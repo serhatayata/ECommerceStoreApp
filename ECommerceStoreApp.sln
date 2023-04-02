@@ -1,0 +1,67 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{1055DE2C-675F-4234-A46F-D9BB463BEB18}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker-compose-files", "docker-compose-files", "{3A931DA4-C6CA-496C-9E99-909BD7495FB1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution-items", "solution-items", "{31BC8496-3826-4C1D-8EBC-BFD0DBEA57E8}"
+	ProjectSection(SolutionItems) = preProject
+		solution-items.txt = solution-items.txt
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "redis", "redis", "{61FE526D-E6F3-4664-8EF4-AD691793D16B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "consul", "consul", "{11E70A35-7996-4C8C-84B6-BF5E88F15B9F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "rabbitmq", "rabbitmq", "{4CB3C9B3-FB0D-4D70-9550-73C1C327B03C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sqlserver", "sqlserver", "{0816F32B-51A9-4668-8DBE-3EB26DAD0516}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "elasticsearch", "elasticsearch", "{F756DF6D-AE10-4843-AA1C-FF4B12771B9B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ApiGateways", "ApiGateways", "{28654088-5A0E-42EE-A40E-50BD0706D3CF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildingBlocks", "BuildingBlocks", "{608D971F-B298-42CC-90E0-FA230DFCDD0D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Clients", "Clients", "{E6FE8BF4-A44C-4A0A-88F0-70D6E67714B6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{DCD06557-C33A-4198-BED7-640F6119B3E7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebApiGateway", "WebApiGateway", "{0DCBAA57-A0DD-4DC4-8E88-6829B279FB71}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web.ApiGateway", "src\ApiGateways\WebApiGateway\Web.ApiGateway\Web.ApiGateway.csproj", "{F0489EAE-7DD1-47DA-9551-165D3D2C5AF3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F0489EAE-7DD1-47DA-9551-165D3D2C5AF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0489EAE-7DD1-47DA-9551-165D3D2C5AF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0489EAE-7DD1-47DA-9551-165D3D2C5AF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0489EAE-7DD1-47DA-9551-165D3D2C5AF3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{61FE526D-E6F3-4664-8EF4-AD691793D16B} = {3A931DA4-C6CA-496C-9E99-909BD7495FB1}
+		{11E70A35-7996-4C8C-84B6-BF5E88F15B9F} = {3A931DA4-C6CA-496C-9E99-909BD7495FB1}
+		{4CB3C9B3-FB0D-4D70-9550-73C1C327B03C} = {3A931DA4-C6CA-496C-9E99-909BD7495FB1}
+		{0816F32B-51A9-4668-8DBE-3EB26DAD0516} = {3A931DA4-C6CA-496C-9E99-909BD7495FB1}
+		{F756DF6D-AE10-4843-AA1C-FF4B12771B9B} = {3A931DA4-C6CA-496C-9E99-909BD7495FB1}
+		{28654088-5A0E-42EE-A40E-50BD0706D3CF} = {1055DE2C-675F-4234-A46F-D9BB463BEB18}
+		{608D971F-B298-42CC-90E0-FA230DFCDD0D} = {1055DE2C-675F-4234-A46F-D9BB463BEB18}
+		{E6FE8BF4-A44C-4A0A-88F0-70D6E67714B6} = {1055DE2C-675F-4234-A46F-D9BB463BEB18}
+		{DCD06557-C33A-4198-BED7-640F6119B3E7} = {1055DE2C-675F-4234-A46F-D9BB463BEB18}
+		{0DCBAA57-A0DD-4DC4-8E88-6829B279FB71} = {28654088-5A0E-42EE-A40E-50BD0706D3CF}
+		{F0489EAE-7DD1-47DA-9551-165D3D2C5AF3} = {0DCBAA57-A0DD-4DC4-8E88-6829B279FB71}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0EA7DAA1-E97E-4D4E-8989-8E0E33F3EDA4}
+	EndGlobalSection
+EndGlobal
