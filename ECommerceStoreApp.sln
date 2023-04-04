@@ -13,14 +13,29 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution-items", "solution-
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "redis", "redis", "{61FE526D-E6F3-4664-8EF4-AD691793D16B}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose-files\redis\docker-compose.yml = docker-compose-files\redis\docker-compose.yml
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "consul", "consul", "{11E70A35-7996-4C8C-84B6-BF5E88F15B9F}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose-files\consul\docker-compose.yml = docker-compose-files\consul\docker-compose.yml
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "rabbitmq", "rabbitmq", "{4CB3C9B3-FB0D-4D70-9550-73C1C327B03C}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose-files\rabbitmq\docker-compose.yml = docker-compose-files\rabbitmq\docker-compose.yml
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sqlserver", "sqlserver", "{0816F32B-51A9-4668-8DBE-3EB26DAD0516}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose-files\sqlserver\docker-compose.yml = docker-compose-files\sqlserver\docker-compose.yml
+	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "elasticsearch", "elasticsearch", "{F756DF6D-AE10-4843-AA1C-FF4B12771B9B}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "graylog", "graylog", "{F756DF6D-AE10-4843-AA1C-FF4B12771B9B}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose-files\graylog\docker-compose.yml = docker-compose-files\graylog\docker-compose.yml
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ApiGateways", "ApiGateways", "{28654088-5A0E-42EE-A40E-50BD0706D3CF}"
 EndProject
@@ -81,6 +96,16 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventBus.Factory", "src\BuildingBlocks\EventBus\EventBus.Factory\EventBus.Factory.csproj", "{DE59AF32-C7BE-4A7E-9B06-88CE54659606}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventBus.RabbitMQ", "src\BuildingBlocks\EventBus\EventBus.RabbitMQ\EventBus.RabbitMQ.csproj", "{0EB474C3-CB96-4ABD-8C54-8BBE5CBC31B4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "mongodb", "mongodb", "{D97E5C42-3EF9-4734-B810-23E385F8F246}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose-files\mongodb\docker-compose.yml = docker-compose-files\mongodb\docker-compose.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "elasticsearch", "elasticsearch", "{E5D880C8-856E-476C-B2CE-508E55AB3CA2}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose-files\elasticsearch\docker-compose.yml = docker-compose-files\elasticsearch\docker-compose.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -184,6 +209,8 @@ Global
 		{68AA9A37-08CD-4B62-856C-70CE09453820} = {511EF21F-D262-466A-8ED0-E6E9C46C41C4}
 		{DE59AF32-C7BE-4A7E-9B06-88CE54659606} = {DD8C9374-2C34-4BAD-AD03-607A15A3E682}
 		{0EB474C3-CB96-4ABD-8C54-8BBE5CBC31B4} = {CCFB0449-3399-4DC0-A3D7-8834123B10D5}
+		{D97E5C42-3EF9-4734-B810-23E385F8F246} = {3A931DA4-C6CA-496C-9E99-909BD7495FB1}
+		{E5D880C8-856E-476C-B2CE-508E55AB3CA2} = {3A931DA4-C6CA-496C-9E99-909BD7495FB1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0EA7DAA1-E97E-4D4E-8989-8E0E33F3EDA4}

@@ -1,0 +1,38 @@
+version: '2'
+services:
+  # Elasticsearch: https://www.elastic.co/guide/en/elasticsearch/reference/7.10/docker.html
+  elasticsearch: # ElasticSearch service
+
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.2 # Version of elasticsearch image
+    volumes:
+      - es_data:/usr/share/elasticsearch/data # Persisted elasticsearch data 
+    environment:
+      - http.host=0.0.0.0
+      - transport.host=localhost
+      - network.host=0.0.0.0
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      # Unlimited amount of memory set for elasticsearch container
+      memlock:
+        soft: -1
+        hard: -1
+        # Resource limit for elasticsearch set to 1 gigabyte
+    mem_limit: 1g
+    networks:
+      - graylog
+      - net_apigateway
+      - net_backendservices
+
+# Volumes for persisting data, see https://docs.docker.com/engine/admin/volumes/volumes/
+volumes:
+  es_data:
+    driver: local
+
+networks:
+  graylog:
+  net_apigateway:
+    name: net_apigateway
+    driver: bridge
+  net_backendservices:
+    name: net_backendservices
+    driver: bridge

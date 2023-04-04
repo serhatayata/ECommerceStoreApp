@@ -1,0 +1,25 @@
+version: '2'
+services:
+  # MongoDB: https://hub.docker.com/_/mongo/
+  mongodb: # Mongodb service
+    image: mongo:4.2 # Version of Mongodb docker image 
+    volumes:
+      - mongo_data:/data/db # Persisted mongodb data
+    networks:
+      - graylog
+      - net_apigateway
+      - net_backendservices
+
+# Volumes for persisting data, see https://docs.docker.com/engine/admin/volumes/volumes/
+volumes:
+  mongo_data:
+    driver: local
+
+networks:
+  graylog:
+  net_apigateway:
+    name: net_apigateway
+    driver: bridge
+  net_backendservices:
+    name: net_backendservices
+    driver: bridge
