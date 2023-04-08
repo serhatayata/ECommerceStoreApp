@@ -1,7 +1,10 @@
-﻿using Polly;
+﻿using Microsoft.Extensions.Logging;
+using Polly;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Exceptions;
+using System;
 using System.Net.Sockets;
+using System.Reflection;
 
 namespace EventBus.RabbitMQ
 {
@@ -12,9 +15,12 @@ namespace EventBus.RabbitMQ
         private readonly int retryCount;
         private object lock_object = new object();
         private bool _disposed;
+        private readonly ILogger logger;
 
-        public RabbitMQPersistentConnection(IConnectionFactory connectionFactory, int retryCount = 5)
+        public RabbitMQPersistentConnection(IConnectionFactory connectionFactory, int retryCount = 5, IServiceProvider serviceProvider)
         {
+            logger = serviceProvider.GetService(typeof(ILogger<RabbitMQPersistentConnection>)) as ILogger<RabbitMQPersistentConnection>;
+
             this.connectionFactory = connectionFactory;
             this.retryCount = retryCount;
         }
@@ -36,7 +42,9 @@ namespace EventBus.RabbitMQ
                              .Or<BrokerUnreachableException>()
                              .WaitAndRetry(retryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
                              {
-
+                                 logger.LogError(ex, "ERROR handling message: {ExceptionMessage} - Method : {ClassName}.{MethodName}",
+                                                 ex.Message, nameof(RabbitMQPersistentConnection),
+                                                 MethodBase.GetCurrentMethod()?.Name);
                              });
 
                 policy.Execute(() =>
