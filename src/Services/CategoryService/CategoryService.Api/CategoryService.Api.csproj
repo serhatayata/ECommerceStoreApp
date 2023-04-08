@@ -31,8 +31,6 @@
   <ItemGroup>
     <Folder Include="Infrastructure\Context\" />
     <Folder Include="Infrastructure\EntityConfigurations\" />
-    <Folder Include="Infrastructure\Setup\" />
-    <Folder Include="wwwroot\pics\" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,4 @@
-﻿using CategoryService.Api.Infrastructure.Context;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
 namespace CategoryService.Api.Extensions
@@ -9,7 +8,7 @@ namespace CategoryService.Api.Extensions
         public static IServiceCollection ConfigureDbContext(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddEntityFrameworkSqlServer()
-                .AddDbContext<CatalogContext>(options =>
+                .AddDbContext<CategoryContext>(options =>
                 {
                     options.UseSqlServer(configuration["ConnectionStrings:DefaultConnection"],
                         sqlServerOptionsAction: sqlOptions =>
