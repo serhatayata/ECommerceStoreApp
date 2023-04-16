@@ -9,4 +9,5 @@ E-Commerce Microservices Application
 - MSSQL, Redis
 
 
-![Architecture_ECommerceStoreApp](https://user-images.githubusercontent.com/82120298/232228739-126e81bb-53d0-4d9b-ae04-90406bfd25c7.png)
+![Architecture_ECommerceStoreApp](https://user-images.githubusercontent.com/82120298/232288482-5a0a0391-4b00-4df0-b0c6-157f844f7cff.png)
+
