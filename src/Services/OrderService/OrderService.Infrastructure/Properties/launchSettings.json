@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "OrderService.Infrastructure": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:51450;http://localhost:51451"
+    }
+  }
+}
