@@ -8,6 +8,6 @@ E-Commerce Microservices Application
 - RabbitMQ
 - MSSQL, Redis
 
+![Architecture_ECommerceStoreApp](https://user-images.githubusercontent.com/82120298/232288567-eb350065-a8ed-4743-b4d5-0c4de56cc4a4.png)
 
-![Architecture_ECommerceStoreApp](https://user-images.githubusercontent.com/82120298/232288482-5a0a0391-4b00-4df0-b0c6-157f844f7cff.png)
 
