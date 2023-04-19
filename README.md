@@ -1,5 +1,5 @@
 # ECommerceStoreApp
-E-Commerce Microservices Application
+E-Commerce Microservices Application (STILL BEING IMPROVED)
 
 - .NET Blazor SPA
 - Ocelot Gateway
