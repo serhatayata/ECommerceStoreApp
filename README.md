@@ -20,5 +20,5 @@ E-Commerce Microservices Application (STILL BEING IMPROVED)
   
   - Updating Migrations
     - update-database -context AppIdentityDbContext -migration mig_v1
-    - update-database -context PersistedGrantDbContext -migration mig_persisted_v1
-    - update-database -context ConfigurationDbContext -migration mig_config_v1
+    - update-database -context AppPersistedGrantDbContext -migration mig_persisted_v1
+    - update-database -context AppConfigurationDbContext -migration mig_config_v1
