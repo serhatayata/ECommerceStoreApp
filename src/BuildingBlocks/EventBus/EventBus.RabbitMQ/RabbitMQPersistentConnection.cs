@@ -17,7 +17,7 @@ namespace EventBus.RabbitMQ
         private bool _disposed;
         private readonly ILogger logger;
 
-        public RabbitMQPersistentConnection(IConnectionFactory connectionFactory, int retryCount = 5, IServiceProvider serviceProvider)
+        public RabbitMQPersistentConnection(IConnectionFactory connectionFactory, int retryCount, IServiceProvider serviceProvider)
         {
             logger = serviceProvider.GetService(typeof(ILogger<RabbitMQPersistentConnection>)) as ILogger<RabbitMQPersistentConnection>;
 
