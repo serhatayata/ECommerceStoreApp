@@ -3,19 +3,19 @@ using IdentityServer.Api.Data.Contexts;
 using IdentityServer.Api.Models.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 
 namespace IdentityServer.Api.Data.SeedData
 {
-    public class IdentityDbContextSeed
+    public class IdentityUserContextSeed
     {
-        public async static Task AddUserSeedAsync(IConfiguration configuration, string connectionString, string assembly)
+        public async static Task AddUserSettingsAsync(string connString)
         {
+            var assembly = typeof(Program).Assembly.GetName().Name;
             var services = new ServiceCollection();
-
             services.AddLogging();
-            services.AddDbContext<AppIdentityDbContext>(options => options.UseSqlServer(connectionString, b => b.MigrationsAssembly(assembly)));
+
+            services.AddDbContext<AppIdentityDbContext>(options => options.UseSqlServer(connString, b => b.MigrationsAssembly(assembly)));
 
             services.AddIdentity<User, Role>(options =>
             {
@@ -28,7 +28,6 @@ namespace IdentityServer.Api.Data.SeedData
             using var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();
 
             var context = scope.ServiceProvider.GetService<AppIdentityDbContext>();
-            var logger = scope.ServiceProvider.GetService<ILogger<IdentityDbContextSeed>>();
             context.Database.Migrate();
 
             #region User_1
@@ -63,12 +62,10 @@ namespace IdentityServer.Api.Data.SeedData
 
                 if (!result.Succeeded)
                     throw new Exception(result.Errors.First().Description);
-
-                logger.LogInformation("Serhat Ayata user created");
             }
             else
             {
-                logger.LogInformation("Serhat Ayata user already exists");
+
             }
             #endregion
             #region User_2
@@ -102,12 +99,10 @@ namespace IdentityServer.Api.Data.SeedData
                         });
                 if (!result.Succeeded)
                     throw new Exception(result.Errors.First().Description);
-
-                logger.LogInformation("Mehmet Kaya user created");
             }
             else
             {
-                logger.LogInformation("Mehmet Kaya user already exists");
+
             }
             #endregion
             #region Roles

@@ -110,6 +110,24 @@ namespace IdentityServer.Api
                         IdentityServerConstants.StandardScopes.Profile,
                         "Roles"
                     }
+                },
+	            #endregion
+                #region BasketClient
+                new Client
+                {
+                    ClientName="Basket Full Client",
+                    ClientId="basket_full_client",
+                    ClientSecrets= {new Secret("basket_full_secret".Sha256())},
+                    AllowedGrantTypes= GrantTypes.ClientCredentials,
+                    AllowedScopes={ "basket_full", "basket_read", "basket_write" }
+                },
+                new Client
+                {
+                    ClientName="Gateway Full Client",
+                    ClientId="gateway_full_client",
+                    ClientSecrets= {new Secret("gateway_full_secret".Sha256())},
+                    AllowedGrantTypes= GrantTypes.ClientCredentials,
+                    AllowedScopes={ "gateway_full" }
                 }
 	            #endregion
             };

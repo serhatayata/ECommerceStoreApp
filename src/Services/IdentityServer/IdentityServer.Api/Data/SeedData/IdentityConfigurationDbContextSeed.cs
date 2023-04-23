@@ -3,14 +3,19 @@ using IdentityServer.Api.Data.Contexts;
 using IdentityServer.Api.Models.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using IdentityModel;
+using System.Security.Claims;
+using IdentityServer4.EntityFramework.DbContexts;
 
 namespace IdentityServer.Api.Data.SeedData
 {
-    public class IdentityConfigurationDbContextSeed
+    public static class IdentityConfigurationDbContextSeed
     {
-        public async static Task AddIdentityConfigurationSeedAsync(IConfiguration configuration, string connectionString, string assembly)
+        public async static Task AddIdentityConfigurationSettingsAsync(IConfiguration configuration)
         {
             var services = new ServiceCollection();
+            var assembly = typeof(IdentityConfigurationDbContextSeed).Assembly.GetName().Name;
+            var identityConnString = configuration.GetConnectionString("DefaultConnection");
 
             services.AddIdentity<User, Role>(options =>
             {
@@ -25,16 +30,18 @@ namespace IdentityServer.Api.Data.SeedData
                 options.Events.RaiseInformationEvents = true;
                 options.Events.RaiseFailureEvents = true;
                 options.Events.RaiseSuccessEvents = true;
+
+                //see https://identityserver4.readthedocs.io/en/latest/topics/resources.html
                 options.EmitStaticAudienceClaim = true;
             })
             .AddAspNetIdentity<User>()
             .AddConfigurationStore<AppConfigurationDbContext>(options =>
             {
-                options.ConfigureDbContext = b => b.UseSqlServer(connectionString, opt => opt.MigrationsAssembly(assembly));
+                options.ConfigureDbContext = b => b.UseSqlServer(identityConnString, opt => opt.MigrationsAssembly(assembly));
             }).AddOperationalStore<AppPersistedGrantDbContext>(options =>
             {
                 options.ConfigureDbContext = b =>
-                            b.UseSqlServer(connectionString, opt => opt.MigrationsAssembly(assembly));
+                            b.UseSqlServer(identityConnString, opt => opt.MigrationsAssembly(assembly));
             })
             .AddDeveloperSigningCredential(); //Sertifika yoksa
 
@@ -43,6 +50,7 @@ namespace IdentityServer.Api.Data.SeedData
 
             var persistedGrantDbContext = scope.ServiceProvider.GetService<AppPersistedGrantDbContext>();
             persistedGrantDbContext.Database.Migrate();
+
             var context = scope.ServiceProvider.GetService<AppConfigurationDbContext>();
             context.Database.Migrate();
 
