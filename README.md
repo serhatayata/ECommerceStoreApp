@@ -15,8 +15,8 @@ E-Commerce Microservices Application (STILL BEING IMPROVED)
 - Migration commands IdentityServer
   - Adding Migrations
     - add-migration -c AppIdentityDbContext -name mig_v1
-    - add-migration -c PersistedGrantDbContext -name mig_persisted_v1
-    - add-migration -c ConfigurationDbContext -name mig_config_v1
+    - add-migration -c AppPersistedGrantDbContext -name mig_persisted_v1
+    - add-migration -c AppConfigurationDbContext -name mig_config_v1
   
   - Updating Migrations
     - update-database -context AppIdentityDbContext -migration mig_v1
