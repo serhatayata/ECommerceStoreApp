@@ -1,7 +1,7 @@
 using IdentityServer.Api.Data.Contexts;
 using IdentityServer.Api.Data.SeedData;
-using IdentityServer.Api.Extensions;
-using IdentityServer.Api.Models.Identity;
+using IdentityServer.Api.Entities.Identity;
+using IdentityServer.Api.Utilities.IoC;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;

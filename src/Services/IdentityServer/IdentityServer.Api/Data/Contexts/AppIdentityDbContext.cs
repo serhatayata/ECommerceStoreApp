@@ -1,5 +1,5 @@
 ﻿using IdentityServer.Api.Data.EntityConfigurations.Identity;
-using IdentityServer.Api.Models.Identity;
+using IdentityServer.Api.Entities.Identity;
 using IdentityServer.Api.Utilities.IoC;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;

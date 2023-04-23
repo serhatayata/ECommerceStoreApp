@@ -112,7 +112,7 @@ namespace IdentityServer.Api
                     }
                 },
 	            #endregion
-                #region BasketClient
+                #region ApiClients
                 new Client
                 {
                     ClientName="Basket Full Client",

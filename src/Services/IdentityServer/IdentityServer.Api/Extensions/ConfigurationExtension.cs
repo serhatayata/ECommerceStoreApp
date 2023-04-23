@@ -1,4 +1,4 @@
-﻿namespace IdentityServer.Api.Extensions
+﻿namespace IdentityServer.Api.Utilities.IoC
 {
     public class ConfigurationExtension
     {

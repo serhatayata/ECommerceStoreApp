@@ -1,11 +1,11 @@
 ﻿using IdentityServer4.EntityFramework.Mappers;
 using IdentityServer.Api.Data.Contexts;
-using IdentityServer.Api.Models.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using IdentityModel;
 using System.Security.Claims;
 using IdentityServer4.EntityFramework.DbContexts;
+using IdentityServer.Api.Entities.Identity;
 
 namespace IdentityServer.Api.Data.SeedData
 {

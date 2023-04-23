@@ -1,4 +1,4 @@
-﻿using IdentityServer.Api.Models.Identity;
+﻿using IdentityServer.Api.Entities.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

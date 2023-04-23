@@ -1,6 +1,6 @@
 ﻿using IdentityModel;
 using IdentityServer.Api.Data.Contexts;
-using IdentityServer.Api.Models.Identity;
+using IdentityServer.Api.Entities.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
