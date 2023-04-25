@@ -4,8 +4,11 @@
 
 using IdentityModel;
 using IdentityServer.Api.Attributes;
+using IdentityServer.Api.Data.Contexts;
 using IdentityServer.Api.Data.SeedData;
+using IdentityServer.Api.Dtos;
 using IdentityServer.Api.Models.Account;
+using IdentityServer.Api.Services.Abstract;
 using IdentityServer.Api.Utilities;
 using IdentityServer.Api.ViewModels.Account;
 using IdentityServer4;
@@ -35,12 +38,14 @@ namespace IdentityServer.Api.Controllers
         private readonly IClientStore _clientStore;
         private readonly IAuthenticationSchemeProvider _schemeProvider;
         private readonly IEventService _events;
+        private readonly IClientService _clientService;
 
         public AccountController(
             IIdentityServerInteractionService interaction,
             IClientStore clientStore,
             IAuthenticationSchemeProvider schemeProvider,
             IEventService events,
+            IClientService clientService,
             TestUserStore users = null)
         {
             // if the TestUserStore is not in DI, then we'll just use the global users collection
@@ -51,6 +56,7 @@ namespace IdentityServer.Api.Controllers
             _clientStore = clientStore;
             _schemeProvider = schemeProvider;
             _events = events;
+            _clientService = clientService;
         }
 
         /// <summary>
@@ -230,6 +236,25 @@ namespace IdentityServer.Api.Controllers
         {
             return View();
         }
+
+        #region Client
+        [HttpPost]
+        [Route("add-client")]
+        public async Task<IActionResult> AddClient(ClientDto client)
+        {
+            var result = await _clientService.AddAsync(client);
+            if (result.Success)
+                return Ok(result);
+            return BadRequest(result);
+        }
+
+        [HttpPost]
+        [Route("update-client")]
+        public async Task<IActionResult> AddClient(ClientDto client)
+        {
+            
+        }
+        #endregion
 
         /*****************************************/
         /* helper APIs for the AccountController */

@@ -1,5 +1,8 @@
+using Autofac.Extensions.DependencyInjection;
+using Autofac;
 using IdentityServer.Api.Data.Contexts;
 using IdentityServer.Api.Data.SeedData;
+using IdentityServer.Api.DependencyResolvers.Autofac;
 using IdentityServer.Api.Entities.Identity;
 using IdentityServer.Api.Utilities.IoC;
 using Microsoft.AspNetCore.Identity;
@@ -15,6 +18,10 @@ builder.Services.AddControllers();
 
 var config = ConfigurationExtension.appConfig;
 builder.Configuration.AddConfiguration(config);
+#region AutoMapper
+builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
+builder.Host.ConfigureContainer<ContainerBuilder>(builder => builder.RegisterModule(new AutofacBusinessModule()));
+#endregion
 
 #region IdentityServer
 string defaultConnString = configuration.GetSection("ConnectionStrings:DefaultConnection").Value;
