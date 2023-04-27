@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using IdentityServer.Api.Data.Contexts;
 using IdentityServer.Api.Services.Abstract;
 using IdentityServer.Api.Services.Concrete;
 
@@ -9,7 +10,9 @@ namespace IdentityServer.Api.DependencyResolvers.Autofac
         protected override void Load(ContainerBuilder builder)
         {
             #region SERVICES
-            builder.RegisterType<ClientService>().As<IClientService>().InstancePerLifetimeScope();
+            builder.RegisterType<ClientService>().As<IClientService>().InstancePerDependency();
+            builder.RegisterType<ApiResourceService>().As<IApiResourceService>().InstancePerDependency();
+            builder.RegisterType<ApiScopeService>().As<IApiScopeService>().InstancePerDependency();
             #endregion
         }
     }

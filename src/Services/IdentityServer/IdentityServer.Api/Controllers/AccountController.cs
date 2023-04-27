@@ -30,7 +30,6 @@ namespace IdentityServer.Api.Controllers
     /// The interaction service provides a way for the UI to communicate with identityserver for validation and context retrieval
     /// </summary>
     [SecurityHeaders]
-    [AllowAnonymous]
     public class AccountController : Controller
     {
         private readonly TestUserStore _users;
@@ -39,6 +38,8 @@ namespace IdentityServer.Api.Controllers
         private readonly IAuthenticationSchemeProvider _schemeProvider;
         private readonly IEventService _events;
         private readonly IClientService _clientService;
+        private readonly IApiResourceService _apiResourceService;
+        private readonly IApiScopeService _apiScopeService;
 
         public AccountController(
             IIdentityServerInteractionService interaction,
@@ -46,6 +47,8 @@ namespace IdentityServer.Api.Controllers
             IAuthenticationSchemeProvider schemeProvider,
             IEventService events,
             IClientService clientService,
+            IApiResourceService apiResourceService,
+            IApiScopeService apiScopeService,
             TestUserStore users = null)
         {
             // if the TestUserStore is not in DI, then we'll just use the global users collection
@@ -57,12 +60,15 @@ namespace IdentityServer.Api.Controllers
             _schemeProvider = schemeProvider;
             _events = events;
             _clientService = clientService;
+            _apiResourceService = apiResourceService;
+            _apiScopeService = apiScopeService;
         }
 
         /// <summary>
         /// Entry point into the login workflow
         /// </summary>
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> Login(string returnUrl)
         {
             // build a model so we know what to show on the login page
@@ -82,6 +88,7 @@ namespace IdentityServer.Api.Controllers
         /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AllowAnonymous]
         public async Task<IActionResult> Login(LoginInputModel model, string button)
         {
             // check if we are in the context of an authorization request
@@ -203,6 +210,7 @@ namespace IdentityServer.Api.Controllers
         /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AllowAnonymous]
         public async Task<IActionResult> Logout(LogoutInputModel model)
         {
             // build a model so the logged out page knows what to display
@@ -231,7 +239,9 @@ namespace IdentityServer.Api.Controllers
 
             return View("LoggedOut", vm);
         }
+
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult AccessDenied()
         {
             return View();
@@ -240,19 +250,124 @@ namespace IdentityServer.Api.Controllers
         #region Client
         [HttpPost]
         [Route("add-client")]
-        public async Task<IActionResult> AddClient(ClientDto client)
+        public IActionResult AddClient(ClientDto client)
         {
-            var result = await _clientService.AddAsync(client);
+            var result = _clientService.Add(client);
             if (result.Success)
                 return Ok(result);
             return BadRequest(result);
         }
 
-        [HttpPost]
-        [Route("update-client")]
-        public async Task<IActionResult> AddClient(ClientDto client)
+        [HttpDelete]
+        [Route("delete-client")]
+        public IActionResult DeleteClient(string clientId)
         {
-            
+            var result = _clientService.Delete(clientId);
+            if (result.Success)
+                return Ok(result);
+            return BadRequest(result);
+        }
+
+        [HttpGet]
+        [Route("get-client")]
+        public IActionResult GetClient(string clientId)
+        {
+            var result = _clientService.Get(clientId, new Models.IncludeOptions.Account.ClientIncludeOptions());
+            if (result.Success)
+                return Ok(result);
+            return BadRequest(result);
+        }
+
+        [HttpGet]
+        [Route("get-clients")]
+        public IActionResult GetClients()
+        {
+            var result = _clientService.GetAll(new Models.IncludeOptions.Account.ClientIncludeOptions());
+            if (result.Success)
+                return Ok(result);
+            return BadRequest(result);
+        }
+        #endregion
+        #region ApiResource
+        [HttpPost]
+        [Route("add-apiresource")]
+        public IActionResult AddApiResource(ApiResourceDto apiResource)
+        {
+            var result = _apiResourceService.Add(apiResource);
+            if (result.Success)
+                return Ok(result);
+            return BadRequest(result);
+        }
+
+        [HttpDelete]
+        [Route("delete-apiresource")]
+        public IActionResult DeleteApiResource(string name)
+        {
+            var result = _apiResourceService.Delete(name);
+            if (result.Success)
+                return Ok(result);
+            return BadRequest(result);
+        }
+
+        [HttpGet]
+        [Route("get-apiresource")]
+        public IActionResult GetApiResources(string name)
+        {
+            var result = _apiResourceService.Get(name, new Models.IncludeOptions.Account.ApiResourceIncludeOptions());
+            if (result.Success)
+                return Ok(result);
+            return BadRequest(result);
+        }
+
+        [HttpGet]
+        [Route("get-apiresources")]
+        public IActionResult GetApiResources()
+        {
+            var result = _apiResourceService.GetAll(new Models.IncludeOptions.Account.ApiResourceIncludeOptions());
+            if (result.Success)
+                return Ok(result);
+            return BadRequest(result);
+        }
+        #endregion
+        #region ApiScope
+        [HttpPost]
+        [Route("add-apiscope")]
+        public IActionResult AddApiScope(ApiScopeDto apiResource)
+        {
+            var result = _apiScopeService.Add(apiResource);
+            if (result.Success)
+                return Ok(result);
+            return BadRequest(result);
+        }
+        
+        [HttpDelete]
+        [Route("delete-apiscope")]
+        public IActionResult DeleteApiScope(int id)
+        {
+            var result = _apiScopeService.Delete(id);
+            if (result.Success)
+                return Ok(result);
+            return BadRequest(result);
+        }
+
+        [HttpGet]
+        [Route("get-apiscope")]
+        public IActionResult GetApiScope(int id)
+        {
+            var result = _apiScopeService.Get(id, new Models.IncludeOptions.Account.ApiScopeIncludeOptions());
+            if (result.Success)
+                return Ok(result);
+            return BadRequest(result);
+        }
+
+        [HttpGet]
+        [Route("get-apiscopes")]
+        public IActionResult GetApiScopes()
+        {
+            var result = _apiScopeService.GetAll(new Models.IncludeOptions.Account.ApiScopeIncludeOptions());
+            if (result.Success)
+                return Ok(result);
+            return BadRequest(result);
         }
         #endregion
 

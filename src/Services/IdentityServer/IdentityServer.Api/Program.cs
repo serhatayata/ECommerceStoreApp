@@ -8,26 +8,33 @@ using IdentityServer.Api.Utilities.IoC;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
+using IdentityServer.Api.Mapping;
+using System.Text.Json.Serialization;
 
 #region SERVICES
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
 var assembly = typeof(Program).Assembly.GetName().Name;
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(o =>
+{
+    o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+});
 
 var config = ConfigurationExtension.appConfig;
 builder.Configuration.AddConfiguration(config);
-#region AutoMapper
+#region Autofac
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 builder.Host.ConfigureContainer<ContainerBuilder>(builder => builder.RegisterModule(new AutofacBusinessModule()));
 #endregion
-
+#region AutoMapper
+builder.Services.AddAutoMapper(typeof(MapProfile).Assembly);
+#endregion
 #region IdentityServer
 string defaultConnString = configuration.GetSection("ConnectionStrings:DefaultConnection").Value;
 
 builder.Services.AddLogging();
-builder.Services.AddDbContext<AppIdentityDbContext>(options => options.UseSqlServer(defaultConnString, b => b.MigrationsAssembly(assembly)));
+builder.Services.AddDbContext<AppIdentityDbContext>(options => options.UseSqlServer(defaultConnString, b => b.MigrationsAssembly(assembly)), ServiceLifetime.Transient);
 
 builder.Services.AddIdentity<User, Role>(options =>
 {

@@ -15,7 +15,7 @@ namespace IdentityServer.Api.Data.SeedData
             var services = new ServiceCollection();
             services.AddLogging();
 
-            services.AddDbContext<AppIdentityDbContext>(options => options.UseSqlServer(connString, b => b.MigrationsAssembly(assembly)));
+            services.AddDbContext<AppIdentityDbContext>(options => options.UseSqlServer(connString, b => b.MigrationsAssembly(assembly)), ServiceLifetime.Transient);
 
             services.AddIdentity<User, Role>(options =>
             {

@@ -1,4 +1,6 @@
-﻿namespace IdentityServer.Api.Dtos
+﻿using IdentityServer4.EntityFramework.Entities;
+
+namespace IdentityServer.Api.Dtos
 {
     public class ClientDto
     {
@@ -38,6 +40,7 @@
         /// Allowed scopes for the client
         /// </summary>
         public List<string> AllowedScopes { get; set; }
+        public List<ClientProperty> Properties { get; set; }
 
     }
 }
