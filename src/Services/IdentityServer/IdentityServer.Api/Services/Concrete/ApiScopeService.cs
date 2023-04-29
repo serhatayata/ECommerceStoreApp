@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
 using IdentityServer.Api.Data.Contexts;
-using IdentityServer.Api.Dtos;
+using IdentityServer.Api.Dtos.ApiScopeDtos;
+using IdentityServer.Api.Dtos.Base.Concrete;
+using IdentityServer.Api.Dtos.ClientDtos;
 using IdentityServer.Api.Models.IncludeOptions.Account;
 using IdentityServer.Api.Services.Abstract;
 using IdentityServer.Api.Utilities.Results;
+using IdentityServer4.EntityFramework.Mappers;
 using Microsoft.EntityFrameworkCore;
 
 namespace IdentityServer.Api.Services.Concrete
@@ -19,25 +22,44 @@ namespace IdentityServer.Api.Services.Concrete
             _mapper = mapper;
         }
 
-        public DataResult<ApiScopeDto> Add(ApiScopeDto model)
+        /// <summary>
+        /// Add api scope
+        /// </summary>
+        /// <param name="model">Api scope add dto</param>
+        /// <returns><see cref="DataResult{T}"/></returns>
+        public DataResult<ApiScopeDto> Add(ApiScopeAddDto model)
         {
-            var mappedApiScope = _mapper.Map<IdentityServer4.EntityFramework.Entities.ApiScope>(model);
-            _confDbContext.ApiScopes.Add(mappedApiScope);
+            var mappedApiScope = _mapper.Map<IdentityServer4.Models.ApiScope>(model);
+            var addedApiScope = mappedApiScope.ToEntity();
+
+            _confDbContext.ApiScopes.Add(addedApiScope);
             var result = _confDbContext.SaveChanges();
-            return result == 1 ? new SuccessDataResult<ApiScopeDto>(model) : new ErrorDataResult<ApiScopeDto>();
+
+            var returnValue = _mapper.Map<ApiScopeDto>(mappedApiScope);
+            return result > 0 ? new SuccessDataResult<ApiScopeDto>(returnValue) : new ErrorDataResult<ApiScopeDto>();
         }
 
-        public Result Delete(int id)
+        /// <summary>
+        /// Deletes the specified api scope
+        /// </summary>
+        /// <param name="model">string dto for api scope name</param>
+        /// <returns><see cref="Result"/></returns>
+        public Result Delete(StringDto model)
         {
-            var existingApiScope = _confDbContext.ApiScopes.FirstOrDefault(c => c.Id == id);
+            var existingApiScope = _confDbContext.ApiScopes.FirstOrDefault(c => c.Name == model.Value);
             if (existingApiScope == null)
                 return new ErrorResult();
 
             _confDbContext.ApiScopes.Remove(existingApiScope);
             var result = _confDbContext.SaveChanges();
-            return result == 1 ? new SuccessResult() : new ErrorResult();
+            return result > 0 ? new SuccessResult() : new ErrorResult();
         }
 
+        /// <summary>
+        /// Get all api scopes
+        /// </summary>
+        /// <param name="options">get include options for api scopes</param>
+        /// <returns></returns>
         public DataResult<List<ApiScopeDto>> GetAll(ApiScopeIncludeOptions options)
         {
             var result = _confDbContext.ApiScopes.ToList();
@@ -53,9 +75,15 @@ namespace IdentityServer.Api.Services.Concrete
             return new SuccessDataResult<List<ApiScopeDto>>(mappedResult);
         }
 
-        public DataResult<ApiScopeDto> Get(int id, ApiScopeIncludeOptions options)
+        /// <summary>
+        /// Get specified api scope
+        /// </summary>
+        /// <param name="model">name of api scope</param>
+        /// <param name="options">get options for the api scope</param>
+        /// <returns></returns>
+        public DataResult<ApiScopeDto> Get(StringDto model, ApiScopeIncludeOptions options)
         {
-            var result = _confDbContext.ApiScopes.FirstOrDefault(c => c.Id == id);
+            var result = _confDbContext.ApiScopes.FirstOrDefault(c => c.Name == model.Value);
 
             if (result == null)
                 return new SuccessDataResult<ApiScopeDto>();

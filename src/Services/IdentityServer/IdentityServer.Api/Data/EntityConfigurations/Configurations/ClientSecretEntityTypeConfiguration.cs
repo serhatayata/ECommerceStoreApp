@@ -9,6 +9,8 @@ namespace IdentityServer.Api.Data.EntityConfigurations.Configurations
         public void Configure(EntityTypeBuilder<ClientSecret> builder)
         {
             builder.ToTable(name: "ClientSecrets", schema: "configuration");
+
+            builder.Property(s => s.Type).HasDefaultValue("SharedSecret");
         }
     }
 }

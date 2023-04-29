@@ -1,15 +1,15 @@
-using Autofac.Extensions.DependencyInjection;
 using Autofac;
+using Autofac.Extensions.DependencyInjection;
 using IdentityServer.Api.Data.Contexts;
 using IdentityServer.Api.Data.SeedData;
 using IdentityServer.Api.DependencyResolvers.Autofac;
 using IdentityServer.Api.Entities.Identity;
+using IdentityServer.Api.Mapping;
 using IdentityServer.Api.Utilities.IoC;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection;
-using IdentityServer.Api.Mapping;
 using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 #region SERVICES
 var builder = WebApplication.CreateBuilder(args);

@@ -171,8 +171,10 @@ namespace IdentityServer.Api.Migrations.AppConfigurationDb
 
                     b.Property<string>("Type")
                         .IsRequired()
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
+                        .HasColumnType("nvarchar(250)")
+                        .HasDefaultValue("SharedSecret");
 
                     b.Property<string>("Value")
                         .IsRequired()
@@ -654,8 +656,10 @@ namespace IdentityServer.Api.Migrations.AppConfigurationDb
 
                     b.Property<string>("Type")
                         .IsRequired()
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
+                        .HasColumnType("nvarchar(250)")
+                        .HasDefaultValue("SharedSecret");
 
                     b.Property<string>("Value")
                         .IsRequired()

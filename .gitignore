@@ -367,3 +367,4 @@ appsettings.Development.json
 
 *.drawio
 *ECommerceStoreApp.jpg
+*Migrations

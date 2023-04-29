@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
 using IdentityServer.Api.Data.Contexts;
-using IdentityServer.Api.Dtos;
+using IdentityServer.Api.Dtos.ApiResourceDtos;
+using IdentityServer.Api.Dtos.Base.Concrete;
+using IdentityServer.Api.Dtos.ClientDtos;
 using IdentityServer.Api.Models.IncludeOptions.Account;
 using IdentityServer.Api.Services.Abstract;
 using IdentityServer.Api.Utilities.Results;
-using Microsoft.EntityFrameworkCore;
+using IdentityServer4.EntityFramework.Mappers;
+using IdentityServer4.Models;
 
 namespace IdentityServer.Api.Services.Concrete
 {
@@ -19,25 +22,52 @@ namespace IdentityServer.Api.Services.Concrete
             _mapper = mapper;
         }
 
-        public DataResult<ClientDto> Add(ClientDto model)
+        /// <summary>
+        /// Add client and its relational tables
+        /// </summary>
+        /// <param name="model">Client add model</param>
+        /// <returns><see cref="DataResult{T}"/></returns>
+        public DataResult<ClientDto> Add(ClientAddDto model)
         {
-            var mappedClient = _mapper.Map<IdentityServer4.EntityFramework.Entities.Client>(model);
-            _confDbContext.Clients.Add(mappedClient);
+            var existingClient = _confDbContext.Clients.FirstOrDefault(s => s.ClientId == model.ClientId);
+            if (existingClient != null)
+                return new ErrorDataResult<ClientDto>();
+
+            var mappedClient = _mapper.Map<IdentityServer4.Models.Client>(model);
+
+            var addedClient = mappedClient.ToEntity();
+            addedClient.ClientSecrets.ForEach(c =>
+            {
+                c.Value = c.Value.Sha256();
+            });
+            _confDbContext.Clients.Add(addedClient);
             var result = _confDbContext.SaveChanges();
-            return result == 1 ? new SuccessDataResult<ClientDto>(model) : new ErrorDataResult<ClientDto>();
+
+            var returnValue = _mapper.Map<ClientDto>(mappedClient);
+            return result > 0 ? new SuccessDataResult<ClientDto>(returnValue) : new ErrorDataResult<ClientDto>();
         }
 
-        public Result Delete(string clientId)
+        /// <summary>
+        /// Delete client by client id
+        /// </summary>
+        /// <param name="clientId">client id</param>
+        /// <returns><see cref="Result"/></returns>
+        public Result Delete(StringDto model)
         {
-            var existingClient = _confDbContext.Clients.FirstOrDefault(c => c.ClientId == clientId);
+            var existingClient = _confDbContext.Clients.FirstOrDefault(c => c.ClientId == model.Value);
             if (existingClient == null)
                 return new ErrorResult();
 
             _confDbContext.Clients.Remove(existingClient);
             var result = _confDbContext.SaveChanges();
-            return result == 1 ? new SuccessResult() : new ErrorResult();
+            return result > 0 ? new SuccessResult() : new ErrorResult();
         }
 
+        /// <summary>
+        /// Get all clients
+        /// </summary>
+        /// <param name="options">include options</param>
+        /// <returns></returns>
         public DataResult<List<ClientDto>> GetAll(ClientIncludeOptions options)
         {
             var result = _confDbContext.Clients.ToList();
@@ -60,7 +90,7 @@ namespace IdentityServer.Api.Services.Concrete
                 if (options.RedirectUris)
                     _confDbContext.Entry(client).Collection(c => c.RedirectUris).Load();
                 if (options.GrantTypes)
-                    _confDbContext.Entry(client).Collection(c => c.RedirectUris).Load();
+                    _confDbContext.Entry(client).Collection(c => c.AllowedGrantTypes).Load();
             });
 
             var mappedResult = _mapper.Map<List<ClientDto>>(result);
@@ -68,9 +98,15 @@ namespace IdentityServer.Api.Services.Concrete
             return new SuccessDataResult<List<ClientDto>>(mappedResult);
         }
 
-        public DataResult<ClientDto> Get(string clientId, ClientIncludeOptions options)
+        /// <summary>
+        /// Get by client id
+        /// </summary>
+        /// <param name="model">string model for client id</param>
+        /// <param name="options">include options</param>
+        /// <returns></returns>
+        public DataResult<ClientDto> Get(StringDto model, ClientIncludeOptions options)
         {
-            var result = _confDbContext.Clients.FirstOrDefault(c => c.ClientId == clientId);
+            var result = _confDbContext.Clients.FirstOrDefault(c => c.ClientId == model.Value);
 
             if (result == null)
                 return new SuccessDataResult<ClientDto>();

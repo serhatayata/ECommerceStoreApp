@@ -13,6 +13,7 @@ namespace IdentityServer.Api.DependencyResolvers.Autofac
             builder.RegisterType<ClientService>().As<IClientService>().InstancePerDependency();
             builder.RegisterType<ApiResourceService>().As<IApiResourceService>().InstancePerDependency();
             builder.RegisterType<ApiScopeService>().As<IApiScopeService>().InstancePerDependency();
+            builder.RegisterType<IdentityResourceService>().As<IIdentityResourceService>().InstancePerDependency();
             #endregion
         }
     }
