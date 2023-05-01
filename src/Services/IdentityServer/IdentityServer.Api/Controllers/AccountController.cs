@@ -263,6 +263,7 @@ namespace IdentityServer.Api.Controllers
             return View();
         }
 
+
         #region User
         [HttpPost]
         [Route("register")]

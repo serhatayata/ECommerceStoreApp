@@ -105,6 +105,7 @@ namespace IdentityServer.Api.Mapping
                 .ForMember(s => s.Surname, opt => opt.MapFrom(u => u.Surname))
                 .ForMember(s => s.UserName, opt => opt.MapFrom(u => u.UserName))
                 .ForAllOtherMembers(opt => opt.Ignore());
+
             #endregion
         }
     }
