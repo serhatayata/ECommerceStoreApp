@@ -51,6 +51,10 @@ namespace IdentityServer.Api.Services.Concrete
                 return new ErrorResult();
 
             _confDbContext.ApiScopes.Remove(existingApiScope);
+            var clientScopes = _confDbContext.ClientScopes.Where(c => c.Scope == model.Value)?.ToArray();
+            if (clientScopes?.Count() > 0)
+                _confDbContext.RemoveRange(clientScopes);
+
             var result = _confDbContext.SaveChanges();
             return result > 0 ? new SuccessResult() : new ErrorResult();
         }

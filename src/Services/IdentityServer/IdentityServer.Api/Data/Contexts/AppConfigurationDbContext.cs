@@ -2,6 +2,7 @@
 using IdentityServer4.EntityFramework.Options;
 using IdentityServer.Api.Data.EntityConfigurations.Configurations;
 using Microsoft.EntityFrameworkCore;
+using IdentityServer4.EntityFramework.Entities;
 
 namespace IdentityServer.Api.Data.Contexts
 {
@@ -11,6 +12,8 @@ namespace IdentityServer.Api.Data.Contexts
         { 
         
         }
+
+        public DbSet<ClientScope> ClientScopes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

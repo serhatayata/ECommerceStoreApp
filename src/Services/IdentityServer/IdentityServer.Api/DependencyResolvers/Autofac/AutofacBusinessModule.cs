@@ -14,6 +14,8 @@ namespace IdentityServer.Api.DependencyResolvers.Autofac
             builder.RegisterType<ApiResourceService>().As<IApiResourceService>().InstancePerDependency();
             builder.RegisterType<ApiScopeService>().As<IApiScopeService>().InstancePerDependency();
             builder.RegisterType<IdentityResourceService>().As<IIdentityResourceService>().InstancePerDependency();
+            builder.RegisterType<UserService>().As<IUserService>().InstancePerDependency();
+            builder.RegisterType<SharedIdentityService>().As<ISharedIdentityService>().InstancePerLifetimeScope();
             #endregion
         }
     }

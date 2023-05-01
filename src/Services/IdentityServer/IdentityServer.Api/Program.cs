@@ -10,6 +10,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using Newtonsoft.Json;
+using Autofac.Core;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using IdentityServer4;
 
 #region SERVICES
 var builder = WebApplication.CreateBuilder(args);
@@ -23,12 +28,23 @@ builder.Services.AddControllers().AddJsonOptions(o =>
 
 var config = ConfigurationExtension.appConfig;
 builder.Configuration.AddConfiguration(config);
+#region Session
+builder.Services.AddSession(options => {
+    options.IdleTimeout = TimeSpan.FromMinutes(60);
+});
+#endregion
+#region Http
+builder.Services.AddHttpContextAccessor();
+#endregion
 #region Autofac
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 builder.Host.ConfigureContainer<ContainerBuilder>(builder => builder.RegisterModule(new AutofacBusinessModule()));
 #endregion
 #region AutoMapper
 builder.Services.AddAutoMapper(typeof(MapProfile).Assembly);
+#endregion
+#region Logging
+builder.Services.AddLogging();
 #endregion
 #region IdentityServer
 string defaultConnString = configuration.GetSection("ConnectionStrings:DefaultConnection").Value;
@@ -38,7 +54,10 @@ builder.Services.AddDbContext<AppIdentityDbContext>(options => options.UseSqlSer
 
 builder.Services.AddIdentity<User, Role>(options =>
 {
-
+    options.Password.RequireDigit = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireNonAlphanumeric = false;
 })
 .AddEntityFrameworkStores<AppIdentityDbContext>()
 .AddDefaultTokenProviders();
@@ -50,6 +69,8 @@ builder.Services.AddIdentityServer(options =>
     options.Events.RaiseFailureEvents = true;
     options.Events.RaiseSuccessEvents = true;
     options.EmitStaticAudienceClaim = true;
+    options.Discovery.CustomEntries.Add("update-user", "~/update-user");
+    options.Discovery.CustomEntries.Add("delete-user", "~/delete-user");
 })
 .AddAspNetIdentity<User>()
 .AddConfigurationStore<AppConfigurationDbContext>(options =>
@@ -62,8 +83,37 @@ builder.Services.AddIdentityServer(options =>
 })
 .AddDeveloperSigningCredential(); //Sertifika yoksa
 
-await IdentityUserContextSeed.AddUserSettingsAsync(defaultConnString);
-await IdentityConfigurationDbContextSeed.AddIdentityConfigurationSettingsAsync(config);
+var serviceProvider = builder.Services.BuildServiceProvider();
+var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();
+
+var identityDbContext = scope.ServiceProvider.GetService<AppIdentityDbContext>();
+var persistedGrantDbContext = scope.ServiceProvider.GetService<AppPersistedGrantDbContext>();
+var configurationContext = scope.ServiceProvider.GetService<AppConfigurationDbContext>();
+
+await IdentityUserContextSeed.AddUserSettingsAsync(identityDbContext, scope);
+await IdentityConfigurationDbContextSeed.AddIdentityConfigurationSettingsAsync(configurationContext, persistedGrantDbContext);
+#endregion
+#region Authentication - Authorization
+builder.Services.AddLocalApiAuthentication();
+
+//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+//    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+//    {
+//        options.Authority = "https://localhost:5001";
+//        options.TokenValidationParameters = new TokenValidationParameters
+//        {
+//            ValidateAudience = false,
+//            ClockSkew = TimeSpan.Zero
+//        };
+//    });
+
+//builder.Services.AddAuthorization(options =>
+//{
+//    options.AddPolicy("IdentityAuth", policy =>
+//    {
+//        policy.RequireClaim("identity_permission");
+//    });
+//});
 #endregion
 
 builder.Services.AddEndpointsApiExplorer();
@@ -79,6 +129,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseSession();
 app.UseHttpsRedirection();
 app.UseRouting();
 //app.UseCors();

@@ -5,7 +5,9 @@ using IdentityServer.Api.Services.Base;
 
 namespace IdentityServer.Api.Services.Abstract
 {
-    public interface IApiResourceService : IBaseService<ApiResourceDto, ApiResourceAddDto, StringDto, ApiResourceIncludeOptions>
+    public interface IApiResourceService : IBaseService<ApiResourceDto, StringDto, ApiResourceIncludeOptions>,
+                                           IAddService<ApiResourceDto, ApiResourceAddDto>,
+                                           IDeleteService<StringDto>
     {
     }
 }

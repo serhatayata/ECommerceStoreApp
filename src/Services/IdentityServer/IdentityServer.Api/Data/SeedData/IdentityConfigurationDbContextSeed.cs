@@ -11,47 +11,9 @@ namespace IdentityServer.Api.Data.SeedData
 {
     public static class IdentityConfigurationDbContextSeed
     {
-        public async static Task AddIdentityConfigurationSettingsAsync(IConfiguration configuration)
+        public async static Task AddIdentityConfigurationSettingsAsync(AppConfigurationDbContext context, AppPersistedGrantDbContext persistedGrantDbContext)
         {
-            var services = new ServiceCollection();
-            var assembly = typeof(IdentityConfigurationDbContextSeed).Assembly.GetName().Name;
-            var identityConnString = configuration.GetConnectionString("DefaultConnection");
-
-            services.AddIdentity<User, Role>(options =>
-            {
-
-            })
-            .AddEntityFrameworkStores<AppIdentityDbContext>()
-            .AddDefaultTokenProviders();
-
-            services.AddIdentityServer(options =>
-            {
-                options.Events.RaiseErrorEvents = true;
-                options.Events.RaiseInformationEvents = true;
-                options.Events.RaiseFailureEvents = true;
-                options.Events.RaiseSuccessEvents = true;
-
-                //see https://identityserver4.readthedocs.io/en/latest/topics/resources.html
-                options.EmitStaticAudienceClaim = true;
-            })
-            .AddAspNetIdentity<User>()
-            .AddConfigurationStore<AppConfigurationDbContext>(options =>
-            {
-                options.ConfigureDbContext = b => b.UseSqlServer(identityConnString, opt => opt.MigrationsAssembly(assembly));
-            }).AddOperationalStore<AppPersistedGrantDbContext>(options =>
-            {
-                options.ConfigureDbContext = b =>
-                            b.UseSqlServer(identityConnString, opt => opt.MigrationsAssembly(assembly));
-            })
-            .AddDeveloperSigningCredential(); //Sertifika yoksa
-
-            var serviceProvider = services.BuildServiceProvider();
-            var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();
-
-            var persistedGrantDbContext = scope.ServiceProvider.GetService<AppPersistedGrantDbContext>();
             persistedGrantDbContext.Database.Migrate();
-
-            var context = scope.ServiceProvider.GetService<AppConfigurationDbContext>();
             context.Database.Migrate();
 
             if (!(await context.Clients.AnyAsync()))

@@ -23,7 +23,7 @@ namespace IdentityServer.Api.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("IdentityServer.Api.Models.Identity.Role", b =>
+            modelBuilder.Entity("IdentityServer.Api.Entities.Identity.Role", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -50,7 +50,7 @@ namespace IdentityServer.Api.Migrations
                     b.ToTable("Roles", "user");
                 });
 
-            modelBuilder.Entity("IdentityServer.Api.Models.Identity.RoleClaim", b =>
+            modelBuilder.Entity("IdentityServer.Api.Entities.Identity.RoleClaim", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -75,7 +75,7 @@ namespace IdentityServer.Api.Migrations
                     b.ToTable("RoleClaims", "user");
                 });
 
-            modelBuilder.Entity("IdentityServer.Api.Models.Identity.User", b =>
+            modelBuilder.Entity("IdentityServer.Api.Entities.Identity.User", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
@@ -87,11 +87,6 @@ namespace IdentityServer.Api.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CountryCode")
-                        .IsRequired()
-                        .HasMaxLength(2)
-                        .HasColumnType("nvarchar(2)");
 
                     b.Property<DateTime>("CreateTime")
                         .ValueGeneratedOnAdd()
@@ -187,7 +182,7 @@ namespace IdentityServer.Api.Migrations
                     b.ToTable("Users", "user");
                 });
 
-            modelBuilder.Entity("IdentityServer.Api.Models.Identity.UserClaim", b =>
+            modelBuilder.Entity("IdentityServer.Api.Entities.Identity.UserClaim", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -217,7 +212,7 @@ namespace IdentityServer.Api.Migrations
                     b.ToTable("UserClaims", "user");
                 });
 
-            modelBuilder.Entity("IdentityServer.Api.Models.Identity.UserLogin", b =>
+            modelBuilder.Entity("IdentityServer.Api.Entities.Identity.UserLogin", b =>
                 {
                     b.Property<string>("LoginProvider")
                         .HasColumnType("nvarchar(450)");
@@ -239,7 +234,7 @@ namespace IdentityServer.Api.Migrations
                     b.ToTable("UserLogins", "user");
                 });
 
-            modelBuilder.Entity("IdentityServer.Api.Models.Identity.UserRole", b =>
+            modelBuilder.Entity("IdentityServer.Api.Entities.Identity.UserRole", b =>
                 {
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
@@ -254,7 +249,7 @@ namespace IdentityServer.Api.Migrations
                     b.ToTable("UserRoles", "user");
                 });
 
-            modelBuilder.Entity("IdentityServer.Api.Models.Identity.UserToken", b =>
+            modelBuilder.Entity("IdentityServer.Api.Entities.Identity.UserToken", b =>
                 {
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
@@ -276,51 +271,51 @@ namespace IdentityServer.Api.Migrations
                     b.ToTable("UserTokens", "user");
                 });
 
-            modelBuilder.Entity("IdentityServer.Api.Models.Identity.RoleClaim", b =>
+            modelBuilder.Entity("IdentityServer.Api.Entities.Identity.RoleClaim", b =>
                 {
-                    b.HasOne("IdentityServer.Api.Models.Identity.Role", null)
+                    b.HasOne("IdentityServer.Api.Entities.Identity.Role", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("IdentityServer.Api.Models.Identity.UserClaim", b =>
+            modelBuilder.Entity("IdentityServer.Api.Entities.Identity.UserClaim", b =>
                 {
-                    b.HasOne("IdentityServer.Api.Models.Identity.User", null)
+                    b.HasOne("IdentityServer.Api.Entities.Identity.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("IdentityServer.Api.Models.Identity.UserLogin", b =>
+            modelBuilder.Entity("IdentityServer.Api.Entities.Identity.UserLogin", b =>
                 {
-                    b.HasOne("IdentityServer.Api.Models.Identity.User", null)
+                    b.HasOne("IdentityServer.Api.Entities.Identity.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("IdentityServer.Api.Models.Identity.UserRole", b =>
+            modelBuilder.Entity("IdentityServer.Api.Entities.Identity.UserRole", b =>
                 {
-                    b.HasOne("IdentityServer.Api.Models.Identity.Role", null)
+                    b.HasOne("IdentityServer.Api.Entities.Identity.Role", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("IdentityServer.Api.Models.Identity.User", null)
+                    b.HasOne("IdentityServer.Api.Entities.Identity.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("IdentityServer.Api.Models.Identity.UserToken", b =>
+            modelBuilder.Entity("IdentityServer.Api.Entities.Identity.UserToken", b =>
                 {
-                    b.HasOne("IdentityServer.Api.Models.Identity.User", null)
+                    b.HasOne("IdentityServer.Api.Entities.Identity.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

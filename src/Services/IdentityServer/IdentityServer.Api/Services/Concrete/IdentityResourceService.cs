@@ -52,10 +52,20 @@ namespace IdentityServer.Api.Services.Concrete
                 return new ErrorResult();
 
             _confDbContext.Remove(existingIdentityResource);
+            var clientScopes = _confDbContext.ClientScopes.Where(c => c.Scope == model.Value)?.ToArray();
+            if (clientScopes?.Count() > 0)
+                _confDbContext.RemoveRange(clientScopes);
+
             var result = _confDbContext.SaveChanges();
             return result > 0 ? new SuccessResult() : new ErrorResult();
         }
 
+        /// <summary>
+        /// Get specified identity resource
+        /// </summary>
+        /// <param name="model">name of identity resource</param>
+        /// <param name="options">include options</param>
+        /// <returns></returns>
         public DataResult<IdentityResourceDto> Get(StringDto model, IdentityResourceIncludeOptions options)
         {
             var result = _confDbContext.IdentityResources.FirstOrDefault(c => c.Name == model.Value);
@@ -72,6 +82,11 @@ namespace IdentityServer.Api.Services.Concrete
             return new SuccessDataResult<IdentityResourceDto>(mappedResult);
         }
 
+        /// <summary>
+        /// Get all identity resources
+        /// </summary>
+        /// <param name="options">include options</param>
+        /// <returns></returns>
         public DataResult<List<IdentityResourceDto>> GetAll(IdentityResourceIncludeOptions options)
         {
             var result = _confDbContext.IdentityResources.ToList();

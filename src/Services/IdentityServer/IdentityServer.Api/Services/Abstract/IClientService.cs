@@ -6,7 +6,9 @@ using IdentityServer.Api.Services.Base;
 
 namespace IdentityServer.Api.Services.Abstract
 {
-    public interface IClientService : IBaseService<ClientDto,ClientAddDto, StringDto, ClientIncludeOptions>
+    public interface IClientService : IBaseService<ClientDto, StringDto, ClientIncludeOptions>,
+                                      IAddService<ClientDto, ClientAddDto>,
+                                      IDeleteService<StringDto>
     {
         
     }

@@ -9,25 +9,8 @@ namespace IdentityServer.Api.Data.SeedData
 {
     public class IdentityUserContextSeed
     {
-        public async static Task AddUserSettingsAsync(string connString)
+        public async static Task AddUserSettingsAsync(AppIdentityDbContext context, IServiceScope scope)
         {
-            var assembly = typeof(Program).Assembly.GetName().Name;
-            var services = new ServiceCollection();
-            services.AddLogging();
-
-            services.AddDbContext<AppIdentityDbContext>(options => options.UseSqlServer(connString, b => b.MigrationsAssembly(assembly)), ServiceLifetime.Transient);
-
-            services.AddIdentity<User, Role>(options =>
-            {
-
-            })
-            .AddEntityFrameworkStores<AppIdentityDbContext>()
-            .AddDefaultTokenProviders();
-
-            var serviceProvider = services.BuildServiceProvider();
-            using var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();
-
-            var context = scope.ServiceProvider.GetService<AppIdentityDbContext>();
             context.Database.Migrate();
 
             #region User_1
@@ -42,7 +25,6 @@ namespace IdentityServer.Api.Data.SeedData
                     CreateTime = DateTime.Now,
                     LastSeen = DateTime.Now,
                     UpdateTime = DateTime.Now,
-                    CountryCode = "TR",
                     PhoneNumber = "7777777777",
                     UserName = "907777777777",
                     Status = (byte)UserStatus.NotValidated,
@@ -79,7 +61,6 @@ namespace IdentityServer.Api.Data.SeedData
                     CreateTime = DateTime.Now,
                     LastSeen = DateTime.Now,
                     UpdateTime = DateTime.Now,
-                    CountryCode = "TR",
                     PhoneNumber = "5555555555",
                     UserName = "905555555555",
                     Status = (byte)UserStatus.NotValidated,

@@ -4,6 +4,8 @@ using IdentityServer.Api.Dtos.ApiScopeDtos;
 using IdentityServer.Api.Dtos.Base.Concrete;
 using IdentityServer.Api.Dtos.ClientDtos;
 using IdentityServer.Api.Dtos.IdentityResourceDtos;
+using IdentityServer.Api.Dtos.UserDtos;
+using IdentityServer.Api.Entities.Identity;
 
 namespace IdentityServer.Api.Mapping
 {
@@ -90,6 +92,19 @@ namespace IdentityServer.Api.Mapping
                 .ForMember(id => id.Properties, opt => opt.MapFrom(idr => idr.Properties.Select(p =>
                 new PropertyDto() { Key = p.Key, Value = p.Value })))
                 .ForMember(id => id.UserClaims, opt => opt.MapFrom(idr => idr.UserClaims));
+            #endregion
+            #region User
+            CreateMap<UserAddDto, User>();
+
+            CreateMap<UserAddDto, UserDto>();
+
+            CreateMap<User, UserDto>();
+
+            CreateMap<UserUpdateDto, User>()
+                .ForMember(s => s.Name, opt => opt.MapFrom(u => u.Name))
+                .ForMember(s => s.Surname, opt => opt.MapFrom(u => u.Surname))
+                .ForMember(s => s.UserName, opt => opt.MapFrom(u => u.UserName))
+                .ForAllOtherMembers(opt => opt.Ignore());
             #endregion
         }
     }

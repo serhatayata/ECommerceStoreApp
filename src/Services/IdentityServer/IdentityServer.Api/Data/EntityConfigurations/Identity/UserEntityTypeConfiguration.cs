@@ -17,7 +17,6 @@ namespace IdentityServer.Api.Data.EntityConfigurations.Identity
             builder.Property(x => x.Name).HasMaxLength(100);
             builder.Property(x => x.Surname).HasMaxLength(100);
             builder.Property(x => x.Surname).HasMaxLength(30);
-            builder.Property(x => x.CountryCode).HasMaxLength(2);
             builder.Property(x => x.Email).HasMaxLength(100);
             builder.HasIndex(x => x.Email).IsUnique();
             builder.Property(x => x.PhoneNumber).HasMaxLength(13);

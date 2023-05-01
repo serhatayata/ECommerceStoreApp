@@ -11,6 +11,7 @@ using IdentityServer.Api.Dtos.ApiScopeDtos;
 using IdentityServer.Api.Dtos.Base.Concrete;
 using IdentityServer.Api.Dtos.ClientDtos;
 using IdentityServer.Api.Dtos.IdentityResourceDtos;
+using IdentityServer.Api.Dtos.UserDtos;
 using IdentityServer.Api.Models.Account;
 using IdentityServer.Api.Models.IncludeOptions.Account;
 using IdentityServer.Api.Services.Abstract;
@@ -26,8 +27,10 @@ using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using IdentityServer4.Test;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static IdentityServer4.IdentityServerConstants;
 
 namespace IdentityServer.Api.Controllers
 {
@@ -48,6 +51,7 @@ namespace IdentityServer.Api.Controllers
         private readonly IApiResourceService _apiResourceService;
         private readonly IApiScopeService _apiScopeService;
         private readonly IIdentityResourceService _identityResourceService;
+        private readonly IUserService _userService;
 
         public AccountController(
             IIdentityServerInteractionService interaction,
@@ -58,6 +62,7 @@ namespace IdentityServer.Api.Controllers
             IApiResourceService apiResourceService,
             IApiScopeService apiScopeService,
             IIdentityResourceService identityResourceService,
+            IUserService userService,
             TestUserStore users = null)
         {
             // if the TestUserStore is not in DI, then we'll just use the global users collection
@@ -72,6 +77,7 @@ namespace IdentityServer.Api.Controllers
             _apiResourceService = apiResourceService;
             _apiScopeService = apiScopeService;
             _identityResourceService = identityResourceService;
+            _userService = userService;
         }
 
         /// <summary>
@@ -257,11 +263,78 @@ namespace IdentityServer.Api.Controllers
             return View();
         }
 
+        #region User
+        [HttpPost]
+        [Route("register")]
+        [ProducesResponseType(typeof(DataResult<UserDto>), (int)System.Net.HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(DataResult<UserDto>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [AllowAnonymous]
+        public async Task<IActionResult> Register([FromBody] UserAddDto model)
+        {
+            var result = await _userService.AddAsync(model);
+            if (result.Success)
+                return Ok(result);
+            return BadRequest(result);
+        }
+
+        [HttpPost]
+        [Route("update-user")]
+        [ProducesResponseType(typeof(DataResult<UserDto>), (int)System.Net.HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(DataResult<UserDto>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(LocalApi.PolicyName)]
+        public async Task<IActionResult> Update([FromBody] UserUpdateDto model)
+        {
+            var result = await _userService.UpdateAsync(model);
+            if (result.Success)
+                return Ok(result);
+            return BadRequest(result);
+        }
+
+        [HttpDelete]
+        [Route("delete-user")]
+        [ProducesResponseType(typeof(Result), (int)System.Net.HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Result), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(LocalApi.PolicyName)]
+        public async Task<IActionResult> Delete([FromBody] StringDto model)
+        {
+            var result = await _userService.DeleteAsync(model);
+            if (result.Success)
+                return Ok(result);
+            return BadRequest(result);
+        }
+
+        [HttpGet]
+        [Route("get-user")]
+        [ProducesResponseType(typeof(DataResult<UserDto>), (int)System.Net.HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(DataResult<UserDto>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(LocalApi.PolicyName)]
+        public async Task<IActionResult> GetUser([FromBody] StringDto model)
+        {
+            var result = await _userService.GetAsync(model, new Models.IncludeOptions.User.UserIncludeOptions());
+            if (result.Success)
+                return Ok(result);
+            return BadRequest(result);
+        }
+
+        [HttpGet]
+        [Route("get-all-users")]
+        [ProducesResponseType(typeof(DataResult<List<UserDto>>), (int)System.Net.HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(DataResult<List<UserDto>>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(LocalApi.PolicyName)]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var result = await _userService.GetAllAsync(new Models.IncludeOptions.User.UserIncludeOptions());
+            if (result.Success)
+                return Ok(result);
+            return BadRequest(result);
+        }
+        #endregion
         #region Client
         [HttpPost]
         [Route("add-client")]
         [ProducesResponseType(typeof(DataResult<ClientDto>),(int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(DataResult<ClientDto>),(int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(LocalApi.PolicyName)]
         public IActionResult AddClient([FromBody] ClientAddDto client)
         {
             var result = _clientService.Add(client);
@@ -274,6 +347,7 @@ namespace IdentityServer.Api.Controllers
         [Route("delete-client")]
         [ProducesResponseType(typeof(Result), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Result), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(LocalApi.PolicyName)]
         public IActionResult DeleteClient([FromBody] StringDto model)
         {
             var result = _clientService.Delete(model);
@@ -286,6 +360,7 @@ namespace IdentityServer.Api.Controllers
         [Route("get-client")]
         [ProducesResponseType(typeof(DataResult<ClientDto>), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(DataResult<ClientDto>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(LocalApi.PolicyName)]
         public IActionResult GetClient([FromBody] StringDto model)
         {
             var result = _clientService.Get(model, new Models.IncludeOptions.Account.ClientIncludeOptions());
@@ -298,6 +373,7 @@ namespace IdentityServer.Api.Controllers
         [Route("get-clients")]
         [ProducesResponseType(typeof(DataResult<List<ClientDto>>), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(DataResult<List<ClientDto>>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(LocalApi.PolicyName)]
         public IActionResult GetClients()
         {
             var result = _clientService.GetAll(new Models.IncludeOptions.Account.ClientIncludeOptions());
@@ -311,6 +387,7 @@ namespace IdentityServer.Api.Controllers
         [Route("add-apiscope")]
         [ProducesResponseType(typeof(DataResult<ApiScopeDto>), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(DataResult<ApiScopeDto>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(LocalApi.PolicyName)]
         public IActionResult AddApiScope([FromBody] ApiScopeAddDto apiScope)
         {
             var result = _apiScopeService.Add(apiScope);
@@ -323,6 +400,7 @@ namespace IdentityServer.Api.Controllers
         [Route("delete-apiscope")]
         [ProducesResponseType(typeof(Result), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Result), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(LocalApi.PolicyName)]
         public IActionResult DeleteApiScope([FromBody] StringDto model)
         {
             var result = _apiScopeService.Delete(model);
@@ -335,6 +413,7 @@ namespace IdentityServer.Api.Controllers
         [Route("get-apiscope")]
         [ProducesResponseType(typeof(DataResult<ApiScopeDto>), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(DataResult<ApiScopeDto>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(LocalApi.PolicyName)]
         public IActionResult GetApiScope([FromBody]StringDto model)
         {
             var result = _apiScopeService.Get(model, new Models.IncludeOptions.Account.ApiScopeIncludeOptions());
@@ -347,6 +426,7 @@ namespace IdentityServer.Api.Controllers
         [Route("get-apiscopes")]
         [ProducesResponseType(typeof(DataResult<List<ApiScopeDto>>), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(DataResult<List<ApiScopeDto>>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(LocalApi.PolicyName)]
         public IActionResult GetApiScopes()
         {
             var result = _apiScopeService.GetAll(new Models.IncludeOptions.Account.ApiScopeIncludeOptions());
@@ -360,6 +440,7 @@ namespace IdentityServer.Api.Controllers
         [Route("add-apiresource")]
         [ProducesResponseType(typeof(DataResult<ApiResourceDto>), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(DataResult<ApiResourceDto>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(LocalApi.PolicyName)]
         public IActionResult AddApiResource([FromBody] ApiResourceAddDto apiResource)
         {
             var result = _apiResourceService.Add(apiResource);
@@ -372,6 +453,7 @@ namespace IdentityServer.Api.Controllers
         [Route("delete-apiresource")]
         [ProducesResponseType(typeof(Result), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Result), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(LocalApi.PolicyName)]
         public IActionResult DeleteApiResource([FromBody] StringDto model)
         {
             var result = _apiResourceService.Delete(model);
@@ -384,6 +466,7 @@ namespace IdentityServer.Api.Controllers
         [Route("get-apiresource")]
         [ProducesResponseType(typeof(DataResult<ApiResourceDto>), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(DataResult<ApiResourceDto>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(LocalApi.PolicyName)]
         public IActionResult GetApiResource([FromBody] StringDto model)
         {
             var result = _apiResourceService.Get(model, new Models.IncludeOptions.Account.ApiResourceIncludeOptions());
@@ -396,6 +479,7 @@ namespace IdentityServer.Api.Controllers
         [Route("get-apiresources")]
         [ProducesResponseType(typeof(DataResult<List<ApiResourceDto>>), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(DataResult<List<ApiResourceDto>>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(LocalApi.PolicyName)]
         public IActionResult GetApiResources()
         {
             var result = _apiResourceService.GetAll(new Models.IncludeOptions.Account.ApiResourceIncludeOptions());
@@ -409,6 +493,7 @@ namespace IdentityServer.Api.Controllers
         [Route("add-identityresource")]
         [ProducesResponseType(typeof(DataResult<IdentityResourceDto>), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(DataResult<IdentityResourceDto>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(LocalApi.PolicyName)]
         public IActionResult AddIdentityResource([FromBody] IdentityResourceAddDto apiResource)
         {
             var result = _identityResourceService.Add(apiResource);
@@ -421,6 +506,7 @@ namespace IdentityServer.Api.Controllers
         [Route("delete-identityresource")]
         [ProducesResponseType(typeof(Result), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Result), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(LocalApi.PolicyName)]
         public IActionResult DeleteIdentityResource([FromBody] StringDto model)
         {
             var result = _identityResourceService.Delete(model);
@@ -433,6 +519,7 @@ namespace IdentityServer.Api.Controllers
         [Route("get-identityresource")]
         [ProducesResponseType(typeof(DataResult<IdentityResourceDto>), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(DataResult<IdentityResourceDto>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(LocalApi.PolicyName)]
         public IActionResult GetIdentityResource([FromBody] StringDto model)
         {
             var result = _identityResourceService.Get(model, new IdentityResourceIncludeOptions());
@@ -445,6 +532,7 @@ namespace IdentityServer.Api.Controllers
         [Route("get-identityresources")]
         [ProducesResponseType(typeof(DataResult<List<IdentityResourceDto>>), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(DataResult<List<IdentityResourceDto>>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(LocalApi.PolicyName)]
         public IActionResult GetIdentityResources()
         {
             var result = _identityResourceService.GetAll(new IdentityResourceIncludeOptions());

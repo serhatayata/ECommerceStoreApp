@@ -6,7 +6,6 @@ namespace IdentityServer.Api.Entities.Identity
     {
         public string Name { get; set; }
         public string Surname { get; set; }
-        public string CountryCode { get; set; }
         public byte Status { get; set; }
         public DateTime CreateTime { get; set; }
         public DateTime UpdateTime { get; set; }
