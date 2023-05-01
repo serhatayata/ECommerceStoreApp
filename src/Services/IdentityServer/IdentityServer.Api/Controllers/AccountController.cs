@@ -4,22 +4,20 @@
 
 using IdentityModel;
 using IdentityServer.Api.Attributes;
-using IdentityServer.Api.Data.Contexts;
 using IdentityServer.Api.Data.SeedData;
-using IdentityServer.Api.Dtos.ApiResourceDtos;
-using IdentityServer.Api.Dtos.ApiScopeDtos;
-using IdentityServer.Api.Dtos.Base.Concrete;
-using IdentityServer.Api.Dtos.ClientDtos;
-using IdentityServer.Api.Dtos.IdentityResourceDtos;
-using IdentityServer.Api.Dtos.UserDtos;
 using IdentityServer.Api.Models.Account;
+using IdentityServer.Api.Models.ApiResourceModels;
+using IdentityServer.Api.Models.ApiScopeModels;
+using IdentityServer.Api.Models.Base.Concrete;
+using IdentityServer.Api.Models.ClientModels;
+using IdentityServer.Api.Models.IdentityResourceModels;
 using IdentityServer.Api.Models.IncludeOptions.Account;
+using IdentityServer.Api.Models.UserModels;
 using IdentityServer.Api.Services.Abstract;
 using IdentityServer.Api.Utilities;
 using IdentityServer.Api.Utilities.Results;
 using IdentityServer.Api.ViewModels.Account;
 using IdentityServer4;
-using IdentityServer4.EntityFramework.Entities;
 using IdentityServer4.Events;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
@@ -27,7 +25,6 @@ using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using IdentityServer4.Test;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static IdentityServer4.IdentityServerConstants;
@@ -263,14 +260,13 @@ namespace IdentityServer.Api.Controllers
             return View();
         }
 
-
         #region User
         [HttpPost]
         [Route("register")]
-        [ProducesResponseType(typeof(DataResult<UserDto>), (int)System.Net.HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(DataResult<UserDto>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(DataResult<UserModel>), (int)System.Net.HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(DataResult<UserModel>), (int)System.Net.HttpStatusCode.BadRequest)]
         [AllowAnonymous]
-        public async Task<IActionResult> Register([FromBody] UserAddDto model)
+        public async Task<IActionResult> Register([FromBody] UserAddModel model)
         {
             var result = await _userService.AddAsync(model);
             if (result.Success)
@@ -280,10 +276,10 @@ namespace IdentityServer.Api.Controllers
 
         [HttpPost]
         [Route("update-user")]
-        [ProducesResponseType(typeof(DataResult<UserDto>), (int)System.Net.HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(DataResult<UserDto>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(DataResult<UserModel>), (int)System.Net.HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(DataResult<UserModel>), (int)System.Net.HttpStatusCode.BadRequest)]
         [Authorize(LocalApi.PolicyName)]
-        public async Task<IActionResult> Update([FromBody] UserUpdateDto model)
+        public async Task<IActionResult> Update([FromBody] UserUpdateModel model)
         {
             var result = await _userService.UpdateAsync(model);
             if (result.Success)
@@ -296,7 +292,7 @@ namespace IdentityServer.Api.Controllers
         [ProducesResponseType(typeof(Result), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Result), (int)System.Net.HttpStatusCode.BadRequest)]
         [Authorize(LocalApi.PolicyName)]
-        public async Task<IActionResult> Delete([FromBody] StringDto model)
+        public async Task<IActionResult> Delete([FromBody] StringModel model)
         {
             var result = await _userService.DeleteAsync(model);
             if (result.Success)
@@ -306,10 +302,10 @@ namespace IdentityServer.Api.Controllers
 
         [HttpGet]
         [Route("get-user")]
-        [ProducesResponseType(typeof(DataResult<UserDto>), (int)System.Net.HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(DataResult<UserDto>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(DataResult<UserModel>), (int)System.Net.HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(DataResult<UserModel>), (int)System.Net.HttpStatusCode.BadRequest)]
         [Authorize(LocalApi.PolicyName)]
-        public async Task<IActionResult> GetUser([FromBody] StringDto model)
+        public async Task<IActionResult> GetUser([FromBody] StringModel model)
         {
             var result = await _userService.GetAsync(model, new Models.IncludeOptions.User.UserIncludeOptions());
             if (result.Success)
@@ -319,8 +315,8 @@ namespace IdentityServer.Api.Controllers
 
         [HttpGet]
         [Route("get-all-users")]
-        [ProducesResponseType(typeof(DataResult<List<UserDto>>), (int)System.Net.HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(DataResult<List<UserDto>>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(DataResult<List<UserModel>>), (int)System.Net.HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(DataResult<List<UserModel>>), (int)System.Net.HttpStatusCode.BadRequest)]
         [Authorize(LocalApi.PolicyName)]
         public async Task<IActionResult> GetAllUsers()
         {
@@ -333,10 +329,10 @@ namespace IdentityServer.Api.Controllers
         #region Client
         [HttpPost]
         [Route("add-client")]
-        [ProducesResponseType(typeof(DataResult<ClientDto>),(int)System.Net.HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(DataResult<ClientDto>),(int)System.Net.HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(DataResult<ClientModel>),(int)System.Net.HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(DataResult<ClientModel>),(int)System.Net.HttpStatusCode.BadRequest)]
         [Authorize(LocalApi.PolicyName)]
-        public IActionResult AddClient([FromBody] ClientAddDto client)
+        public IActionResult AddClient([FromBody] ClientAddModel client)
         {
             var result = _clientService.Add(client);
             if (result.Success)
@@ -349,7 +345,7 @@ namespace IdentityServer.Api.Controllers
         [ProducesResponseType(typeof(Result), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Result), (int)System.Net.HttpStatusCode.BadRequest)]
         [Authorize(LocalApi.PolicyName)]
-        public IActionResult DeleteClient([FromBody] StringDto model)
+        public IActionResult DeleteClient([FromBody] StringModel model)
         {
             var result = _clientService.Delete(model);
             if (result.Success)
@@ -359,10 +355,10 @@ namespace IdentityServer.Api.Controllers
 
         [HttpPost]
         [Route("get-client")]
-        [ProducesResponseType(typeof(DataResult<ClientDto>), (int)System.Net.HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(DataResult<ClientDto>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(DataResult<ClientModel>), (int)System.Net.HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(DataResult<ClientModel>), (int)System.Net.HttpStatusCode.BadRequest)]
         [Authorize(LocalApi.PolicyName)]
-        public IActionResult GetClient([FromBody] StringDto model)
+        public IActionResult GetClient([FromBody] StringModel model)
         {
             var result = _clientService.Get(model, new Models.IncludeOptions.Account.ClientIncludeOptions());
             if (result.Success)
@@ -372,8 +368,8 @@ namespace IdentityServer.Api.Controllers
 
         [HttpPost]
         [Route("get-clients")]
-        [ProducesResponseType(typeof(DataResult<List<ClientDto>>), (int)System.Net.HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(DataResult<List<ClientDto>>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(DataResult<List<ClientModel>>), (int)System.Net.HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(DataResult<List<ClientModel>>), (int)System.Net.HttpStatusCode.BadRequest)]
         [Authorize(LocalApi.PolicyName)]
         public IActionResult GetClients()
         {
@@ -386,10 +382,10 @@ namespace IdentityServer.Api.Controllers
         #region ApiScope
         [HttpPost]
         [Route("add-apiscope")]
-        [ProducesResponseType(typeof(DataResult<ApiScopeDto>), (int)System.Net.HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(DataResult<ApiScopeDto>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(DataResult<ApiScopeModel>), (int)System.Net.HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(DataResult<ApiScopeModel>), (int)System.Net.HttpStatusCode.BadRequest)]
         [Authorize(LocalApi.PolicyName)]
-        public IActionResult AddApiScope([FromBody] ApiScopeAddDto apiScope)
+        public IActionResult AddApiScope([FromBody] ApiScopeAddModel apiScope)
         {
             var result = _apiScopeService.Add(apiScope);
             if (result.Success)
@@ -402,7 +398,7 @@ namespace IdentityServer.Api.Controllers
         [ProducesResponseType(typeof(Result), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Result), (int)System.Net.HttpStatusCode.BadRequest)]
         [Authorize(LocalApi.PolicyName)]
-        public IActionResult DeleteApiScope([FromBody] StringDto model)
+        public IActionResult DeleteApiScope([FromBody] StringModel model)
         {
             var result = _apiScopeService.Delete(model);
             if (result.Success)
@@ -412,10 +408,10 @@ namespace IdentityServer.Api.Controllers
 
         [HttpPost]
         [Route("get-apiscope")]
-        [ProducesResponseType(typeof(DataResult<ApiScopeDto>), (int)System.Net.HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(DataResult<ApiScopeDto>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(DataResult<ApiScopeModel>), (int)System.Net.HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(DataResult<ApiScopeModel>), (int)System.Net.HttpStatusCode.BadRequest)]
         [Authorize(LocalApi.PolicyName)]
-        public IActionResult GetApiScope([FromBody]StringDto model)
+        public IActionResult GetApiScope([FromBody]StringModel model)
         {
             var result = _apiScopeService.Get(model, new Models.IncludeOptions.Account.ApiScopeIncludeOptions());
             if (result.Success)
@@ -425,8 +421,8 @@ namespace IdentityServer.Api.Controllers
 
         [HttpPost]
         [Route("get-apiscopes")]
-        [ProducesResponseType(typeof(DataResult<List<ApiScopeDto>>), (int)System.Net.HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(DataResult<List<ApiScopeDto>>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(DataResult<List<ApiScopeModel>>), (int)System.Net.HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(DataResult<List<ApiScopeModel>>), (int)System.Net.HttpStatusCode.BadRequest)]
         [Authorize(LocalApi.PolicyName)]
         public IActionResult GetApiScopes()
         {
@@ -439,10 +435,10 @@ namespace IdentityServer.Api.Controllers
         #region ApiResource
         [HttpPost]
         [Route("add-apiresource")]
-        [ProducesResponseType(typeof(DataResult<ApiResourceDto>), (int)System.Net.HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(DataResult<ApiResourceDto>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(DataResult<ApiResourceModel>), (int)System.Net.HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(DataResult<ApiResourceModel>), (int)System.Net.HttpStatusCode.BadRequest)]
         [Authorize(LocalApi.PolicyName)]
-        public IActionResult AddApiResource([FromBody] ApiResourceAddDto apiResource)
+        public IActionResult AddApiResource([FromBody] ApiResourceAddModel apiResource)
         {
             var result = _apiResourceService.Add(apiResource);
             if (result.Success)
@@ -455,7 +451,7 @@ namespace IdentityServer.Api.Controllers
         [ProducesResponseType(typeof(Result), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Result), (int)System.Net.HttpStatusCode.BadRequest)]
         [Authorize(LocalApi.PolicyName)]
-        public IActionResult DeleteApiResource([FromBody] StringDto model)
+        public IActionResult DeleteApiResource([FromBody] StringModel model)
         {
             var result = _apiResourceService.Delete(model);
             if (result.Success)
@@ -465,10 +461,10 @@ namespace IdentityServer.Api.Controllers
 
         [HttpPost]
         [Route("get-apiresource")]
-        [ProducesResponseType(typeof(DataResult<ApiResourceDto>), (int)System.Net.HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(DataResult<ApiResourceDto>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(DataResult<ApiResourceModel>), (int)System.Net.HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(DataResult<ApiResourceModel>), (int)System.Net.HttpStatusCode.BadRequest)]
         [Authorize(LocalApi.PolicyName)]
-        public IActionResult GetApiResource([FromBody] StringDto model)
+        public IActionResult GetApiResource([FromBody] StringModel model)
         {
             var result = _apiResourceService.Get(model, new Models.IncludeOptions.Account.ApiResourceIncludeOptions());
             if (result.Success)
@@ -478,8 +474,8 @@ namespace IdentityServer.Api.Controllers
 
         [HttpPost]
         [Route("get-apiresources")]
-        [ProducesResponseType(typeof(DataResult<List<ApiResourceDto>>), (int)System.Net.HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(DataResult<List<ApiResourceDto>>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(DataResult<List<ApiResourceModel>>), (int)System.Net.HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(DataResult<List<ApiResourceModel>>), (int)System.Net.HttpStatusCode.BadRequest)]
         [Authorize(LocalApi.PolicyName)]
         public IActionResult GetApiResources()
         {
@@ -492,10 +488,10 @@ namespace IdentityServer.Api.Controllers
         #region IdentityResource
         [HttpPost]
         [Route("add-identityresource")]
-        [ProducesResponseType(typeof(DataResult<IdentityResourceDto>), (int)System.Net.HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(DataResult<IdentityResourceDto>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(DataResult<IdentityResourceModel>), (int)System.Net.HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(DataResult<IdentityResourceModel>), (int)System.Net.HttpStatusCode.BadRequest)]
         [Authorize(LocalApi.PolicyName)]
-        public IActionResult AddIdentityResource([FromBody] IdentityResourceAddDto apiResource)
+        public IActionResult AddIdentityResource([FromBody] IdentityResourceAddModel apiResource)
         {
             var result = _identityResourceService.Add(apiResource);
             if (result.Success)
@@ -508,7 +504,7 @@ namespace IdentityServer.Api.Controllers
         [ProducesResponseType(typeof(Result), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Result), (int)System.Net.HttpStatusCode.BadRequest)]
         [Authorize(LocalApi.PolicyName)]
-        public IActionResult DeleteIdentityResource([FromBody] StringDto model)
+        public IActionResult DeleteIdentityResource([FromBody] StringModel model)
         {
             var result = _identityResourceService.Delete(model);
             if (result.Success)
@@ -518,10 +514,10 @@ namespace IdentityServer.Api.Controllers
 
         [HttpPost]
         [Route("get-identityresource")]
-        [ProducesResponseType(typeof(DataResult<IdentityResourceDto>), (int)System.Net.HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(DataResult<IdentityResourceDto>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(DataResult<IdentityResourceModel>), (int)System.Net.HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(DataResult<IdentityResourceModel>), (int)System.Net.HttpStatusCode.BadRequest)]
         [Authorize(LocalApi.PolicyName)]
-        public IActionResult GetIdentityResource([FromBody] StringDto model)
+        public IActionResult GetIdentityResource([FromBody] StringModel model)
         {
             var result = _identityResourceService.Get(model, new IdentityResourceIncludeOptions());
             if (result.Success)
@@ -531,8 +527,8 @@ namespace IdentityServer.Api.Controllers
 
         [HttpPost]
         [Route("get-identityresources")]
-        [ProducesResponseType(typeof(DataResult<List<IdentityResourceDto>>), (int)System.Net.HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(DataResult<List<IdentityResourceDto>>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(DataResult<List<IdentityResourceModel>>), (int)System.Net.HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(DataResult<List<IdentityResourceModel>>), (int)System.Net.HttpStatusCode.BadRequest)]
         [Authorize(LocalApi.PolicyName)]
         public IActionResult GetIdentityResources()
         {

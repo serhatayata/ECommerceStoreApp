@@ -1,11 +1,11 @@
-﻿using IdentityServer.Api.Dtos.Base.Abstract;
+﻿using IdentityServer.Api.Models.Base.Abstract;
 using IdentityServer4.EntityFramework.Entities;
 using IdentityServer4.Models;
 using Newtonsoft.Json;
 
-namespace IdentityServer.Api.Dtos.ClientDtos
+namespace IdentityServer.Api.Models.ClientModels
 {
-    public class ClientAddDto : IAddDto
+    public class ClientAddModel : IAddModel
     {
         /// <summary>
         /// Client id
@@ -56,7 +56,7 @@ namespace IdentityServer.Api.Dtos.ClientDtos
         /// Properties for the client
         /// </summary>
         [JsonProperty("properties")]
-        public List<IdentityServer4.EntityFramework.Entities.ClientProperty> Properties { get; set; }
+        public List<ClientProperty> Properties { get; set; }
         /// <summary>
         /// Enabled or not for the client
         /// </summary>
@@ -196,7 +196,7 @@ namespace IdentityServer.Api.Dtos.ClientDtos
         /// Access token type for the client, Default 0 and it is AccessTokenType.Jwt
         /// </summary>
         [JsonProperty("accessTokenType")]
-        public int AccessTokenType { get; set; } = (int)0; // AccessTokenType.Jwt;
+        public int AccessTokenType { get; set; } = 0; // AccessTokenType.Jwt;
         /// <summary>
         /// Enable local login for the client, default true
         /// </summary>

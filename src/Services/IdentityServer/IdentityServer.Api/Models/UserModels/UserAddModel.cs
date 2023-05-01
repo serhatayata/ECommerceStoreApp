@@ -1,9 +1,9 @@
-﻿using IdentityServer.Api.Dtos.Base.Abstract;
+﻿using IdentityServer.Api.Models.Base.Abstract;
 using Newtonsoft.Json;
 
-namespace IdentityServer.Api.Dtos.UserDtos
+namespace IdentityServer.Api.Models.UserModels
 {
-    public class UserAddDto : IAddDto
+    public class UserAddModel : IAddModel
     {
         /// <summary>
         /// Name of the user

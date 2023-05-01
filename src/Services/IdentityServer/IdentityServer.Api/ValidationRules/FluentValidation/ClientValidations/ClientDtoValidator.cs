@@ -1,10 +1,9 @@
 ﻿using FluentValidation;
-using IdentityServer.Api.Dtos;
-using IdentityServer.Api.Dtos.ClientDtos;
+using IdentityServer.Api.Models.ClientModels;
 
 namespace IdentityServer.Api.ValidationRules.FluentValidation.ClientValidations
 {
-    public class ClientDtoValidator : AbstractValidator<ClientAddDto>
+    public class ClientDtoValidator : AbstractValidator<ClientAddModel>
     {
         public ClientDtoValidator()
         {

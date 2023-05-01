@@ -1,61 +1,56 @@
-﻿using IdentityServer.Api.Dtos.Base.Abstract;
-using IdentityServer.Api.Dtos.Base.Concrete;
+﻿using IdentityServer.Api.Models.Base.Abstract;
+using IdentityServer.Api.Models.Base.Concrete;
 using IdentityServer4.EntityFramework.Entities;
 using Newtonsoft.Json;
 
-namespace IdentityServer.Api.Dtos.IdentityResourceDtos
+namespace IdentityServer.Api.Models.ApiScopeModels
 {
-    public class IdentityResourceAddDto : IAddDto
+    public class ApiScopeModel : IModel
     {
         /// <summary>
-        /// enabled or not for identity resource
+        /// enabled or not for api scope
         /// </summary>
         [JsonProperty("enabled")]
         public bool Enabled { get; set; } = true;
         /// <summary>
-        /// Identity resource name
+        /// name of api scope
         /// </summary>
         [JsonProperty("name")]
         public string Name { get; set; }
         /// <summary>
-        /// Identity resource display name
+        /// display name of api scope
         /// </summary>
         [JsonProperty("displayName")]
         public string DisplayName { get; set; }
         /// <summary>
-        /// Identity resource description
+        /// description of api scope
         /// </summary>
         [JsonProperty("description")]
         public string Description { get; set; }
         /// <summary>
-        /// Identity resource required or not
+        /// required or not for api scope
         /// </summary>
         [JsonProperty("required")]
-        public bool Required { get; set; } = false;
+        public bool Required { get; set; }
         /// <summary>
-        /// Identity resource emphasize or not
+        /// Emphasize for api scope
         /// </summary>
         [JsonProperty("emphasize")]
-        public bool Emphasize { get; set; } = false;
+        public bool Emphasize { get; set; }
         /// <summary>
-        /// Identity resource show in discovery document or not
+        /// Show in discovery document or not for api scope
         /// </summary>
         [JsonProperty("showInDiscoveryDocument")]
         public bool ShowInDiscoveryDocument { get; set; } = true;
         /// <summary>
-        /// Identity resource user claims
+        /// User claims of api scope
         /// </summary>
         [JsonProperty("userClaims")]
         public List<string> UserClaims { get; set; }
         /// <summary>
-        /// Identity resource properties
+        /// Properties of api scope
         /// </summary>
         [JsonProperty("properties")]
-        public List<PropertyDto> Properties { get; set; }
-        /// <summary>
-        /// Identity resource non editable or not
-        /// </summary>
-        [JsonProperty("nonEditable")]
-        public bool NonEditable { get; set; } = false;
+        public List<PropertyModel> Properties { get; set; }
     }
 }

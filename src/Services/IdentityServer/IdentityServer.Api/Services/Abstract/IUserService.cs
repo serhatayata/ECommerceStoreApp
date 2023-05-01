@@ -1,15 +1,15 @@
-﻿using IdentityServer.Api.Dtos.Base.Concrete;
-using IdentityServer.Api.Dtos.UserDtos;
+﻿using IdentityServer.Api.Models.Base.Concrete;
 using IdentityServer.Api.Models.IncludeOptions.User;
+using IdentityServer.Api.Models.UserModels;
 using IdentityServer.Api.Services.Base;
 
 namespace IdentityServer.Api.Services.Abstract
 {
-    public interface IUserService : IGetAllAsyncService<UserDto, UserIncludeOptions>,
-                                    IGetAsyncService<UserDto, StringDto, UserIncludeOptions>,
-                                    IAddAsyncService<UserDto, UserAddDto>,
-                                    IUpdateAsyncService<UserDto, UserUpdateDto>,
-                                    IDeleteAsyncService<StringDto>
+    public interface IUserService : IGetAllAsyncService<UserModel, UserIncludeOptions>,
+                                    IGetAsyncService<UserModel, StringModel, UserIncludeOptions>,
+                                    IAddAsyncService<UserModel, UserAddModel>,
+                                    IUpdateAsyncService<UserModel, UserUpdateModel>,
+                                    IDeleteAsyncService<StringModel>
     {
 
     }

@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
 using IdentityServer.Api.Data.Contexts;
-using IdentityServer.Api.Dtos.ApiScopeDtos;
-using IdentityServer.Api.Dtos.Base.Concrete;
-using IdentityServer.Api.Dtos.ClientDtos;
-using IdentityServer.Api.Dtos.IdentityResourceDtos;
+using IdentityServer.Api.Models.Base.Concrete;
+using IdentityServer.Api.Models.IdentityResourceModels;
 using IdentityServer.Api.Models.IncludeOptions.Account;
 using IdentityServer.Api.Services.Abstract;
 using IdentityServer.Api.Utilities.Results;
@@ -27,7 +25,7 @@ namespace IdentityServer.Api.Services.Concrete
         /// </summary>
         /// <param name="model">identity resource add dto</param>
         /// <returns><see cref="DataResult{T}"/></returns>
-        public DataResult<IdentityResourceDto> Add(IdentityResourceAddDto model)
+        public DataResult<IdentityResourceModel> Add(IdentityResourceAddModel model)
         {
             var mappedIdentityResource = _mapper.Map<IdentityServer4.Models.IdentityResource>(model);
             var addedIdentityResource = mappedIdentityResource.ToEntity();
@@ -35,8 +33,8 @@ namespace IdentityServer.Api.Services.Concrete
             _confDbContext.IdentityResources.Add(addedIdentityResource);
             var result = _confDbContext.SaveChanges();
 
-            var returnValue = _mapper.Map<IdentityResourceDto>(mappedIdentityResource);
-            return result > 0 ? new SuccessDataResult<IdentityResourceDto>(returnValue) : new ErrorDataResult<IdentityResourceDto>();
+            var returnValue = _mapper.Map<IdentityResourceModel>(mappedIdentityResource);
+            return result > 0 ? new SuccessDataResult<IdentityResourceModel>(returnValue) : new ErrorDataResult<IdentityResourceModel>();
         }
 
         /// <summary>
@@ -45,7 +43,7 @@ namespace IdentityServer.Api.Services.Concrete
         /// <param name="model"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public Result Delete(StringDto model)
+        public Result Delete(StringModel model)
         {
             var existingIdentityResource = _confDbContext.IdentityResources.FirstOrDefault(id => id.Name == model.Value);
             if (existingIdentityResource == null)
@@ -66,20 +64,20 @@ namespace IdentityServer.Api.Services.Concrete
         /// <param name="model">name of identity resource</param>
         /// <param name="options">include options</param>
         /// <returns></returns>
-        public DataResult<IdentityResourceDto> Get(StringDto model, IdentityResourceIncludeOptions options)
+        public DataResult<IdentityResourceModel> Get(StringModel model, IdentityResourceIncludeOptions options)
         {
             var result = _confDbContext.IdentityResources.FirstOrDefault(c => c.Name == model.Value);
 
             if (result == null)
-                return new SuccessDataResult<IdentityResourceDto>();
+                return new SuccessDataResult<IdentityResourceModel>();
 
             if (options.UserClaims)
                 _confDbContext.Entry(result).Collection(c => c.UserClaims).Load();
             if (options.Properties)
                 _confDbContext.Entry(result).Collection(c => c.Properties).Load();
 
-            var mappedResult = _mapper.Map<IdentityResourceDto>(result);
-            return new SuccessDataResult<IdentityResourceDto>(mappedResult);
+            var mappedResult = _mapper.Map<IdentityResourceModel>(result);
+            return new SuccessDataResult<IdentityResourceModel>(mappedResult);
         }
 
         /// <summary>
@@ -87,12 +85,12 @@ namespace IdentityServer.Api.Services.Concrete
         /// </summary>
         /// <param name="options">include options</param>
         /// <returns></returns>
-        public DataResult<List<IdentityResourceDto>> GetAll(IdentityResourceIncludeOptions options)
+        public DataResult<List<IdentityResourceModel>> GetAll(IdentityResourceIncludeOptions options)
         {
             var result = _confDbContext.IdentityResources.ToList();
 
             if (result.Count == 0)
-                return new SuccessDataResult<List<IdentityResourceDto>>();
+                return new SuccessDataResult<List<IdentityResourceModel>>();
 
             result.ForEach(identity =>
             {
@@ -102,8 +100,8 @@ namespace IdentityServer.Api.Services.Concrete
                     _confDbContext.Entry(identity).Collection(c => c.Properties).Load();
             });
 
-            var mappedResult = _mapper.Map<List<IdentityResourceDto>>(result);
-            return new SuccessDataResult<List<IdentityResourceDto>>(mappedResult);
+            var mappedResult = _mapper.Map<List<IdentityResourceModel>>(result);
+            return new SuccessDataResult<List<IdentityResourceModel>>(mappedResult);
         }
     }
 }

@@ -1,15 +1,12 @@
 ﻿using AutoMapper;
 using IdentityServer.Api.Data.Contexts;
-using IdentityServer.Api.Dtos.ApiResourceDtos;
-using IdentityServer.Api.Dtos.Base.Concrete;
-using IdentityServer.Api.Dtos.ClientDtos;
+using IdentityServer.Api.Models.ApiResourceModels;
+using IdentityServer.Api.Models.Base.Concrete;
 using IdentityServer.Api.Services.Abstract;
 using IdentityServer.Api.Utilities.Results;
 using IdentityServer4.EntityFramework.Mappers;
-using IdentityServer4.EntityFramework.Stores;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
-using Microsoft.EntityFrameworkCore;
 
 namespace IdentityServer.Api.Services.Concrete
 {
@@ -31,17 +28,17 @@ namespace IdentityServer.Api.Services.Concrete
         /// </summary>
         /// <param name="model">api resource model dto</param>
         /// <returns><see cref="{T}"/></returns>
-        public DataResult<ApiResourceDto> Add(ApiResourceAddDto model)
+        public DataResult<ApiResourceModel> Add(ApiResourceAddModel model)
         {
             var existingApiResource = _confDbContext.ApiResources.FirstOrDefault(s => s.Name == model.Name);
             if(existingApiResource != null)
-                return new ErrorDataResult<ApiResourceDto>();
+                return new ErrorDataResult<ApiResourceModel>();
 
             var allApiScopes = _confDbContext.ApiScopes.Select(s => s.Name).ToList();
             foreach (var scope in model.Scopes)
             {
                 if (!allApiScopes.Any(s => s == scope))
-                    return new ErrorDataResult<ApiResourceDto>();
+                    return new ErrorDataResult<ApiResourceModel>();
             }
 
             var mappedApiResource = _mapper.Map<IdentityServer4.Models.ApiResource>(model);
@@ -53,8 +50,8 @@ namespace IdentityServer.Api.Services.Concrete
             _confDbContext.ApiResources.Add(addedApiResource);
             var result = _confDbContext.SaveChanges();
 
-            var returnValue = _mapper.Map<ApiResourceDto>(mappedApiResource);
-            return result > 0 ? new SuccessDataResult<ApiResourceDto>(model) : new ErrorDataResult<ApiResourceDto>();
+            var returnValue = _mapper.Map<ApiResourceModel>(mappedApiResource);
+            return result > 0 ? new SuccessDataResult<ApiResourceModel>(model) : new ErrorDataResult<ApiResourceModel>();
         }
 
         /// <summary>
@@ -62,7 +59,7 @@ namespace IdentityServer.Api.Services.Concrete
         /// </summary>
         /// <param name="model">string model for api resource name</param>
         /// <returns><see cref="{T}"/></returns>
-        public Result Delete(StringDto model)
+        public Result Delete(StringModel model)
         {
             var existingApiResource = _confDbContext.ApiResources.FirstOrDefault(c => c.Name == model.Value);
             if (existingApiResource == null)
@@ -78,7 +75,7 @@ namespace IdentityServer.Api.Services.Concrete
         /// </summary>
         /// <param name="options">include options for api resources</param>
         /// <returns><see cref="{T}"/></returns>
-        public DataResult<List<ApiResourceDto>> GetAll(Models.IncludeOptions.Account.ApiResourceIncludeOptions options)
+        public DataResult<List<ApiResourceModel>> GetAll(Models.IncludeOptions.Account.ApiResourceIncludeOptions options)
         {
             var result = _confDbContext.ApiResources.ToList();
             result.ForEach(apiResource =>
@@ -93,8 +90,8 @@ namespace IdentityServer.Api.Services.Concrete
                     _confDbContext.Entry(apiResource).Collection(c => c.Properties).Load();
             });
 
-            var mappedResult = _mapper.Map<List<ApiResourceDto>>(result);
-            return new SuccessDataResult<List<ApiResourceDto>>(mappedResult);
+            var mappedResult = _mapper.Map<List<ApiResourceModel>>(result);
+            return new SuccessDataResult<List<ApiResourceModel>>(mappedResult);
         }
 
         /// <summary>
@@ -103,11 +100,11 @@ namespace IdentityServer.Api.Services.Concrete
         /// <param name="model">api resource name</param>
         /// <param name="options">api resource include option</param>
         /// <returns><see cref="{T}"/></returns>
-        public DataResult<ApiResourceDto> Get(StringDto model, Models.IncludeOptions.Account.ApiResourceIncludeOptions options)
+        public DataResult<ApiResourceModel> Get(StringModel model, Models.IncludeOptions.Account.ApiResourceIncludeOptions options)
         {
             var result = _confDbContext.ApiResources.FirstOrDefault(c => c.Name == model.Value);
             if (result == null)
-                return new SuccessDataResult<ApiResourceDto>();
+                return new SuccessDataResult<ApiResourceModel>();
 
             if (options.Secrets)
                 _confDbContext.Entry(result).Collection(c => c.Secrets).Load();
@@ -118,8 +115,8 @@ namespace IdentityServer.Api.Services.Concrete
             if (options.Properties)
                 _confDbContext.Entry(result).Collection(c => c.Properties).Load();
 
-            var mappedResult = _mapper.Map<ApiResourceDto>(result);
-            return new SuccessDataResult<ApiResourceDto>(mappedResult);
+            var mappedResult = _mapper.Map<ApiResourceModel>(result);
+            return new SuccessDataResult<ApiResourceModel>(mappedResult);
         }
     }
 }

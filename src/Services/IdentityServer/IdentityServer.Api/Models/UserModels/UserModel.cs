@@ -1,8 +1,8 @@
-﻿using IdentityServer.Api.Dtos.Base.Abstract;
+﻿using IdentityServer.Api.Models.Base.Abstract;
 
-namespace IdentityServer.Api.Dtos.UserDtos
+namespace IdentityServer.Api.Models.UserModels
 {
-    public class UserDto : IDto
+    public class UserModel : IModel
     {
         /// <summary>
         /// Name of the user

@@ -1,9 +1,9 @@
-﻿using IdentityServer.Api.Dtos.Base.Abstract;
+﻿using IdentityServer.Api.Models.Base.Abstract;
 using IdentityServer.Api.Utilities.Results;
 
 namespace IdentityServer.Api.Services.Base
 {
-    public interface IDeleteAsyncService<D> where D : class, IDeleteDto
+    public interface IDeleteAsyncService<D> where D : class, IDeleteModel
     {
         /// <summary>
         /// Delete by <typeparamref name="D"/>

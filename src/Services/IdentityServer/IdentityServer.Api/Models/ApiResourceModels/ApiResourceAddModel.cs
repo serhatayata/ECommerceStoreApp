@@ -1,10 +1,10 @@
-﻿using IdentityServer.Api.Dtos.Base.Abstract;
-using IdentityServer.Api.Dtos.Base.Concrete;
+﻿using IdentityServer.Api.Models.Base.Abstract;
+using IdentityServer.Api.Models.Base.Concrete;
 using IdentityServer4.EntityFramework.Entities;
 
-namespace IdentityServer.Api.Dtos.ApiResourceDtos
+namespace IdentityServer.Api.Models.ApiResourceModels
 {
-    public class ApiResourceAddDto : IAddDto
+    public class ApiResourceAddModel : IAddModel
     {
         public bool Enabled { get; set; } = true;
         public string Name { get; set; }
@@ -15,7 +15,7 @@ namespace IdentityServer.Api.Dtos.ApiResourceDtos
         public List<IdentityServer4.Models.Secret> Secrets { get; set; }
         public List<string> Scopes { get; set; }
         public List<string> UserClaims { get; set; }
-        public List<PropertyDto> Properties { get; set; }
+        public List<PropertyModel> Properties { get; set; }
         public bool NonEditable { get; set; }
     }
 }

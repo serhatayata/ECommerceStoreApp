@@ -1,11 +1,11 @@
-﻿using IdentityServer.Api.Dtos.Base.Abstract;
-using IdentityServer.Api.Dtos.Base.Concrete;
+﻿using IdentityServer.Api.Models.Base.Abstract;
+using IdentityServer.Api.Models.Base.Concrete;
 using IdentityServer4.EntityFramework.Entities;
 using Newtonsoft.Json;
 
-namespace IdentityServer.Api.Dtos.IdentityResourceDtos
+namespace IdentityServer.Api.Models.IdentityResourceModels
 {
-    public class IdentityResourceDto : IDto
+    public class IdentityResourceAddModel : IAddModel
     {
         /// <summary>
         /// enabled or not for identity resource
@@ -31,12 +31,12 @@ namespace IdentityServer.Api.Dtos.IdentityResourceDtos
         /// Identity resource required or not
         /// </summary>
         [JsonProperty("required")]
-        public bool Required { get; set; }
+        public bool Required { get; set; } = false;
         /// <summary>
         /// Identity resource emphasize or not
         /// </summary>
         [JsonProperty("emphasize")]
-        public bool Emphasize { get; set; }
+        public bool Emphasize { get; set; } = false;
         /// <summary>
         /// Identity resource show in discovery document or not
         /// </summary>
@@ -51,11 +51,11 @@ namespace IdentityServer.Api.Dtos.IdentityResourceDtos
         /// Identity resource properties
         /// </summary>
         [JsonProperty("properties")]
-        public List<PropertyDto> Properties { get; set; }
+        public List<PropertyModel> Properties { get; set; }
         /// <summary>
         /// Identity resource non editable or not
         /// </summary>
         [JsonProperty("nonEditable")]
-        public bool NonEditable { get; set; }
+        public bool NonEditable { get; set; } = false;
     }
 }

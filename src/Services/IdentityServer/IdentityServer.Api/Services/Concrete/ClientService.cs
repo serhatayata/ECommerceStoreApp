@@ -1,8 +1,7 @@
 ﻿using AutoMapper;
 using IdentityServer.Api.Data.Contexts;
-using IdentityServer.Api.Dtos.ApiResourceDtos;
-using IdentityServer.Api.Dtos.Base.Concrete;
-using IdentityServer.Api.Dtos.ClientDtos;
+using IdentityServer.Api.Models.Base.Concrete;
+using IdentityServer.Api.Models.ClientModels;
 using IdentityServer.Api.Models.IncludeOptions.Account;
 using IdentityServer.Api.Services.Abstract;
 using IdentityServer.Api.Utilities.Results;
@@ -27,11 +26,11 @@ namespace IdentityServer.Api.Services.Concrete
         /// </summary>
         /// <param name="model">Client add model</param>
         /// <returns><see cref="DataResult{T}"/></returns>
-        public DataResult<ClientDto> Add(ClientAddDto model)
+        public DataResult<ClientModel> Add(ClientAddModel model)
         {
             var existingClient = _confDbContext.Clients.FirstOrDefault(s => s.ClientId == model.ClientId);
             if (existingClient != null)
-                return new ErrorDataResult<ClientDto>();
+                return new ErrorDataResult<ClientModel>();
 
             var mappedClient = _mapper.Map<IdentityServer4.Models.Client>(model);
 
@@ -43,8 +42,8 @@ namespace IdentityServer.Api.Services.Concrete
             _confDbContext.Clients.Add(addedClient);
             var result = _confDbContext.SaveChanges();
 
-            var returnValue = _mapper.Map<ClientDto>(mappedClient);
-            return result > 0 ? new SuccessDataResult<ClientDto>(returnValue) : new ErrorDataResult<ClientDto>();
+            var returnValue = _mapper.Map<ClientModel>(mappedClient);
+            return result > 0 ? new SuccessDataResult<ClientModel>(returnValue) : new ErrorDataResult<ClientModel>();
         }
 
         /// <summary>
@@ -52,7 +51,7 @@ namespace IdentityServer.Api.Services.Concrete
         /// </summary>
         /// <param name="clientId">client id</param>
         /// <returns><see cref="Result"/></returns>
-        public Result Delete(StringDto model)
+        public Result Delete(StringModel model)
         {
             var existingClient = _confDbContext.Clients.FirstOrDefault(c => c.ClientId == model.Value);
             if (existingClient == null)
@@ -68,7 +67,7 @@ namespace IdentityServer.Api.Services.Concrete
         /// </summary>
         /// <param name="options">include options</param>
         /// <returns></returns>
-        public DataResult<List<ClientDto>> GetAll(ClientIncludeOptions options)
+        public DataResult<List<ClientModel>> GetAll(ClientIncludeOptions options)
         {
             var result = _confDbContext.Clients.ToList();
             result.ForEach(client =>
@@ -93,9 +92,9 @@ namespace IdentityServer.Api.Services.Concrete
                     _confDbContext.Entry(client).Collection(c => c.AllowedGrantTypes).Load();
             });
 
-            var mappedResult = _mapper.Map<List<ClientDto>>(result);
+            var mappedResult = _mapper.Map<List<ClientModel>>(result);
 
-            return new SuccessDataResult<List<ClientDto>>(mappedResult);
+            return new SuccessDataResult<List<ClientModel>>(mappedResult);
         }
 
         /// <summary>
@@ -104,12 +103,12 @@ namespace IdentityServer.Api.Services.Concrete
         /// <param name="model">string model for client id</param>
         /// <param name="options">include options</param>
         /// <returns></returns>
-        public DataResult<ClientDto> Get(StringDto model, ClientIncludeOptions options)
+        public DataResult<ClientModel> Get(StringModel model, ClientIncludeOptions options)
         {
             var result = _confDbContext.Clients.FirstOrDefault(c => c.ClientId == model.Value);
 
             if (result == null)
-                return new SuccessDataResult<ClientDto>();
+                return new SuccessDataResult<ClientModel>();
 
             if (options.Claims)
                 _confDbContext.Entry(result).Collection(c => c.Claims).Load();
@@ -130,8 +129,8 @@ namespace IdentityServer.Api.Services.Concrete
             if (options.GrantTypes)
                 _confDbContext.Entry(result).Collection(c => c.AllowedGrantTypes).Load();
 
-            var mappedResult = _mapper.Map<ClientDto>(result);
-            return new SuccessDataResult<ClientDto>(mappedResult);
+            var mappedResult = _mapper.Map<ClientModel>(result);
+            return new SuccessDataResult<ClientModel>(mappedResult);
         }
     }
 }

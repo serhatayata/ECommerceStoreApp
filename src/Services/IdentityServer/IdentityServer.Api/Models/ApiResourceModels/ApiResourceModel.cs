@@ -1,10 +1,10 @@
-﻿using IdentityServer.Api.Dtos.Base.Abstract;
-using IdentityServer.Api.Dtos.Base.Concrete;
+﻿using IdentityServer.Api.Models.Base.Abstract;
+using IdentityServer.Api.Models.Base.Concrete;
 using Newtonsoft.Json;
 
-namespace IdentityServer.Api.Dtos.ApiResourceDtos
+namespace IdentityServer.Api.Models.ApiResourceModels
 {
-    public class ApiResourceDto : IDto
+    public class ApiResourceModel : IModel
     {
         /// <summary>
         /// enabled or not for api resource
@@ -55,7 +55,7 @@ namespace IdentityServer.Api.Dtos.ApiResourceDtos
         /// Properties for api resource
         /// </summary>
         [JsonProperty("properties")]
-        public List<PropertyDto> Properties { get; set; }
+        public List<PropertyModel> Properties { get; set; }
         /// <summary>
         /// Non editable or not for api resource
         /// </summary>

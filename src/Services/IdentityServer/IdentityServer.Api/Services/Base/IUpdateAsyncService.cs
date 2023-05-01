@@ -1,10 +1,10 @@
-﻿using IdentityServer.Api.Dtos.Base.Abstract;
+﻿using IdentityServer.Api.Models.Base.Abstract;
 using IdentityServer.Api.Utilities.Results;
 
 namespace IdentityServer.Api.Services.Base
 {
-    public interface IUpdateAsyncService<T, U> where T : class, IDto
-                                               where U : class, IUpdateDto
+    public interface IUpdateAsyncService<T, U> where T : class, IModel
+                                               where U : class, IUpdateModel
     {
         /// <summary>
         /// Update <typeparamref name="U"/>

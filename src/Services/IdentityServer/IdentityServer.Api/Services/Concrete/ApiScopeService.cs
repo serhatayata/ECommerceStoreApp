@@ -1,13 +1,11 @@
 ﻿using AutoMapper;
 using IdentityServer.Api.Data.Contexts;
-using IdentityServer.Api.Dtos.ApiScopeDtos;
-using IdentityServer.Api.Dtos.Base.Concrete;
-using IdentityServer.Api.Dtos.ClientDtos;
+using IdentityServer.Api.Models.ApiScopeModels;
+using IdentityServer.Api.Models.Base.Concrete;
 using IdentityServer.Api.Models.IncludeOptions.Account;
 using IdentityServer.Api.Services.Abstract;
 using IdentityServer.Api.Utilities.Results;
 using IdentityServer4.EntityFramework.Mappers;
-using Microsoft.EntityFrameworkCore;
 
 namespace IdentityServer.Api.Services.Concrete
 {
@@ -27,7 +25,7 @@ namespace IdentityServer.Api.Services.Concrete
         /// </summary>
         /// <param name="model">Api scope add dto</param>
         /// <returns><see cref="DataResult{T}"/></returns>
-        public DataResult<ApiScopeDto> Add(ApiScopeAddDto model)
+        public DataResult<ApiScopeModel> Add(ApiScopeAddModel model)
         {
             var mappedApiScope = _mapper.Map<IdentityServer4.Models.ApiScope>(model);
             var addedApiScope = mappedApiScope.ToEntity();
@@ -35,8 +33,8 @@ namespace IdentityServer.Api.Services.Concrete
             _confDbContext.ApiScopes.Add(addedApiScope);
             var result = _confDbContext.SaveChanges();
 
-            var returnValue = _mapper.Map<ApiScopeDto>(mappedApiScope);
-            return result > 0 ? new SuccessDataResult<ApiScopeDto>(returnValue) : new ErrorDataResult<ApiScopeDto>();
+            var returnValue = _mapper.Map<ApiScopeModel>(mappedApiScope);
+            return result > 0 ? new SuccessDataResult<ApiScopeModel>(returnValue) : new ErrorDataResult<ApiScopeModel>();
         }
 
         /// <summary>
@@ -44,7 +42,7 @@ namespace IdentityServer.Api.Services.Concrete
         /// </summary>
         /// <param name="model">string dto for api scope name</param>
         /// <returns><see cref="Result"/></returns>
-        public Result Delete(StringDto model)
+        public Result Delete(StringModel model)
         {
             var existingApiScope = _confDbContext.ApiScopes.FirstOrDefault(c => c.Name == model.Value);
             if (existingApiScope == null)
@@ -64,7 +62,7 @@ namespace IdentityServer.Api.Services.Concrete
         /// </summary>
         /// <param name="options">get include options for api scopes</param>
         /// <returns></returns>
-        public DataResult<List<ApiScopeDto>> GetAll(ApiScopeIncludeOptions options)
+        public DataResult<List<ApiScopeModel>> GetAll(ApiScopeIncludeOptions options)
         {
             var result = _confDbContext.ApiScopes.ToList();
             result.ForEach(apiScope =>
@@ -75,8 +73,8 @@ namespace IdentityServer.Api.Services.Concrete
                     _confDbContext.Entry(apiScope).Collection(c => c.Properties).Load();
             });
 
-            var mappedResult = _mapper.Map<List<ApiScopeDto>>(result);
-            return new SuccessDataResult<List<ApiScopeDto>>(mappedResult);
+            var mappedResult = _mapper.Map<List<ApiScopeModel>>(result);
+            return new SuccessDataResult<List<ApiScopeModel>>(mappedResult);
         }
 
         /// <summary>
@@ -85,20 +83,20 @@ namespace IdentityServer.Api.Services.Concrete
         /// <param name="model">name of api scope</param>
         /// <param name="options">get options for the api scope</param>
         /// <returns></returns>
-        public DataResult<ApiScopeDto> Get(StringDto model, ApiScopeIncludeOptions options)
+        public DataResult<ApiScopeModel> Get(StringModel model, ApiScopeIncludeOptions options)
         {
             var result = _confDbContext.ApiScopes.FirstOrDefault(c => c.Name == model.Value);
 
             if (result == null)
-                return new SuccessDataResult<ApiScopeDto>();
+                return new SuccessDataResult<ApiScopeModel>();
 
             if (options.UserClaims)
                 _confDbContext.Entry(result).Collection(c => c.UserClaims).Load();
             if (options.Properties)
                 _confDbContext.Entry(result).Collection(c => c.Properties).Load();
 
-            var mappedResult = _mapper.Map<ApiScopeDto>(result);
-            return new SuccessDataResult<ApiScopeDto>(mappedResult);
+            var mappedResult = _mapper.Map<ApiScopeModel>(result);
+            return new SuccessDataResult<ApiScopeModel>(mappedResult);
         }
     }
 }

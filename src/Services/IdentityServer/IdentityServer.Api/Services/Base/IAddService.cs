@@ -1,11 +1,11 @@
-﻿using IdentityServer.Api.Dtos.Base.Abstract;
+﻿using IdentityServer.Api.Models.Base.Abstract;
 using IdentityServer.Api.Models.IncludeOptions;
 using IdentityServer.Api.Utilities.Results;
 
 namespace IdentityServer.Api.Services.Base
 {
-    public interface IAddService<T,A> where A : class, IAddDto
-                                        where T : class, IDto
+    public interface IAddService<T,A> where A : class, IAddModel
+                                        where T : class, IModel
     {
         /// <summary>
         /// Add <typeparamref name="A"/>

@@ -1,10 +1,10 @@
-﻿using IdentityServer.Api.Dtos.Base.Abstract;
-using IdentityServer.Api.Dtos.Base.Concrete;
+﻿using IdentityServer.Api.Models.Base.Abstract;
+using IdentityServer.Api.Models.Base.Concrete;
 using IdentityServer4.EntityFramework.Entities;
 
-namespace IdentityServer.Api.Dtos.ApiScopeDtos
+namespace IdentityServer.Api.Models.ApiScopeModels
 {
-    public class ApiScopeAddDto : IAddDto
+    public class ApiScopeAddModel : IAddModel
     {
         public bool Enabled { get; set; } = true;
         public string Name { get; set; }
@@ -14,6 +14,6 @@ namespace IdentityServer.Api.Dtos.ApiScopeDtos
         public bool Emphasize { get; set; }
         public bool ShowInDiscoveryDocument { get; set; } = true;
         public List<string> UserClaims { get; set; }
-        public List<PropertyDto> Properties { get; set; }
+        public List<PropertyModel> Properties { get; set; }
     }
 }

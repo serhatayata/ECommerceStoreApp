@@ -1,10 +1,10 @@
-﻿using IdentityServer.Api.Dtos.Base.Abstract;
+﻿using IdentityServer.Api.Models.Base.Abstract;
 using IdentityServer.Api.Models.IncludeOptions;
 using IdentityServer.Api.Utilities.Results;
 
 namespace IdentityServer.Api.Services.Base
 {
-    public interface IGetAllAsyncService<T, Y> where T : class, IDto
+    public interface IGetAllAsyncService<T, Y> where T : class, IModel
                                                where Y : IBaseIncludeOptions
     {
         /// <summary>

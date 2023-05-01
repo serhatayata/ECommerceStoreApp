@@ -1,9 +1,9 @@
-﻿using IdentityServer.Api.Dtos.Base.Abstract;
+﻿using IdentityServer.Api.Models.Base.Abstract;
 using Newtonsoft.Json;
 
-namespace IdentityServer.Api.Dtos.ClientDtos
+namespace IdentityServer.Api.Models.ClientModels
 {
-    public class ClientDto : IDto
+    public class ClientModel : IModel
     {
         /// <summary>
         /// Client id
