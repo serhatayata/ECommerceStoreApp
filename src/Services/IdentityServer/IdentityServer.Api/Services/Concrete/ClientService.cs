@@ -21,11 +21,6 @@ namespace IdentityServer.Api.Services.Concrete
             _mapper = mapper;
         }
 
-        /// <summary>
-        /// Add client and its relational tables
-        /// </summary>
-        /// <param name="model">Client add model</param>
-        /// <returns><see cref="DataResult{T}"/></returns>
         public DataResult<ClientModel> Add(ClientAddModel model)
         {
             var existingClient = _confDbContext.Clients.FirstOrDefault(s => s.ClientId == model.ClientId);
@@ -46,11 +41,6 @@ namespace IdentityServer.Api.Services.Concrete
             return result > 0 ? new SuccessDataResult<ClientModel>(returnValue) : new ErrorDataResult<ClientModel>();
         }
 
-        /// <summary>
-        /// Delete client by client id
-        /// </summary>
-        /// <param name="clientId">client id</param>
-        /// <returns><see cref="Result"/></returns>
         public Result Delete(StringModel model)
         {
             var existingClient = _confDbContext.Clients.FirstOrDefault(c => c.ClientId == model.Value);
@@ -62,11 +52,6 @@ namespace IdentityServer.Api.Services.Concrete
             return result > 0 ? new SuccessResult() : new ErrorResult();
         }
 
-        /// <summary>
-        /// Get all clients
-        /// </summary>
-        /// <param name="options">include options</param>
-        /// <returns></returns>
         public DataResult<List<ClientModel>> GetAll(ClientIncludeOptions options)
         {
             var result = _confDbContext.Clients.ToList();
@@ -97,12 +82,6 @@ namespace IdentityServer.Api.Services.Concrete
             return new SuccessDataResult<List<ClientModel>>(mappedResult);
         }
 
-        /// <summary>
-        /// Get by client id
-        /// </summary>
-        /// <param name="model">string model for client id</param>
-        /// <param name="options">include options</param>
-        /// <returns></returns>
         public DataResult<ClientModel> Get(StringModel model, ClientIncludeOptions options)
         {
             var result = _confDbContext.Clients.FirstOrDefault(c => c.ClientId == model.Value);

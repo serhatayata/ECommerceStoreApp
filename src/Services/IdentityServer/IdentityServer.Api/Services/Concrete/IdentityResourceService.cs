@@ -20,11 +20,6 @@ namespace IdentityServer.Api.Services.Concrete
             _mapper = mapper;
         }
 
-        /// <summary>
-        /// Add identity resource
-        /// </summary>
-        /// <param name="model">identity resource add dto</param>
-        /// <returns><see cref="DataResult{T}"/></returns>
         public DataResult<IdentityResourceModel> Add(IdentityResourceAddModel model)
         {
             var mappedIdentityResource = _mapper.Map<IdentityServer4.Models.IdentityResource>(model);
@@ -37,12 +32,6 @@ namespace IdentityServer.Api.Services.Concrete
             return result > 0 ? new SuccessDataResult<IdentityResourceModel>(returnValue) : new ErrorDataResult<IdentityResourceModel>();
         }
 
-        /// <summary>
-        /// Delete specified identity resource
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
         public Result Delete(StringModel model)
         {
             var existingIdentityResource = _confDbContext.IdentityResources.FirstOrDefault(id => id.Name == model.Value);
@@ -58,12 +47,6 @@ namespace IdentityServer.Api.Services.Concrete
             return result > 0 ? new SuccessResult() : new ErrorResult();
         }
 
-        /// <summary>
-        /// Get specified identity resource
-        /// </summary>
-        /// <param name="model">name of identity resource</param>
-        /// <param name="options">include options</param>
-        /// <returns></returns>
         public DataResult<IdentityResourceModel> Get(StringModel model, IdentityResourceIncludeOptions options)
         {
             var result = _confDbContext.IdentityResources.FirstOrDefault(c => c.Name == model.Value);
@@ -80,11 +63,6 @@ namespace IdentityServer.Api.Services.Concrete
             return new SuccessDataResult<IdentityResourceModel>(mappedResult);
         }
 
-        /// <summary>
-        /// Get all identity resources
-        /// </summary>
-        /// <param name="options">include options</param>
-        /// <returns></returns>
         public DataResult<List<IdentityResourceModel>> GetAll(IdentityResourceIncludeOptions options)
         {
             var result = _confDbContext.IdentityResources.ToList();

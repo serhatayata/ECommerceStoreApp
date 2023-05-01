@@ -23,11 +23,6 @@ namespace IdentityServer.Api.Services.Concrete
             _mapper = mapper;
         }
 
-        /// <summary>
-        /// Add api resource
-        /// </summary>
-        /// <param name="model">api resource model dto</param>
-        /// <returns><see cref="{T}"/></returns>
         public DataResult<ApiResourceModel> Add(ApiResourceAddModel model)
         {
             var existingApiResource = _confDbContext.ApiResources.FirstOrDefault(s => s.Name == model.Name);
@@ -54,11 +49,6 @@ namespace IdentityServer.Api.Services.Concrete
             return result > 0 ? new SuccessDataResult<ApiResourceModel>(model) : new ErrorDataResult<ApiResourceModel>();
         }
 
-        /// <summary>
-        /// Deletes the specified api resource
-        /// </summary>
-        /// <param name="model">string model for api resource name</param>
-        /// <returns><see cref="{T}"/></returns>
         public Result Delete(StringModel model)
         {
             var existingApiResource = _confDbContext.ApiResources.FirstOrDefault(c => c.Name == model.Value);
@@ -70,11 +60,6 @@ namespace IdentityServer.Api.Services.Concrete
             return result > 0 ? new SuccessResult() : new ErrorResult();
         }
 
-        /// <summary>
-        /// Get all api resources
-        /// </summary>
-        /// <param name="options">include options for api resources</param>
-        /// <returns><see cref="{T}"/></returns>
         public DataResult<List<ApiResourceModel>> GetAll(Models.IncludeOptions.Account.ApiResourceIncludeOptions options)
         {
             var result = _confDbContext.ApiResources.ToList();
@@ -94,12 +79,6 @@ namespace IdentityServer.Api.Services.Concrete
             return new SuccessDataResult<List<ApiResourceModel>>(mappedResult);
         }
 
-        /// <summary>
-        /// Get api resource by name
-        /// </summary>
-        /// <param name="model">api resource name</param>
-        /// <param name="options">api resource include option</param>
-        /// <returns><see cref="{T}"/></returns>
         public DataResult<ApiResourceModel> Get(StringModel model, Models.IncludeOptions.Account.ApiResourceIncludeOptions options)
         {
             var result = _confDbContext.ApiResources.FirstOrDefault(c => c.Name == model.Value);

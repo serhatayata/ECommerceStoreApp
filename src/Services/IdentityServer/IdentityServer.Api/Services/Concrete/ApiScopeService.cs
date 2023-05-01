@@ -20,11 +20,6 @@ namespace IdentityServer.Api.Services.Concrete
             _mapper = mapper;
         }
 
-        /// <summary>
-        /// Add api scope
-        /// </summary>
-        /// <param name="model">Api scope add dto</param>
-        /// <returns><see cref="DataResult{T}"/></returns>
         public DataResult<ApiScopeModel> Add(ApiScopeAddModel model)
         {
             var mappedApiScope = _mapper.Map<IdentityServer4.Models.ApiScope>(model);
@@ -37,11 +32,6 @@ namespace IdentityServer.Api.Services.Concrete
             return result > 0 ? new SuccessDataResult<ApiScopeModel>(returnValue) : new ErrorDataResult<ApiScopeModel>();
         }
 
-        /// <summary>
-        /// Deletes the specified api scope
-        /// </summary>
-        /// <param name="model">string dto for api scope name</param>
-        /// <returns><see cref="Result"/></returns>
         public Result Delete(StringModel model)
         {
             var existingApiScope = _confDbContext.ApiScopes.FirstOrDefault(c => c.Name == model.Value);
@@ -57,11 +47,6 @@ namespace IdentityServer.Api.Services.Concrete
             return result > 0 ? new SuccessResult() : new ErrorResult();
         }
 
-        /// <summary>
-        /// Get all api scopes
-        /// </summary>
-        /// <param name="options">get include options for api scopes</param>
-        /// <returns></returns>
         public DataResult<List<ApiScopeModel>> GetAll(ApiScopeIncludeOptions options)
         {
             var result = _confDbContext.ApiScopes.ToList();
@@ -77,12 +62,6 @@ namespace IdentityServer.Api.Services.Concrete
             return new SuccessDataResult<List<ApiScopeModel>>(mappedResult);
         }
 
-        /// <summary>
-        /// Get specified api scope
-        /// </summary>
-        /// <param name="model">name of api scope</param>
-        /// <param name="options">get options for the api scope</param>
-        /// <returns></returns>
         public DataResult<ApiScopeModel> Get(StringModel model, ApiScopeIncludeOptions options)
         {
             var result = _confDbContext.ApiScopes.FirstOrDefault(c => c.Name == model.Value);

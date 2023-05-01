@@ -2,6 +2,7 @@
 using IdentityServer.Api.Models.IncludeOptions.User;
 using IdentityServer.Api.Models.UserModels;
 using IdentityServer.Api.Services.Base;
+using IdentityServer.Api.Utilities.Results;
 
 namespace IdentityServer.Api.Services.Abstract
 {

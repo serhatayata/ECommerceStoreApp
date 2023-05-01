@@ -4,17 +4,13 @@ using IdentityServer.Api.Data.Contexts;
 using IdentityServer.Api.Data.SeedData;
 using IdentityServer.Api.DependencyResolvers.Autofac;
 using IdentityServer.Api.Entities.Identity;
+using IdentityServer.Api.Extensions;
 using IdentityServer.Api.Mapping;
 using IdentityServer.Api.Utilities.IoC;
+using IdentityServer.Api.Validations.IdentityValidators;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
-using Newtonsoft.Json;
-using Autofac.Core;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using IdentityServer4;
 
 #region SERVICES
 var builder = WebApplication.CreateBuilder(args);
@@ -28,6 +24,7 @@ builder.Services.AddControllers().AddJsonOptions(o =>
 
 var config = ConfigurationExtension.appConfig;
 builder.Configuration.AddConfiguration(config);
+
 #region Session
 builder.Services.AddSession(options => {
     options.IdleTimeout = TimeSpan.FromMinutes(60);
@@ -35,6 +32,7 @@ builder.Services.AddSession(options => {
 #endregion
 #region Http
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 #endregion
 #region Autofac
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
@@ -58,6 +56,10 @@ builder.Services.AddIdentity<User, Role>(options =>
     options.Password.RequireLowercase = false;
     options.Password.RequireUppercase = false;
     options.Password.RequireNonAlphanumeric = false;
+
+    options.Lockout.AllowedForNewUsers = false;
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(2);
+    options.Lockout.MaxFailedAccessAttempts = 3;
 })
 .AddEntityFrameworkStores<AppIdentityDbContext>()
 .AddDefaultTokenProviders();
@@ -72,6 +74,7 @@ builder.Services.AddIdentityServer(options =>
     options.Discovery.CustomEntries.Add("update-user", "~/update-user");
     options.Discovery.CustomEntries.Add("delete-user", "~/delete-user");
 })
+.AddResourceOwnerValidator<ResourceOwnerPasswordCustomValidator>()
 .AddAspNetIdentity<User>()
 .AddConfigurationStore<AppConfigurationDbContext>(options =>
 {
@@ -129,6 +132,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.ConfigureCustomExceptionMiddleware();
 app.UseSession();
 app.UseHttpsRedirection();
 app.UseRouting();

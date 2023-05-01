@@ -3,6 +3,7 @@
 
 
 using IdentityModel;
+using IdentityModel.Client;
 using IdentityServer.Api.Attributes;
 using IdentityServer.Api.Data.SeedData;
 using IdentityServer.Api.Models.Account;

@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using IdentityModel.Client;
 using IdentityServer.Api.Data.Contexts;
 using IdentityServer.Api.Entities.Identity;
+using IdentityServer.Api.Extensions;
 using IdentityServer.Api.Models.Base.Concrete;
 using IdentityServer.Api.Models.IncludeOptions.User;
 using IdentityServer.Api.Models.UserModels;
@@ -15,26 +17,21 @@ namespace IdentityServer.Api.Services.Concrete
     {
         private AppIdentityDbContext _identityDbContext;
         private UserManager<User> _userManager;
+        private SignInManager<User> _signInManager;
         private IMapper _mapper;
+        private IHttpContextAccessor _httpContextAccessor;
 
-        public UserService(AppIdentityDbContext identityDbContext, UserManager<User> userManager, IMapper mapper)
+        public UserService(AppIdentityDbContext identityDbContext, 
+                           UserManager<User> userManager, 
+                           IMapper mapper, 
+                           SignInManager<User> signInManager)
         {
             _identityDbContext = identityDbContext;
             _userManager = userManager;
             _mapper = mapper;
+            _signInManager = signInManager;
         }
 
-        public UserService(AppIdentityDbContext identityDbContext, IMapper mapper)
-        {
-            _identityDbContext = identityDbContext;
-            _mapper = mapper;
-        }
-
-        /// <summary>
-        /// Add a new user
-        /// </summary>
-        /// <param name="model">User add model</param>
-        /// <returns><see cref="DataResult{T}"/></returns>
         public async Task<DataResult<UserModel>> AddAsync(UserAddModel model)
         {
             var existingMail = await _userManager.FindByEmailAsync(model.Email);
@@ -54,11 +51,6 @@ namespace IdentityServer.Api.Services.Concrete
             return new SuccessDataResult<UserModel>(resultValue);
         }
 
-        /// <summary>
-        /// Update the specified user
-        /// </summary>
-        /// <param name="model">User update model</param>
-        /// <returns><see cref="{T}"/></returns>
         public async Task<DataResult<UserModel>> UpdateAsync(UserUpdateModel model)
         {
             var existingUser = await _userManager.FindByNameAsync(model.CurrentUserName);
@@ -74,11 +66,6 @@ namespace IdentityServer.Api.Services.Concrete
             return new SuccessDataResult<UserModel>(resultValue);
         }
 
-        /// <summary>
-        /// Delete the specified user
-        /// </summary>
-        /// <param name="model">Delete model</param>
-        /// <returns><see cref="{R}"/></returns>
         public async Task<Result> DeleteAsync(StringModel model)
         {
             var existingUser = await _userManager.FindByNameAsync(model.Value);
@@ -91,12 +78,6 @@ namespace IdentityServer.Api.Services.Concrete
             return new SuccessResult();
         }
 
-        /// <summary>
-        /// Get specified user
-        /// </summary>
-        /// <param name="id">id of the user</param>
-        /// <param name="options">get include options</param>
-        /// <returns><see cref="{T}"/></returns>
         public async Task<DataResult<UserModel>> GetAsync(StringModel model, UserIncludeOptions options)
         {
             var existingUser = await _userManager.FindByNameAsync(model.Value);
@@ -107,11 +88,6 @@ namespace IdentityServer.Api.Services.Concrete
             return new SuccessDataResult<UserModel>(returnValue);
         }
 
-        /// <summary>
-        /// Get all users
-        /// </summary>
-        /// <param name="options">get include options</param>
-        /// <returns><see cref="List{T}"/></returns>
         public async Task<DataResult<List<UserModel>>> GetAllAsync(UserIncludeOptions options)
         {
             var users = await _userManager.Users.ToListAsync();
