@@ -1,4 +1,5 @@
 using Autofac;
+using Autofac.Core;
 using Autofac.Extensions.DependencyInjection;
 using IdentityServer.Api.Data.Contexts;
 using IdentityServer.Api.Data.SeedData;
@@ -8,6 +9,9 @@ using IdentityServer.Api.Extensions;
 using IdentityServer.Api.Mapping;
 using IdentityServer.Api.Utilities.IoC;
 using IdentityServer.Api.Validations.IdentityValidators;
+using IdentityServer4.AspNetIdentity;
+using IdentityServer4.Services;
+using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
@@ -75,6 +79,7 @@ builder.Services.AddIdentityServer(options =>
     options.Discovery.CustomEntries.Add("delete-user", "~/delete-user");
 })
 .AddResourceOwnerValidator<ResourceOwnerPasswordCustomValidator>()
+.AddProfileService<ProfileService>()
 .AddAspNetIdentity<User>()
 .AddConfigurationStore<AppConfigurationDbContext>(options =>
 {
@@ -85,6 +90,9 @@ builder.Services.AddIdentityServer(options =>
                 b.UseSqlServer(defaultConnString, opt => opt.MigrationsAssembly(assembly));
 })
 .AddDeveloperSigningCredential(); //Sertifika yoksa
+
+//builder.Services.AddTransient<IResourceOwnerPasswordValidator, ResourceOwnerPasswordCustomValidator>();
+//builder.Services.AddTransient<IProfileService, ProfileService>();
 
 var serviceProvider = builder.Services.BuildServiceProvider();
 var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();

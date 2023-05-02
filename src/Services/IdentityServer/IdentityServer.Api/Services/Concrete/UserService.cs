@@ -3,33 +3,68 @@ using IdentityModel.Client;
 using IdentityServer.Api.Data.Contexts;
 using IdentityServer.Api.Entities.Identity;
 using IdentityServer.Api.Extensions;
+using IdentityServer.Api.Models.Account;
 using IdentityServer.Api.Models.Base.Concrete;
 using IdentityServer.Api.Models.IncludeOptions.User;
 using IdentityServer.Api.Models.UserModels;
 using IdentityServer.Api.Services.Abstract;
 using IdentityServer.Api.Utilities.Results;
+using IdentityServer4.Events;
+using IdentityServer4;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace IdentityServer.Api.Services.Concrete
 {
     public class UserService : IUserService
     {
-        private AppIdentityDbContext _identityDbContext;
         private UserManager<User> _userManager;
         private SignInManager<User> _signInManager;
         private IMapper _mapper;
-        private IHttpContextAccessor _httpContextAccessor;
+        private IRedisCacheService _redisCacheService;
+        private IConfiguration _configuration;
 
-        public UserService(AppIdentityDbContext identityDbContext, 
-                           UserManager<User> userManager, 
-                           IMapper mapper, 
-                           SignInManager<User> signInManager)
+        public UserService(UserManager<User> userManager, 
+                           SignInManager<User> signInManager,
+                           IRedisCacheService redisCacheService,
+                           IMapper mapper,
+                           IConfiguration configuration)
         {
-            _identityDbContext = identityDbContext;
             _userManager = userManager;
-            _mapper = mapper;
             _signInManager = signInManager;
+            _redisCacheService = redisCacheService;
+            _mapper = mapper;
+            _configuration = configuration;
+        }
+
+        public async Task<DataResult<UserLoginResponse>> GetLoginCodeAsync(UserLoginModel model)
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == model.Username);
+            if (user == null)
+                return new ErrorDataResult<UserLoginResponse>();
+
+            var signInResult = await _signInManager.CheckPasswordSignInAsync(user, model.Password, true);
+            if (!signInResult.Succeeded)
+                return new ErrorDataResult<UserLoginResponse>();
+
+            var isTwoFactorEnabled = await _userManager.GetTwoFactorEnabledAsync(user);
+            if (!isTwoFactorEnabled)
+                return new ErrorDataResult<UserLoginResponse>();
+
+            var code = await _userManager.GenerateTwoFactorTokenAsync(user, "Email");
+            var resultValue = new UserLoginResponse()
+            {
+                UserName = user.UserName,
+                Code = code
+            };
+
+            string loginCodePrefix = _configuration.GetValue<string>("LoginOptions:Prefix");
+            int duration = _configuration.GetValue<int>("LoginOptions:Duration");
+            await _redisCacheService.SetAsync(loginCodePrefix + user.UserName, code, duration);
+
+            return new SuccessDataResult<UserLoginResponse>(resultValue);
         }
 
         public async Task<DataResult<UserModel>> AddAsync(UserAddModel model)
@@ -43,6 +78,7 @@ namespace IdentityServer.Api.Services.Concrete
                 return new ErrorDataResult<UserModel>();
 
             var addedUser = _mapper.Map<User>(model);
+            addedUser.TwoFactorEnabled = true;
             var result = await _userManager.CreateAsync(addedUser, model.Password);
             if (!result.Succeeded)
                 return new ErrorDataResult<UserModel>();

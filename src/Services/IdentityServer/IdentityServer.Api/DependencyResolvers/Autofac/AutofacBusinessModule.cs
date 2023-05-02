@@ -1,7 +1,9 @@
 ﻿using Autofac;
-using IdentityServer.Api.Data.Contexts;
 using IdentityServer.Api.Services.Abstract;
 using IdentityServer.Api.Services.Concrete;
+using IdentityServer.Api.Validations.IdentityValidators;
+using IdentityServer4.Services;
+using IdentityServer4.Validation;
 
 namespace IdentityServer.Api.DependencyResolvers.Autofac
 {
@@ -16,6 +18,11 @@ namespace IdentityServer.Api.DependencyResolvers.Autofac
             builder.RegisterType<IdentityResourceService>().As<IIdentityResourceService>().InstancePerDependency();
             builder.RegisterType<UserService>().As<IUserService>().InstancePerDependency();
             builder.RegisterType<SharedIdentityService>().As<ISharedIdentityService>().InstancePerLifetimeScope();
+            builder.RegisterType<RedisCacheService>().As<IRedisCacheService>().InstancePerLifetimeScope();
+            #endregion
+            #region VALIDATORS
+            builder.RegisterType<ResourceOwnerPasswordCustomValidator>().As<IResourceOwnerPasswordValidator>().InstancePerDependency();
+            builder.RegisterType<ProfileService>().As<IProfileService>().InstancePerDependency();
             #endregion
         }
     }
