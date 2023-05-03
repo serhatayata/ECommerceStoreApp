@@ -39,34 +39,6 @@ namespace IdentityServer.Api.Services.Concrete
             _configuration = configuration;
         }
 
-        public async Task<DataResult<UserLoginResponse>> GetLoginCodeAsync(UserLoginModel model)
-        {
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == model.Username);
-            if (user == null)
-                return new ErrorDataResult<UserLoginResponse>();
-
-            var signInResult = await _signInManager.CheckPasswordSignInAsync(user, model.Password, true);
-            if (!signInResult.Succeeded)
-                return new ErrorDataResult<UserLoginResponse>();
-
-            var isTwoFactorEnabled = await _userManager.GetTwoFactorEnabledAsync(user);
-            if (!isTwoFactorEnabled)
-                return new ErrorDataResult<UserLoginResponse>();
-
-            var code = await _userManager.GenerateTwoFactorTokenAsync(user, "Email");
-            var resultValue = new UserLoginResponse()
-            {
-                UserName = user.UserName,
-                Code = code
-            };
-
-            string loginCodePrefix = _configuration.GetValue<string>("LoginOptions:Prefix");
-            int duration = _configuration.GetValue<int>("LoginOptions:Duration");
-            await _redisCacheService.SetAsync(loginCodePrefix + user.UserName, code, duration);
-
-            return new SuccessDataResult<UserLoginResponse>(resultValue);
-        }
-
         public async Task<DataResult<UserModel>> AddAsync(UserAddModel model)
         {
             var existingMail = await _userManager.FindByEmailAsync(model.Email);

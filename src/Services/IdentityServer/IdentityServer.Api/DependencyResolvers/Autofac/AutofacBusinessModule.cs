@@ -18,7 +18,7 @@ namespace IdentityServer.Api.DependencyResolvers.Autofac
             builder.RegisterType<IdentityResourceService>().As<IIdentityResourceService>().InstancePerDependency();
             builder.RegisterType<UserService>().As<IUserService>().InstancePerDependency();
             builder.RegisterType<SharedIdentityService>().As<ISharedIdentityService>().InstancePerLifetimeScope();
-            builder.RegisterType<RedisCacheService>().As<IRedisCacheService>().InstancePerLifetimeScope();
+            builder.RegisterType<RedisCacheService>().As<IRedisCacheService>().SingleInstance();
             #endregion
             #region VALIDATORS
             builder.RegisterType<ResourceOwnerPasswordCustomValidator>().As<IResourceOwnerPasswordValidator>().InstancePerDependency();

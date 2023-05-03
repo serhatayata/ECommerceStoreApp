@@ -12,6 +12,5 @@ namespace IdentityServer.Api.Services.Abstract
                                     IUpdateAsyncService<UserModel, UserUpdateModel>,
                                     IDeleteAsyncService<StringModel>
     {
-        Task<DataResult<UserLoginResponse>> GetLoginCodeAsync(UserLoginModel model);
     }
 }
