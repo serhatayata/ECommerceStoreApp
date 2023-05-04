@@ -15,6 +15,8 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
+using IdentityServer.Api.Utilities.Security.Jwt;
+using System.Security.Claims;
 
 namespace IdentityServer.Api.Services.Concrete
 {
@@ -25,18 +27,50 @@ namespace IdentityServer.Api.Services.Concrete
         private IMapper _mapper;
         private IRedisCacheService _redisCacheService;
         private IConfiguration _configuration;
+        private IJwtHelper _jwtHelper;
 
         public UserService(UserManager<User> userManager, 
                            SignInManager<User> signInManager,
                            IRedisCacheService redisCacheService,
                            IMapper mapper,
-                           IConfiguration configuration)
+                           IConfiguration configuration,
+                           IJwtHelper jwtHelper)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _redisCacheService = redisCacheService;
             _mapper = mapper;
             _configuration = configuration;
+            _jwtHelper = jwtHelper;
+        }
+
+        public async Task<DataResult<UserLoginResponse>> GetLoginCodeAsync(UserLoginModel model)
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync();
+            if (user == null)
+                return new ErrorDataResult<UserLoginResponse>("User not found");
+
+            var checkUser = await _signInManager.CheckPasswordSignInAsync(user, model.Password, true);
+            if (checkUser.IsLockedOut)
+                return new ErrorDataResult<UserLoginResponse>("You entered wrong credentials for 3 times, wait 180 seconds and try again");
+            else if (!checkUser.Succeeded)
+                return new ErrorDataResult<UserLoginResponse>("Invalid username or password");
+
+            string loginCodePrefix = _configuration.GetValue<string>("LoginOptions:Prefix");
+            int duration = _configuration.GetValue<int>("LoginOptions:Duration");
+            int databaseId = _configuration.GetValue<int>("LoginOptions:DatabaseId");
+
+            var userRoles = await _userManager.GetRolesAsync(user);
+            var userClaims = ClaimExtensions.GetClaims(userRoles.ToList());
+
+            var accessToken = _jwtHelper.CreateToken(user, new List<Claim>() { new Claim(ClaimTypes.Role, "VerifyCodeRole") }, false);
+
+            var code = RandomExtensions.RandomCode(6);
+            await _redisCacheService.SetAsync($"{loginCodePrefix}{user.UserName}", code, duration, databaseId);
+
+            var response = new UserLoginResponse(user.UserName, code, accessToken);
+
+            return new SuccessDataResult<UserLoginResponse>(response);
         }
 
         public async Task<DataResult<UserModel>> AddAsync(UserAddModel model)

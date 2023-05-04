@@ -1,6 +1,7 @@
 ﻿using IdentityModel;
 using IdentityServer.Api.Data.Contexts;
 using IdentityServer.Api.Entities.Identity;
+using IdentityServer.Api.Extensions;
 using IdentityServer4.AspNetIdentity;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
@@ -26,7 +27,7 @@ namespace IdentityServer.Api.Validations.IdentityValidators
             try
             {
                 //depending on the scope accessing the user data.
-                if (!string.IsNullOrEmpty(context.Subject.Identity.Name))
+                if (!string.IsNullOrEmpty(context.Subject.Identity?.Name))
                 {
                     //get user from db (in my case this is by email)
                     var user = await _userManager.FindByNameAsync(context.Subject.Identity.Name);
@@ -34,7 +35,7 @@ namespace IdentityServer.Api.Validations.IdentityValidators
                     if (user != null)
                     {
                         var roles = await _userManager.GetRolesAsync(user);
-                        var claims = ResourceOwnerPasswordCustomValidator.GetUserClaims(user, roles.ToList());
+                        var claims = ClaimExtensions.GetUserClaims(user, roles.ToList());
 
                         //set issued claims to return
                         context.IssuedClaims = claims.Where(x => context.RequestedClaimTypes.Contains(x.Type)).ToList();
@@ -53,7 +54,7 @@ namespace IdentityServer.Api.Validations.IdentityValidators
                         if (user != null)
                         {
                             var roles = await _userManager.GetRolesAsync(user);
-                            var claims = ResourceOwnerPasswordCustomValidator.GetUserClaims(user, roles.ToList());
+                            var claims = ClaimExtensions.GetUserClaims(user, roles.ToList());
 
                             context.IssuedClaims = claims.Where(x => context.RequestedClaimTypes.Contains(x.Type)).ToList();
                         }

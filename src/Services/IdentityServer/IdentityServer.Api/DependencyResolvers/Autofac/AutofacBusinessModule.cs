@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using IdentityServer.Api.Services.Abstract;
 using IdentityServer.Api.Services.Concrete;
+using IdentityServer.Api.Utilities.Security.Jwt;
 using IdentityServer.Api.Validations.IdentityValidators;
 using IdentityServer4.Services;
 using IdentityServer4.Validation;
@@ -18,7 +19,9 @@ namespace IdentityServer.Api.DependencyResolvers.Autofac
             builder.RegisterType<IdentityResourceService>().As<IIdentityResourceService>().InstancePerDependency();
             builder.RegisterType<UserService>().As<IUserService>().InstancePerDependency();
             builder.RegisterType<SharedIdentityService>().As<ISharedIdentityService>().InstancePerLifetimeScope();
+
             builder.RegisterType<RedisCacheService>().As<IRedisCacheService>().SingleInstance();
+            builder.RegisterType<JwtHelper>().As<IJwtHelper>().SingleInstance();
             #endregion
             #region VALIDATORS
             builder.RegisterType<ResourceOwnerPasswordCustomValidator>().As<IResourceOwnerPasswordValidator>().InstancePerDependency();

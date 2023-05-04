@@ -96,10 +96,10 @@ namespace IdentityServer.Api.Services.Concrete
         }
         #endregion
         #region SetAsync
-        public Task SetAsync(string key, object value)
+        public async Task SetAsync(string key, object value)
         {
             string jsonValue = JsonConvert.SerializeObject(value, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
-            return _client.GetDatabase().StringSetAsync(_redisDbName + key, jsonValue);
+            await  _client.GetDatabase().StringSetAsync(_redisDbName + key, jsonValue);
         }
         #endregion
         #region Set
@@ -110,9 +110,18 @@ namespace IdentityServer.Api.Services.Concrete
         }
         #endregion
         #region SetAsync with TimeSpan
-        public Task SetAsync(string key, object value, int duration)
+        public async Task SetAsync(string key, object value, int duration)
         {
-            return _client.GetDatabase().StringSetAsync(_redisDbName + key, value.ToJson(), TimeSpan.FromMinutes(duration));
+            await _client.GetDatabase().StringSetAsync(_redisDbName + key, value.ToJson(), TimeSpan.FromMinutes(duration));
+        }
+        #endregion
+        #region SetAsync by DatabaseId and TimeSpan
+        public async Task SetAsync(string key, object value, int duration, int databaseId)
+        {
+            var db = _client.GetDatabase(databaseId);
+
+            string jsonValue = JsonConvert.SerializeObject(value, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+            await db.StringSetAsync(_redisDbName + key, jsonValue, TimeSpan.FromSeconds(duration));
         }
         #endregion
         #region Remove

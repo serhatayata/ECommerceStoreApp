@@ -1,6 +1,9 @@
 ﻿using IdentityModel;
 using IdentityServer.Api.Entities.Identity;
+using IdentityServer.Api.Extensions;
 using IdentityServer.Api.Services.Abstract;
+using IdentityServer.Api.Validations.ValidationContexts;
+using IdentityServer4.AspNetIdentity;
 using IdentityServer4.Events;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
@@ -16,31 +19,34 @@ namespace IdentityServer.Api.Validations.IdentityValidators
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IEventService _events;
-        private readonly IRedisCacheService _redisCacheService;
         private readonly IConfiguration _configuration;
+        private readonly IRedisCacheService _redisCacheService;
 
         public ResourceOwnerPasswordCustomValidator(UserManager<User> userManager, 
                                                     SignInManager<User> signInManager, 
                                                     IEventService events,
-                                                    IRedisCacheService redisCacheService,
-                                                    IConfiguration configuration)
+                                                    IConfiguration configuration,
+                                                    IRedisCacheService redisCacheService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _events = events;
-            _redisCacheService = redisCacheService;
             _configuration = configuration;
+            _redisCacheService = redisCacheService;
         }
 
         public async Task ValidateAsync(ResourceOwnerPasswordValidationContext context)
         {
             var clientId = context.Request?.Client?.ClientId;
+
+            var verifyCode = context.Request?.Raw.Get("verifyCode");
+            if (string.IsNullOrWhiteSpace(verifyCode))
+                await _events.RaiseAsync(new UserLoginFailureEvent(context.UserName, "code not found", false, clientId));
+
             var user = await _userManager.FindByNameAsync(context.UserName);
             if (user != null)
             {
-                string login2FAPrefix = _configuration.GetSection("LoginOptions:Prefix").Value;
-                string login2FACode = await _redisCacheService.GetAsync<string>(login2FAPrefix + user.UserName);
-                var result = await _signInManager.TwoFactorSignInAsync("Email", login2FACode, false, false);
+                var result = await _signInManager.TwoFactorSignInAsync("Email", verifyCode, false, false);
 
                 if (result.Succeeded)
                 {
@@ -49,7 +55,7 @@ namespace IdentityServer.Api.Validations.IdentityValidators
 
                     await _events.RaiseAsync(new UserLoginSuccessEvent(context.UserName, userId, context.UserName, false, clientId));
 
-                    var claims = GetUserClaims(user, roles.ToList());
+                    var claims = ClaimExtensions.GetUserClaims(user, roles.ToList());
                     context.Result = new GrantValidationResult(subject: userId, 
                                                                authenticationMethod: AuthenticationMethods.Password, 
                                                                claims);
@@ -65,7 +71,7 @@ namespace IdentityServer.Api.Validations.IdentityValidators
                 }
                 else
                 {
-                    await _events.RaiseAsync(new UserLoginFailureEvent(context.UserName, "invalid credentials", false, clientId));
+                    await _events.RaiseAsync(new UserLoginFailureEvent(context.UserName, "invalid verify code", false, clientId));
                 }
             }
             else
@@ -74,23 +80,6 @@ namespace IdentityServer.Api.Validations.IdentityValidators
             }
 
             context.Result = new GrantValidationResult(TokenRequestErrors.InvalidGrant);
-        }
-
-        public static Claim[] GetUserClaims(User user, List<string> roles)
-        {
-            var claims = new List<Claim>
-            {
-                new Claim(JwtClaimTypes.Id, user.Id),
-                new Claim(JwtClaimTypes.Name, (!string.IsNullOrEmpty(user.Name) && !string.IsNullOrEmpty(user.Surname)) ? (user.Name + " " + user.Surname) : string.Empty),
-                new Claim(JwtClaimTypes.GivenName, user.Name  ?? string.Empty),
-                new Claim(JwtClaimTypes.FamilyName, user.Surname  ?? string.Empty),
-                new Claim(JwtClaimTypes.Email, user.Email  ?? string.Empty),
-            };
-
-            foreach (var role in roles)
-                claims.Add(new Claim(JwtClaimTypes.Role, role));
-
-            return claims.ToArray();
         }
     }
 }

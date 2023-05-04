@@ -265,6 +265,32 @@ namespace IdentityServer.Api.Controllers
 
         #region User
         [HttpPost]
+        [Route("get-login-code")]
+        [ProducesResponseType(typeof(DataResult<UserLoginResponse>), (int)System.Net.HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(DataResult<UserLoginResponse>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(LocalApi.PolicyName)]
+        public async Task<IActionResult> GetLoginCode([FromBody] UserLoginModel model)
+        {
+            var result = await _userService.GetLoginCodeAsync(model);
+            if (result.Success)
+                return Ok(result);
+            return BadRequest(result);
+        }
+
+        [HttpPost]
+        [Route("verify-login-code")]
+        [ProducesResponseType(typeof(DataResult<UserLoginResponse>), (int)System.Net.HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(DataResult<UserLoginResponse>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(AuthenticationSchemes = "VerifyCodeScheme", Policy = "VerifyCode")]
+        public async Task<IActionResult> VerifyCode([FromBody] UserLoginModel model)
+        {
+            var result = await _userService.GetLoginCodeAsync(model);
+            if (result.Success)
+                return Ok(result);
+            return BadRequest(result);
+        }
+
+        [HttpPost]
         [Route("register")]
         [ProducesResponseType(typeof(DataResult<UserModel>), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(DataResult<UserModel>), (int)System.Net.HttpStatusCode.BadRequest)]

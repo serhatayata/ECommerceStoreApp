@@ -45,6 +45,15 @@ namespace IdentityServer.Api.Services.Abstract
         /// <returns></returns>
         Task SetAsync(string key, object value, int duration);
         /// <summary>
+        /// Caching with a specific period of time ASYNC by using databaseId
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="duration"></param>
+        /// <param name="databaseId"></param>
+        /// <returns></returns>
+        Task SetAsync(string key, object value, int duration, int databaseId);
+        /// <summary>
         /// Gets the key if it exists
         /// </summary>
         /// <typeparam name="T"></typeparam>
