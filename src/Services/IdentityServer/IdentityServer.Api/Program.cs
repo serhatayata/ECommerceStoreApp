@@ -6,14 +6,24 @@ using IdentityServer.Api.Data.SeedData;
 using IdentityServer.Api.DependencyResolvers.Autofac;
 using IdentityServer.Api.Entities.Identity;
 using IdentityServer.Api.Extensions;
+using IdentityServer.Api.Extensions.Authentication;
+using IdentityServer.Api.Handlers;
 using IdentityServer.Api.Mapping;
 using IdentityServer.Api.Utilities.IoC;
 using IdentityServer.Api.Validations.IdentityValidators;
+using IdentityServer4;
 using IdentityServer4.AspNetIdentity;
+using IdentityServer4.Hosting.LocalApiAuthentication;
 using IdentityServer4.Services;
 using IdentityServer4.Validation;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using System.Text;
 using System.Text.Json.Serialization;
 
 #region SERVICES
@@ -30,7 +40,8 @@ var config = ConfigurationExtension.appConfig;
 builder.Configuration.AddConfiguration(config);
 
 #region Session
-builder.Services.AddSession(options => {
+builder.Services.AddSession(options =>
+{
     options.IdleTimeout = TimeSpan.FromMinutes(60);
 });
 #endregion
@@ -91,9 +102,6 @@ builder.Services.AddIdentityServer(options =>
 })
 .AddDeveloperSigningCredential(); //Sertifika yoksa
 
-//builder.Services.AddTransient<IResourceOwnerPasswordValidator, ResourceOwnerPasswordCustomValidator>();
-//builder.Services.AddTransient<IProfileService, ProfileService>();
-
 var serviceProvider = builder.Services.BuildServiceProvider();
 var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();
 
@@ -105,26 +113,36 @@ await IdentityUserContextSeed.AddUserSettingsAsync(identityDbContext, scope);
 await IdentityConfigurationDbContextSeed.AddIdentityConfigurationSettingsAsync(configurationContext, persistedGrantDbContext);
 #endregion
 #region Authentication - Authorization
-builder.Services.AddLocalApiAuthentication();
+string verifyCodeRole = configuration.GetValue<string>("Schemes:VerifyCode");
 
-//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-//    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
-//    {
-//        options.Authority = "https://localhost:5001";
-//        options.TokenValidationParameters = new TokenValidationParameters
-//        {
-//            ValidateAudience = false,
-//            ClockSkew = TimeSpan.Zero
-//        };
-//    });
+builder.Services.AddLocalApiAuthentication();
+builder.Services.UseVerifyCodeTokenAuthentication();
+
+//builder.Services.AddAuthentication(option =>
+//{
+//    option.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+//})
+//  .AddJwtBearer(AuthenticationSchemeConstants.VerifyCode, options =>
+//  {
+//      options.TokenValidationParameters = new TokenValidationParameters
+//      {
+//          ValidateIssuer = true,
+//          ValidateAudience = true,
+//          ValidateIssuerSigningKey = true,
+//          ValidIssuer = configuration.GetValue<string>("JwtTokenOptionsForVerify:Issuer"),
+//          ValidAudience = configuration.GetValue<string>("JwtTokenOptionsForVerify:Audience"),
+//          IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetValue<string>("JwtTokenOptionsForVerify:SecretKey")))
+//      };
+//  });
 
 //builder.Services.AddAuthorization(options =>
 //{
-//    options.AddPolicy("IdentityAuth", policy =>
-//    {
-//        policy.RequireClaim("identity_permission");
-//    });
+//    var onlySecondJwtSchemePolicyBuilder = new AuthorizationPolicyBuilder(AuthenticationPolicyConstants.VerifyCodePolicy);
+//    options.AddPolicy(AuthenticationPolicyConstants.VerifyCodePolicy, onlySecondJwtSchemePolicyBuilder
+//        .RequireAuthenticatedUser()
+//        .Build());
 //});
+
 #endregion
 
 builder.Services.AddEndpointsApiExplorer();

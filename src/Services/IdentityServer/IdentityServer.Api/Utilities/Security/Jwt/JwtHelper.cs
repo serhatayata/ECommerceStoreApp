@@ -1,6 +1,8 @@
 ﻿using IdentityModel;
 using IdentityServer.Api.Entities.Identity;
 using IdentityServer.Api.Extensions;
+using IdentityServer.Api.Extensions.Authentication;
+using IdentityServer.Api.Utilities.Results;
 using IdentityServer.Api.Utilities.Security.Jwt.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -12,18 +14,17 @@ namespace IdentityServer.Api.Utilities.Security.Jwt
 {
     public class JwtHelper : IJwtHelper
     {
-        private IConfiguration Configuration { get; }
+        private IConfiguration _configuration { get; }
         private readonly JwtTokenOptions _tokenOptions;
 
         public JwtHelper(IConfiguration configuration)
         {
-            Configuration = configuration;
-            _tokenOptions = Configuration.GetSection("JwtTokenOptionsForVerify").Get<JwtTokenOptions>(); ;
+            _configuration = configuration;
+            _tokenOptions = _configuration.GetSection("JwtTokenOptions:VerifyCode").Get<JwtTokenOptions>();
         }
 
-        public JwtAccessToken CreateToken(User user, List<Claim> operationClaims, bool containsRefreshToken)
+        public JwtAccessToken CreateToken(User user, List<Claim> operationClaims, int expiration,bool containsRefreshToken)
         {
-            int expiration = _tokenOptions.AccessTokenExpiration;
             int refreshExpiration = _tokenOptions.RefreshTokenExpiration;
 
             string issuer = _tokenOptions.Issuer;
@@ -65,6 +66,35 @@ namespace IdentityServer.Api.Utilities.Security.Jwt
             };
         }
 
+        public DataResult<List<Claim>> ValidateCurrentToken(string token, string scheme)
+        {
+            var tokenOptions = _configuration.GetSection($"JwtTokenOptions:{scheme}").Get<JwtTokenOptions>();
+            var tokenClaims = new List<Claim>();
+
+            var securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(tokenOptions.SecretKey));
+            var tokenHandler = new JwtSecurityTokenHandler();
+            try
+            {
+                var tokenResult = tokenHandler.ValidateToken(token, new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidIssuer = tokenOptions.Issuer,
+                    ValidAudience = tokenOptions.Audience,
+                    IssuerSigningKey = securityKey
+                }, out SecurityToken validatedToken);
+
+                tokenClaims = tokenResult.Claims.ToList();
+            }
+            catch
+            {
+                return new ErrorDataResult<List<Claim>>();
+            }
+
+            return new SuccessDataResult<List<Claim>>(tokenClaims);
+        }
+
         private JwtSecurityToken CreateJwtSecurityToken(string issuer, 
                                                         string audience,
                                                         int expiration,
@@ -91,23 +121,22 @@ namespace IdentityServer.Api.Utilities.Security.Jwt
             var claims = new List<Claim>();
             claims.AddNameIdentifier(user.Id);
             claims.AddPhoneNumber(user.PhoneNumber);
-            claims.AddName($"{user.UserName} {user.NormalizedUserName}");
-            //claims.AddName($"{user.FirstName} {user.LastName}");
+            claims.AddName($"{user.Name} {user.Surname}");
 
             if (!string.IsNullOrEmpty(user.Email))
                 claims.AddEmail(user.Email);
 
-            var ip = operationClaims.Where(x => x.Type == ClaimTypes.Locality).Select(c => c.Value).FirstOrDefault();
+            var ip = operationClaims.Where(x => x.Type == JwtClaimTypes.Locale).Select(c => c.Value).FirstOrDefault();
             if (!string.IsNullOrEmpty(ip))
             {
-                var ipClaim = operationClaims.Where(x => x.Type == ClaimTypes.Locality).Select(c => c.Value)
+                var ipClaim = operationClaims.Where(x => x.Type == JwtClaimTypes.Locale).Select(c => c.Value)
                      .FirstOrDefault();
 
                 if (ipClaim != null)
                     claims.AddIp(ipClaim);
             }
 
-            claims.AddRoles(operationClaims.Where(x => x.Type == ClaimTypes.Role).Select(c => c.Value).ToArray());
+            claims.AddRoles(operationClaims.Where(x => x.Type == JwtClaimTypes.Role).Select(c => c.Value).ToArray());
             return claims;
         }
     }

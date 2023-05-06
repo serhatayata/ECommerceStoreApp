@@ -1,21 +1,15 @@
 ﻿using AutoMapper;
-using IdentityModel.Client;
-using IdentityServer.Api.Data.Contexts;
+using IdentityModel;
 using IdentityServer.Api.Entities.Identity;
 using IdentityServer.Api.Extensions;
-using IdentityServer.Api.Models.Account;
 using IdentityServer.Api.Models.Base.Concrete;
 using IdentityServer.Api.Models.IncludeOptions.User;
 using IdentityServer.Api.Models.UserModels;
 using IdentityServer.Api.Services.Abstract;
 using IdentityServer.Api.Utilities.Results;
-using IdentityServer4.Events;
-using IdentityServer4;
-using Microsoft.AspNetCore.Authentication;
+using IdentityServer.Api.Utilities.Security.Jwt;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using IdentityServer.Api.Utilities.Security.Jwt;
 using System.Security.Claims;
 
 namespace IdentityServer.Api.Services.Concrete
@@ -28,6 +22,8 @@ namespace IdentityServer.Api.Services.Concrete
         private IRedisCacheService _redisCacheService;
         private IConfiguration _configuration;
         private IJwtHelper _jwtHelper;
+
+        private LoginOptions loginOptions;
 
         public UserService(UserManager<User> userManager, 
                            SignInManager<User> signInManager,
@@ -42,6 +38,8 @@ namespace IdentityServer.Api.Services.Concrete
             _mapper = mapper;
             _configuration = configuration;
             _jwtHelper = jwtHelper;
+
+            this.loginOptions = _configuration.GetSection("LoginOptions").Get<LoginOptions>();
         }
 
         public async Task<DataResult<UserLoginResponse>> GetLoginCodeAsync(UserLoginModel model)
@@ -56,17 +54,18 @@ namespace IdentityServer.Api.Services.Concrete
             else if (!checkUser.Succeeded)
                 return new ErrorDataResult<UserLoginResponse>("Invalid username or password");
 
-            string loginCodePrefix = _configuration.GetValue<string>("LoginOptions:Prefix");
-            int duration = _configuration.GetValue<int>("LoginOptions:Duration");
-            int databaseId = _configuration.GetValue<int>("LoginOptions:DatabaseId");
+            int verifyCodeDuration = loginOptions.VerifyCodeDuration;
+            string verifyCodeRole = loginOptions.VerifyCodeRole;
+
+            int databaseId = loginOptions.DatabaseId;
 
             var userRoles = await _userManager.GetRolesAsync(user);
             var userClaims = ClaimExtensions.GetClaims(userRoles.ToList());
 
-            var accessToken = _jwtHelper.CreateToken(user, new List<Claim>() { new Claim(ClaimTypes.Role, "VerifyCodeRole") }, false);
+            var accessToken = _jwtHelper.CreateToken(user, new List<Claim>() { new Claim(JwtClaimTypes.Role, verifyCodeRole) }, verifyCodeDuration, false);
 
             var code = RandomExtensions.RandomCode(6);
-            await _redisCacheService.SetAsync($"{loginCodePrefix}{user.UserName}", code, duration, databaseId);
+            await _redisCacheService.SetAsync($"{loginOptions.Prefix}{user.UserName}", code, verifyCodeDuration, databaseId);
 
             var response = new UserLoginResponse(user.UserName, code, accessToken);
 

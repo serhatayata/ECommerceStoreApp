@@ -14,22 +14,22 @@ namespace IdentityServer.Api.Extensions
 
         public static void AddPhoneNumber(this ICollection<Claim> claims, string phoneNumber)
         {
-            claims.Add(new Claim(ClaimTypes.MobilePhone, phoneNumber));
+            claims.Add(new Claim(JwtClaimTypes.PhoneNumber, phoneNumber));
         }
 
         public static void AddName(this ICollection<Claim> claims, string name)
         {
-            claims.Add(new Claim(ClaimTypes.Name, name));
+            claims.Add(new Claim(JwtClaimTypes.Name, name));
         }
 
         public static void AddNameIdentifier(this ICollection<Claim> claims, string nameIdentifier)
         {
-            claims.Add(new Claim(ClaimTypes.NameIdentifier, nameIdentifier));
+            claims.Add(new Claim(JwtClaimTypes.Id, nameIdentifier));
         }
 
         public static void AddRoles(this ICollection<Claim> claims, string[] roles)
         {
-            roles.ToList().ForEach(role => claims.Add(new Claim(ClaimTypes.Role, role)));
+            roles.ToList().ForEach(role => claims.Add(new Claim(JwtClaimTypes.Role, role)));
         }
         public static void AddUserData(this ICollection<Claim> claims, string userData)
         {
@@ -38,7 +38,7 @@ namespace IdentityServer.Api.Extensions
 
         public static void AddIp(this ICollection<Claim> claims, string ip)
         {
-            claims.Add(new Claim(ClaimTypes.Locality, ip));
+            claims.Add(new Claim(JwtClaimTypes.Locale, ip));
         }
 
 
@@ -64,7 +64,7 @@ namespace IdentityServer.Api.Extensions
             var result = new List<Claim>();
 
             foreach (var role in claims)
-                result.Add(new Claim(ClaimTypes.Role, role));
+                result.Add(new Claim(JwtClaimTypes.Role, role));
 
             return result.ToArray();
         }

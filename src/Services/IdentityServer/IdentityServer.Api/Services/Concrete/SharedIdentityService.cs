@@ -1,4 +1,5 @@
-﻿using IdentityServer.Api.Services.Abstract;
+﻿using IdentityModel;
+using IdentityServer.Api.Services.Abstract;
 using System.Security.Claims;
 
 namespace IdentityServer.Api.Services.Concrete
@@ -12,7 +13,7 @@ namespace IdentityServer.Api.Services.Concrete
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public string GetUserId => _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        public string GetUserId => _httpContextAccessor.HttpContext.User.FindFirstValue(JwtClaimTypes.Id);
         public ClaimsPrincipal GetUser => _httpContextAccessor.HttpContext.User;
     }
 }

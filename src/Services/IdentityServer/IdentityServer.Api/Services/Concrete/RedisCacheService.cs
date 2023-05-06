@@ -16,7 +16,7 @@ namespace IdentityServer.Api.Services.Concrete
         public RedisCacheService(IConfiguration configuration)
         {
             _connectionString = configuration?.GetSection("RedisSettings:ConnectionString")?.Value ?? string.Empty;
-            _redisDbName = configuration?.GetSection("RedisSettings:DbName")?.Value ?? string.Empty;
+            _redisDbName = string.Empty;
             var connectionStrings = _connectionString.Split(",");
 
             _configurationOptions = new ConfigurationOptions()
@@ -79,6 +79,14 @@ namespace IdentityServer.Api.Services.Concrete
         public async Task<T> GetAsync<T>(string key) where T : class
         {
             string value = await _client.GetDatabase().StringGetAsync(_redisDbName + key);
+
+            return value.ToObject<T>();
+        }
+        #endregion
+        #region GetAsync<T>
+        public async Task<T> GetAsyncWithDatabaseId<T>(string key, int databaseId) where T : class
+        {
+            string value = await _client.GetDatabase(databaseId).StringGetAsync(_redisDbName + key);
 
             return value.ToObject<T>();
         }

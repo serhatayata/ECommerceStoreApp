@@ -73,6 +73,16 @@ namespace IdentityServer.Api.Services.Abstract
         /// <param name="key"></param>
         /// <returns></returns>
         Task<T> GetAsync<T>(string key) where T : class;
+
+        /// <summary>
+        /// Gets the key if it exists with databaseId ASYNC
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="databaseId"></param>
+        /// <returns></returns>
+        Task<T> GetAsyncWithDatabaseId<T>(string key, int databaseId) where T : class;
+
         /// <summary>
         /// Removes the key from cache
         /// </summary>
