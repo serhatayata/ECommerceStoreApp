@@ -2,7 +2,7 @@
 using IdentityServer.Api.Extensions;
 using IdentityServer.Api.Extensions.Authentication;
 using IdentityServer.Api.Models.UserModels;
-using IdentityServer.Api.Services.Abstract;
+using IdentityServer.Api.Services.Redis.Abstract;
 using IdentityServer.Api.Utilities.Security.Jwt;
 using IdentityServer4.Events;
 using IdentityServer4.Models;
@@ -21,7 +21,7 @@ namespace IdentityServer.Api.Validations.IdentityValidators
         private readonly SignInManager<User> _signInManager;
         private readonly IEventService _events;
         private readonly IConfiguration _configuration;
-        private readonly IRedisCacheService _redisCacheService;
+        private readonly IRedisService _redisCacheService;
         private readonly IJwtHelper _jwtHelper;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
@@ -31,7 +31,7 @@ namespace IdentityServer.Api.Validations.IdentityValidators
                                                     SignInManager<User> signInManager,
                                                     IEventService events,
                                                     IConfiguration configuration,
-                                                    IRedisCacheService redisCacheService,
+                                                    IRedisService redisCacheService,
                                                     IJwtHelper jwtHelper,
                                                     IHttpContextAccessor httpContextAccessor)
         {

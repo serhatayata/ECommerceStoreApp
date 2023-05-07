@@ -1,8 +1,8 @@
 ﻿using StackExchange.Redis;
 
-namespace IdentityServer.Api.Services.Abstract
+namespace IdentityServer.Api.Services.Redis.Abstract
 {
-    public interface IRedisCacheService
+    public interface IRedisService
     {
         ConnectionMultiplexer GetConnection(int db = 1);
         List<RedisKey> GetKeys(int db = 1);

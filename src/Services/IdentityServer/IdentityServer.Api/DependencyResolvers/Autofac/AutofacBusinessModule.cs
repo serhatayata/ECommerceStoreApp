@@ -1,6 +1,10 @@
 ﻿using Autofac;
 using IdentityServer.Api.Services.Abstract;
 using IdentityServer.Api.Services.Concrete;
+using IdentityServer.Api.Services.ElasticSearch.Abstract;
+using IdentityServer.Api.Services.ElasticSearch.Concrete;
+using IdentityServer.Api.Services.Redis.Abstract;
+using IdentityServer.Api.Services.Redis.Concrete;
 using IdentityServer.Api.Utilities.Security.Jwt;
 using IdentityServer.Api.Validations.IdentityValidators;
 using IdentityServer4.Services;
@@ -20,7 +24,8 @@ namespace IdentityServer.Api.DependencyResolvers.Autofac
             builder.RegisterType<UserService>().As<IUserService>().InstancePerDependency();
             builder.RegisterType<SharedIdentityService>().As<ISharedIdentityService>().InstancePerLifetimeScope();
 
-            builder.RegisterType<RedisCacheService>().As<IRedisCacheService>().SingleInstance();
+            builder.RegisterType<RedisService>().As<IRedisService>().SingleInstance();
+            builder.RegisterType<ElasticSearchService>().As<IElasticSearchService>().SingleInstance();
             builder.RegisterType<JwtHelper>().As<IJwtHelper>().SingleInstance();
             #endregion
             #region VALIDATORS

@@ -9,6 +9,10 @@ using IdentityServer.Api.Extensions;
 using IdentityServer.Api.Extensions.Authentication;
 using IdentityServer.Api.Handlers;
 using IdentityServer.Api.Mapping;
+using IdentityServer.Api.Models.LogModels;
+using IdentityServer.Api.Models.UserModels;
+using IdentityServer.Api.Services.ElasticSearch.Abstract;
+using IdentityServer.Api.Services.ElasticSearch.Concrete;
 using IdentityServer.Api.Utilities.IoC;
 using IdentityServer.Api.Validations.IdentityValidators;
 using IdentityServer4;
@@ -39,6 +43,9 @@ builder.Services.AddControllers().AddJsonOptions(o =>
 var config = ConfigurationExtension.appConfig;
 builder.Configuration.AddConfiguration(config);
 
+#region Startup DI
+builder.Services.AddSingleton<IElasticSearchService, ElasticSearchService>();
+#endregion
 #region Session
 builder.Services.AddSession(options =>
 {
@@ -61,6 +68,7 @@ builder.Services.AddLogging();
 #endregion
 #region IdentityServer
 string defaultConnString = configuration.GetSection("ConnectionStrings:DefaultConnection").Value;
+var loginOptions = configuration.GetSection("LoginOptions").Get<LoginOptions>();
 
 builder.Services.AddLogging();
 builder.Services.AddDbContext<AppIdentityDbContext>(options => options.UseSqlServer(defaultConnString, b => b.MigrationsAssembly(assembly)), ServiceLifetime.Transient);
@@ -73,8 +81,8 @@ builder.Services.AddIdentity<User, Role>(options =>
     options.Password.RequireNonAlphanumeric = false;
 
     options.Lockout.AllowedForNewUsers = false;
-    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(2);
-    options.Lockout.MaxFailedAccessAttempts = 3;
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(loginOptions.LockoutTimeSpan);
+    options.Lockout.MaxFailedAccessAttempts = loginOptions.MaxFailedAccessAttempts;
 })
 .AddEntityFrameworkStores<AppIdentityDbContext>()
 .AddDefaultTokenProviders();
@@ -111,6 +119,12 @@ var configurationContext = scope.ServiceProvider.GetService<AppConfigurationDbCo
 
 await IdentityUserContextSeed.AddUserSettingsAsync(identityDbContext, scope);
 await IdentityConfigurationDbContextSeed.AddIdentityConfigurationSettingsAsync(configurationContext, persistedGrantDbContext);
+#endregion
+#region ElasticSearch
+var elasticSearchService = scope.ServiceProvider.GetRequiredService<IElasticSearchService>();
+
+string logDetailIndex = configuration.GetSection("ElasticSearchOptions:LogIndex").Value;
+await elasticSearchService.CreateIndexAsync<LogDetail>(logDetailIndex);
 #endregion
 #region Authentication - Authorization
 string verifyCodeRole = configuration.GetValue<string>("Schemes:VerifyCode");

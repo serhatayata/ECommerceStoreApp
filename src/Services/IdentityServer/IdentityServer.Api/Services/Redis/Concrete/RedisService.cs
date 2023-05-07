@@ -1,22 +1,19 @@
 ﻿using IdentityServer.Api.Extensions;
-using IdentityServer.Api.Services.Abstract;
+using IdentityServer.Api.Services.Redis.Abstract;
 using Newtonsoft.Json;
 using StackExchange.Redis;
 
-namespace IdentityServer.Api.Services.Concrete
+namespace IdentityServer.Api.Services.Redis.Concrete
 {
-    public class RedisCacheService : IRedisCacheService, IDisposable
+    public class RedisService : IRedisService, IDisposable
     {
         private readonly ConnectionMultiplexer _client;
-        private readonly string _redisDbName;
         private readonly string _connectionString;
         private readonly ConfigurationOptions _configurationOptions;
 
-
-        public RedisCacheService(IConfiguration configuration)
+        public RedisService(IConfiguration configuration)
         {
             _connectionString = configuration?.GetSection("RedisSettings:ConnectionString")?.Value ?? string.Empty;
-            _redisDbName = string.Empty;
             var connectionStrings = _connectionString.Split(",");
 
             _configurationOptions = new ConfigurationOptions()
@@ -64,7 +61,7 @@ namespace IdentityServer.Api.Services.Concrete
         #region Get<T>
         public T Get<T>(string key) where T : class
         {
-            string value = _client.GetDatabase().StringGet(_redisDbName + key);
+            string value = _client.GetDatabase().StringGet(key);
 
             return value.ToObject<T>();
         }
@@ -72,13 +69,13 @@ namespace IdentityServer.Api.Services.Concrete
         #region Get
         public string Get(string key)
         {
-            return _client.GetDatabase().StringGet(_redisDbName + key);
+            return _client.GetDatabase().StringGet(key);
         }
         #endregion
         #region GetAsync<T>
         public async Task<T> GetAsync<T>(string key) where T : class
         {
-            string value = await _client.GetDatabase().StringGetAsync(_redisDbName + key);
+            string value = await _client.GetDatabase().StringGetAsync(key);
 
             return value.ToObject<T>();
         }
@@ -86,7 +83,7 @@ namespace IdentityServer.Api.Services.Concrete
         #region GetAsync<T>
         public async Task<T> GetAsyncWithDatabaseId<T>(string key, int databaseId) where T : class
         {
-            string value = await _client.GetDatabase(databaseId).StringGetAsync(_redisDbName + key);
+            string value = await _client.GetDatabase(databaseId).StringGetAsync(key);
 
             return value.ToObject<T>();
         }
@@ -94,33 +91,33 @@ namespace IdentityServer.Api.Services.Concrete
         #region Set
         public void Set(string key, string value)
         {
-            _client.GetDatabase().StringSet(_redisDbName + key, value);
+            _client.GetDatabase().StringSet(key, value);
         }
         #endregion
         #region Set<T>
         public void Set<T>(string key, T value) where T : class
         {
-            _client.GetDatabase().StringSet(_redisDbName + key, value.ToJson());
+            _client.GetDatabase().StringSet(key, value.ToJson());
         }
         #endregion
         #region SetAsync
         public async Task SetAsync(string key, object value)
         {
             string jsonValue = JsonConvert.SerializeObject(value, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
-            await  _client.GetDatabase().StringSetAsync(_redisDbName + key, jsonValue);
+            await _client.GetDatabase().StringSetAsync(key, jsonValue);
         }
         #endregion
         #region Set
         public void Set(string key, object value, int duration)
         {
             string jsonValue = JsonConvert.SerializeObject(value, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
-            _client.GetDatabase().StringSet(_redisDbName + key, jsonValue, TimeSpan.FromMinutes(duration));
+            _client.GetDatabase().StringSet(key, jsonValue, TimeSpan.FromMinutes(duration));
         }
         #endregion
         #region SetAsync with TimeSpan
         public async Task SetAsync(string key, object value, int duration)
         {
-            await _client.GetDatabase().StringSetAsync(_redisDbName + key, value.ToJson(), TimeSpan.FromMinutes(duration));
+            await _client.GetDatabase().StringSetAsync(key, value.ToJson(), TimeSpan.FromMinutes(duration));
         }
         #endregion
         #region SetAsync by DatabaseId and TimeSpan
@@ -129,30 +126,30 @@ namespace IdentityServer.Api.Services.Concrete
             var db = _client.GetDatabase(databaseId);
 
             string jsonValue = JsonConvert.SerializeObject(value, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
-            await db.StringSetAsync(_redisDbName + key, jsonValue, TimeSpan.FromSeconds(duration));
+            await db.StringSetAsync(key, jsonValue, TimeSpan.FromSeconds(duration));
         }
         #endregion
         #region Remove
         public void Remove(string key)
         {
-            _client.GetDatabase().KeyDelete(_redisDbName + key);
+            _client.GetDatabase().KeyDelete(key);
         }
         #endregion
         #region KeyExists
         public bool KeyExists(string key)
         {
-            //string value = _client.GetDatabase().StringGet(_redisDbName + key);
+            //string value = _client.GetDatabase().StringGet(key);
             //return !string.IsNullOrEmpty(value);
 
-            return _client.GetDatabase().KeyExists(_redisDbName + key);
+            return _client.GetDatabase().KeyExists(key);
         }
         #endregion
         #region KeyExistsAsync
         public async Task<bool> KeyExistsAsync(string key)
         {
-            //string value = await _client.GetDatabase().StringGetAsync(_redisDbName + key);
+            //string value = await _client.GetDatabase().StringGetAsync(key);
             //return !string.IsNullOrEmpty(value);
-            return await _client.GetDatabase().KeyExistsAsync(_redisDbName + key);
+            return await _client.GetDatabase().KeyExistsAsync(key);
         }
 
         public void Dispose()

@@ -6,6 +6,7 @@ using IdentityServer.Api.Models.Base.Concrete;
 using IdentityServer.Api.Models.IncludeOptions.User;
 using IdentityServer.Api.Models.UserModels;
 using IdentityServer.Api.Services.Abstract;
+using IdentityServer.Api.Services.Redis.Abstract;
 using IdentityServer.Api.Utilities.Results;
 using IdentityServer.Api.Utilities.Security.Jwt;
 using Microsoft.AspNetCore.Identity;
@@ -19,7 +20,7 @@ namespace IdentityServer.Api.Services.Concrete
         private UserManager<User> _userManager;
         private SignInManager<User> _signInManager;
         private IMapper _mapper;
-        private IRedisCacheService _redisCacheService;
+        private IRedisService _redisCacheService;
         private IConfiguration _configuration;
         private IJwtHelper _jwtHelper;
 
@@ -27,7 +28,7 @@ namespace IdentityServer.Api.Services.Concrete
 
         public UserService(UserManager<User> userManager, 
                            SignInManager<User> signInManager,
-                           IRedisCacheService redisCacheService,
+                           IRedisService redisCacheService,
                            IMapper mapper,
                            IConfiguration configuration,
                            IJwtHelper jwtHelper)
