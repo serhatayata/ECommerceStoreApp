@@ -23,6 +23,7 @@ namespace IdentityServer.Api.Services.Concrete
         private IRedisService _redisCacheService;
         private IConfiguration _configuration;
         private IJwtHelper _jwtHelper;
+        private ILogger<UserService> _logger;
 
         private LoginOptions loginOptions;
 
@@ -31,7 +32,8 @@ namespace IdentityServer.Api.Services.Concrete
                            IRedisService redisCacheService,
                            IMapper mapper,
                            IConfiguration configuration,
-                           IJwtHelper jwtHelper)
+                           IJwtHelper jwtHelper,
+                           ILogger<UserService> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -39,6 +41,7 @@ namespace IdentityServer.Api.Services.Concrete
             _mapper = mapper;
             _configuration = configuration;
             _jwtHelper = jwtHelper;
+            _logger = logger;
 
             this.loginOptions = _configuration.GetSection("LoginOptions").Get<LoginOptions>();
         }

@@ -35,6 +35,7 @@ using System.Text.Json.Serialization;
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
 var assembly = typeof(Program).Assembly.GetName().Name;
+IWebHostEnvironment environment = builder.Environment;
 
 builder.Services.AddControllers().AddJsonOptions(o =>
 {
@@ -52,17 +53,8 @@ builder.Host.UseDefaultServiceProvider((context, options) =>
     options.ValidateScopes = false;
 });
 
-builder.Host.ConfigureLogging(s => s.ClearProviders()) // Remove all added providers before
-                                                       // https://github.com/serilog/serilog-aspnetcore
-            .UseSerilog(
-            //(context, serv, cfg) =>
-            //{
-            //cfg.ReadFrom.Configuration(context.Configuration)
-            //   .ReadFrom.Services(serv)
-            //   .Enrich.FromLogContext()
-            //   .WriteTo.Console();
-            //}, writeToProviders: true
-            );
+builder.Host.AddHostExtensions(environment);
+builder.Services.AddElasticSearchConfiguration();
 
 #region Startup DI
 builder.Services.AddSingleton<IElasticSearchService, ElasticSearchService>();

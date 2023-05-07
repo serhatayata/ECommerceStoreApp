@@ -371,4 +371,5 @@ serilog.Development.json
 *.drawio
 *ECommerceStoreApp.jpg
 *Migrations
+*log-identity-api.txt
 

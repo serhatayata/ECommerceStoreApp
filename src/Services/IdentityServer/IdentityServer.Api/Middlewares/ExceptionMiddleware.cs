@@ -87,8 +87,10 @@ namespace IdentityServer.Api.Middlewares
             }
             catch (Exception ex)
             {
+                string logFileName = _configuration.GetSection("LogTextFile").Value;
+
                 var currentDirectory = System.IO.Directory.GetCurrentDirectory();
-                using StreamWriter writer = new StreamWriter($"{currentDirectory}\\log-identity-api.text", true);
+                using StreamWriter writer = new StreamWriter($"{currentDirectory}\\{logFileName}", true);
 
                 string textMessage = $"{messagePrefix} : {ex.Message} --- {logDetail.MethodName} --- {logDetail.Explanation} --- {logDetail.Risk} --- {logDetail.LoggingTime} \r\n";
 
