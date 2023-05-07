@@ -7,9 +7,14 @@ namespace IdentityServer.Api.Services.ElasticSearch.Abstract
     public interface IElasticSearchService
     {
         /// <summary>
+        /// Check if index exists
+        /// </summary>
+        /// <param name="index">index name</param>
+        /// <returns><typeparamref name="T"/></returns>
+        Task<bool> IndexExistsAsync(string index);
+        /// <summary>
         /// Create index
         /// </summary>
-        /// <param name="model">index model</param>
         /// <param name="index">index name</param>
         /// <returns><typeparamref name="T"/></returns>
         Task<bool> CreateIndexAsync<T>(string index) where T : class;
@@ -20,7 +25,7 @@ namespace IdentityServer.Api.Services.ElasticSearch.Abstract
         /// <param name="index">index name</param>
         /// <param name="model"></param>
         /// <returns><see cref="{T}"/></returns>
-        Task<bool> DeleteIndexAsync<T>(string index) where T : class;
+        Task<bool> DeleteIndexAsync(string index);
         /// <summary>
         /// Get all 
         /// </summary>

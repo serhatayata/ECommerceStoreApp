@@ -28,6 +28,12 @@ namespace IdentityServer.Api.Services.ElasticSearch.Concrete
             return new ElasticClient(settings);
         }
 
+        public async Task<bool> IndexExistsAsync(string index) 
+        {
+            var indexExists = await _client.Indices.ExistsAsync(index);
+            return indexExists.Exists;
+        }
+
         public async Task<bool> CreateIndexAsync<T>(string index) where T : class
         {
             var indexExists = await _client.Indices.ExistsAsync(index);
@@ -53,7 +59,7 @@ namespace IdentityServer.Api.Services.ElasticSearch.Concrete
             return true;
         }
 
-        public async Task<bool> DeleteIndexAsync<T>(string index) where T : class
+        public async Task<bool> DeleteIndexAsync(string index)
         {
             var indexExists = await _client.Indices.ExistsAsync(index);
             if (indexExists.Exists)

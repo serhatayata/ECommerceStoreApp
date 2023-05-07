@@ -1,7 +1,9 @@
-﻿using FluentValidation;
+﻿using System.Net;
+using System.Reflection;
+using FluentValidation;
 using IdentityServer.Api.Models.ErrorModels;
 using IdentityServer.Api.Models.LogModels;
-using System.Net;
+using IdentityServer.Api.Services.ElasticSearch.Abstract;
 
 namespace IdentityServer.Api.Middlewares
 {
@@ -9,11 +11,19 @@ namespace IdentityServer.Api.Middlewares
     {
         private readonly RequestDelegate _next;
         private readonly IConfiguration _configuration;
+        private readonly IElasticSearchService _elasticSearchService;
 
-        public ExceptionMiddleware(RequestDelegate next, IConfiguration configuration)
+        private ElasticSearchOptions _logOptions;
+
+        public ExceptionMiddleware(RequestDelegate next, 
+                                   IConfiguration configuration, 
+                                   IElasticSearchService elasticSearchService)
         {
             _next = next;
             _configuration = configuration;
+            _elasticSearchService = elasticSearchService;
+
+            _logOptions = _configuration.GetSection("ElasticSearchOptions").Get<ElasticSearchOptions>();
         }
 
         public async Task InvokeAsync(HttpContext httpContext)
@@ -46,7 +56,8 @@ namespace IdentityServer.Api.Middlewares
             httpContext.Response.StatusCode = statusCode;
 
             object message = string.Empty;
-            string messagePrefix = "Exception :";
+            string messagePrefix = "Exception";
+            string logIndex = _logOptions.LogIndex;
 
             //If it is because of FluentValidation
             if (e.GetType() == typeof(ValidationException))
@@ -61,6 +72,28 @@ namespace IdentityServer.Api.Middlewares
                 Risk = (byte)LogDetailRisks.Normal,
                 LoggingTime = DateTime.Now.ToString()
             };
+
+            try
+            {
+                bool clientExists = await _elasticSearchService.IndexExistsAsync(logIndex);
+                if (!clientExists)
+                {
+                    var indexCreated = await _elasticSearchService.CreateIndexAsync<LogDetail>(logIndex);
+                    if (!indexCreated)
+                        throw new Exception($"{logIndex} not created");
+                }
+
+                _ = await _elasticSearchService.CreateOrUpdateAsync(logIndex, logDetail);
+            }
+            catch (Exception ex)
+            {
+                var currentDirectory = System.IO.Directory.GetCurrentDirectory();
+                using StreamWriter writer = new StreamWriter($"{currentDirectory}\\log-identity-api.text", true);
+
+                string textMessage = $"{messagePrefix} : {ex.Message} --- {logDetail.MethodName} --- {logDetail.Explanation} --- {logDetail.Risk} --- {logDetail.LoggingTime} \r\n";
+
+                await writer.WriteAsync(textMessage);
+            }
 
             await httpContext.Response.WriteAsync(new ErrorDetails()
             {

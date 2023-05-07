@@ -365,6 +365,10 @@ FodyWeavers.xsd
 appsettings.json
 appsettings.Development.json
 
+serilog.json
+serilog.Development.json
+
 *.drawio
 *ECommerceStoreApp.jpg
 *Migrations
+

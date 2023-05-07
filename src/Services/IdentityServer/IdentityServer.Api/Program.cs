@@ -26,6 +26,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -41,7 +42,27 @@ builder.Services.AddControllers().AddJsonOptions(o =>
 });
 
 var config = ConfigurationExtension.appConfig;
+var serilogConfig = ConfigurationExtension.serilogConfig;
+
 builder.Configuration.AddConfiguration(config);
+
+builder.Host.UseDefaultServiceProvider((context, options) =>
+{
+    options.ValidateOnBuild = false;
+    options.ValidateScopes = false;
+});
+
+builder.Host.ConfigureLogging(s => s.ClearProviders()) // Remove all added providers before
+                                                       // https://github.com/serilog/serilog-aspnetcore
+            .UseSerilog(
+            //(context, serv, cfg) =>
+            //{
+            //cfg.ReadFrom.Configuration(context.Configuration)
+            //   .ReadFrom.Services(serv)
+            //   .Enrich.FromLogContext()
+            //   .WriteTo.Console();
+            //}, writeToProviders: true
+            );
 
 #region Startup DI
 builder.Services.AddSingleton<IElasticSearchService, ElasticSearchService>();
@@ -123,8 +144,8 @@ await IdentityConfigurationDbContextSeed.AddIdentityConfigurationSettingsAsync(c
 #region ElasticSearch
 var elasticSearchService = scope.ServiceProvider.GetRequiredService<IElasticSearchService>();
 
-string logDetailIndex = configuration.GetSection("ElasticSearchOptions:LogIndex").Value;
-await elasticSearchService.CreateIndexAsync<LogDetail>(logDetailIndex);
+var elasticLogOptions = configuration.GetSection("ElasticSearchOptions").Get<ElasticSearchOptions>();
+await elasticSearchService.CreateIndexAsync<LogDetail>(elasticLogOptions.LogIndex);
 #endregion
 #region Authentication - Authorization
 string verifyCodeRole = configuration.GetValue<string>("Schemes:VerifyCode");
@@ -173,6 +194,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.ConfigureCustomExceptionMiddleware();
+app.UseStaticFiles();
 app.UseSession();
 app.UseHttpsRedirection();
 app.UseRouting();
