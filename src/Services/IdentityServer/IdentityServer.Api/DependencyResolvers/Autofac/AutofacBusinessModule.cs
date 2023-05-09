@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using IdentityServer.Api.Events.CustomEventSinks;
 using IdentityServer.Api.Services.Abstract;
 using IdentityServer.Api.Services.Concrete;
 using IdentityServer.Api.Services.ElasticSearch.Abstract;
@@ -31,6 +32,9 @@ namespace IdentityServer.Api.DependencyResolvers.Autofac
             #region VALIDATORS
             builder.RegisterType<ResourceOwnerPasswordCustomValidator>().As<IResourceOwnerPasswordValidator>().InstancePerDependency();
             builder.RegisterType<ProfileService>().As<IProfileService>().InstancePerDependency();
+            #endregion
+            #region EVENT SINKS
+            builder.RegisterType<CustomEventSink>().As<IEventSink>().InstancePerDependency();
             #endregion
         }
     }

@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker-compose-files", "doc
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution-items", "solution-items", "{31BC8496-3826-4C1D-8EBC-BFD0DBEA57E8}"
 	ProjectSection(SolutionItems) = preProject
-		solution-items.txt = solution-items.txt
+		solution-items\solution-items.txt = solution-items\solution-items.txt
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "redis", "redis", "{61FE526D-E6F3-4664-8EF4-AD691793D16B}"

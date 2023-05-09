@@ -9,6 +9,7 @@ using IdentityServer.Api.Extensions;
 using IdentityServer.Api.Extensions.Authentication;
 using IdentityServer.Api.Handlers;
 using IdentityServer.Api.Mapping;
+using IdentityServer.Api.Models.Localizations;
 using IdentityServer.Api.Models.LogModels;
 using IdentityServer.Api.Models.UserModels;
 using IdentityServer.Api.Services.ElasticSearch.Abstract;
@@ -37,15 +38,10 @@ ConfigurationManager configuration = builder.Configuration;
 var assembly = typeof(Program).Assembly.GetName().Name;
 IWebHostEnvironment environment = builder.Environment;
 
-builder.Services.AddControllers().AddJsonOptions(o =>
-{
-    o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-});
+builder.Services.AddControllerSettings();
 
 var config = ConfigurationExtension.appConfig;
 var serilogConfig = ConfigurationExtension.serilogConfig;
-
-builder.Configuration.AddConfiguration(config);
 
 builder.Host.UseDefaultServiceProvider((context, options) =>
 {
@@ -69,6 +65,19 @@ builder.Services.AddSession(options =>
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 #endregion
+#region Htpp Clients
+builder.Services.AddScoped(sp =>
+{
+    var clientFactory = sp.GetRequiredService<IHttpClientFactory>();
+
+    return clientFactory.CreateClient("ApiGatewayHttpClient");
+});
+
+builder.Services.AddHttpClient("ApiGatewayHttpClient", client =>
+{
+    client.BaseAddress = new Uri("http://localhost:5000/");
+}).AddHttpMessageHandler<LocalizationTokenHandler>();
+#endregion
 #region Autofac
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 builder.Host.ConfigureContainer<ContainerBuilder>(builder => builder.RegisterModule(new AutofacBusinessModule()));
@@ -78,6 +87,9 @@ builder.Services.AddAutoMapper(typeof(MapProfile).Assembly);
 #endregion
 #region Logging
 builder.Services.AddLogging();
+#endregion
+#region Controller Settings
+builder.Configuration.AddConfiguration(config);
 #endregion
 #region IdentityServer
 string defaultConnString = configuration.GetSection("ConnectionStrings:DefaultConnection").Value;
@@ -170,6 +182,9 @@ builder.Services.UseVerifyCodeTokenAuthentication();
 //        .Build());
 //});
 
+#endregion
+#region Options Pattern
+builder.Services.Configure<LocalizationConfigurations>(configuration.GetSection("LocalizationConfigurations"));
 #endregion
 
 builder.Services.AddEndpointsApiExplorer();

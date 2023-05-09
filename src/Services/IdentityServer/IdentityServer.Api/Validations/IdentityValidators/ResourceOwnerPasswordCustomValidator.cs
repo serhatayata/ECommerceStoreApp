@@ -1,4 +1,5 @@
 ﻿using IdentityServer.Api.Entities.Identity;
+using IdentityServer.Api.Events.CustomEvents;
 using IdentityServer.Api.Extensions;
 using IdentityServer.Api.Extensions.Authentication;
 using IdentityServer.Api.Models.UserModels;
@@ -9,7 +10,6 @@ using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Identity;
-using System.Reflection.PortableExecutable;
 using System.Security.Claims;
 using static IdentityModel.OidcConstants;
 
@@ -48,7 +48,7 @@ namespace IdentityServer.Api.Validations.IdentityValidators
 
         public async Task ValidateAsync(ResourceOwnerPasswordValidationContext context)
         {
-            var clientId = context.Request?.Client?.ClientId;
+            var clientId = context.Request?.Client?.ClientId ?? string.Empty;
             var request = _httpContextAccessor.HttpContext?.Request;
             if (request == null || string.IsNullOrWhiteSpace(request?.Headers.Authorization))
             {
@@ -66,7 +66,7 @@ namespace IdentityServer.Api.Validations.IdentityValidators
             var role = tokenClaims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
             if (!tokenVerify.Success || role == null || role?.Value != verifyRole)
             {
-                await _events.RaiseAsync(new UserLoginFailureEvent(context.UserName, "invalid credentials", false, clientId));
+                await _events.RaiseAsync(new UserLoginFailureEvent(context.UserName, "Invalid credentials", false, clientId));
 
                 context.Result = new GrantValidationResult(TokenRequestErrors.UnauthorizedClient);
                 return;
@@ -75,7 +75,7 @@ namespace IdentityServer.Api.Validations.IdentityValidators
             var verifyCode = context.Request?.Raw.Get("verifyCode");
             if (string.IsNullOrWhiteSpace(verifyCode))
             {
-                await _events.RaiseAsync(new UserLoginFailureEvent(context.UserName, "invalid verify code", false, clientId));
+                await _events.RaiseAsync(new UserVerifyCodeFailureEvent(context.UserName, "Verify code not found", clientId));
 
                 context.Result = new GrantValidationResult(TokenRequestErrors.InvalidGrant);
                 return;
@@ -87,7 +87,7 @@ namespace IdentityServer.Api.Validations.IdentityValidators
                 var existingCode = await _redisCacheService.GetAsyncWithDatabaseId<string>($"{_loginOptions.Prefix}{user.UserName}", _loginOptions.DatabaseId);
                 if (existingCode == null || existingCode != verifyCode)
                 {
-                    await _events.RaiseAsync(new UserLoginFailureEvent(context.UserName, "verify code not matched", false, clientId));
+                    await _events.RaiseAsync(new UserVerifyCodeFailureEvent(context.UserName, "Verify code not matched", clientId));
 
                     context.Result = new GrantValidationResult(TokenRequestErrors.InvalidClient);
                     return;
@@ -106,7 +106,7 @@ namespace IdentityServer.Api.Validations.IdentityValidators
             }
             else
             {
-                await _events.RaiseAsync(new UserLoginFailureEvent(context.UserName, "invalid user", false, clientId));
+                await _events.RaiseAsync(new UserLoginFailureEvent(context.UserName, "Invalid user", false, clientId));
             }
 
             context.Result = new GrantValidationResult(TokenRequestErrors.InvalidGrant);
