@@ -1,5 +1,4 @@
 using Autofac;
-using Autofac.Core;
 using Autofac.Extensions.DependencyInjection;
 using IdentityServer.Api.Data.Contexts;
 using IdentityServer.Api.Data.SeedData;
@@ -7,30 +6,15 @@ using IdentityServer.Api.DependencyResolvers.Autofac;
 using IdentityServer.Api.Entities.Identity;
 using IdentityServer.Api.Extensions;
 using IdentityServer.Api.Extensions.Authentication;
-using IdentityServer.Api.Handlers;
 using IdentityServer.Api.Mapping;
-using IdentityServer.Api.Models.Localizations;
 using IdentityServer.Api.Models.LogModels;
 using IdentityServer.Api.Models.UserModels;
 using IdentityServer.Api.Services.ElasticSearch.Abstract;
 using IdentityServer.Api.Services.ElasticSearch.Concrete;
 using IdentityServer.Api.Utilities.IoC;
 using IdentityServer.Api.Validations.IdentityValidators;
-using IdentityServer4;
-using IdentityServer4.AspNetIdentity;
-using IdentityServer4.Hosting.LocalApiAuthentication;
-using IdentityServer4.Services;
-using IdentityServer4.Validation;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Serilog;
-using System.Security.Claims;
-using System.Text;
-using System.Text.Json.Serialization;
 
 #region SERVICES
 var builder = WebApplication.CreateBuilder(args);
@@ -64,19 +48,6 @@ builder.Services.AddSession(options =>
 #region Http
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-#endregion
-#region Htpp Clients
-builder.Services.AddScoped(sp =>
-{
-    var clientFactory = sp.GetRequiredService<IHttpClientFactory>();
-
-    return clientFactory.CreateClient("ApiGatewayHttpClient");
-});
-
-builder.Services.AddHttpClient("ApiGatewayHttpClient", client =>
-{
-    client.BaseAddress = new Uri("http://localhost:5000/");
-}).AddHttpMessageHandler<LocalizationTokenHandler>();
 #endregion
 #region Autofac
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
@@ -184,7 +155,7 @@ builder.Services.UseVerifyCodeTokenAuthentication();
 
 #endregion
 #region Options Pattern
-builder.Services.Configure<LocalizationConfigurations>(configuration.GetSection("LocalizationConfigurations"));
+
 #endregion
 
 builder.Services.AddEndpointsApiExplorer();
