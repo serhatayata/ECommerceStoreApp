@@ -102,6 +102,12 @@ namespace IdentityServer.Api.Services.Concrete
             if (existingUser == null)
                 return new ErrorDataResult<UserModel>();
 
+            var userNameExists = _userManager.Users.Where(u => u.UserName != model.CurrentUserName &&
+                                                               u.UserName == model.UserName);
+
+            if (userNameExists != null)
+                return new ErrorDataResult<UserModel>();
+
             var updatedUser = _mapper.Map<UserUpdateModel,User>(model, existingUser);
             var result = await _userManager.UpdateAsync(updatedUser);
             if (!result.Succeeded)

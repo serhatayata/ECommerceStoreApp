@@ -1,5 +1,7 @@
-﻿using FluentValidation.AspNetCore;
+﻿using FluentValidation;
+using FluentValidation.AspNetCore;
 using IdentityServer.Api.Attributes;
+using IdentityServer.Api.Validations.FluentValidation.UserValidations;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
 
@@ -22,7 +24,7 @@ namespace IdentityServer.Api.Extensions
                 options.SuppressModelStateInvalidFilter = true;
             });
 
-            //services.AddValidatorsFromAssemblyContaining<CategoryUpdateDtoValidator>();
+            services.AddValidatorsFromAssemblyContaining<UserLoginModelValidator>();
 
             services.AddFluentValidationAutoValidation();
             services.AddFluentValidationClientsideAdapters(); // for client side

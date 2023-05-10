@@ -57,7 +57,7 @@ namespace IdentityServer.Api.Validations.IdentityValidators
             }
 
             var authorizationHeader = request.Headers.Authorization.ToString();
-            var token = authorizationHeader.Substring(AuthenticationSchemeConstants.VerifyCode.Length).TrimStart();
+            var token = authorizationHeader.Substring(AuthenticationSchemes.AuthorizationHeaderBearer.Length).TrimStart();
 
             string verifyRole = _loginOptions.VerifyCodeRole;
 
