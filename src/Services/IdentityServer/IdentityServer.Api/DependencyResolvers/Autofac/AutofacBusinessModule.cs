@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using IdentityServer.Api.CacheStores;
 using IdentityServer.Api.Events.CustomEventSinks;
 using IdentityServer.Api.Services.Abstract;
 using IdentityServer.Api.Services.Concrete;
@@ -9,6 +10,7 @@ using IdentityServer.Api.Services.Redis.Concrete;
 using IdentityServer.Api.Utilities.Security.Jwt;
 using IdentityServer.Api.Validations.IdentityValidators;
 using IdentityServer4.Services;
+using IdentityServer4.Stores;
 using IdentityServer4.Validation;
 
 namespace IdentityServer.Api.DependencyResolvers.Autofac
@@ -35,6 +37,10 @@ namespace IdentityServer.Api.DependencyResolvers.Autofac
             #endregion
             #region EVENT SINKS
             builder.RegisterType<CustomEventSink>().As<IEventSink>().InstancePerDependency();
+            #endregion
+            #region CUSTOM STORES
+            builder.RegisterType<CustomClientStore>().As<IClientStore>().SingleInstance();
+            builder.RegisterType<CustomResourceStore>().As<IResourceStore>().SingleInstance();
             #endregion
         }
     }

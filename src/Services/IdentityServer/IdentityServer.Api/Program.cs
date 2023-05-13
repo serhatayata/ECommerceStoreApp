@@ -1,5 +1,7 @@
 using Autofac;
+using Autofac.Core;
 using Autofac.Extensions.DependencyInjection;
+using IdentityServer.Api.CacheStores;
 using IdentityServer.Api.Data.Contexts;
 using IdentityServer.Api.Data.SeedData;
 using IdentityServer.Api.DependencyResolvers.Autofac;
@@ -13,6 +15,7 @@ using IdentityServer.Api.Services.ElasticSearch.Abstract;
 using IdentityServer.Api.Services.ElasticSearch.Concrete;
 using IdentityServer.Api.Utilities.IoC;
 using IdentityServer.Api.Validations.IdentityValidators;
+using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -90,12 +93,18 @@ builder.Services.AddIdentityServer(options =>
     options.Events.RaiseFailureEvents = true;
     options.Events.RaiseSuccessEvents = true;
     options.EmitStaticAudienceClaim = true;
+
+    options.Caching.ClientStoreExpiration = TimeSpan.FromDays(1);
+    options.Caching.ResourceStoreExpiration = TimeSpan.FromDays(1);
+
     options.Discovery.CustomEntries.Add("update-user", "~/update-user");
     options.Discovery.CustomEntries.Add("delete-user", "~/delete-user");
 })
 .AddResourceOwnerValidator<ResourceOwnerPasswordCustomValidator>()
 .AddProfileService<ProfileService>()
 .AddAspNetIdentity<User>()
+.AddClientStoreCache<CustomClientStore>()
+.AddResourceStoreCache<CustomResourceStore>()
 .AddConfigurationStore<AppConfigurationDbContext>(options =>
 {
     options.ConfigureDbContext = b => b.UseSqlServer(defaultConnString, opt => opt.MigrationsAssembly(assembly));

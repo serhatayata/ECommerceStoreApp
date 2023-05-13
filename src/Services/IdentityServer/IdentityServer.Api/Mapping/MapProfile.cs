@@ -53,6 +53,10 @@ namespace IdentityServer.Api.Mapping
                 .ForMember(a => a.Properties, opt => opt.MapFrom(ap => ap.Properties.Select(b => 
                 new PropertyModel() { Key = b.Key, Value = b.Value })))
                 .ForMember(a => a.UserClaims, opt => opt.MapFrom(ap => ap.UserClaims.Select(b => b.Type)));
+
+            CreateMap<ApiScopeModel, IdentityServer4.Models.ApiScope>()
+                .ForMember(a => a.Properties, opt => opt.MapFrom(ap => ap.Properties.ToDictionary(p => p.Key, p => p.Value)))
+                .ForMember(a => a.UserClaims, opt => opt.MapFrom(ap => ap.UserClaims));
             #endregion
             #region ApiResource
             CreateMap<ApiResourceAddModel, IdentityServer4.Models.ApiResource>()
@@ -77,6 +81,13 @@ namespace IdentityServer.Api.Mapping
                 .ForMember(a => a.AllowedAccessTokenSigningAlgorithms, opt => opt.MapFrom(ar => ar.AllowedAccessTokenSigningAlgorithms))
                 .ForMember(a => a.Secrets, opt => opt.MapFrom(ar => ar.ApiSecrets))
                 .ForMember(a => a.UserClaims, opt => opt.MapFrom(ar => ar.UserClaims));
+
+            CreateMap<ApiResourceModel, IdentityServer4.Models.ApiResource>()
+                .ForMember(a => a.Scopes, opt => opt.MapFrom(ar => ar.Scopes))
+                .ForMember(a => a.Properties, opt => opt.MapFrom(ar => ar.Properties.ToDictionary(p => p.Key, p => p.Value)))
+                .ForMember(a => a.AllowedAccessTokenSigningAlgorithms, opt => opt.MapFrom(at => at.AllowedAccessTokenSigningAlgorithms))
+                .ForMember(a => a.ApiSecrets, opt => opt.MapFrom(ap => ap.Secrets))
+                .ForMember(a => a.UserClaims, opt => opt.MapFrom(u => u.UserClaims));
             #endregion
             #region IdentityResource
             CreateMap<IdentityResourceAddModel, IdentityServer4.Models.IdentityResource>()
@@ -91,7 +102,7 @@ namespace IdentityServer.Api.Mapping
             CreateMap<IdentityServer4.Models.IdentityResource, IdentityResourceModel>()
                 .ForMember(id => id.Properties, opt => opt.MapFrom(idr => idr.Properties.Select(p =>
                 new PropertyModel() { Key = p.Key, Value = p.Value })))
-                .ForMember(id => id.UserClaims, opt => opt.MapFrom(idr => idr.UserClaims));
+                .ForMember(id => id.UserClaims, opt => opt.MapFrom(idr => idr.UserClaims)).ReverseMap();
             #endregion
             #region User
             CreateMap<UserAddModel, User>();

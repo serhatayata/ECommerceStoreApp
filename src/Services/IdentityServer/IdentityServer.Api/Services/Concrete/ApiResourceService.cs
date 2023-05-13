@@ -2,24 +2,25 @@
 using IdentityServer.Api.Data.Contexts;
 using IdentityServer.Api.Models.ApiResourceModels;
 using IdentityServer.Api.Models.Base.Concrete;
+using IdentityServer.Api.Models.IncludeOptions.Account;
 using IdentityServer.Api.Services.Abstract;
 using IdentityServer.Api.Utilities.Results;
+using IdentityServer4.EntityFramework.Entities;
 using IdentityServer4.EntityFramework.Mappers;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
+using Microsoft.EntityFrameworkCore;
 
 namespace IdentityServer.Api.Services.Concrete
 {
     public class ApiResourceService : IApiResourceService
     {
         private AppConfigurationDbContext _confDbContext;
-        private readonly IResourceStore _resourceStore;
         private IMapper _mapper;
 
-        public ApiResourceService(AppConfigurationDbContext confDbContext, IResourceStore resourceStore,IMapper mapper)
+        public ApiResourceService(AppConfigurationDbContext confDbContext, IMapper mapper)
         {
             _confDbContext = confDbContext;
-            _resourceStore = resourceStore;
             _mapper = mapper;
         }
 
@@ -63,6 +64,9 @@ namespace IdentityServer.Api.Services.Concrete
         public DataResult<List<ApiResourceModel>> GetAll(Models.IncludeOptions.Account.ApiResourceIncludeOptions options)
         {
             var result = _confDbContext.ApiResources.ToList();
+            if (result.Count() < 1)
+                return new SuccessDataResult<List<ApiResourceModel>>(new List<ApiResourceModel>());
+
             result.ForEach(apiResource =>
             {
                 if (options.Secrets)
@@ -96,6 +100,54 @@ namespace IdentityServer.Api.Services.Concrete
 
             var mappedResult = _mapper.Map<ApiResourceModel>(result);
             return new SuccessDataResult<ApiResourceModel>(mappedResult);
+        }
+
+        public DataResult<List<ApiResourceModel>> Get(List<string> apiResources, ApiResourceIncludeOptions options)
+        {
+            var result = _confDbContext.ApiResources.Where(c => apiResources.Contains(c.Name)).ToList();
+            if (result.Count() < 1)
+                return new SuccessDataResult<List<ApiResourceModel>>(new List<ApiResourceModel>());
+
+            foreach (var apiResource in result)
+            {
+                if (options.Secrets)
+                    _confDbContext.Entry(apiResource).Collection(c => c.Secrets).Load();
+                if (options.Scopes)
+                    _confDbContext.Entry(apiResource).Collection(c => c.Scopes).Load();
+                if (options.UserClaims)
+                    _confDbContext.Entry(apiResource).Collection(c => c.UserClaims).Load();
+                if (options.Properties)
+                    _confDbContext.Entry(apiResource).Collection(c => c.Properties).Load();
+            }
+
+            var mappedResult = _mapper.Map<List<ApiResourceModel>>(result);
+            return new SuccessDataResult<List<ApiResourceModel>>(mappedResult);
+        }
+
+        public DataResult<List<ApiResourceModel>> GetByApiScopeNames(List<string> apiScopeNames, ApiResourceIncludeOptions options)
+        {
+            var result = _confDbContext.ApiResources
+                            .Include(a => a.Scopes)
+                            .Where(c => c.Scopes.Any(s => apiScopeNames.Contains(s.Scope)))
+                            .ToList();
+
+            if (result.Count() < 1)
+                return new SuccessDataResult<List<ApiResourceModel>>(new List<ApiResourceModel>());
+
+            foreach (var apiResource in result)
+            {
+                if (options.Secrets)
+                    _confDbContext.Entry(apiResource).Collection(c => c.Secrets).Load();
+                if (options.Scopes)
+                    _confDbContext.Entry(apiResource).Collection(c => c.Scopes).Load();
+                if (options.UserClaims)
+                    _confDbContext.Entry(apiResource).Collection(c => c.UserClaims).Load();
+                if (options.Properties)
+                    _confDbContext.Entry(apiResource).Collection(c => c.Properties).Load();
+            }
+
+            var mappedResult = _mapper.Map<List<ApiResourceModel>>(result);
+            return new SuccessDataResult<List<ApiResourceModel>>(mappedResult);
         }
     }
 }

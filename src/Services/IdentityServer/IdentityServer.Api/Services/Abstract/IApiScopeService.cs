@@ -2,6 +2,7 @@
 using IdentityServer.Api.Models.Base.Concrete;
 using IdentityServer.Api.Models.IncludeOptions.Account;
 using IdentityServer.Api.Services.Base;
+using IdentityServer.Api.Utilities.Results;
 
 namespace IdentityServer.Api.Services.Abstract
 {
@@ -9,6 +10,6 @@ namespace IdentityServer.Api.Services.Abstract
                                         IAddService<ApiScopeModel, ApiScopeAddModel>,
                                         IDeleteService<StringModel>
     {
-
+        DataResult<List<ApiScopeModel>> Get(List<string> apiScopeNames, ApiScopeIncludeOptions options);
     }
 }

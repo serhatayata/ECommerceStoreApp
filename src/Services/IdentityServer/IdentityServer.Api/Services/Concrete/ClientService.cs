@@ -55,6 +55,9 @@ namespace IdentityServer.Api.Services.Concrete
         public DataResult<List<ClientModel>> GetAll(ClientIncludeOptions options)
         {
             var result = _confDbContext.Clients.ToList();
+            if (result.Count() < 1)
+                return new SuccessDataResult<List<ClientModel>>(new List<ClientModel>());
+
             result.ForEach(client =>
             {
                 if (options.Claims)

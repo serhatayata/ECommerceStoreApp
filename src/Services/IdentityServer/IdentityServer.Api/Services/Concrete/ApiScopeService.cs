@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using IdentityServer.Api.Data.Contexts;
+using IdentityServer.Api.Models.ApiResourceModels;
 using IdentityServer.Api.Models.ApiScopeModels;
 using IdentityServer.Api.Models.Base.Concrete;
 using IdentityServer.Api.Models.IncludeOptions.Account;
@@ -50,6 +51,9 @@ namespace IdentityServer.Api.Services.Concrete
         public DataResult<List<ApiScopeModel>> GetAll(ApiScopeIncludeOptions options)
         {
             var result = _confDbContext.ApiScopes.ToList();
+            if (result.Count() < 1)
+                return new SuccessDataResult<List<ApiScopeModel>>(new List<ApiScopeModel>());
+
             result.ForEach(apiScope =>
             {
                 if (options.UserClaims)
@@ -76,6 +80,24 @@ namespace IdentityServer.Api.Services.Concrete
 
             var mappedResult = _mapper.Map<ApiScopeModel>(result);
             return new SuccessDataResult<ApiScopeModel>(mappedResult);
+        }
+
+        public DataResult<List<ApiScopeModel>> Get(List<string> apiScopeNames, ApiScopeIncludeOptions options)
+        {
+            var result = _confDbContext.ApiScopes.Where(c => apiScopeNames.Contains(c.Name)).ToList();
+            if (result.Count() < 1)
+                return new SuccessDataResult<List<ApiScopeModel>>(new List<ApiScopeModel>());
+
+            foreach (var apiScope in result)
+            {
+                if (options.UserClaims)
+                    _confDbContext.Entry(apiScope).Collection(c => c.UserClaims).Load();
+                if (options.Properties)
+                    _confDbContext.Entry(apiScope).Collection(c => c.Properties).Load();
+            }
+
+            var mappedResult = _mapper.Map<List<ApiScopeModel>>(result);
+            return new SuccessDataResult<List<ApiScopeModel>>(mappedResult);
         }
     }
 }

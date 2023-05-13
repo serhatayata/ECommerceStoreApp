@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using IdentityServer.Api.Data.Contexts;
+using IdentityServer.Api.Models.ApiScopeModels;
 using IdentityServer.Api.Models.Base.Concrete;
 using IdentityServer.Api.Models.IdentityResourceModels;
 using IdentityServer.Api.Models.IncludeOptions.Account;
@@ -63,12 +64,30 @@ namespace IdentityServer.Api.Services.Concrete
             return new SuccessDataResult<IdentityResourceModel>(mappedResult);
         }
 
+        public DataResult<List<IdentityResourceModel>> Get(List<string> scopeNames, IdentityResourceIncludeOptions options)
+        {
+            var result = _confDbContext.IdentityResources.Where(c => scopeNames.Contains(c.Name)).ToList();
+            if (result.Count() < 1)
+                return new SuccessDataResult<List<IdentityResourceModel>>(new List<IdentityResourceModel>());
+
+            foreach (var apiScope in result)
+            {
+                if (options.UserClaims)
+                    _confDbContext.Entry(apiScope).Collection(c => c.UserClaims).Load();
+                if (options.Properties)
+                    _confDbContext.Entry(apiScope).Collection(c => c.Properties).Load();
+            }
+
+            var mappedResult = _mapper.Map<List<IdentityResourceModel>>(result);
+            return new SuccessDataResult<List<IdentityResourceModel>>(mappedResult);
+        }
+
         public DataResult<List<IdentityResourceModel>> GetAll(IdentityResourceIncludeOptions options)
         {
             var result = _confDbContext.IdentityResources.ToList();
 
-            if (result.Count == 0)
-                return new SuccessDataResult<List<IdentityResourceModel>>();
+            if (result.Count < 1)
+                return new SuccessDataResult<List<IdentityResourceModel>>(new List<IdentityResourceModel>());
 
             result.ForEach(identity =>
             {
