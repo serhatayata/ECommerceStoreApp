@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using IdentityServer.Api.CacheStores.Models;
 using IdentityServer.Api.Services.Abstract;
 using IdentityServer.Api.Services.Redis.Abstract;
 using IdentityServer4.Models;
@@ -14,7 +15,11 @@ namespace IdentityServer.Api.CacheStores
         private readonly ILogger<CustomClientStore> _logger;
         private readonly IRedisService _redisService;
         private readonly IMapper _mapper;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IConfiguration _configuration;
+
+        private readonly CustomStoreConfiguration _customStoreConfiguration;
+        private readonly string _prefix;
+        private readonly int _duration;
 
         public CustomResourceStore(IApiResourceService apiResourceService, 
                                    IApiScopeService apiScopeService, 
@@ -22,7 +27,7 @@ namespace IdentityServer.Api.CacheStores
                                    ILogger<CustomClientStore> logger, 
                                    IRedisService redisService,
                                    IMapper mapper,
-                                   IHttpContextAccessor httpContextAccessor)
+                                   IConfiguration configuration)
         {
             _apiResourceService = apiResourceService;
             _apiScopeService = apiScopeService;
@@ -30,7 +35,13 @@ namespace IdentityServer.Api.CacheStores
             _logger = logger;
             _redisService = redisService;
             _mapper = mapper;
-            _httpContextAccessor = httpContextAccessor;
+            _configuration = configuration;
+
+            _customStoreConfiguration = _configuration.GetSection("CustomStoreConfigurations:CustomResourceStore")
+                                                      .Get<CustomStoreConfiguration>();
+
+            _prefix = _customStoreConfiguration.Prefix;
+            _duration = _customStoreConfiguration.Duration;
         }
 
         public async Task<IEnumerable<IdentityServer4.Models.ApiResource>> FindApiResourcesByNameAsync(IEnumerable<string> apiResourceNames)

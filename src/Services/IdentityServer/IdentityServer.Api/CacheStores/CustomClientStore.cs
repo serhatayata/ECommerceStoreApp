@@ -1,4 +1,5 @@
-﻿using IdentityServer.Api.Models.Base.Concrete;
+﻿using IdentityServer.Api.CacheStores.Models;
+using IdentityServer.Api.Models.Base.Concrete;
 using IdentityServer.Api.Models.ClientModels;
 using IdentityServer.Api.Models.IncludeOptions.Account;
 using IdentityServer.Api.Services.Abstract;
@@ -14,17 +15,28 @@ namespace IdentityServer.Api.CacheStores
         private readonly IClientService _clientService;
         private readonly ILogger<CustomClientStore> _logger;
         private readonly IRedisService _redisService;
+        private readonly IConfiguration _configuration;
 
-        public CustomClientStore(IClientService clientService, ILogger<CustomClientStore> logger, IRedisService redisService)
+        private CustomStoreConfiguration _customStoreConfiguration;
+
+        public CustomClientStore(IClientService clientService, 
+                                 ILogger<CustomClientStore> logger, 
+                                 IRedisService redisService, 
+                                 IConfiguration configuration)
         {
             _clientService = clientService;
             _logger = logger;
             _redisService = redisService;
+            _configuration = configuration;
+
+            _customStoreConfiguration = _configuration.GetSection("CustomStoreConfigurations:CustomClientStore")
+                                                      .Get<CustomStoreConfiguration>();
         }
 
         public async Task<IdentityServer4.Models.Client> FindClientByIdAsync(string clientId)
         {
-            string prefix = "identityserver-api-client-";
+            var prefix = _customStoreConfiguration.Prefix;
+            var duration = _customStoreConfiguration.Duration;
 
             var cacheValue = await _redisService.GetAsync<ClientModel>(prefix + clientId);
             if (cacheValue != null)
@@ -42,7 +54,7 @@ namespace IdentityServer.Api.CacheStores
             if (client == null)
                 return null;
 
-            await _redisService.SetAsync(prefix + clientId, client.Data);
+            await _redisService.SetAsync(prefix + clientId, client.Data, duration);
 
             ICollection<string> type = null;
             switch (client.Data.AllowedGrantTypes.FirstOrDefault())
