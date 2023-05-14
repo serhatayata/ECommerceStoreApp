@@ -1,6 +1,7 @@
 ﻿using IdentityServer.Api.Extensions;
 using IdentityServer.Api.Services.Redis.Abstract;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using StackExchange.Redis;
 
 namespace IdentityServer.Api.Services.Redis.Concrete
@@ -81,11 +82,17 @@ namespace IdentityServer.Api.Services.Redis.Concrete
         }
         #endregion
         #region GetAsync<T>
-        public async Task<T> GetAsyncWithDatabaseId<T>(string key, int databaseId) where T : class
+        public async Task<T> GetAsync<T>(string key, int databaseId) where T : class
         {
             string value = await _client.GetDatabase(databaseId).StringGetAsync(key);
 
             return value.ToObject<T>();
+        }
+        #endregion
+        #region GetAsync<T> with Func
+        public async Task<T> GetAsync<T>(string key, int databaseId, int duration, Func<T> filter) where T : class
+        {
+            return await _client.GetDatabase(databaseId).CacheOrGetAsync<T>(key, duration, filter);
         }
         #endregion
         #region Set
@@ -186,3 +193,4 @@ namespace IdentityServer.Api.Services.Redis.Concrete
         }
     }
 }
+

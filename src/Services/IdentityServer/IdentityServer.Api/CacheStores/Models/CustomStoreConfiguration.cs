@@ -4,5 +4,6 @@
     {
         public string Prefix { get; set; }
         public int Duration { get; set; }
+        public int DatabaseId { get; set; }
     }
 }

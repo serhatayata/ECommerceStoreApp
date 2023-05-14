@@ -84,7 +84,7 @@ namespace IdentityServer.Api.Validations.IdentityValidators
             var user = await _userManager.FindByNameAsync(context.UserName);
             if (user != null)
             {
-                var existingCode = await _redisCacheService.GetAsyncWithDatabaseId<string>($"{_loginOptions.Prefix}{user.UserName}", _loginOptions.DatabaseId);
+                var existingCode = await _redisCacheService.GetAsync<string>($"{_loginOptions.Prefix}{user.UserName}", _loginOptions.DatabaseId);
                 if (existingCode == null || existingCode != verifyCode)
                 {
                     await _events.RaiseAsync(new UserVerifyCodeFailureEvent(context.UserName, "Verify code not matched", clientId));
