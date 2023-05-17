@@ -32,7 +32,7 @@ namespace IdentityServer.Api.Data.Contexts
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(_configuration.GetConnectionString("IdentityConnection"));
+                optionsBuilder.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"));
             }
         }
 

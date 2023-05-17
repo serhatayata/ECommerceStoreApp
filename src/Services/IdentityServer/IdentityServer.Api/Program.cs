@@ -30,12 +30,6 @@ builder.Services.AddControllerSettings();
 var config = ConfigurationExtension.appConfig;
 var serilogConfig = ConfigurationExtension.serilogConfig;
 
-builder.Host.UseDefaultServiceProvider((context, options) =>
-{
-    options.ValidateOnBuild = false;
-    options.ValidateScopes = false;
-});
-
 builder.Host.AddHostExtensions(environment);
 builder.Services.AddElasticSearchConfiguration();
 
@@ -62,7 +56,7 @@ builder.Services.AddAutoMapper(typeof(MapProfile).Assembly);
 #region Logging
 builder.Services.AddLogging();
 #endregion
-#region Controller Settings
+#region Configuration Settings
 builder.Configuration.AddConfiguration(config);
 #endregion
 #region IdentityServer
@@ -161,9 +155,6 @@ builder.Services.UseVerifyCodeTokenAuthentication();
 //        .RequireAuthenticatedUser()
 //        .Build());
 //});
-
-#endregion
-#region Options Pattern
 
 #endregion
 
