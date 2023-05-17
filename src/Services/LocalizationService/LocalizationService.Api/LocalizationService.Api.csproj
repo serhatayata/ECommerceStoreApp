@@ -38,6 +38,7 @@
 
   <ItemGroup>
     <Folder Include="Controllers\" />
+    <Folder Include="Data\Contexts\Factories\" />
     <Folder Include="Data\SeedData\" />
   </ItemGroup>
 

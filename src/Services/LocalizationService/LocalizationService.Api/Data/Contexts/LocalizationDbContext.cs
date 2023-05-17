@@ -3,7 +3,7 @@ using LocalizationService.Api.Entities;
 using LocalizationService.Api.Utilities.IoC;
 using Microsoft.EntityFrameworkCore;
 
-namespace LocalizationService.Api.Data.Contexts.Factories
+namespace LocalizationService.Api.Data.Contexts
 {
     public class LocalizationDbContext : DbContext
     {
