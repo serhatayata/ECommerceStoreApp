@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Autofac" Version="7.0.1" />
-    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.0.1" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="AutoMapper" Version="12.0.1" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="FluentValidation" Version="11.5.2" />
@@ -33,13 +33,11 @@
     <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
     <PackageReference Include="Serilog.Sinks.Elasticsearch" Version="9.0.1" />
     <PackageReference Include="StackExchange.Redis" Version="2.6.111" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Controllers\" />
-    <Folder Include="Data\Contexts\Factories\" />
-    <Folder Include="Data\SeedData\" />
   </ItemGroup>
 
 </Project>

@@ -8,7 +8,7 @@ namespace LocalizationService.Api.Data.EntityConfigurations
     {
         public void Configure(EntityTypeBuilder<Language> builder)
         {
-            builder.ToTable(name: "Resources", schema: "localization");
+            builder.ToTable(name: "Languages", schema: "localization");
 
             builder.HasKey(r => r.Id);
             builder.Property(r => r.Id).ValueGeneratedOnAdd();

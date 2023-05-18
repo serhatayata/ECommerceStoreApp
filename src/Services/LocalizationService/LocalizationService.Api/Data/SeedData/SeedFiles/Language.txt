@@ -1,0 +1,4 @@
+﻿Code,DisplayName
+tr-TR,Turkish,
+en-US,English
+es-ES,Spanish

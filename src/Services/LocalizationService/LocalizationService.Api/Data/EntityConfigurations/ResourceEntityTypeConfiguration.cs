@@ -14,12 +14,13 @@ namespace LocalizationService.Api.Data.EntityConfigurations
             builder.HasKey(r => r.Id);
             builder.Property(r => r.Id).ValueGeneratedOnAdd();
 
-            builder.HasIndex(r => r.Code).IsUnique();
+            builder.HasIndex(r => r.ResourceCode).IsUnique();
             builder.HasIndex(r => new {r.Tag, r.LanguageId}).IsUnique();
             
             builder.Property(r => r.Tag).HasColumnType("nvarchar(300)");
 
-            builder.Property(r => r.Code).HasColumnType("nvarchar(40)");
+            builder.Property(r => r.ResourceCode).HasColumnType("nvarchar(40)");
+            builder.Property(r => r.LanguageCode).HasColumnType("nvarchar(10)");
 
             builder.Property(r => r.CreateDate).HasColumnType("datetime2");
             builder.Property(c => c.CreateDate).HasDefaultValueSql("getdate()");
@@ -32,7 +33,7 @@ namespace LocalizationService.Api.Data.EntityConfigurations
             builder.HasOne(r => r.Member)
                    .WithMany(l => l.Resources)
                    .HasForeignKey(rl => rl.MemberId)
-                   .OnDelete(DeleteBehavior.NoAction);
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

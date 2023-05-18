@@ -1,0 +1,10 @@
+﻿Tag,Value,LanguageCode
+test,testvalue,tr-TR
+test2,testvalue2,tr-TR
+test3,testvalue3,tr-TR
+test4,testvalue4,en-US
+test5,testvalue5,en-US
+test6,testvalue6,en-US
+test7,testvalue7,es-ES
+test8,testvalue8,es-ES
+test9,testvalue9,es-ES

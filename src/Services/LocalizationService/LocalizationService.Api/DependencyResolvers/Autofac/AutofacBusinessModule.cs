@@ -1,13 +1,13 @@
 ﻿using Autofac;
 
-namespace IdentityServer.Api.DependencyResolvers.Autofac
+namespace LocalizationService.Api.DependencyResolvers.Autofac
 {
     public class AutofacBusinessModule : Module
     {
         protected override void Load(ContainerBuilder builder)
         {
             #region SERVICES
-            //builder.RegisterType<ClientService>().As<IClientService>().InstancePerDependency();
+            //builder.RegisterType<RedisService>().As<IRedisService>().InstancePerLifetimeScope();
             #endregion
         }
     }

@@ -9,7 +9,7 @@ namespace LocalizationService.Api.Data.EntityConfigurations
     {
         public void Configure(EntityTypeBuilder<Member> builder)
         {
-            builder.ToTable(name: "Resources", schema: "localization");
+            builder.ToTable(name: "Members", schema: "localization");
 
             builder.HasKey(r => r.Id);
             builder.Property(r => r.Id).ValueGeneratedOnAdd();

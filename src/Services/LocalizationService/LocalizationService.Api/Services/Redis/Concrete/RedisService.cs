@@ -1,4 +1,5 @@
-﻿using LocalizationService.Api.Services.Redis.Abstract;
+﻿using LocalizationService.Api.Extensions;
+using LocalizationService.Api.Services.Redis.Abstract;
 using Newtonsoft.Json;
 using StackExchange.Redis;
 

@@ -21,15 +21,23 @@ namespace LocalizationService.Api.Entities
         /// </summary>
         public string Tag { get; set; }
         /// <summary>
-        /// Code of the resource
+        /// Value of the resource
         /// </summary>
-        public string Code { get; set; }
+        public string Value { get; set; }
+        /// <summary>
+        /// ResourceCode of the resource
+        /// </summary>
+        public string ResourceCode { get; set; }
+        /// <summary>
+        /// LanguageCode of the resource
+        /// </summary>
+        public string LanguageCode { get; set; }
         /// <summary>
         /// Creation date of the resource
         /// </summary>
         public DateTime CreateDate { get; set; }
 
-        public Language Language { get; set; }
-        public Member Member { get; set; }
+        public virtual Language Language { get; set; }
+        public virtual Member Member { get; set; }
     }
 }

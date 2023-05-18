@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 
-namespace IdentityServer.Api.Mapping
+namespace LocalizationService.Api.Mapping
 {
     public class MapProfile : Profile
     {

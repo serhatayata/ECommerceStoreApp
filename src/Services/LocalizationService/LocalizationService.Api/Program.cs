@@ -1,13 +1,15 @@
 using Autofac;
-using Autofac.Core;
 using Autofac.Extensions.DependencyInjection;
-using IdentityServer.Api.DependencyResolvers.Autofac;
-using IdentityServer.Api.Mapping;
+using LocalizationService.Api.Data.Contexts;
+using LocalizationService.Api.Data.SeedData;
+using LocalizationService.Api.DependencyResolvers.Autofac;
 using LocalizationService.Api.Extensions;
+using LocalizationService.Api.Mapping;
 using LocalizationService.Api.Models.LogModels;
 using LocalizationService.Api.Services.ElasticSearch.Abstract;
 using LocalizationService.Api.Services.ElasticSearch.Concrete;
 using LocalizationService.Api.Utilities.IoC;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
@@ -16,6 +18,8 @@ IWebHostEnvironment environment = builder.Environment;
 
 var config = ConfigurationExtension.appConfig;
 var serilogConfig = ConfigurationExtension.serilogConfig;
+
+builder.Services.AddControllerSettings();
 
 #region Startup DI
 builder.Services.AddSingleton<IElasticSearchService, ElasticSearchService>();
@@ -29,11 +33,10 @@ builder.Configuration.AddConfiguration(config);
 #region Logging
 builder.Services.AddLogging();
 #endregion
-#region Session
-builder.Services.AddSession(options =>
-{
-    options.IdleTimeout = TimeSpan.FromMinutes(60);
-});
+#region DbContext
+string defaultConnString = configuration.GetConnectionString("DefaultConnection");
+
+builder.Services.AddDbContext<LocalizationDbContext>(options => options.UseSqlServer(defaultConnString, b => b.MigrationsAssembly(assembly)), ServiceLifetime.Transient);
 #endregion
 #region Http
 builder.Services.AddHttpContextAccessor();
@@ -58,8 +61,12 @@ await elasticSearchService.CreateIndexAsync<LogDetail>(elasticLogOptions.LogInde
 #region ServiceTool
 ServiceTool.Create(builder.Services);
 #endregion
+#region SeedData
+var localizationDbContext = scope.ServiceProvider.GetService<LocalizationDbContext>();
 
-builder.Services.AddControllers();
+await LocalizationSeedData.LoadLocalizationSeedDataAsync(localizationDbContext, scope, environment, configuration);
+#endregion
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -73,7 +80,6 @@ if (app.Environment.IsDevelopment())
 
 app.ConfigureCustomExceptionMiddleware();
 app.UseStaticFiles();
-app.UseSession();
 app.UseHttpsRedirection();
 app.UseRouting();
 //app.UseCors();
