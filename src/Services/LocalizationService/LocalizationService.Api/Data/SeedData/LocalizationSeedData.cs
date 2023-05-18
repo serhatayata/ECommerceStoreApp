@@ -24,7 +24,8 @@ namespace LocalizationService.Api.Data.SeedData
                         .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
                         {
                             logger.LogError(ex, "ERROR handling message: {ExceptionMessage} - Method : {ClassName}.{MethodName}",
-                                                ex.Message, nameof(LocalizationSeedData),
+                                                ex.Message, 
+                                                nameof(LocalizationSeedData),
                                                 MethodBase.GetCurrentMethod()?.Name);
                         });
 

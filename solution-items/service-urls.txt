@@ -1,0 +1,38 @@
+-- Http Ports --
+
+ApiGateway -> 5000
+IdentityServer -> 5001
+LocalizationService -> 5002
+NotificationService -> 5003
+FileService -> 5004
+BasketService -> 5005
+CatalogService -> 5006
+OrderService -> 5007
+PaymentService -> 5008
+CampaignService -> 5009
+
+-- Https Ports --
+
+ApiGateway -> 6000
+IdentityServer -> 6001
+LocalizationService -> 6002
+NotificationService -> 6003
+FileService -> 6004
+BasketService -> 6005
+CatalogService -> 6006
+OrderService -> 6007
+PaymentService -> 6008
+CampaignService -> 6009
+
+-- IIS Ports --
+
+ApiGateway -> 12000
+IdentityServer -> 12001
+LocalizationService -> 12002
+NotificationService -> 12003
+FileService -> 12004
+BasketService -> 12005
+CatalogService -> 12006
+OrderService -> 12007
+PaymentService -> 12008
+CampaignService -> 12009
