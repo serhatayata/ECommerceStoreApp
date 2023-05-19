@@ -11,7 +11,7 @@ namespace LocalizationService.Api.Entities
         /// <summary>
         /// Language Id of the resource
         /// </summary>
-        public int LanguageId { get; set; }
+        public int? LanguageId { get; set; }
         /// <summary>
         /// Member Id using the resource
         /// </summary>
@@ -36,6 +36,10 @@ namespace LocalizationService.Api.Entities
         /// Creation date of the resource
         /// </summary>
         public DateTime CreateDate { get; set; }
+        /// <summary>
+        /// Status of the resource
+        /// </summary>
+        public bool Status { get; set; }
 
         public virtual Language Language { get; set; }
         public virtual Member Member { get; set; }

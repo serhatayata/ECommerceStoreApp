@@ -2,10 +2,11 @@
 using LocalizationService.Api.Entities;
 using LocalizationService.Api.Utilities.IoC;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace LocalizationService.Api.Data.Contexts
 {
-    public class LocalizationDbContext : DbContext
+    public class LocalizationDbContext : DbContext, ILocalizationDbContext
     {
         private readonly IConfiguration? _configuration;
 
@@ -17,6 +18,8 @@ namespace LocalizationService.Api.Data.Contexts
         public DbSet<Resource> Resources { get; set; }
         public DbSet<Member> Members { get; set; }
         public DbSet<Language> Languages { get; set; }
+
+        public IDbConnection Connection => Database.GetDbConnection();
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

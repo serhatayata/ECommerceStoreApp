@@ -118,7 +118,8 @@ namespace LocalizationService.Api.Data.SeedData
                                                    LanguageId = currentLanguage?.Id ?? 0,
                                                    MemberId = currentMember?.Id ?? 0,
                                                    CreateDate = DateTime.Now,
-                                                   ResourceCode = Guid.NewGuid().ToString()
+                                                   ResourceCode = Guid.NewGuid().ToString(),
+                                                   Status = Convert.ToBoolean(m[3])
                                                };
                                            }).ToList();
 
