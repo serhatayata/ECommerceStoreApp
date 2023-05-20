@@ -38,7 +38,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
     <Folder Include="Data\Repositories\EntityFramework\Abstract\" />
     <Folder Include="Data\Repositories\EntityFramework\Concrete\" />
   </ItemGroup>

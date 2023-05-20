@@ -1,5 +1,6 @@
 ﻿using LocalizationService.Api.Data.EntityConfigurations;
 using LocalizationService.Api.Entities;
+using LocalizationService.Api.Entities.Abstract;
 using LocalizationService.Api.Utilities.IoC;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
@@ -38,6 +39,17 @@ namespace LocalizationService.Api.Data.Contexts
             modelBuilder.ApplyConfiguration(new ResourceEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new MemberEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new LanguageEntityTypeConfiguration());
+        }
+
+        public string GetTableNameWithScheme<T>() where T : class, IEntity
+        {
+            var entityType = this.Model.FindEntityType(typeof(T));
+            var schema = entityType?.GetSchema();
+            var tableName = entityType?.GetTableName();
+            if (schema == null)
+                return entityType?.GetTableName() ?? string.Empty;
+
+            return $"{schema}.{tableName}";
         }
     }
 }

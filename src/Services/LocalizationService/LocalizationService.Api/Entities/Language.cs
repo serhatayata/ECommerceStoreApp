@@ -1,4 +1,5 @@
 ﻿using LocalizationService.Api.Entities.Abstract;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LocalizationService.Api.Entities
 {

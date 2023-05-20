@@ -3,6 +3,7 @@ using LocalizationService.Api.Data.Contexts;
 using LocalizationService.Api.Data.Contexts.Connections.Abstract;
 using LocalizationService.Api.Data.Repositories.Dapper.Abstract;
 using LocalizationService.Api.Entities;
+using LocalizationService.Api.Extensions;
 using LocalizationService.Api.Models.Base.Concrete;
 using LocalizationService.Api.Utilities.Results;
 using Microsoft.EntityFrameworkCore;
@@ -17,13 +18,19 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
         private readonly ILocalizationReadDbConnection _readDbConnection;
         private readonly ILocalizationWriteDbConnection _writeDbConnection;
 
-        public DapperLanguageRepository(ILocalizationDbContext dbContext, 
-                                        ILocalizationReadDbConnection readDbConnection, 
+        private string _languageTable;
+        private string _resourceTable;
+
+        public DapperLanguageRepository(ILocalizationDbContext dbContext,
+                                        ILocalizationReadDbConnection readDbConnection,
                                         ILocalizationWriteDbConnection writeDbConnection)
         {
             _dbContext = dbContext;
             _readDbConnection = readDbConnection;
             _writeDbConnection = writeDbConnection;
+
+            _languageTable = _dbContext.GetTableNameWithScheme<Language>();
+            _resourceTable = _dbContext.GetTableNameWithScheme<Resource>();
         }
 
         public async Task<Result> AddAsync(Language entity)
@@ -39,10 +46,10 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
                     return new ErrorResult("Language code already exists");
 
                 //Add language, with SELECT CAST... we get the added language's id
-                var addQuery = "INSERT INTO Languages(Code,DisplayName) VALUES (@Code,@DisplayName);SELECT CAST(SCOPE_IDENTITY() as int)";
-                var languageId = await _writeDbConnection.QuerySingleAsync<int>(sql : addQuery, 
-                                                                                transaction : transaction, 
-                                                                                param : new { Code = entity.Code, DisplayName = entity.DisplayName});
+                var addQuery = $"INSERT INTO {_languageTable}(Code,DisplayName) VALUES (@Code,@DisplayName);SELECT CAST(SCOPE_IDENTITY() as int)";
+                var languageId = await _writeDbConnection.QuerySingleAsync<int>(sql: addQuery,
+                                                                                transaction: transaction,
+                                                                                param: new { Code = entity.Code, DisplayName = entity.DisplayName });
                 if (languageId == 0)
                     return new ErrorResult("Language not added");
 
@@ -55,8 +62,8 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
                 throw new Exception(ex.Message);
             }
             finally
-            { 
-               _dbContext.Connection.Close(); 
+            {
+                _dbContext.Connection.Close();
             }
         }
 
@@ -71,7 +78,7 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
                     return new ErrorResult("Language does not exist");
 
                 //Delete query
-                var deleteQuery = "DELETE FROM Languages WHERE Code=@Code";
+                var deleteQuery = $"DELETE FROM {_languageTable} WHERE Code=@Code";
                 var result = await _writeDbConnection.ExecuteAsync(sql: deleteQuery,
                                                                    transaction: transaction,
                                                                    param: new { Code = model.Value });
@@ -106,7 +113,7 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
                     return new ErrorResult("Language code already exists");
 
                 //Update query
-                var updateQuery = "UPDATE Languages SET Code = @Code, DisplayName = @DisplayName WHERE Code=@ExistingCode";
+                var updateQuery = $"UPDATE {_languageTable} SET Code = @Code, DisplayName = @DisplayName WHERE Code=@ExistingCode";
                 var result = await _writeDbConnection.ExecuteAsync(sql: updateQuery,
                                                                    transaction: transaction,
                                                                    param: new { Code = entity.Code, DisplayName = entity.DisplayName, ExistingCode = languageExists.Code });
@@ -128,7 +135,7 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
 
         public async Task<DataResult<IReadOnlyList<Language>>> GetAllAsync()
         {
-            var query = $"SELECT Id,Code,DisplayName FROM Languages";
+            var query = $"SELECT Id,Code,DisplayName FROM {_languageTable}";
 
             var result = await _readDbConnection.QueryAsync<Language>(query);
             return new DataResult<IReadOnlyList<Language>>(result);
@@ -136,16 +143,17 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
 
         public async Task<DataResult<IReadOnlyList<Language>>> GetAllWithResourcesAsync()
         {
-            var query = "SELECT l.Id, l.Code, l.DisplayName FROM Languages l " +
-                        "INNER JOIN Resources r ON l.Id = r.LanguageId";
+            var query = $"SELECT l.Id, l.Code, l.DisplayName, r.Id as ResourceId, r.* " +
+                        $"FROM {_languageTable} l " +
+                        $"INNER JOIN {_resourceTable} r ON l.Id = r.LanguageId";
 
             var languageDictionary = new Dictionary<int, Language>();
 
-            var result = await _dbContext.Connection.QueryAsync<Language,Resource,Language>(query, (language, resource) =>
+            var result = await _dbContext.Connection.QueryAsync<Language, Resource, Language>(query, (language, resource) =>
             {
                 Language languageEntry;
 
-                if(!languageDictionary.TryGetValue(language.Id, out languageEntry))
+                if (!languageDictionary.TryGetValue(language.Id, out languageEntry))
                 {
                     languageEntry = language;
                     languageEntry.Resources = languageEntry.Resources ?? new List<Resource>();
@@ -154,14 +162,15 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
 
                 languageEntry.Resources.Add(resource);
                 return languageEntry;
-            }, splitOn: "Id");
+            }, splitOn: "ResourceId");
 
-            return new DataResult<IReadOnlyList<Language>>(result.Distinct().ToList());
+            var filteredResult = result.Distinct().ToList();
+            return new DataResult<IReadOnlyList<Language>>(filteredResult);
         }
 
         public async Task<DataResult<Language>> GetAsync(StringModel model)
         {
-            var query = $"SELECT Id,Code,DisplayName FROM Languages WHERE Code=@Code";
+            var query = $"SELECT Id,Code,DisplayName FROM {_languageTable} WHERE Code=@Code";
 
             var result = await _readDbConnection.QuerySingleAsync<Language>(query, new { Code = model.Value });
             return new DataResult<Language>(result);

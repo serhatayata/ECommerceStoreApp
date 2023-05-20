@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 using LocalizationService.Api.Entities;
+using LocalizationService.Api.Entities.Abstract;
 
 namespace LocalizationService.Api.Data.Contexts
 {
@@ -13,5 +14,6 @@ namespace LocalizationService.Api.Data.Contexts
         public DbSet<Member> Members { get; set; }
         public DbSet<Language> Languages { get; set; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
+        string GetTableNameWithScheme<T>() where T : class, IEntity;
     }
 }
