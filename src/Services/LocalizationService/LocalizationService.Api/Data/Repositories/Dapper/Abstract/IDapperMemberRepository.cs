@@ -8,5 +8,7 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Abstract
     public interface IDapperMemberRepository : IGenericRepository<Member,StringModel>
     {
         Task<DataResult<IReadOnlyList<Member>>> GetAllWithResourcesAsync();
+        Task<DataResult<IReadOnlyList<Member>>> GetAllWithResourcesPagingAsync(PagingModel model);
+        Task<DataResult<IReadOnlyList<Member>>> GetAllPagingAsync(PagingModel model);
     }
 }

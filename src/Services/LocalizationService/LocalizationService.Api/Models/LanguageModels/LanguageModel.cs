@@ -1,4 +1,5 @@
-﻿using LocalizationService.Api.Models.Base.Abstract;
+﻿using LocalizationService.Api.Entities;
+using LocalizationService.Api.Models.Base.Abstract;
 
 namespace LocalizationService.Api.Models.LanguageModels
 {
@@ -6,5 +7,7 @@ namespace LocalizationService.Api.Models.LanguageModels
     {
         public string Code { get; set; }
         public string DisplayName { get; set; }
+
+        public IReadOnlyList<Resource> Resources { get; set; }
     }
 }

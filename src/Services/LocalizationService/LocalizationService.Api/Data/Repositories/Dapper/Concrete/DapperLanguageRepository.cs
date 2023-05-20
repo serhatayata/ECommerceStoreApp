@@ -20,6 +20,7 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
 
         private string _languageTable;
         private string _resourceTable;
+        private string _memberTable;
 
         public DapperLanguageRepository(ILocalizationDbContext dbContext,
                                         ILocalizationReadDbConnection readDbConnection,
@@ -31,6 +32,7 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
 
             _languageTable = _dbContext.GetTableNameWithScheme<Language>();
             _resourceTable = _dbContext.GetTableNameWithScheme<Resource>();
+            _memberTable = _dbContext.GetTableNameWithScheme<Member>();
         }
 
         public async Task<Result> AddAsync(Language entity)
@@ -141,6 +143,16 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
             return new DataResult<IReadOnlyList<Language>>(result);
         }
 
+        public async Task<DataResult<IReadOnlyList<Language>>> GetAllPagingAsync(PagingModel model)
+        {
+            var query = $"SELECT Id,Code,DisplayName FROM {_languageTable} " +
+                        $"ORDER BY Id DESC OFFSET (@Page-1) * @PageSize ROWS FETCH NEXT @PageSize ROWS ONLY";
+
+            var result = await _readDbConnection.QueryAsync<Language>(sql: query,
+                                                                      param: new { Page = model.Page, PageSize = model.PageSize });;
+            return new DataResult<IReadOnlyList<Language>>(result);
+        }
+
         public async Task<DataResult<IReadOnlyList<Language>>> GetAllWithResourcesAsync()
         {
             var query = $"SELECT l.Id, l.Code, l.DisplayName, r.Id as ResourceId, r.* " +
@@ -168,12 +180,56 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
             return new DataResult<IReadOnlyList<Language>>(filteredResult);
         }
 
+        public async Task<DataResult<IReadOnlyList<Language>>> GetAllWithResourcesPagingAsync(PagingModel model)
+        {
+            var query = $"SELECT l.Id, l.Code, l.DisplayName, r.Id as ResourceId, r.* " +
+                        $"FROM (SELECT * FROM {_languageTable} ORDER BY Id DESC OFFSET (@Page-1) * @PageSize ROWS FETCH NEXT @PageSize ROWS ONLY) l " +
+                        $"INNER JOIN {_resourceTable} r ON l.Id = r.LanguageId ";
+
+            var languageDictionary = new Dictionary<int, Language>();
+
+            var result = await _dbContext.Connection.QueryAsync<Language, Resource, Language>(query, (language, resource) =>
+            {
+                Language languageEntry;
+
+                if (!languageDictionary.TryGetValue(language.Id, out languageEntry))
+                {
+                    languageEntry = language;
+                    languageEntry.Resources = languageEntry.Resources ?? new List<Resource>();
+                    languageDictionary.Add(languageEntry.Id, languageEntry);
+                }
+
+                languageEntry.Resources.Add(resource);
+                return languageEntry;
+            },param: new { Page = model.Page, PageSize = model.PageSize }, splitOn: "ResourceId");
+
+            var filteredResult = result.DistinctBy(l => l.Id).ToList();
+            return new DataResult<IReadOnlyList<Language>>(filteredResult);
+        }
+
         public async Task<DataResult<Language>> GetAsync(StringModel model)
         {
             var query = $"SELECT Id,Code,DisplayName FROM {_languageTable} WHERE Code=@Code";
 
             var result = await _readDbConnection.QuerySingleOrDefaultAsync<Language>(query, new { Code = model.Value });
-            return new DataResult<Language>(result);
+            if (result == null)
+                return new ErrorDataResult<Language>(result);
+
+            var resourceQuery = "SELECT r.*, l.Id AS LangId, l.*, m.Id AS MemId, m.* " +
+                                $"FROM {_resourceTable} r " +
+                                $"INNER JOIN {_languageTable} l ON l.Id = r.LanguageId " +
+                                $"INNER JOIN {_memberTable} m ON m.Id = r.MemberId " +
+                                "WHERE r.Status = @Status AND r.LanguageCode=@LanguageCode";
+
+            var resourceResult = await _dbContext.Connection.QueryAsync<Resource, Member, Resource>(resourceQuery, (resource, member) =>
+            {
+                resource.Member = member;
+                return resource;
+            }, splitOn: "LangId,MemId", param: new { Status = 1, LanguageCode = model.Value });
+
+            var filteredResult = resourceResult.DistinctBy(r => r.Id).ToList();
+            result.Resources = filteredResult;
+            return new SuccessDataResult<Language>(result);
         }
     }
 }

@@ -2,9 +2,8 @@
 
 namespace LocalizationService.Api.Models.Base.Concrete
 {
-    public class PropertyModel : IModel
+    public class BoolModel : IModel
     {
-        public string Key { get; set; }
-        public string Value { get; set; }
+        public bool Value { get; set; }
     }
 }

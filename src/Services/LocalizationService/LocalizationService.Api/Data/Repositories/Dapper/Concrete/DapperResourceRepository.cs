@@ -165,6 +165,24 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
             return new DataResult<IReadOnlyList<Resource>>(filteredResult);
         }
 
+        public async Task<DataResult<IReadOnlyList<Resource>>> GetAllPagingAsync(PagingModel model)
+        {
+            var query = "SELECT r.*, l.Id AS LangId, l.*, m.Id AS MemId, m.* " +
+                        $"FROM (SELECT * FROM {_resourceTable} ORDER BY Id DESC OFFSET (@Page-1) * @PageSize ROWS FETCH NEXT @PageSize ROWS ONLY) r " +
+                        $"INNER JOIN {_languageTable} l ON l.Id = r.LanguageId " +
+                        $"INNER JOIN {_memberTable} m ON m.Id = r.MemberId";
+
+            var result = await _dbContext.Connection.QueryAsync<Resource, Language, Member, Resource>(query, (resource, language, member) =>
+            {
+                resource.Language = language;
+                resource.Member = member;
+                return resource;
+            },param: new { Page = model.Page, PageSize = model.PageSize }, splitOn: "LangId,MemId");
+
+            var filteredResult = result.DistinctBy(r => r.Id).ToList();
+            return new DataResult<IReadOnlyList<Resource>>(filteredResult);
+        }
+
         public async Task<DataResult<IReadOnlyList<Resource>>> GetAllActiveAsync()
         {
             var query = "SELECT r.*, l.Id AS LangId, l.*, m.Id AS MemId, m.* " +
@@ -179,6 +197,24 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
                 resource.Member = member;
                 return resource;
             }, splitOn: "LangId,MemId", param : new { Status = 1 });
+
+            var filteredResult = result.DistinctBy(r => r.Id).ToList();
+            return new DataResult<IReadOnlyList<Resource>>(filteredResult);
+        }
+
+        public async Task<DataResult<IReadOnlyList<Resource>>> GetAllActivePagingAsync(PagingModel model)
+        {
+            var query = "SELECT r.*, l.Id AS LangId, l.*, m.Id AS MemId, m.* " +
+                        $"FROM (SELECT * FROM {_resourceTable} WHERE Status = @Status ORDER BY Id DESC OFFSET (@Page-1) * @PageSize ROWS FETCH NEXT @PageSize ROWS ONLY) r " +
+                        $"INNER JOIN {_languageTable} l ON l.Id = r.LanguageId " +
+                        $"INNER JOIN {_memberTable} m ON m.Id = r.MemberId ";
+
+            var result = await _dbContext.Connection.QueryAsync<Resource, Language, Member, Resource>(query, (resource, language, member) =>
+            {
+                resource.Language = language;
+                resource.Member = member;
+                return resource;
+            }, splitOn: "LangId,MemId", param: new { Status = 1, Page = model.Page, PageSize = model.PageSize });
 
             var filteredResult = result.DistinctBy(r => r.Id).ToList();
             return new DataResult<IReadOnlyList<Resource>>(filteredResult);

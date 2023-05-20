@@ -142,6 +142,15 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
             return new DataResult<IReadOnlyList<Member>>(result);
         }
 
+        public async Task<DataResult<IReadOnlyList<Member>>> GetAllPagingAsync(PagingModel model)
+        {
+            var query = $"SELECT Id,Name,MemberKey,CreateDate FROM {_memberTable} " +
+                        $"ORDER BY Id DESC OFFSET (@Page-1) * @PageSize ROWS FETCH NEXT @PageSize ROWS ONLY";
+
+            var result = await _readDbConnection.QueryAsync<Member>(sql: query, param: new { Page = model.Page, PageSize = model.PageSize });
+            return new DataResult<IReadOnlyList<Member>>(result);
+        }
+
         public async Task<DataResult<IReadOnlyList<Member>>> GetAllWithResourcesAsync()
         {
             var query = $"SELECT l.*, r.Id as ResourceId, r.* FROM {_memberTable} l " +
@@ -169,11 +178,52 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
             return new DataResult<IReadOnlyList<Member>>(filteredResult);
         }
 
+        public async Task<DataResult<IReadOnlyList<Member>>> GetAllWithResourcesPagingAsync(PagingModel model)
+        {
+            var query = $"SELECT m.*, r.Id as ResourceId, r.* FROM " +
+                        $"(SELECT * FROM {_memberTable} ORDER BY Id DESC OFFSET (@Page-1) * @PageSize ROWS FETCH NEXT @PageSize ROWS ONLY) m " +
+                        $"INNER JOIN {_resourceTable} r ON m.Id = r.MemberId";
+
+            var memberDictionary = new Dictionary<int, Member>();
+
+            var result = await _dbContext.Connection.QueryAsync<Member, Resource, Member>(query, (member, resource) =>
+            {
+                Member? memberEntry;
+
+                if (!memberDictionary.TryGetValue(member.Id, out memberEntry))
+                {
+                    memberEntry = member;
+                    memberEntry.Resources = new List<Resource>();
+                    memberDictionary.Add(memberEntry.Id, memberEntry);
+                }
+                if (resource != null)
+                    memberEntry.Resources.Add(resource);
+
+                return memberEntry;
+            }, param: new { Page = model.Page, PageSize = model.PageSize }, splitOn: "ResourceId");
+
+            var filteredResult = result.DistinctBy(m => m.Id).ToList();
+            return new DataResult<IReadOnlyList<Member>>(filteredResult);
+        }
+
         public async Task<DataResult<Member>> GetAsync(StringModel model)
         {
             var query = $"SELECT Id, Name, MemberKey, CreateDate FROM {_memberTable} WHERE MemberKey = @MemberKey";
-
             var result = await _readDbConnection.QuerySingleOrDefaultAsync<Member>(query, new { MemberKey = model.Value });
+
+            if (result == null)
+                return new ErrorDataResult<Member>(result);
+
+            var resourceQuery = "SELECT r.*, m.Id AS MemId, m.* " +
+                                $"FROM {_resourceTable} r " +
+                                $"INNER JOIN {_memberTable} m ON m.Id = r.MemberId " +
+                                "WHERE r.Status = @Status AND m.MemberKey=@MemberKey";
+
+            var resourceResult = await _dbContext.Connection.QueryAsync<Resource>(sql: resourceQuery,
+                                                                                  param: new { Status = 1, MemberKey = result.MemberKey });
+
+            var filteredResult = resourceResult.DistinctBy(r => r.Id).ToList();
+            result.Resources = filteredResult;
             return new DataResult<Member>(result);
         }
     }
