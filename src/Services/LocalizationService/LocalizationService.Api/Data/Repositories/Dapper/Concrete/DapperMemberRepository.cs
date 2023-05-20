@@ -16,13 +16,19 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
         private readonly ILocalizationReadDbConnection _readDbConnection;
         private readonly ILocalizationWriteDbConnection _writeDbConnection;
 
-        public DapperMemberRepository(ILocalizationDbContext dbContext, 
-                                      ILocalizationReadDbConnection readDbConnection, 
+        private readonly string _memberTable;
+        private readonly string _resourceTable;
+
+        public DapperMemberRepository(ILocalizationDbContext dbContext,
+                                      ILocalizationReadDbConnection readDbConnection,
                                       ILocalizationWriteDbConnection writeDbConnection)
         {
             _dbContext = dbContext;
             _readDbConnection = readDbConnection;
             _writeDbConnection = writeDbConnection;
+
+            _memberTable = dbContext.GetTableNameWithScheme<Member>();
+            _resourceTable = dbContext.GetTableNameWithScheme<Resource>();
         }
 
         public async Task<Result> AddAsync(Member entity)
@@ -38,8 +44,8 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
                     return new ErrorResult("Member already exists");
 
                 //Add member, with SELECT CAST... we get the added member's id
-                var addQuery = "INSERT INTO Members(Name,MemberKey) VALUES (@Name,@MemberKey);SELECT CAST(SCOPE_IDENTITY() as int)";
-                var memberId = await _writeDbConnection.QuerySingleAsync<int>(sql: addQuery,
+                var addQuery = $"INSERT INTO {_memberTable}(Name,MemberKey) VALUES (@Name,@MemberKey);SELECT CAST(SCOPE_IDENTITY() as int)";
+                var memberId = await _writeDbConnection.QuerySingleOrDefaultAsync<int>(sql: addQuery,
                                                                               transaction: transaction,
                                                                               param: new { Name = entity.Name, MemberKey = entity.MemberKey });
                 if (memberId == 0)
@@ -70,7 +76,7 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
                     return new ErrorResult("Member does not exist");
 
                 //Delete query
-                var deleteQuery = "DELETE FROM Members WHERE MemberKey=@MemberKey";
+                var deleteQuery = $"DELETE FROM {_memberTable} WHERE MemberKey=@MemberKey";
                 var result = await _writeDbConnection.ExecuteAsync(sql: deleteQuery,
                                                                    transaction: transaction,
                                                                    param: new { MemberKey = model.Value });
@@ -108,7 +114,7 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
                     return new ErrorResult("Member name already exists");
 
                 //Update query
-                var updateQuery = "UPDATE Members SET Name = @Name WHERE MemberKey=@MemberKey";
+                var updateQuery = $"UPDATE {_memberTable} SET Name = @Name WHERE MemberKey=@MemberKey";
                 var result = await _writeDbConnection.ExecuteAsync(sql: updateQuery,
                                                                    transaction: transaction,
                                                                    param: new { Name = entity.Name, MemberKey = entity.MemberKey });
@@ -130,7 +136,7 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
 
         public async Task<DataResult<IReadOnlyList<Member>>> GetAllAsync()
         {
-            var query = $"SELECT Id,Name,MemberKey,CreateDate FROM Members";
+            var query = $"SELECT Id,Name,MemberKey,CreateDate FROM {_memberTable}";
 
             var result = await _readDbConnection.QueryAsync<Member>(query);
             return new DataResult<IReadOnlyList<Member>>(result);
@@ -138,34 +144,36 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
 
         public async Task<DataResult<IReadOnlyList<Member>>> GetAllWithResourcesAsync()
         {
-            var query = "SELECT l.Id, l.Name, l.MemberKey, l.CreateDate FROM Languages l " +
-                        "INNER JOIN Resources r ON l.Id = r.LanguageId";
+            var query = $"SELECT l.*, r.Id as ResourceId, r.* FROM {_memberTable} l " +
+                        $"INNER JOIN {_resourceTable} r ON l.Id = r.MemberId";
 
             var memberDictionary = new Dictionary<int, Member>();
 
             var result = await _dbContext.Connection.QueryAsync<Member, Resource, Member>(query, (member, resource) =>
             {
-                Member memberEntry;
+                Member? memberEntry;
 
                 if (!memberDictionary.TryGetValue(member.Id, out memberEntry))
                 {
                     memberEntry = member;
-                    memberEntry.Resources = memberEntry.Resources ?? new List<Resource>();
+                    memberEntry.Resources = new List<Resource>();
                     memberDictionary.Add(memberEntry.Id, memberEntry);
                 }
+                if (resource != null)
+                    memberEntry.Resources.Add(resource);
 
-                memberEntry.Resources.Add(resource);
                 return memberEntry;
-            }, splitOn: "Id");
+            }, splitOn: "ResourceId");
 
-            return new DataResult<IReadOnlyList<Member>>(result.Distinct().ToList());
+            var filteredResult = result.DistinctBy(m => m.Id).ToList();
+            return new DataResult<IReadOnlyList<Member>>(filteredResult);
         }
 
         public async Task<DataResult<Member>> GetAsync(StringModel model)
         {
-            var query = $"SELECT Id, Name, MemberKey, CreateDate FROM Members WHERE MemberKey = @MemberKey";
+            var query = $"SELECT Id, Name, MemberKey, CreateDate FROM {_memberTable} WHERE MemberKey = @MemberKey";
 
-            var result = await _readDbConnection.QuerySingleAsync<Member>(query, new { MemberKey = model.Value });
+            var result = await _readDbConnection.QuerySingleOrDefaultAsync<Member>(query, new { MemberKey = model.Value });
             return new DataResult<Member>(result);
         }
     }

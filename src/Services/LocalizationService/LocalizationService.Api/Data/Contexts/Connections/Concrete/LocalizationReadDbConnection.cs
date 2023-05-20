@@ -23,9 +23,9 @@ namespace LocalizationService.Api.Data.Contexts.Connections.Concrete
             return await connection.QueryFirstOrDefaultAsync<T>(sql, param, transaction);
         }
 
-        public async Task<T> QuerySingleAsync<T>(string sql, object param = null, IDbTransaction transaction = null, CancellationToken cancellationToken = default)
+        public async Task<T> QuerySingleOrDefaultAsync<T>(string sql, object param = null, IDbTransaction transaction = null, CancellationToken cancellationToken = default)
         {
-            return await connection.QuerySingleAsync<T>(sql, param, transaction);
+            return await connection.QuerySingleOrDefaultAsync<T>(sql, param, transaction);
         }
 
         public void Dispose()

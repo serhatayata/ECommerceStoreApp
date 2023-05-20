@@ -47,7 +47,7 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
 
                 //Add language, with SELECT CAST... we get the added language's id
                 var addQuery = $"INSERT INTO {_languageTable}(Code,DisplayName) VALUES (@Code,@DisplayName);SELECT CAST(SCOPE_IDENTITY() as int)";
-                var languageId = await _writeDbConnection.QuerySingleAsync<int>(sql: addQuery,
+                var languageId = await _writeDbConnection.QuerySingleOrDefaultAsync<int>(sql: addQuery,
                                                                                 transaction: transaction,
                                                                                 param: new { Code = entity.Code, DisplayName = entity.DisplayName });
                 if (languageId == 0)
@@ -164,7 +164,7 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
                 return languageEntry;
             }, splitOn: "ResourceId");
 
-            var filteredResult = result.Distinct().ToList();
+            var filteredResult = result.DistinctBy(l => l.Id).ToList();
             return new DataResult<IReadOnlyList<Language>>(filteredResult);
         }
 
@@ -172,7 +172,7 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
         {
             var query = $"SELECT Id,Code,DisplayName FROM {_languageTable} WHERE Code=@Code";
 
-            var result = await _readDbConnection.QuerySingleAsync<Language>(query, new { Code = model.Value });
+            var result = await _readDbConnection.QuerySingleOrDefaultAsync<Language>(query, new { Code = model.Value });
             return new DataResult<Language>(result);
         }
     }

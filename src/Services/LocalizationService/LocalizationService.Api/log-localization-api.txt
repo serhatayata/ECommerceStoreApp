@@ -1,0 +1,2 @@
+Exception : logging.ecom-store-app.localization not created --- System.Linq.ThrowHelper --- Exception : Sequence contains no elements --- 2 --- 20.05.2023 18:11:33 
+Exception : logging.ecom-store-app.localization not created --- System.Linq.ThrowHelper --- Exception : Sequence contains no elements --- 2 --- 20.05.2023 18:11:56 

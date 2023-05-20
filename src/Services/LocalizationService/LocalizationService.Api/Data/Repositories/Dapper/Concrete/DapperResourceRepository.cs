@@ -16,6 +16,10 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
         private readonly ILocalizationReadDbConnection _readDbConnection;
         private readonly ILocalizationWriteDbConnection _writeDbConnection;
 
+        private readonly string _resourceTable;
+        private readonly string _languageTable;
+        private readonly string _memberTable;
+
         public DapperResourceRepository(ILocalizationDbContext dbContext, 
                                         ILocalizationReadDbConnection readDbConnection, 
                                         ILocalizationWriteDbConnection writeDbConnection)
@@ -23,6 +27,10 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
             _dbContext = dbContext;
             _readDbConnection = readDbConnection;
             _writeDbConnection = writeDbConnection;
+
+            _resourceTable = _dbContext.GetTableNameWithScheme<Resource>();
+            _languageTable = _dbContext.GetTableNameWithScheme<Language>();
+            _memberTable = _dbContext.GetTableNameWithScheme<Member>();
         }
 
         public async Task<Result> AddAsync(Resource entity)
@@ -42,11 +50,11 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
                     return new ErrorResult("Resource already exists");
 
                 //Add language, with SELECT CAST... we get the added language's id
-                var addQuery = "INSERT INTO Resources(LanguageId,MemberId,Tag,Value,ResourceCode,LanguageCode,Status) " +
+                var addQuery = $"INSERT INTO {_resourceTable}(LanguageId,MemberId,Tag,Value,ResourceCode,LanguageCode,Status) " +
                                "VALUES (@LanguageId,@MemberId,@Tag,@Value,@ResourceCode,@LanguageCode,@Status);" +
                                "SELECT CAST(SCOPE_IDENTITY() as int)";
 
-                var resourceId = await _writeDbConnection.QuerySingleAsync<int>(sql: addQuery,
+                var resourceId = await _writeDbConnection.QuerySingleOrDefaultAsync<int>(sql: addQuery,
                                                                                 transaction: transaction,
                                                                                 param: new { LanguageId = existingLanguage?.Id });
                 if (resourceId == 0)
@@ -77,7 +85,7 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
                     return new ErrorResult("Resource does not exist");
 
                 //Delete query
-                var deleteQuery = "DELETE FROM Resources WHERE ResourceCode=@ResourceCode";
+                var deleteQuery = $"DELETE FROM {_resourceTable} WHERE ResourceCode=@ResourceCode";
                 var result = await _writeDbConnection.ExecuteAsync(sql: deleteQuery,
                                                                    transaction: transaction,
                                                                    param: new { ResourceCode = model.Value });
@@ -116,7 +124,7 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
                     return new ErrorResult("Resource code already exists");
 
                 //Update query
-                var updateQuery = "UPDATE Resources SET Tag = @Tag, Value = @Value, Status = @Status WHERE ResourceCode = @ResourceCode";
+                var updateQuery = $"UPDATE {_resourceTable} SET Tag = @Tag, Value = @Value, Status = @Status WHERE ResourceCode = @ResourceCode";
                 var result = await _writeDbConnection.ExecuteAsync(sql: updateQuery,
                                                                    transaction: transaction,
                                                                    param: new { Tag = entity.Tag, 
@@ -141,27 +149,28 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
 
         public async Task<DataResult<IReadOnlyList<Resource>>> GetAllAsync()
         {
-            var query = "SELECT r.Id, r.LanguageId, r.MemberId, r.Tag, r.Value, r.ResourceCode, r.LanguageCode, r.CreateDate, r.Status " +
-                        "FROM Resources r " +
-                        "INNER JOIN Languages l ON l.Id = r.LanguageId " +
-                        "INNER JOIN Members m ON m.Id = r.MemberId";
+            var query = "SELECT r.*, l.Id AS LangId, l.*, m.Id AS MemId, m.* " +
+                        $"FROM {_resourceTable} r " +
+                        $"INNER JOIN {_languageTable} l ON l.Id = r.LanguageId " +
+                        $"INNER JOIN {_memberTable} m ON m.Id = r.MemberId";
 
             var result = await _dbContext.Connection.QueryAsync<Resource,Language,Member,Resource>(query, (resource,language,member) =>
             {
                 resource.Language = language;
                 resource.Member = member;
                 return resource;
-            }, splitOn: "Id");
+            }, splitOn: "LangId,MemId");
 
-            return new DataResult<IReadOnlyList<Resource>>(result.Distinct().ToList());
+            var filteredResult = result.DistinctBy(r => r.Id).ToList();
+            return new DataResult<IReadOnlyList<Resource>>(filteredResult);
         }
 
         public async Task<DataResult<IReadOnlyList<Resource>>> GetAllActiveAsync()
         {
-            var query = "SELECT r.Id, r.LanguageId, r.MemberId, r.Tag, r.Value, r.ResourceCode, r.LanguageCode, r.CreateDate, r.Status " +
-                        "FROM Resources r " +
-                        "INNER JOIN Languages l ON l.Id = r.LanguageId " +
-                        "INNER JOIN Members m ON m.Id = r.MemberId " +
+            var query = "SELECT r.*, l.Id AS LangId, l.*, m.Id AS MemId, m.* " +
+                        $"FROM {_resourceTable} r " +
+                        $"INNER JOIN {_languageTable} l ON l.Id = r.LanguageId " +
+                        $"INNER JOIN {_memberTable} m ON m.Id = r.MemberId " +
                         "WHERE Status = @Status";
 
             var result = await _dbContext.Connection.QueryAsync<Resource, Language, Member, Resource>(query, (resource, language, member) =>
@@ -169,16 +178,17 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
                 resource.Language = language;
                 resource.Member = member;
                 return resource;
-            }, splitOn: "Id", param : new { Status = 1 });
+            }, splitOn: "LangId,MemId", param : new { Status = 1 });
 
-            return new DataResult<IReadOnlyList<Resource>>(result.Distinct().ToList());
+            var filteredResult = result.DistinctBy(r => r.Id).ToList();
+            return new DataResult<IReadOnlyList<Resource>>(filteredResult);
         }
 
         public async Task<DataResult<Resource>> GetAsync(StringModel model)
         {
-            var query = "SELECT Id, LanguageId, MemberId, Tag, Value, ResourceCode, LanguageCode, CreateDate, Status FROM Resources WHERE ResourceCode = @ResourceCode";
+            var query = $"SELECT Id, LanguageId, MemberId, Tag, Value, ResourceCode, LanguageCode, CreateDate, Status FROM {_resourceTable} WHERE ResourceCode = @ResourceCode";
 
-            var result = await _readDbConnection.QuerySingleAsync<Resource>(query, new { ResourceCode = model.Value });
+            var result = await _readDbConnection.QuerySingleOrDefaultAsync<Resource>(query, new { ResourceCode = model.Value });
             return new DataResult<Resource>(result);
         }
     }
