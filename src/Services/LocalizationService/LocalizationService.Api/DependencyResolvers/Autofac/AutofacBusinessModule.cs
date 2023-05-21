@@ -5,6 +5,8 @@ using LocalizationService.Api.Data.Contexts.Connections.Concrete;
 using LocalizationService.Api.Data.Repositories.Base;
 using LocalizationService.Api.Data.Repositories.Dapper.Abstract;
 using LocalizationService.Api.Data.Repositories.Dapper.Concrete;
+using LocalizationService.Api.Data.Repositories.EntityFramework.Abstract;
+using LocalizationService.Api.Data.Repositories.EntityFramework.Concrete;
 using LocalizationService.Api.Services.Abstract;
 using LocalizationService.Api.Services.Concrete;
 using LocalizationService.Api.Services.Redis.Abstract;
@@ -28,6 +30,10 @@ namespace LocalizationService.Api.DependencyResolvers.Autofac
             builder.RegisterType<DapperLanguageRepository>().As<IDapperLanguageRepository>().InstancePerDependency();
             builder.RegisterType<DapperMemberRepository>().As<IDapperMemberRepository>().InstancePerDependency();
             builder.RegisterType<DapperResourceRepository>().As<IDapperResourceRepository>().InstancePerDependency();
+
+            builder.RegisterType<EfLanguageRepository>().As<IEfLanguageRepository>().InstancePerDependency();
+            builder.RegisterType<EfMemberRepository>().As<IEfMemberRepository>().InstancePerDependency();
+            builder.RegisterType<EfResourceRepository>().As<IEfResourceRepository>().InstancePerDependency();
             #endregion
             #region SERVICES
             builder.RegisterType<LanguageService>().As<ILanguageService>().InstancePerLifetimeScope();

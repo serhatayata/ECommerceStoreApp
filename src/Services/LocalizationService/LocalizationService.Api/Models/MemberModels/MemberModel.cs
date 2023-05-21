@@ -1,4 +1,5 @@
-﻿using LocalizationService.Api.Models.Base.Abstract;
+﻿using LocalizationService.Api.Entities;
+using LocalizationService.Api.Models.Base.Abstract;
 
 namespace LocalizationService.Api.Models.MemberModels
 {
@@ -7,5 +8,7 @@ namespace LocalizationService.Api.Models.MemberModels
         public string Name { get; set; }
         public string MemberKey { get; set; }
         public DateTime CreateDate { get; set; }
+
+        public IReadOnlyList<Resource> Resources { get; set; }
     }
 }

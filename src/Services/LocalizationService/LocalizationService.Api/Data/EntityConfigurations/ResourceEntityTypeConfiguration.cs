@@ -31,7 +31,7 @@ namespace LocalizationService.Api.Data.EntityConfigurations
                    .WithMany(l => l.Resources)
                    .HasForeignKey(rl => rl.LanguageId)
                    .IsRequired()
-                   .OnDelete(DeleteBehavior.NoAction);
+                   .OnDelete(DeleteBehavior.SetNull);
 
             builder.HasOne(r => r.Member)
                    .WithMany(l => l.Resources)

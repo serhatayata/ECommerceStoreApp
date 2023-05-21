@@ -1,4 +1,5 @@
 ﻿using LocalizationService.Api.Data.Repositories.Dapper.Abstract;
+using LocalizationService.Api.Data.Repositories.EntityFramework.Abstract;
 
 namespace LocalizationService.Api.Data.Repositories.Base
 {
@@ -7,5 +8,9 @@ namespace LocalizationService.Api.Data.Repositories.Base
         IDapperLanguageRepository LanguageRepository { get; }
         IDapperMemberRepository MemberRepository { get; }
         IDapperResourceRepository ResourceRepository { get; }
+
+        IEfLanguageRepository EfLanguageRepository { get; }
+        IEfMemberRepository EfMemberRepository { get; }
+        IEfResourceRepository EfResourceRepository { get; }
     }
 }

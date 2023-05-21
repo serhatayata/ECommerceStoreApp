@@ -40,11 +40,14 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
             try
             {
                 _dbContext.Database.UseTransaction(transaction as DbTransaction);
+
+                var existingLanguage = await _dbContext.Languages.FirstOrDefaultAsync(l => l.Code == entity.LanguageCode);
+                if (existingLanguage == null)
+                    return new ErrorResult("Language not found");
+
                 //Check if resource exists
                 bool resourceExists = await _dbContext.Resources.AnyAsync(l => l.ResourceCode == entity.ResourceCode || 
                                                                                (l.Tag == entity.Tag && l.MemberId == entity.MemberId));
-
-                var existingLanguage = await _dbContext.Languages.FirstOrDefaultAsync(l => l.Code == entity.LanguageCode);
 
                 if (resourceExists)
                     return new ErrorResult("Resource already exists");
@@ -56,7 +59,14 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
 
                 var resourceId = await _writeDbConnection.QuerySingleOrDefaultAsync<int>(sql: addQuery,
                                                                                 transaction: transaction,
-                                                                                param: new { LanguageId = existingLanguage?.Id });
+                                                                                param: new { LanguageId = existingLanguage?.Id,
+                                                                                             MemberId = entity.MemberId,
+                                                                                             Tag = entity.Tag,
+                                                                                             Value = entity.Value,
+                                                                                             ResourceCode = Guid.NewGuid().ToString(),
+                                                                                             LanguageCode = entity.LanguageCode,
+                                                                                             Status = entity.Status
+                                                                                });
                 if (resourceId == 0)
                     return new ErrorResult("Resource not added");
 
@@ -80,6 +90,7 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
             using var transaction = _dbContext.Connection.BeginTransaction();
             try
             {
+                _dbContext.Database.UseTransaction(transaction as DbTransaction);
                 bool resourceExists = await _dbContext.Resources.AnyAsync(l => l.ResourceCode == model.Value);
                 if (!resourceExists)
                     return new ErrorResult("Resource does not exist");
@@ -111,6 +122,7 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
             using var transaction = _dbContext.Connection.BeginTransaction();
             try
             {
+                _dbContext.Database.UseTransaction(transaction as DbTransaction);
                 var resourceExists = await _dbContext.Resources.FirstOrDefaultAsync(l => l.ResourceCode == entity.ResourceCode);
                 if (resourceExists == null)
                     return new ErrorResult("Resource does not exist");
@@ -151,7 +163,7 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
         {
             var query = "SELECT r.*, l.Id AS LangId, l.*, m.Id AS MemId, m.* " +
                         $"FROM {_resourceTable} r " +
-                        $"INNER JOIN {_languageTable} l ON l.Id = r.LanguageId " +
+                        $"INNER JOIN {_languageTable} l ON l.Code = r.LanguageCode " +
                         $"INNER JOIN {_memberTable} m ON m.Id = r.MemberId";
 
             var result = await _dbContext.Connection.QueryAsync<Resource,Language,Member,Resource>(query, (resource,language,member) =>
@@ -169,7 +181,7 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
         {
             var query = "SELECT r.*, l.Id AS LangId, l.*, m.Id AS MemId, m.* " +
                         $"FROM (SELECT * FROM {_resourceTable} ORDER BY Id DESC OFFSET (@Page-1) * @PageSize ROWS FETCH NEXT @PageSize ROWS ONLY) r " +
-                        $"INNER JOIN {_languageTable} l ON l.Id = r.LanguageId " +
+                        $"INNER JOIN {_languageTable} l ON l.Code = r.LanguageCode " +
                         $"INNER JOIN {_memberTable} m ON m.Id = r.MemberId";
 
             var result = await _dbContext.Connection.QueryAsync<Resource, Language, Member, Resource>(query, (resource, language, member) =>
@@ -187,7 +199,7 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
         {
             var query = "SELECT r.*, l.Id AS LangId, l.*, m.Id AS MemId, m.* " +
                         $"FROM {_resourceTable} r " +
-                        $"INNER JOIN {_languageTable} l ON l.Id = r.LanguageId " +
+                        $"INNER JOIN {_languageTable} l ON l.Code = r.LanguageCode " +
                         $"INNER JOIN {_memberTable} m ON m.Id = r.MemberId " +
                         "WHERE Status = @Status";
 
@@ -206,7 +218,7 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
         {
             var query = "SELECT r.*, l.Id AS LangId, l.*, m.Id AS MemId, m.* " +
                         $"FROM (SELECT * FROM {_resourceTable} WHERE Status = @Status ORDER BY Id DESC OFFSET (@Page-1) * @PageSize ROWS FETCH NEXT @PageSize ROWS ONLY) r " +
-                        $"INNER JOIN {_languageTable} l ON l.Id = r.LanguageId " +
+                        $"INNER JOIN {_languageTable} l ON l.Code = r.LanguageCode " +
                         $"INNER JOIN {_memberTable} m ON m.Id = r.MemberId ";
 
             var result = await _dbContext.Connection.QueryAsync<Resource, Language, Member, Resource>(query, (resource, language, member) =>

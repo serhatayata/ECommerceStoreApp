@@ -1,4 +1,7 @@
 ﻿using FluentValidation;
+using FluentValidation.AspNetCore;
+using LocalizationService.Api.Attributes;
+using LocalizationService.Api.Validations.FluentValidation.LanguageValidators;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
 
@@ -10,7 +13,7 @@ namespace LocalizationService.Api.Extensions
         {
             services.AddControllers(options =>
             {
-                //options.Filters.Add(typeof(FluentValidationCustomValidationAttribute));
+                options.Filters.Add(typeof(FluentValidationCustomValidationAttribute));
             }).AddJsonOptions(o =>
             {
                 o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
@@ -21,9 +24,12 @@ namespace LocalizationService.Api.Extensions
                 options.SuppressModelStateInvalidFilter = true;
             });
 
-            //services.AddValidatorsFromAssemblyContaining<UserLoginModelValidator>();
+            #region Language
+            services.AddValidatorsFromAssemblyContaining<LanguageAddModelValidator>();
+            services.AddValidatorsFromAssemblyContaining<LanguageUpdateModelValidator>();
+            #endregion
 
-            //services.AddFluentValidationAutoValidation();
+            services.AddFluentValidationAutoValidation();
             //services.AddFluentValidationClientsideAdapters(); // for client side
         }
     }

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using LocalizationService.Api.Data.Repositories.Base;
+using LocalizationService.Api.Entities;
 using LocalizationService.Api.Models.Base.Concrete;
 using LocalizationService.Api.Models.IncludeOptions;
 using LocalizationService.Api.Models.LanguageModels;
@@ -21,25 +22,33 @@ namespace LocalizationService.Api.Services.Concrete
 
         public async Task<Result> AddAsync(LanguageAddModel model)
         {
-            throw new NotImplementedException();
+            var mappedLanguage = _mapper.Map<Language>(model);
+            var result = await _unitOfWork.EfLanguageRepository.AddAsync(mappedLanguage);
+
+            return result;
         }
 
         public async Task<Result> UpdateAsync(LanguageUpdateModel model)
         {
-            throw new NotImplementedException();
+            var mappedLanguage = _mapper.Map<Language>(model);
+            var result = await _unitOfWork.EfLanguageRepository.UpdateAsync(mappedLanguage);
+
+            return result;
         }
 
         public async Task<Result> DeleteAsync(StringModel model)
         {
-            throw new NotImplementedException();
+            var result = await _unitOfWork.EfLanguageRepository.DeleteAsync(model);
+
+            return result;
         }
 
         public async Task<DataResult<IReadOnlyList<LanguageModel>>> GetAllAsync()
         {
             var languages = await _unitOfWork.LanguageRepository.GetAllAsync();
-            var result = _mapper.Map<IReadOnlyList<LanguageModel>>(languages);
+            var result = _mapper.Map<IReadOnlyList<LanguageModel>>(languages.Data);
 
-            return new DataResult<IReadOnlyList<LanguageModel>>(result);
+            return new SuccessDataResult<IReadOnlyList<LanguageModel>>(result);
         }
 
         public async Task<DataResult<IReadOnlyList<LanguageModel>>> GetAllWithResourcesAsync()
@@ -47,15 +56,17 @@ namespace LocalizationService.Api.Services.Concrete
             var languages = await _unitOfWork.LanguageRepository.GetAllWithResourcesAsync();
             var result = _mapper.Map<IReadOnlyList<LanguageModel>>(languages.Data);
 
-            return new DataResult<IReadOnlyList<LanguageModel>>(result);
+            return new SuccessDataResult<IReadOnlyList<LanguageModel>>(result);
         }
 
         public async Task<DataResult<LanguageModel>> GetAsync(StringModel model)
         {
             var language = await _unitOfWork.LanguageRepository.GetAsync(model);
             var result = _mapper.Map<LanguageModel>(language.Data);
+            if (result == null)
+                return new ErrorDataResult<LanguageModel>();
 
-            return new DataResult<LanguageModel>(result);
+            return new SuccessDataResult<LanguageModel>(result);
         }
 
         public async Task<DataResult<IReadOnlyList<LanguageModel>>> GetAllWithResourcesPagingAsync(PagingModel model)
@@ -63,7 +74,7 @@ namespace LocalizationService.Api.Services.Concrete
             var languages = await _unitOfWork.LanguageRepository.GetAllWithResourcesPagingAsync(model);
             var result = _mapper.Map<IReadOnlyList<LanguageModel>>(languages.Data);
 
-            return new DataResult<IReadOnlyList<LanguageModel>>(result);
+            return new SuccessDataResult<IReadOnlyList<LanguageModel>>(result);
         }
 
         public async Task<DataResult<IReadOnlyList<LanguageModel>>> GetAllPagingAsync(PagingModel model)
@@ -71,7 +82,7 @@ namespace LocalizationService.Api.Services.Concrete
             var languages = await _unitOfWork.LanguageRepository.GetAllPagingAsync(model);
             var result = _mapper.Map<IReadOnlyList<LanguageModel>>(languages.Data);
 
-            return new DataResult<IReadOnlyList<LanguageModel>>(result);
+            return new SuccessDataResult<IReadOnlyList<LanguageModel>>(result);
         }
     }
 }
