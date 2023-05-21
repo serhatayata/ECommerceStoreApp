@@ -36,8 +36,11 @@ builder.Services.AddLogging();
 #endregion
 #region DbContext
 string defaultConnString = configuration.GetConnectionString("DefaultConnection");
-
 builder.Services.AddDbContext<LocalizationDbContext>(options => options.UseSqlServer(defaultConnString, b => b.MigrationsAssembly(assembly)), ServiceLifetime.Transient);
+#endregion
+#region Authentication / Authorization
+builder.Services.AddAuthenticationConfigurations(configuration);
+builder.Services.AddAuthorizationConfigurations();
 #endregion
 #region Http
 builder.Services.AddHttpContextAccessor();

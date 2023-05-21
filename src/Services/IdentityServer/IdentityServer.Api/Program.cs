@@ -17,6 +17,7 @@ using IdentityServer.Api.Utilities.IoC;
 using IdentityServer.Api.Validations.IdentityValidators;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 #region SERVICES

@@ -2,6 +2,8 @@
 using LocalizationService.Api.Models.LanguageModels;
 using LocalizationService.Api.Services.Abstract;
 using LocalizationService.Api.Utilities.Results;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LocalizationService.Api.Controllers
@@ -21,6 +23,7 @@ namespace LocalizationService.Api.Controllers
         [Route("add")]
         [ProducesResponseType(typeof(SuccessResult), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ErrorResult), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(Policy = "LocalizationWrite")]
         public async Task<IActionResult> AddAsync([FromBody] LanguageAddModel model)
         {
             var result = await _languageService.AddAsync(model);
@@ -34,6 +37,7 @@ namespace LocalizationService.Api.Controllers
         [Route("update")]
         [ProducesResponseType(typeof(SuccessResult), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ErrorResult), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(Policy = "LocalizationWrite")]
         public async Task<IActionResult> UpdateAsync([FromBody] LanguageUpdateModel model)
         {
             var result = await _languageService.UpdateAsync(model);
@@ -47,6 +51,7 @@ namespace LocalizationService.Api.Controllers
         [Route("delete")]
         [ProducesResponseType(typeof(SuccessResult), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ErrorResult), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(Policy = "LocalizationWrite")]
         public async Task<IActionResult> DeleteAsync([FromBody] StringModel model)
         {
             var result = await _languageService.DeleteAsync(model);
@@ -60,6 +65,7 @@ namespace LocalizationService.Api.Controllers
         [Route("get")]
         [ProducesResponseType(typeof(SuccessDataResult<LanguageModel>), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ErrorDataResult<LanguageModel>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(Policy = "LocalizationRead")]
         public async Task<IActionResult> GetAsync([FromBody] StringModel model)
         {
             var result = await _languageService.GetAsync(model);
@@ -73,6 +79,7 @@ namespace LocalizationService.Api.Controllers
         [Route("get-all")]
         [ProducesResponseType(typeof(DataResult<LanguageModel>), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(DataResult<LanguageModel>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(Policy = "LocalizationRead")]
         public async Task<IActionResult> GetAllAsync()
         {
             var result = await _languageService.GetAllAsync();
@@ -86,6 +93,7 @@ namespace LocalizationService.Api.Controllers
         [Route("get-all-paging")]
         [ProducesResponseType(typeof(DataResult<LanguageModel>), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(DataResult<LanguageModel>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(Policy = "LocalizationRead")]
         public async Task<IActionResult> GetAllPagingAsync([FromBody] PagingModel model)
         {
             var result = await _languageService.GetAllPagingAsync(model);
@@ -99,6 +107,7 @@ namespace LocalizationService.Api.Controllers
         [Route("get-all-with-resources")]
         [ProducesResponseType(typeof(DataResult<LanguageModel>), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(DataResult<LanguageModel>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(Policy = "LocalizationRead")]
         public async Task<IActionResult> GetAllWithResourcesAsync()
         {
             var result = await _languageService.GetAllWithResourcesAsync();
@@ -112,6 +121,7 @@ namespace LocalizationService.Api.Controllers
         [Route("get-all-with-resources-paging")]
         [ProducesResponseType(typeof(DataResult<LanguageModel>), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(DataResult<LanguageModel>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(Policy = "LocalizationRead")]
         public async Task<IActionResult> GetAllWithResourcesPagingAsync([FromBody] PagingModel model)
         {
             var result = await _languageService.GetAllWithResourcesPagingAsync(model);

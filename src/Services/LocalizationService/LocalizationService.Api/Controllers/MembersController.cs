@@ -2,6 +2,7 @@
 using LocalizationService.Api.Models.MemberModels;
 using LocalizationService.Api.Services.Abstract;
 using LocalizationService.Api.Utilities.Results;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LocalizationService.Api.Controllers
@@ -21,6 +22,7 @@ namespace LocalizationService.Api.Controllers
         [Route("add")]
         [ProducesResponseType(typeof(SuccessResult), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ErrorResult), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(Policy = "LocalizationWrite")]
         public async Task<IActionResult> AddAsync([FromBody] MemberAddModel model)
         {
             var result = await _memberService.AddAsync(model);
@@ -34,6 +36,7 @@ namespace LocalizationService.Api.Controllers
         [Route("update")]
         [ProducesResponseType(typeof(SuccessResult), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ErrorResult), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(Policy = "LocalizationWrite")]
         public async Task<IActionResult> UpdateAsync([FromBody] MemberUpdateModel model)
         {
             var result = await _memberService.UpdateAsync(model);
@@ -47,6 +50,7 @@ namespace LocalizationService.Api.Controllers
         [Route("delete")]
         [ProducesResponseType(typeof(SuccessResult), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ErrorResult), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(Policy = "LocalizationWrite")]
         public async Task<IActionResult> DeleteAsync([FromBody] StringModel model)
         {
             var result = await _memberService.DeleteAsync(model);
@@ -60,6 +64,7 @@ namespace LocalizationService.Api.Controllers
         [Route("get-all")]
         [ProducesResponseType(typeof(DataResult<MemberModel>), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(DataResult<MemberModel>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(Policy = "LocalizationRead")]
         public async Task<IActionResult> GetAllAsync()
         {
             var result = await _memberService.GetAllAsync();
@@ -73,6 +78,7 @@ namespace LocalizationService.Api.Controllers
         [Route("get-all-paging")]
         [ProducesResponseType(typeof(DataResult<MemberModel>), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(DataResult<MemberModel>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(Policy = "LocalizationRead")]
         public async Task<IActionResult> GetAllPagingAsync([FromBody] PagingModel model)
         {
             var result = await _memberService.GetAllPagingAsync(model);
@@ -86,6 +92,7 @@ namespace LocalizationService.Api.Controllers
         [Route("get-all-with-resources")]
         [ProducesResponseType(typeof(DataResult<MemberModel>), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(DataResult<MemberModel>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(Policy = "LocalizationRead")]
         public async Task<IActionResult> GetAllWithResourcesAsync()
         {
             var result = await _memberService.GetAllWithResourcesAsync();
@@ -99,6 +106,7 @@ namespace LocalizationService.Api.Controllers
         [Route("get-all-with-resources-paging")]
         [ProducesResponseType(typeof(DataResult<MemberModel>), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(DataResult<MemberModel>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(Policy = "LocalizationRead")]
         public async Task<IActionResult> GetAllWithResourcesPagingAsync([FromBody] PagingModel model)
         {
             var result = await _memberService.GetAllWithResourcesPagingAsync(model);

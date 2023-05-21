@@ -51,7 +51,7 @@ namespace IdentityServer.Api.CacheStores
             var client = _clientService.Get(new StringModel() { Value = clientId },
                                             new ClientIncludeOptions());
 
-            if (client == null)
+            if (client.Data == null)
                 return null;
 
             await _redisService.SetAsync(prefix + clientId, client.Data, duration);

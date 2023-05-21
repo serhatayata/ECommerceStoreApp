@@ -17,6 +17,7 @@ namespace LocalizationService.Api.Extensions
             services.AddControllers(options =>
             {
                 options.Filters.Add(typeof(FluentValidationCustomValidationAttribute));
+                options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
             }).AddJsonOptions(o =>
             {
                 o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
