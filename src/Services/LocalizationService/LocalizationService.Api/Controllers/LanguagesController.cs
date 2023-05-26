@@ -79,7 +79,7 @@ namespace LocalizationService.Api.Controllers
         [Route("get-all")]
         [ProducesResponseType(typeof(DataResult<LanguageModel>), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(DataResult<LanguageModel>), (int)System.Net.HttpStatusCode.BadRequest)]
-        [Authorize(Policy = "LocalizationRead")]
+        //[Authorize(Policy = "LocalizationRead")]
         public async Task<IActionResult> GetAllAsync()
         {
             var result = await _languageService.GetAllAsync();

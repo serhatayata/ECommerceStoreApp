@@ -70,6 +70,9 @@ var localizationDbContext = scope.ServiceProvider.GetService<LocalizationDbConte
 
 await LocalizationSeedData.LoadLocalizationSeedDataAsync(localizationDbContext, scope, environment, configuration);
 #endregion
+#region Consul
+builder.Services.ConfigureConsul(configuration);
+#endregion
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -92,4 +95,8 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+app.Start();
+
+app.RegisterWithConsul(app.Lifetime, configuration);
+
+app.WaitForShutdown();

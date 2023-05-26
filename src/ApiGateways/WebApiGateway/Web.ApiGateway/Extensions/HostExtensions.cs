@@ -14,7 +14,7 @@ namespace Web.ApiGateway.Extensions
 
             host.ConfigureAppConfiguration(config =>
             {
-                config.AddJsonFile($"Configurations/ocelot.{environment.EnvironmentName}.json")
+                config.AddJsonFile($"Configurations/ocelot.json")
                       .AddEnvironmentVariables()
                       .Build();
             })

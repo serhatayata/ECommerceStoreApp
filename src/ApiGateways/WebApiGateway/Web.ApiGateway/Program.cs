@@ -13,29 +13,21 @@ IWebHostEnvironment environment = builder.Environment;
 var config = ConfigurationExtension.appConfig;
 var serilogConfig = ConfigurationExtension.serilogConfig;
 
-builder.Services.AddControllers();
 builder.Configuration.AddConfiguration(config);
 
-#region HOST
 builder.Host.AddHostExtensions(environment);
-#endregion
-#region AUTH
-builder.Services.ConfigureAuth(configuration);
-#endregion
-#region HTTP
-builder.Services.AddTransient<HttpClientDelegatingHandler>();
 
-builder.Services.ConfigureHttpClients(configuration);
-#endregion
-#region OCELOT CONFIGURATIONS
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddControllers();
+
 builder.Services.AddOcelot().AddConsul();
-#endregion
-#region CORS
-builder.Services.ConfigureCors();
-#endregion
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.ConfigureCors();
+
+builder.Services.AddTransient<HttpClientDelegatingHandler>();
 
 var app = builder.Build();
 
@@ -45,8 +37,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Web.ApiGateway v1"));
 }
 
-app.UseHttpsRedirection();
 app.UseRouting();
+
 app.UseCors("CorsPolicy");
 
 app.UseAuthentication();

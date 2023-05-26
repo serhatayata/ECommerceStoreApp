@@ -4,24 +4,36 @@
     //Notes : Consul service discovery is used, no need to use DownstreamHostAndPorts.
     {
       "UseServiceDiscovery": true,
-      "ServiceName": "LocalizationService.Api",
+      "ServiceName": "LocalizationService",
       "DownstreamPathTemplate": "/api/{everything}",
       "DownstreamScheme": "http",
 
       "UpstreamPathTemplate": "/localization/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "DELETE", "PUT" ],
       "UpstreamScheme": "http"
+      //"DownstreamHostAndPorts": [
+      //  {
+      //    "Host": "localhost",
+      //    "Port": 5002
+      //  }
+      //]
     },
     // IDENTITY SERVICE
     {
       "UseServiceDiscovery": true,
-      "ServiceName": "IdentityService.Api",
-      "DownstreamPathTemplate": "{everything}",
+      "ServiceName": "IdentityService",
+      "DownstreamPathTemplate": "/{everything}",
       "DownstreamScheme": "http",
 
       "UpstreamPathTemplate": "/auth/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "DELETE", "PUT" ],
       "UpstreamScheme": "http"
+      //"DownstreamHostAndPorts": [
+      //  {
+      //    "Host": "localhost",
+      //    "Port": 5001
+      //  }
+      //]
     }
   ],
   "GlobalConfiguration": {
@@ -30,7 +42,7 @@
     "ServiceDiscoveryProvider": {
       "Scheme": "http",
       //"Host": "s_consul",
-      "Host": "http://localhost:5000",
+      "Host": "localhost",
       "Port": "8500",
       "Type": "Consul"
     }
