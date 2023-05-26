@@ -1,0 +1,38 @@
+﻿{
+  "Routes": [
+    // LOCALIZATION SERVICE
+    //Notes : Consul service discovery is used, no need to use DownstreamHostAndPorts.
+    {
+      "UseServiceDiscovery": true,
+      "ServiceName": "LocalizationService.Api",
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+
+      "UpstreamPathTemplate": "/localization/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "DELETE", "PUT" ],
+      "UpstreamScheme": "http"
+    },
+    // IDENTITY SERVICE
+    {
+      "UseServiceDiscovery": true,
+      "ServiceName": "IdentityService.Api",
+      "DownstreamPathTemplate": "/{everything}",
+      "DownstreamScheme": "http",
+
+      "UpstreamPathTemplate": "/auth/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "DELETE", "PUT" ],
+      "UpstreamScheme": "http"
+    }
+  ],
+  "GlobalConfiguration": {
+    //"BaseUrl": "http://web.apigateway.api:5000",
+    "BaseUrl": "http://localhost:5000",
+    "ServiceDiscoveryProvider": {
+      "Scheme": "http",
+      //"Host": "s_consul",
+      "Host": "http://localhost:5000",
+      "Port": "8500",
+      "Type": "Consul"
+    }
+  }
+}

@@ -2,6 +2,8 @@ using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 using Ocelot.Provider.Consul;
 using Web.ApiGateway.Extensions;
+using Web.ApiGateway.Handlers;
+using Web.ApiGateway.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
@@ -14,10 +16,23 @@ var serilogConfig = ConfigurationExtension.serilogConfig;
 builder.Services.AddControllers();
 builder.Configuration.AddConfiguration(config);
 
+#region HOST
+builder.Host.AddHostExtensions(environment);
+#endregion
+#region AUTH
 builder.Services.ConfigureAuth(configuration);
-builder.Services.AddOcelot().AddConsul();
+#endregion
+#region HTTP
+builder.Services.AddTransient<HttpClientDelegatingHandler>();
+
 builder.Services.ConfigureHttpClients(configuration);
+#endregion
+#region OCELOT CONFIGURATIONS
+builder.Services.AddOcelot().AddConsul();
+#endregion
+#region CORS
 builder.Services.ConfigureCors();
+#endregion
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -37,8 +52,13 @@ app.UseCors("CorsPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
+var ocelotConfig = new OcelotPipelineConfiguration
+{
+    AuthorizationMiddleware = GatewayAuthorizationMiddleware.Authorize
+};
 
-await app.UseOcelot();
+await app.UseOcelot(ocelotConfig);
+
+app.MapControllers();
 
 app.Run();
