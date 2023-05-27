@@ -7,6 +7,10 @@ namespace Web.ApiGateway.Controllers
     [ApiController]
     public class LocalizationsController : ControllerBase
     {
-
+        [HttpGet]
+        public async Task<IActionResult> Get()
+        {
+            return Ok();
+        }
     }
 }
