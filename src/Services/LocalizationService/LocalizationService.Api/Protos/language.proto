@@ -1,0 +1,30 @@
+﻿import "google/protobuf/any.proto";
+
+syntax = "proto3";
+
+option csharp_namespace = "Grpc.LocalizationService";
+
+package localization;
+
+service LanguageService {
+	rpc GetAllAsync (GetProductDetail) returns (ProductModel);
+}
+
+//message DataResult {
+  //oneof kind {
+  //ListValue list_value = 6;
+  //}
+//}
+
+message DataResult {
+  bool Success = 1;
+  object Message = 2;
+  int StatusCode = 3;
+  string MessageCode = 4;
+  repeated LanguageModel values = 5;
+}
+
+message LanguageModel {
+    string Code = 1;
+    string DisplayName = 2;
+}

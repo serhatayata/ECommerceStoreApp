@@ -6,6 +6,8 @@ using LocalizationService.Api.DependencyResolvers.Autofac;
 using LocalizationService.Api.Extensions;
 using LocalizationService.Api.Mapping;
 using LocalizationService.Api.Models.LogModels;
+using LocalizationService.Api.Services.Abstract;
+using LocalizationService.Api.Services.Concrete;
 using LocalizationService.Api.Services.ElasticSearch.Abstract;
 using LocalizationService.Api.Services.ElasticSearch.Concrete;
 using LocalizationService.Api.Utilities.IoC;
@@ -24,6 +26,9 @@ builder.Services.AddElasticSearchConfiguration();
 
 #region Startup DI
 builder.Services.AddSingleton<IElasticSearchService, ElasticSearchService>();
+#endregion
+#region gRPC
+builder.Services.AddGrpc();
 #endregion
 #region Host
 builder.Host.AddHostExtensions(environment);
@@ -92,6 +97,8 @@ app.UseRouting();
 //app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapGrpcService<GreeterService>();
 
 app.MapControllers();
 
