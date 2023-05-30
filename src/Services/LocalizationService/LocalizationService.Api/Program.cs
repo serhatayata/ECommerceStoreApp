@@ -6,12 +6,13 @@ using LocalizationService.Api.DependencyResolvers.Autofac;
 using LocalizationService.Api.Extensions;
 using LocalizationService.Api.Mapping;
 using LocalizationService.Api.Models.LogModels;
-using LocalizationService.Api.Services.Abstract;
-using LocalizationService.Api.Services.Concrete;
 using LocalizationService.Api.Services.ElasticSearch.Abstract;
 using LocalizationService.Api.Services.ElasticSearch.Concrete;
+using LocalizationService.Api.Services.gRPC;
 using LocalizationService.Api.Utilities.IoC;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
@@ -78,6 +79,23 @@ await LocalizationSeedData.LoadLocalizationSeedDataAsync(localizationDbContext, 
 #region Consul
 builder.Services.ConfigureConsul(configuration);
 #endregion
+#region gRPC
+builder.Services.AddGrpcReflection();
+#endregion
+
+builder.WebHost.UseKestrel(options =>
+{
+    var ports = GetDefinedPorts(builder.Configuration);
+    options.Listen(IPAddress.Loopback, ports.httpPort, listenOptions =>
+    {
+        listenOptions.Protocols = HttpProtocols.Http1;
+    });
+    options.Listen(IPAddress.Loopback, ports.grpcPort, listenOptions =>
+    {
+        listenOptions.Protocols = HttpProtocols.Http2;
+    });
+
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -88,6 +106,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.MapGrpcReflectionService();
 }
 
 app.ConfigureCustomExceptionMiddleware();
@@ -98,7 +117,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGrpcService<GreeterService>();
+app.MapGrpcService<GrpcLanguageService>();
 
 app.MapControllers();
 
@@ -107,3 +126,10 @@ app.Start();
 app.RegisterWithConsul(app.Lifetime, configuration);
 
 app.WaitForShutdown();
+
+(int httpPort, int grpcPort) GetDefinedPorts(IConfiguration config)
+{
+    var grpcPort = config.GetValue("HostSettings:GRPC_PORT", 81);
+    var port = config.GetValue("HostSettings:PORT", 80);
+    return (port, grpcPort);
+}

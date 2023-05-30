@@ -3,11 +3,9 @@ using LocalizationService.Api.Data.Contexts;
 using LocalizationService.Api.Data.Contexts.Connections.Abstract;
 using LocalizationService.Api.Data.Repositories.Dapper.Abstract;
 using LocalizationService.Api.Entities;
-using LocalizationService.Api.Extensions;
 using LocalizationService.Api.Models.Base.Concrete;
 using LocalizationService.Api.Utilities.Results;
 using Microsoft.EntityFrameworkCore;
-using StackExchange.Redis;
 using System.Data.Common;
 
 namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
