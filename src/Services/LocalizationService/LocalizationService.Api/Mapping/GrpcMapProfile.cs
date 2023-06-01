@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using LocalizationService.Api.Grpc;
+using LocalizationService.Api.Models.Base.Concrete;
 using LocalizationService.Api.Models.LanguageModels;
 using LocalizationService.Api.Utilities.Results;
 
@@ -20,6 +21,10 @@ namespace LocalizationService.Api.Mapping
             #endregion
             #region Results
             CreateMap<Result, ResultGrpc>().ReverseMap();
+            #endregion
+            #region Common
+            CreateMap<StringModel, StringModelGrpc>().ReverseMap();
+
             #endregion
         }
     }

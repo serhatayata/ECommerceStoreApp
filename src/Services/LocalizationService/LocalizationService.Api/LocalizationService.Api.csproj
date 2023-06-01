@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <None Remove="log-localization-api.txt" />
-    <None Remove="Protos\language.proto" />
   </ItemGroup>
 
   <ItemGroup>

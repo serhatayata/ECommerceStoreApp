@@ -8,9 +8,18 @@ package language;
 
 service LanguageGrpcService {
   rpc AddAsync (LanguageAddGrpcModel) returns (ResultGrpc);
+  rpc UpdateAsync (LanguageUpdateGrpcModel) returns (ResultGrpc);
+  rpc DeleteAsync (StringModelGrpc) returns (ResultGrpc);
+
+  rpc GetAllAsync (EmptyGrpc) returns (ResultGrpc);
 }
 
 message LanguageAddGrpcModel {
+  string code = 1;
+  string displayName = 2;
+}
+
+message LanguageUpdateGrpcModel {
   string code = 1;
   string displayName = 2;
 }
@@ -20,4 +29,12 @@ message ResultGrpc {
    google.protobuf.Any Message = 2;
    int32 StatusCode = 3;
    string MessageCode = 4;
+}
+
+message StringModelGrpc {
+  string Value = 1;
+}
+
+message EmptyGrpc {
+
 }
