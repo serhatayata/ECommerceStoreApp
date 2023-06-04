@@ -3,6 +3,8 @@ using IdentityServer.Api.Services.Redis.Abstract;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using StackExchange.Redis;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using IServer = StackExchange.Redis.IServer;
 
 namespace IdentityServer.Api.Services.Redis.Concrete
 {
@@ -71,6 +73,43 @@ namespace IdentityServer.Api.Services.Redis.Concrete
         public string Get(string key)
         {
             return _client.GetDatabase().StringGet(key);
+        }
+        #endregion
+        #region GetValuesByPrefix
+        public RedisValue[] GetValuesByPrefix(string prefix, int databaseId = 1)
+        {
+            var server = this.GetServer();
+
+            var keys = server.Keys(database: databaseId, 
+                                   pattern: prefix + "*").ToArray();
+
+            RedisValue[] values = _client.GetDatabase(databaseId).StringGet(keys);
+            return values;
+        }
+        #endregion
+        #region GetKeyValuesByPrefix
+        public Dictionary<string,RedisValue> GetKeyValuesByPrefix(string prefix, int databaseId = 1)
+        {
+            var values = new Dictionary<string, RedisValue>();
+
+            var server = this.GetServer();
+
+            if (!server.IsConnected)
+                return values;
+
+            var keys = server.Keys(database: databaseId,
+                                   pattern: prefix + "*").ToArray();
+
+            if (keys == null || keys?.Count() < 1)
+                return values;
+
+            foreach (var key in keys)
+            {
+                var value = _client.GetDatabase().StringGet(key);
+                values.Add(key, value);
+            }
+
+            return values;
         }
         #endregion
         #region GetAsync<T>
@@ -150,6 +189,11 @@ namespace IdentityServer.Api.Services.Redis.Concrete
 
             return _client.GetDatabase().KeyExists(key);
         }
+
+        public bool KeyExists(string key, int databaseId)
+        {
+            return _client.GetDatabase(databaseId).KeyExists(key);
+        }
         #endregion
         #region KeyExistsAsync
         public async Task<bool> KeyExistsAsync(string key)
@@ -159,11 +203,30 @@ namespace IdentityServer.Api.Services.Redis.Concrete
             return await _client.GetDatabase().KeyExistsAsync(key);
         }
 
+        public async Task<bool> KeyExistsAsync(string key, int databaseId)
+        {
+            return await _client.GetDatabase(databaseId).KeyExistsAsync(key);
+        }
+        #endregion
+        #region AnyKeyExistsByPrefix
+        public bool AnyKeyExistsByPrefix(string prefix, int databaseId)
+        {
+            var server = this.GetServer();
+
+            if (!server.IsConnected)
+                return false;
+
+            var keys = server.Keys(database: databaseId,
+                                   pattern: prefix + "*").ToArray();
+
+            return keys.Count() < 0 ? false : true;
+        }
+        #endregion
+
         public void Dispose()
         {
             _client.Close();
         }
-        #endregion
 
         public async void RemoveByPattern(string pattern, int db)
         {

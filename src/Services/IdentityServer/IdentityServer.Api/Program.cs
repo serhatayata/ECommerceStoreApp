@@ -13,6 +13,8 @@ using IdentityServer.Api.Models.LogModels;
 using IdentityServer.Api.Models.UserModels;
 using IdentityServer.Api.Services.ElasticSearch.Abstract;
 using IdentityServer.Api.Services.ElasticSearch.Concrete;
+using IdentityServer.Api.Services.Redis.Abstract;
+using IdentityServer.Api.Services.Redis.Concrete;
 using IdentityServer.Api.Utilities.IoC;
 using IdentityServer.Api.Validations.IdentityValidators;
 using IdentityServer4.Stores;
@@ -36,6 +38,7 @@ builder.Services.AddElasticSearchConfiguration();
 
 #region Startup DI
 builder.Services.AddSingleton<IElasticSearchService, ElasticSearchService>();
+builder.Services.AddSingleton<IRedisService, RedisService>();
 #endregion
 #region Session
 builder.Services.AddSession(options =>
@@ -157,6 +160,9 @@ builder.Services.UseVerifyCodeTokenAuthentication();
 //        .Build());
 //});
 
+#endregion
+#region Cache Initialize
+builder.Services.LocalizationCacheInitialize(configuration);
 #endregion
 
 builder.Services.AddEndpointsApiExplorer();

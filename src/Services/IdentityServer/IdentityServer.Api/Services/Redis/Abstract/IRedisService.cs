@@ -1,4 +1,5 @@
 ﻿using StackExchange.Redis;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace IdentityServer.Api.Services.Redis.Abstract
 {
@@ -61,6 +62,18 @@ namespace IdentityServer.Api.Services.Redis.Abstract
         /// <returns></returns>        
         T Get<T>(string key) where T : class;
         /// <summary>
+        /// Gets values by prefix
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        RedisValue[] GetValuesByPrefix(string prefix, int databaseId);
+        /// <summary>
+        /// Gets key and values by prefix
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        Dictionary<string,RedisValue> GetKeyValuesByPrefix(string prefix, int databaseId);
+        /// <summary>
         /// Gets the key if it exists
         /// </summary>
         /// <param name="key"></param>
@@ -98,7 +111,10 @@ namespace IdentityServer.Api.Services.Redis.Abstract
         /// <param name="key"></param>
         void Remove(string key);
 
+        bool AnyKeyExistsByPrefix(string prefix, int databaseId);
+        bool KeyExists(string key, int databaseId);
         bool KeyExists(string key);
+        Task<bool> KeyExistsAsync(string key, int databaseId);
         Task<bool> KeyExistsAsync(string key);
         void RemoveByPattern(string pattern, int db = 1);
     }

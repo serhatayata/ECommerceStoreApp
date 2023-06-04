@@ -1,4 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿using IdentityServer.Api.Models.CacheModels;
+using IdentityServer.Api.Services.Redis.Abstract;
+using Newtonsoft.Json;
+using Polly;
+using Serilog;
+using StackExchange.Redis;
+using System.Reflection;
 
 namespace IdentityServer.Api.Extensions
 {
@@ -52,6 +58,63 @@ namespace IdentityServer.Api.Extensions
 
                 return result;
             }
+        }
+
+        public static string GetCacheKeyByModel(CacheKeyModel model)
+        {
+            var parameters = string.Join("-", model.Parameters);
+
+            var result = string.Join("-",
+                             model.Prefix,
+                             model.ProjectName,
+                             model.ClassName,
+                             model.MethodName,
+                             model.Language,
+                             parameters);
+
+            return result;
+        }
+
+        public static string GetCacheKey(string[] parameters, string prefix = "")
+        {
+            var values = string.Join("-", parameters);
+
+            var result = string.Join("-", prefix, values);
+            return result;
+        }
+
+        public static void LocalizationCacheInitialize(this IServiceCollection services, IConfiguration configuration)
+        {
+            var projectName = Assembly.GetCallingAssembly().GetName().Name;
+            var values = new Dictionary<string, RedisValue>();
+
+            var serviceProvider = services.BuildServiceProvider();
+            var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();
+
+            var redisService = scope.ServiceProvider.GetRequiredService<IRedisService>();
+
+            var policy = Polly.Policy.Handle<Exception>()
+                        .WaitAndRetry(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
+                        {
+                            Log.Error("ERROR handling message: {ExceptionMessage} - Method : {ClassName}.{MethodName}",
+                                                ex.Message, nameof(CacheExtensions),
+                                                MethodBase.GetCurrentMethod()?.Name);
+                        });
+
+            policy.Execute(() =>
+            {
+                int databaseId = configuration.GetSection("RedisSettings:LocalizationCacheDbId").Get<int>();
+                if (!redisService.AnyKeyExistsByPrefix(projectName, databaseId))
+                {
+
+                }
+
+                values = redisService.GetKeyValuesByPrefix(projectName, databaseId);
+
+                
+
+                //Localization service istek atılacak ve redis'e kaydı yapılacak.
+            });
         }
     }
 }

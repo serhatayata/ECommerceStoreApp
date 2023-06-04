@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using LocalizationService.Api.Models.CacheModels;
+using Newtonsoft.Json;
 
 namespace LocalizationService.Api.Extensions
 {
@@ -52,6 +53,29 @@ namespace LocalizationService.Api.Extensions
 
                 return result;
             }
+        }
+
+        public static string GetCacheKeyByModel(CacheKeyModel model)
+        {
+            var parameters = string.Join("-", model.Parameters);
+
+            var result = string.Join("-", 
+                             model.Prefix,
+                             model.ProjectName,
+                             model.ClassName,
+                             model.MethodName,
+                             model.Language,
+                             parameters);
+
+            return result;
+        }
+
+        public static string GetCacheKey(string[] parameters, string prefix = "")
+        {
+            var values = string.Join("-", parameters);
+
+            var result = string.Join("-", prefix, values);
+            return result;
         }
     }
 }
