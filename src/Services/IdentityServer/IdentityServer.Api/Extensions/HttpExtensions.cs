@@ -6,13 +6,17 @@ namespace IdentityServer.Api.Extensions
     {
         public static void AddHttpClients(this IServiceCollection services, ConfigurationManager configuration)
         {
+            string env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+
             services.AddScoped<LocalizationRequestTokenHandler>();
 
             #region HttpClients
-            
-            services.AddHttpClient("communications-send-smtp", config =>
+            string gatewayClient = configuration.GetSection($"SourceOriginSettings:{env}:Gateway").Value;
+
+            services.AddHttpClient("gateway", config =>
             {
-                config.BaseAddress = new Uri(uriSendSmtp);
+                var baseAddress = $"{gatewayClient}/localization/resources/get-all-active-by-service";
+                config.BaseAddress = new Uri(baseAddress);
             }).AddHttpMessageHandler<LocalizationRequestTokenHandler>();
 
             #endregion

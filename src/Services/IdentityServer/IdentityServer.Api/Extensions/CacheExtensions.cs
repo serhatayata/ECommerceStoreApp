@@ -92,6 +92,7 @@ namespace IdentityServer.Api.Extensions
             var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();
 
             var redisService = scope.ServiceProvider.GetRequiredService<IRedisService>();
+            var httpClientFactory = scope.ServiceProvider.GetRequiredService<IHttpClientFactory>();
 
             var policy = Polly.Policy.Handle<Exception>()
                         .WaitAndRetry(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
@@ -106,7 +107,7 @@ namespace IdentityServer.Api.Extensions
                 int databaseId = configuration.GetSection("RedisSettings:LocalizationCacheDbId").Get<int>();
                 if (!redisService.AnyKeyExistsByPrefix(projectName, databaseId))
                 {
-
+                    
                 }
 
                 values = redisService.GetKeyValuesByPrefix(projectName, databaseId);
