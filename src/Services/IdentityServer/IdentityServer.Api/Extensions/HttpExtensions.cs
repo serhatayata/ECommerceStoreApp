@@ -15,7 +15,7 @@ namespace IdentityServer.Api.Extensions
 
             services.AddHttpClient("gateway", config =>
             {
-                var baseAddress = $"{gatewayClient}/localization/resources/get-all-active-by-service";
+                var baseAddress = $"{gatewayClient}";
                 config.BaseAddress = new Uri(baseAddress);
             }).AddHttpMessageHandler<LocalizationRequestTokenHandler>();
 

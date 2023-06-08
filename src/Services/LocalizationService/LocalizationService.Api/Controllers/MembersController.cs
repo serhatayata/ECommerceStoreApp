@@ -115,5 +115,19 @@ namespace LocalizationService.Api.Controllers
 
             return BadRequest(result);
         }
+
+        [HttpPost]
+        [Route("get-all-with-resources-by-memberkey")]
+        [ProducesResponseType(typeof(DataResult<MemberModel>), (int)System.Net.HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(DataResult<MemberModel>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(Policy = "LocalizationRead")]
+        public async Task<IActionResult> GetAllWithResourcesByMemberKeyAsync()
+        {
+            var result = await _memberService.GetAllWithResourcesByMemberKeyAsync();
+            if (result.Success)
+                return Ok(result);
+
+            return BadRequest(result);
+        }
     }
 }

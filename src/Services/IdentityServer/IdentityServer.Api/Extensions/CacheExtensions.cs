@@ -1,4 +1,6 @@
-﻿using IdentityServer.Api.Models.CacheModels;
+﻿using IdentityServer.Api.Dtos.Localization;
+using IdentityServer.Api.Models.Base.Concrete;
+using IdentityServer.Api.Models.CacheModels;
 using IdentityServer.Api.Services.Redis.Abstract;
 using Newtonsoft.Json;
 using Polly;
@@ -85,7 +87,6 @@ namespace IdentityServer.Api.Extensions
 
         public static void LocalizationCacheInitialize(this IServiceCollection services, IConfiguration configuration)
         {
-            var projectName = Assembly.GetCallingAssembly().GetName().Name;
             var values = new Dictionary<string, RedisValue>();
 
             var serviceProvider = services.BuildServiceProvider();
@@ -104,13 +105,19 @@ namespace IdentityServer.Api.Extensions
 
             policy.Execute(() =>
             {
+                var localizationMemberKey = configuration.GetSection("LocalizationSettings:MemberKey").Value;
                 int databaseId = configuration.GetSection("RedisSettings:LocalizationCacheDbId").Get<int>();
-                if (!redisService.AnyKeyExistsByPrefix(projectName, databaseId))
+
+                if (!redisService.AnyKeyExistsByPrefix(localizationMemberKey, databaseId))
                 {
-                    
+                    var gatewayClient = httpClientFactory.CreateClient("gateway");
+                    var result = gatewayClient.PostGetResponseAsync<MemberDto, StringModel>("/localization/members/get-all-with-resources-by-memberkey", 
+                                                                                             new StringModel() { Value = localizationMemberKey });
+
+                    // will continue
                 }
 
-                values = redisService.GetKeyValuesByPrefix(projectName, databaseId);
+                values = redisService.GetKeyValuesByPrefix(localizationMemberKey, databaseId);
 
                 
 
