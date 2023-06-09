@@ -121,9 +121,9 @@ namespace LocalizationService.Api.Controllers
         [ProducesResponseType(typeof(DataResult<MemberModel>), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(DataResult<MemberModel>), (int)System.Net.HttpStatusCode.BadRequest)]
         [Authorize(Policy = "LocalizationRead")]
-        public async Task<IActionResult> GetAllWithResourcesByMemberKeyAsync()
+        public async Task<IActionResult> GetAllWithResourcesByMemberKeyAsync([FromBody] StringModel model)
         {
-            var result = await _memberService.GetAllWithResourcesByMemberKeyAsync();
+            var result = await _memberService.GetAllWithResourcesByMemberKeyAsync(model);
             if (result.Success)
                 return Ok(result);
 

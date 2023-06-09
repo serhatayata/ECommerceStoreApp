@@ -206,6 +206,34 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
             return new DataResult<IReadOnlyList<Member>>(filteredResult);
         }
 
+        public async Task<DataResult<IReadOnlyList<Member>>> GetAllWithResourcesByMemberKeyAsync(StringModel model)
+        {
+            var query = $"SELECT m.*, r.Id as ResourceId, r.* FROM {_memberTable} m " +
+                        $"INNER JOIN {_resourceTable} r ON m.Id = r.MemberId " +
+                        $"WHERE m.MemberKey = @MemberKey";
+
+            var memberDictionary = new Dictionary<int, Member>();
+
+            var result = await _dbContext.Connection.QueryAsync<Member, Resource, Member>(query, (member, resource) =>
+            {
+                Member? memberEntry;
+
+                if (!memberDictionary.TryGetValue(member.Id, out memberEntry))
+                {
+                    memberEntry = member;
+                    memberEntry.Resources = new List<Resource>();
+                    memberDictionary.Add(memberEntry.Id, memberEntry);
+                }
+                if (resource != null)
+                    memberEntry.Resources.Add(resource);
+
+                return memberEntry;
+            }, param: new { MemberKey = model.Value }, splitOn: "ResourceId");
+
+            var filteredResult = result.DistinctBy(m => m.Id).ToList();
+            return new DataResult<IReadOnlyList<Member>>(filteredResult);
+        }
+
         public async Task<DataResult<Member>> GetAsync(StringModel model)
         {
             var query = $"SELECT Id, Name, MemberKey, CreateDate FROM {_memberTable} WHERE MemberKey = @MemberKey";

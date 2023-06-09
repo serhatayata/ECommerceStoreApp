@@ -10,11 +10,14 @@ using IdentityServer.Api.Extensions;
 using IdentityServer.Api.Extensions.Authentication;
 using IdentityServer.Api.Mapping;
 using IdentityServer.Api.Models.LogModels;
+using IdentityServer.Api.Models.Settings;
 using IdentityServer.Api.Models.UserModels;
 using IdentityServer.Api.Services.ElasticSearch.Abstract;
 using IdentityServer.Api.Services.ElasticSearch.Concrete;
 using IdentityServer.Api.Services.Redis.Abstract;
 using IdentityServer.Api.Services.Redis.Concrete;
+using IdentityServer.Api.Services.Token.Abstract;
+using IdentityServer.Api.Services.Token.Concrete;
 using IdentityServer.Api.Utilities.IoC;
 using IdentityServer.Api.Validations.IdentityValidators;
 using IdentityServer4.Stores;
@@ -39,6 +42,8 @@ builder.Services.AddElasticSearchConfiguration();
 #region Startup DI
 builder.Services.AddSingleton<IElasticSearchService, ElasticSearchService>();
 builder.Services.AddSingleton<IRedisService, RedisService>();
+
+builder.Services.AddTransient<IClientCredentialsTokenService, ClientCredentialsTokenService>();
 #endregion
 #region Session
 builder.Services.AddSession(options =>
@@ -46,9 +51,15 @@ builder.Services.AddSession(options =>
     options.IdleTimeout = TimeSpan.FromMinutes(60);
 });
 #endregion
+#region Configure
+builder.Services.Configure<SourceOrigin>(configuration.GetSection($"SourceOriginSettings:{environment.EnvironmentName}"));
+#endregion
 #region Http
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddHttpClients(configuration);
+
+builder.Services.AddAccessTokenManagement();
 #endregion
 #region Autofac
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
@@ -162,7 +173,7 @@ builder.Services.UseVerifyCodeTokenAuthentication();
 
 #endregion
 #region Cache Initialize
-builder.Services.LocalizationCacheInitialize(configuration);
+await builder.Services.LocalizationCacheInitialize(configuration);
 #endregion
 
 builder.Services.AddEndpointsApiExplorer();

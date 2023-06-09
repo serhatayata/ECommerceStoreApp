@@ -72,7 +72,8 @@ namespace LocalizationService.Api.Data.SeedData
                                           .Select(m => new Member()
                                           {
                                               Name = m[0],
-                                              MemberKey = RandomExtensions.RandomCode(memberCodeLength),
+                                              MemberKey = m[1],
+                                              //MemberKey = RandomExtensions.RandomCode(memberCodeLength),
                                               CreateDate = DateTime.Now
                                           }).ToList();
 

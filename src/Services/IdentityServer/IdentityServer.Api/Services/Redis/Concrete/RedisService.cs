@@ -219,7 +219,7 @@ namespace IdentityServer.Api.Services.Redis.Concrete
             var keys = server.Keys(database: databaseId,
                                    pattern: prefix + "*").ToArray();
 
-            return keys.Count() < 0 ? false : true;
+            return keys.Count() < 1 ? false : true;
         }
         #endregion
 

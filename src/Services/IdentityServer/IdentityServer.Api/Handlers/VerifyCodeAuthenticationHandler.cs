@@ -1,14 +1,11 @@
-﻿using IdentityModel;
-using IdentityServer.Api.Extensions.Authentication;
+﻿using IdentityServer.Api.Extensions.Authentication;
 using IdentityServer.Api.Models.UserModels;
 using IdentityServer.Api.Utilities.Security.Jwt;
 using IdentityServer.Api.Utilities.Security.Jwt.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
-using Newtonsoft.Json;
 using System.Security.Claims;
-using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.RegularExpressions;
 

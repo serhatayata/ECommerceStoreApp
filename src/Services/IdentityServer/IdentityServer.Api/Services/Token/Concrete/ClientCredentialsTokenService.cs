@@ -9,7 +9,7 @@ using Microsoft.OpenApi.Extensions;
 
 namespace IdentityServer.Api.Services.Token.Concrete
 {
-    public class ClientCredentialsTokenService : ITokenService
+    public class ClientCredentialsTokenService : IClientCredentialsTokenService
     {
         private readonly SourceOrigin _sourceOrigin;
         private readonly IClientAccessTokenCache _clientAccessTokenCache;
@@ -48,7 +48,7 @@ namespace IdentityServer.Api.Services.Token.Concrete
                 throw disco.Exception;
 
             var clientId = _configuration.GetSection($"ClientSettings:{typeName}:FullPermission:ClientId").Value;
-            var clientSecret = _configuration.GetSection($"ClientSettings:{typeName}:FullPermission:ClientSecret").Value
+            var clientSecret = _configuration.GetSection($"ClientSettings:{typeName}:FullPermission:ClientSecret").Value;
 
             var clientCredentialTokenRequest = new ClientCredentialsTokenRequest
             {

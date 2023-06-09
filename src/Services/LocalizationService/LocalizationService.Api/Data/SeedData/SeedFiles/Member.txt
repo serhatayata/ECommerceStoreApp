@@ -1,4 +1,4 @@
-﻿Name
-TestMember1
-TestMember2
-TestMember3
+﻿Name,MemberKey
+IdentityMember1,IdentityV1
+CatalogMember1,CatalogV1
+BasketMember1,BasketV1

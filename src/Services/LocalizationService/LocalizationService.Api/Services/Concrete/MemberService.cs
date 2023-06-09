@@ -74,6 +74,14 @@ namespace LocalizationService.Api.Services.Concrete
             return new SuccessDataResult<IReadOnlyList<MemberModel>>(result);
         }
 
+        public async Task<DataResult<IReadOnlyList<MemberModel>>> GetAllWithResourcesByMemberKeyAsync(StringModel model)
+        {
+            var members = await _unitOfWork.MemberRepository.GetAllWithResourcesByMemberKeyAsync(model);
+            var result = _mapper.Map<IReadOnlyList<MemberModel>>(members.Data);
+
+            return new SuccessDataResult<IReadOnlyList<MemberModel>>(result);
+        }
+
         public async Task<DataResult<MemberModel>> GetAsync(StringModel model)
         {
             var member = await _unitOfWork.MemberRepository.GetAsync(model);

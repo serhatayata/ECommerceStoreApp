@@ -13,6 +13,7 @@ namespace LocalizationService.Api.Services.Abstract
         Task<DataResult<IReadOnlyList<MemberModel>>> GetAllWithResourcesPagingAsync(PagingModel model);
         Task<DataResult<IReadOnlyList<MemberModel>>> GetAllAsync();
         Task<DataResult<IReadOnlyList<MemberModel>>> GetAllPagingAsync(PagingModel model);
+        Task<DataResult<IReadOnlyList<MemberModel>>> GetAllWithResourcesByMemberKeyAsync(StringModel model);
         Task<DataResult<MemberModel>> GetAsync(StringModel model);
     }
 }

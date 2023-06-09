@@ -10,5 +10,6 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Abstract
         Task<DataResult<IReadOnlyList<Member>>> GetAllWithResourcesAsync();
         Task<DataResult<IReadOnlyList<Member>>> GetAllWithResourcesPagingAsync(PagingModel model);
         Task<DataResult<IReadOnlyList<Member>>> GetAllPagingAsync(PagingModel model);
+        Task<DataResult<IReadOnlyList<Member>>> GetAllWithResourcesByMemberKeyAsync(StringModel model);
     }
 }

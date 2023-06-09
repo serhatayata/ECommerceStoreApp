@@ -85,10 +85,8 @@ namespace IdentityServer.Api.Extensions
             return result;
         }
 
-        public static void LocalizationCacheInitialize(this IServiceCollection services, IConfiguration configuration)
+        public static async Task LocalizationCacheInitialize(this IServiceCollection services, IConfiguration configuration)
         {
-            var values = new Dictionary<string, RedisValue>();
-
             var serviceProvider = services.BuildServiceProvider();
             var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();
 
@@ -96,23 +94,25 @@ namespace IdentityServer.Api.Extensions
             var httpClientFactory = scope.ServiceProvider.GetRequiredService<IHttpClientFactory>();
 
             var policy = Polly.Policy.Handle<Exception>()
-                        .WaitAndRetry(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
+                        .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
                         {
                             Log.Error("ERROR handling message: {ExceptionMessage} - Method : {ClassName}.{MethodName}",
                                                 ex.Message, nameof(CacheExtensions),
                                                 MethodBase.GetCurrentMethod()?.Name);
                         });
 
-            policy.Execute(() =>
+            await policy.ExecuteAsync(async () =>
             {
+                var values = new Dictionary<string, RedisValue>();
+
                 var localizationMemberKey = configuration.GetSection("LocalizationSettings:MemberKey").Value;
                 int databaseId = configuration.GetSection("RedisSettings:LocalizationCacheDbId").Get<int>();
 
                 if (!redisService.AnyKeyExistsByPrefix(localizationMemberKey, databaseId))
                 {
                     var gatewayClient = httpClientFactory.CreateClient("gateway");
-                    var result = gatewayClient.PostGetResponseAsync<MemberDto, StringModel>("/localization/members/get-all-with-resources-by-memberkey", 
-                                                                                             new StringModel() { Value = localizationMemberKey });
+                    var result = await gatewayClient.PostGetResponseAsync<MemberDto, StringModel>("localization/members/get-all-with-resources-by-memberkey", 
+                                                                                                    new StringModel() { Value = localizationMemberKey });
 
                     // will continue
                 }
