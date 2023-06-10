@@ -1,4 +1,5 @@
 ﻿using IdentityServer.Api.Entities.Identity;
+using IdentityServer.Api.Utilities.Enums;
 using IdentityServer.Api.Utilities.Results;
 using IdentityServer.Api.Utilities.Security.Jwt.Models;
 using Microsoft.IdentityModel.Tokens;
@@ -16,6 +17,14 @@ namespace IdentityServer.Api.Utilities.Security.Jwt
         /// <param name="containsRefreshToken">if contains refresh token or not</param>
         /// <returns></returns>
         JwtAccessToken CreateToken(User user, List<Claim> operationClaims, int expiration,bool containsRefreshToken);
+        /// <summary>
+        /// Create custom api token
+        /// </summary>
+        /// <param name="type">type of project</param>
+        /// <param name="expiration">expiration time</param>
+        /// <param name="containsRefreshToken">contains refresh token or not</param>
+        /// <returns></returns>
+        JwtAccessToken CreateApiToken(JwtApiTokenOptions jwtTokenOptions, int expiration);
         /// <summary>
         /// Validate token
         /// </summary>

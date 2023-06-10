@@ -2,10 +2,13 @@
 using IdentityServer.Api.Entities.Identity;
 using IdentityServer.Api.Extensions;
 using IdentityServer.Api.Extensions.Authentication;
+using IdentityServer.Api.Models.UserModels;
+using IdentityServer.Api.Utilities.Enums;
 using IdentityServer.Api.Utilities.Results;
 using IdentityServer.Api.Utilities.Security.Jwt.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -23,7 +26,7 @@ namespace IdentityServer.Api.Utilities.Security.Jwt
             _tokenOptions = _configuration.GetSection("JwtTokenOptions:VerifyCode").Get<JwtTokenOptions>();
         }
 
-        public JwtAccessToken CreateToken(User user, List<Claim> operationClaims, int expiration,bool containsRefreshToken)
+        public JwtAccessToken CreateToken(User user, List<Claim> operationClaims, int expiration, bool containsRefreshToken)
         {
             int refreshExpiration = _tokenOptions.RefreshTokenExpiration;
 
@@ -36,11 +39,11 @@ namespace IdentityServer.Api.Utilities.Security.Jwt
 
             var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
 
-            var jwtSecurityToken = CreateJwtSecurityToken(issuer, 
-                                                          audience, 
+            var jwtSecurityToken = CreateJwtSecurityToken(issuer,
+                                                          audience,
                                                           expiration,
-                                                          user, 
-                                                          signingCredentials, 
+                                                          user,
+                                                          signingCredentials,
                                                           operationClaims);
 
             var token = jwtSecurityTokenHandler.WriteToken(jwtSecurityToken);
@@ -62,6 +65,31 @@ namespace IdentityServer.Api.Utilities.Security.Jwt
             {
                 AccessToken = token,
                 RefreshToken = refreshToken,
+                Expiration = DateTime.Now.AddMinutes(expiration),
+            };
+        }
+
+        public JwtAccessToken CreateApiToken(JwtApiTokenOptions jwtTokenOptions,int expiration)
+        {
+            string issuer = jwtTokenOptions.Issuer;
+            string audience = jwtTokenOptions.Audience;
+            string secretKey = jwtTokenOptions.SecretKey;
+
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
+            var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature);
+
+            var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+
+            var jwtSecurityToken = CreateJwtSecurityApiToken(issuer,
+                                                             audience,
+                                                             expiration,
+                                                             signingCredentials);
+
+            var token = jwtSecurityTokenHandler.WriteToken(jwtSecurityToken);
+
+            return new JwtAccessToken
+            {
+                AccessToken = token,
                 Expiration = DateTime.Now.AddMinutes(expiration),
             };
         }
@@ -95,11 +123,11 @@ namespace IdentityServer.Api.Utilities.Security.Jwt
             return new SuccessDataResult<List<Claim>>(tokenClaims);
         }
 
-        private JwtSecurityToken CreateJwtSecurityToken(string issuer, 
+        private JwtSecurityToken CreateJwtSecurityToken(string issuer,
                                                         string audience,
                                                         int expiration,
                                                         User user,
-                                                        SigningCredentials signingCredentials, 
+                                                        SigningCredentials signingCredentials,
                                                         List<Claim> operationClaims)
         {
             var tokenExpiration = DateTime.Now.AddMinutes(expiration);
@@ -114,6 +142,40 @@ namespace IdentityServer.Api.Utilities.Security.Jwt
             );
 
             return jwt;
+        }
+        
+        private JwtSecurityToken CreateJwtSecurityApiToken(string issuer,
+                                                           string audience,
+                                                           int expiration,
+                                                           SigningCredentials signingCredentials)
+        {
+            var tokenExpiration = DateTime.Now.AddMinutes(expiration);
+
+            var jwt = new JwtSecurityToken(
+                issuer: issuer,
+                audience: audience,
+                expires: tokenExpiration,
+                //notBefore:DateTime.Now,//AccessTokenExpiration zamanı şimdiden önce ise token geçerli değil.
+                signingCredentials: signingCredentials
+            );
+             
+            return jwt;
+        }
+
+        private IEnumerable<Claim> SetApiClaims(List<string> scope, string clientId)
+        {
+            var claims = new List<Claim>();
+
+            //notBefore
+            claims.Add(new Claim(JwtClaimTypes.NotBefore, (((DateTimeOffset)DateTime.Now).ToUnixTimeSeconds()).ToString()));
+            //clientid
+            claims.Add(new Claim(JwtClaimTypes.ClientId, clientId));
+            //iat (issued at)
+            claims.Add(new Claim(JwtClaimTypes.IssuedAt, (((DateTimeOffset)DateTime.Now).ToUnixTimeSeconds()).ToString()));
+            //scope
+            claims.Add(new Claim(JwtClaimTypes.Scope, JsonConvert.SerializeObject(scope)));
+
+            return claims;
         }
 
         private IEnumerable<Claim> SetClaims(User user, List<Claim> operationClaims)

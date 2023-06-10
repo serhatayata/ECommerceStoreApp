@@ -19,6 +19,7 @@ using IdentityServer.Api.Services.Redis.Concrete;
 using IdentityServer.Api.Services.Token.Abstract;
 using IdentityServer.Api.Services.Token.Concrete;
 using IdentityServer.Api.Utilities.IoC;
+using IdentityServer.Api.Utilities.Security.Jwt;
 using IdentityServer.Api.Validations.IdentityValidators;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Identity;
@@ -42,6 +43,7 @@ builder.Services.AddElasticSearchConfiguration();
 #region Startup DI
 builder.Services.AddSingleton<IElasticSearchService, ElasticSearchService>();
 builder.Services.AddSingleton<IRedisService, RedisService>();
+builder.Services.AddSingleton<IJwtHelper, JwtHelper>();
 
 builder.Services.AddTransient<IClientCredentialsTokenService, ClientCredentialsTokenService>();
 #endregion
