@@ -1,5 +1,6 @@
 ﻿using IdentityModel.AspNetCore.AccessTokenManagement;
 using IdentityModel.Client;
+using IdentityServer.Api.Models.ClientModels;
 using IdentityServer.Api.Models.Settings;
 using IdentityServer.Api.Services.Token.Abstract;
 using IdentityServer.Api.Utilities.Enums;
@@ -40,7 +41,7 @@ namespace IdentityServer.Api.Services.Token.Concrete
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public async Task<DataResult<string>> GetToken(EnumProjectType type)
+        public async Task<DataResult<string>> GetToken(EnumProjectType type, ApiPermissionType permissionType)
         {
             var typeName = type.GetDisplayName();
             var currentToken = await _clientAccessTokenCache.GetAsync($"{typeName}-token", new ClientAccessTokenParameters());
@@ -48,9 +49,10 @@ namespace IdentityServer.Api.Services.Token.Concrete
             if (currentToken != null)
                 return new SuccessDataResult<string>(currentToken.AccessToken);
 
-            var clientId = _configuration.GetSection($"ClientSettings:{typeName}:FullPermission:ClientId").Value;
-            var clientSecret = _configuration.GetSection($"ClientSettings:{typeName}:FullPermission:ClientSecret").Value;
-            var duration = _configuration.GetSection($"ClientSettings:{typeName}:FullPermission:Duration").Get<int>();
+            var clientId = _configuration.GetSection($"ClientSettings:{typeName}:{permissionType.GetDisplayName()}:ClientId").Value;
+            var clientSecret = _configuration.GetSection($"ClientSettings:{typeName}:{permissionType.GetDisplayName()}:ClientSecret").Value;
+            var duration = _configuration.GetSection($"ClientSettings:{typeName}:{permissionType.GetDisplayName()}:Duration").Get<int>();
+            var scope = _configuration.GetSection($"ClientSettings:{typeName}:{permissionType.GetDisplayName()}:Scope").Get<List<string>>();
 
             var jwtIssuer = _configuration.GetSection("Jwt:Issuer").Value;
             var jwtAudience = _configuration.GetSection("Jwt:Audience").Value;
@@ -62,7 +64,7 @@ namespace IdentityServer.Api.Services.Token.Concrete
                 Issuer = jwtIssuer,
                 Audience = jwtAudience,
                 AccessTokenExpiration = duration
-            }, duration);
+            }, duration, clientId, scope);
             //var newToken = await _httpClient.RequestClientCredentialsTokenAsync(clientCredentialTokenRequest);
 
             if (newToken == null)

@@ -120,7 +120,7 @@ namespace LocalizationService.Api.Controllers
         [Route("get-all-with-resources-by-memberkey")]
         [ProducesResponseType(typeof(DataResult<MemberModel>), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(DataResult<MemberModel>), (int)System.Net.HttpStatusCode.BadRequest)]
-        [Authorize(Policy = "LocalizationRead")]
+        [Authorize(Policy = "LocalizationStaticRead")]
         public async Task<IActionResult> GetAllWithResourcesByMemberKeyAsync([FromBody] StringModel model)
         {
             var result = await _memberService.GetAllWithResourcesByMemberKeyAsync(model);

@@ -47,6 +47,9 @@ builder.Services.AddSingleton<IJwtHelper, JwtHelper>();
 
 builder.Services.AddTransient<IClientCredentialsTokenService, ClientCredentialsTokenService>();
 #endregion
+#region MemoryCache
+builder.Services.AddMemoryCache();
+#endregion
 #region Session
 builder.Services.AddSession(options =>
 {

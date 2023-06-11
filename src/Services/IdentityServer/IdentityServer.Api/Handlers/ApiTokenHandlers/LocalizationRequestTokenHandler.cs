@@ -17,7 +17,7 @@ namespace IdentityServer.Api.Handlers.ApiTokenHandlers
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            var token = await _clientCredentialTokenService.GetToken(Utilities.Enums.EnumProjectType.LocalizationService);
+            var token = await _clientCredentialTokenService.GetToken(Utilities.Enums.EnumProjectType.LocalizationService, Models.ClientModels.ApiPermissionType.ReadPermission);
 
             request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, token.Data);
             var response = await base.SendAsync(request, cancellationToken);

@@ -24,7 +24,7 @@ namespace IdentityServer.Api.Utilities.Security.Jwt
         /// <param name="expiration">expiration time</param>
         /// <param name="containsRefreshToken">contains refresh token or not</param>
         /// <returns></returns>
-        JwtAccessToken CreateApiToken(JwtApiTokenOptions jwtTokenOptions, int expiration);
+        JwtAccessToken CreateApiToken(JwtApiTokenOptions jwtTokenOptions, int expiration, string clientId, List<string> scope);
         /// <summary>
         /// Validate token
         /// </summary>

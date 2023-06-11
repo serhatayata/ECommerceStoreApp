@@ -4,8 +4,10 @@ namespace LocalizationService.Api.Extensions
 {
     public static class AuthorizationExtensions
     {
-        public static void AddAuthorizationConfigurations(this IServiceCollection services)
+        public static void AddAuthorizationConfigurations(this IServiceCollection services, IConfiguration configuration)
         {
+            var identityServerStaticScheme = configuration.GetSection("IdentityServerStaticConfigurations:Scheme").Value;
+
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("LocalizationRead", policy =>
@@ -29,6 +31,12 @@ namespace LocalizationService.Api.Extensions
                     policy.RequireAssertion(context => context.User.HasClaim(c =>
                         (c.Type == "scope" && (c.Value == "localization_writepermission" || c.Value == "localization_readpermission"))
                     ));
+                });
+
+                options.AddPolicy("LocalizationStaticRead", policy =>
+                {
+                    policy.AddAuthenticationSchemes(identityServerStaticScheme);
+                    policy.RequireAuthenticatedUser();
                 });
             });
         }

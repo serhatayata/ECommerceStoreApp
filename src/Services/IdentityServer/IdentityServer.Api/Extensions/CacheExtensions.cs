@@ -2,6 +2,8 @@
 using IdentityServer.Api.Models.Base.Concrete;
 using IdentityServer.Api.Models.CacheModels;
 using IdentityServer.Api.Services.Redis.Abstract;
+using IdentityServer.Api.Utilities.Results;
+using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using Polly;
 using Serilog;
@@ -92,6 +94,7 @@ namespace IdentityServer.Api.Extensions
 
             var redisService = scope.ServiceProvider.GetRequiredService<IRedisService>();
             var httpClientFactory = scope.ServiceProvider.GetRequiredService<IHttpClientFactory>();
+            var memoryCache = scope.ServiceProvider.GetRequiredService<IMemoryCache>();
 
             var policy = Polly.Policy.Handle<Exception>()
                         .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
@@ -106,14 +109,40 @@ namespace IdentityServer.Api.Extensions
                 var values = new Dictionary<string, RedisValue>();
 
                 var localizationMemberKey = configuration.GetSection("LocalizationSettings:MemberKey").Value;
+                var localizationDuration1 = configuration.GetSection("LocalizationSettings:MemoryCache:Duration1").Get<int>();
+                var localizationDuration2 = configuration.GetSection("LocalizationSettings:MemoryCache:Duration2").Get<int>();
+
+                var localizationSuffix1 = configuration.GetSection("LocalizationSettings:MemoryCache:Suffix1").Value;
+                var localizationSuffix2 = configuration.GetSection("LocalizationSettings:MemoryCache:Suffix2").Value;
+
+                var localizationMemoryCacheDuration = configuration.GetSection("LocalizationSettings:MemoryCacheDuration").Value;
                 int databaseId = configuration.GetSection("RedisSettings:LocalizationCacheDbId").Get<int>();
 
                 if (!redisService.AnyKeyExistsByPrefix(localizationMemberKey, databaseId))
                 {
                     var gatewayClient = httpClientFactory.CreateClient("gateway");
-                    var result = await gatewayClient.PostGetResponseAsync<MemberDto, StringModel>("localization/members/get-all-with-resources-by-memberkey", new StringModel() { Value = localizationMemberKey });
+                    var result = await gatewayClient.PostGetResponseAsync<DataResult<IReadOnlyList<MemberDto>>, StringModel>("localization/members/get-all-with-resources-by-memberkey", new StringModel() { Value = localizationMemberKey });
 
-                    // will continue
+                    if (!result.Success)
+                        throw new Exception("Localization data request not successful");
+
+                    var resultData = result.Data;
+
+                    //MemoryCache1
+                    _ = memoryCache.Set($"{localizationMemberKey}-{localizationSuffix1}", resultData, new MemoryCacheEntryOptions()
+                    {
+                        AbsoluteExpiration = DateTime.Now.AddHours(localizationDuration1),
+                        Priority = CacheItemPriority.High
+                    });
+
+                    //MemoryCache2
+                    _ = memoryCache.Set($"{localizationMemberKey}-{localizationSuffix2}", resultData, new MemoryCacheEntryOptions()
+                    {
+                        AbsoluteExpiration = DateTime.Now.AddHours(localizationDuration1),
+                        Priority = CacheItemPriority.High
+                    });
+
+                    //REDIS SET EDILECEK
                 }
 
                 values = redisService.GetKeyValuesByPrefix(localizationMemberKey, databaseId);

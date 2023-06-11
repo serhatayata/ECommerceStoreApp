@@ -10,6 +10,7 @@ using LocalizationService.Api.Services.ElasticSearch.Abstract;
 using LocalizationService.Api.Services.ElasticSearch.Concrete;
 using LocalizationService.Api.Utilities.IoC;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
@@ -40,7 +41,9 @@ builder.Services.AddDbContext<LocalizationDbContext>(options => options.UseSqlSe
 #endregion
 #region Authentication / Authorization
 builder.Services.AddAuthenticationConfigurations(configuration);
-builder.Services.AddAuthorizationConfigurations();
+builder.Services.AddAuthorizationConfigurations(configuration);
+
+IdentityModelEventSource.ShowPII = true;
 #endregion
 #region Http
 builder.Services.AddHttpContextAccessor();

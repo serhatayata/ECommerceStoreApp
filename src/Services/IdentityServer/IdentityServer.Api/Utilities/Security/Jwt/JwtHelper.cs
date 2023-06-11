@@ -69,7 +69,7 @@ namespace IdentityServer.Api.Utilities.Security.Jwt
             };
         }
 
-        public JwtAccessToken CreateApiToken(JwtApiTokenOptions jwtTokenOptions,int expiration)
+        public JwtAccessToken CreateApiToken(JwtApiTokenOptions jwtTokenOptions,int expiration, string clientId, List<string> scope)
         {
             string issuer = jwtTokenOptions.Issuer;
             string audience = jwtTokenOptions.Audience;
@@ -83,6 +83,8 @@ namespace IdentityServer.Api.Utilities.Security.Jwt
             var jwtSecurityToken = CreateJwtSecurityApiToken(issuer,
                                                              audience,
                                                              expiration,
+                                                             clientId,
+                                                             scope,
                                                              signingCredentials);
 
             var token = jwtSecurityTokenHandler.WriteToken(jwtSecurityToken);
@@ -147,6 +149,8 @@ namespace IdentityServer.Api.Utilities.Security.Jwt
         private JwtSecurityToken CreateJwtSecurityApiToken(string issuer,
                                                            string audience,
                                                            int expiration,
+                                                           string clientId,
+                                                           List<string> scope,
                                                            SigningCredentials signingCredentials)
         {
             var tokenExpiration = DateTime.Now.AddMinutes(expiration);
@@ -156,6 +160,7 @@ namespace IdentityServer.Api.Utilities.Security.Jwt
                 audience: audience,
                 expires: tokenExpiration,
                 //notBefore:DateTime.Now,//AccessTokenExpiration zamanı şimdiden önce ise token geçerli değil.
+                claims:SetApiClaims(scope, clientId),
                 signingCredentials: signingCredentials
             );
              
@@ -173,7 +178,10 @@ namespace IdentityServer.Api.Utilities.Security.Jwt
             //iat (issued at)
             claims.Add(new Claim(JwtClaimTypes.IssuedAt, (((DateTimeOffset)DateTime.Now).ToUnixTimeSeconds()).ToString()));
             //scope
-            claims.Add(new Claim(JwtClaimTypes.Scope, JsonConvert.SerializeObject(scope)));
+            foreach (var scopeClaim in scope)
+            {
+                claims.Add(new Claim(JwtClaimTypes.Scope, scopeClaim));
+            }
 
             return claims;
         }
