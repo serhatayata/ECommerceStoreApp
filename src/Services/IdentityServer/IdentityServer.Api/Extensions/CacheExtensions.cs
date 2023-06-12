@@ -109,19 +109,19 @@ namespace IdentityServer.Api.Extensions
                 var values = new Dictionary<string, RedisValue>();
 
                 var localizationMemberKey = configuration.GetSection("LocalizationSettings:MemberKey").Value;
-                var localizationDuration1 = configuration.GetSection("LocalizationSettings:MemoryCache:Duration1").Get<int>();
-                var localizationDuration2 = configuration.GetSection("LocalizationSettings:MemoryCache:Duration2").Get<int>();
+                var localizationMemoryDuration1 = configuration.GetSection("LocalizationSettings:MemoryCache:Duration1").Get<int>();
+                var localizationMemoryDuration2 = configuration.GetSection("LocalizationSettings:MemoryCache:Duration2").Get<int>();
 
                 var localizationSuffix1 = configuration.GetSection("LocalizationSettings:MemoryCache:Suffix1").Value;
                 var localizationSuffix2 = configuration.GetSection("LocalizationSettings:MemoryCache:Suffix2").Value;
 
-                var localizationMemoryCacheDuration = configuration.GetSection("LocalizationSettings:MemoryCacheDuration").Value;
+                var redisCacheDuration = configuration.GetSection("LocalizationSettings:CacheDuration").Get<int>();
                 int databaseId = configuration.GetSection("RedisSettings:LocalizationCacheDbId").Get<int>();
 
                 if (!redisService.AnyKeyExistsByPrefix(localizationMemberKey, databaseId))
                 {
                     var gatewayClient = httpClientFactory.CreateClient("gateway");
-                    var result = await gatewayClient.PostGetResponseAsync<DataResult<IReadOnlyList<MemberDto>>, StringModel>("localization/members/get-all-with-resources-by-memberkey", new StringModel() { Value = localizationMemberKey });
+                    var result = await gatewayClient.PostGetResponseAsync<DataResult<IReadOnlyList<MemberDto>>, StringModel>("localization/members/get-all-with-resources-by-memberkey-and-save", new StringModel() { Value = localizationMemberKey });
 
                     if (!result.Success)
                         throw new Exception("Localization data request not successful");
@@ -131,23 +131,24 @@ namespace IdentityServer.Api.Extensions
                     //MemoryCache1
                     _ = memoryCache.Set($"{localizationMemberKey}-{localizationSuffix1}", resultData, new MemoryCacheEntryOptions()
                     {
-                        AbsoluteExpiration = DateTime.Now.AddHours(localizationDuration1),
+                        AbsoluteExpiration = DateTime.Now.AddHours(localizationMemoryDuration1),
                         Priority = CacheItemPriority.High
                     });
 
                     //MemoryCache2
                     _ = memoryCache.Set($"{localizationMemberKey}-{localizationSuffix2}", resultData, new MemoryCacheEntryOptions()
                     {
-                        AbsoluteExpiration = DateTime.Now.AddHours(localizationDuration1),
+                        AbsoluteExpiration = DateTime.Now.AddHours(localizationMemoryDuration2),
                         Priority = CacheItemPriority.High
                     });
 
-                    //REDIS SET EDILECEK
+                    if (redisService.AnyKeyExistsByPrefix(localizationMemberKey, databaseId))
+                        return;
+
+                    await redisService.SetAsync(localizationMemberKey, resultData, redisCacheDuration, databaseId);
                 }
 
                 values = redisService.GetKeyValuesByPrefix(localizationMemberKey, databaseId);
-
-                
 
                 //Localization service istek atılacak ve redis'e kaydı yapılacak.
             });

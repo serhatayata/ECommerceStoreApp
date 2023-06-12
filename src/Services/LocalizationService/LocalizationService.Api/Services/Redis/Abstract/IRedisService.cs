@@ -98,6 +98,7 @@ namespace LocalizationService.Api.Services.Redis.Abstract
         /// <param name="key"></param>
         void Remove(string key);
 
+        bool AnyKeyExistsByPrefix(string prefix, int databaseId);
         bool KeyExists(string key);
         Task<bool> KeyExistsAsync(string key);
         void RemoveByPattern(string pattern, int db = 1);

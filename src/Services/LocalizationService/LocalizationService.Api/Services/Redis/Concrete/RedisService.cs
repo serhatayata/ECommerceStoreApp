@@ -163,6 +163,20 @@ namespace LocalizationService.Api.Services.Redis.Concrete
             _client.Close();
         }
         #endregion
+        #region AnyKeyExistsByPrefix
+        public bool AnyKeyExistsByPrefix(string prefix, int databaseId)
+        {
+            var server = this.GetServer();
+
+            if (!server.IsConnected)
+                return false;
+
+            var keys = server.Keys(database: databaseId,
+                                   pattern: prefix + "*").ToArray();
+
+            return keys.Count() < 1 ? false : true;
+        }
+        #endregion
 
         public async void RemoveByPattern(string pattern, int db)
         {

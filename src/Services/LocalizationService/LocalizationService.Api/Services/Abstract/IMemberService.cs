@@ -9,6 +9,7 @@ namespace LocalizationService.Api.Services.Abstract
         Task<Result> AddAsync(MemberAddModel model);
         Task<Result> UpdateAsync(MemberUpdateModel model);
         Task<Result> DeleteAsync(StringModel model);
+        Task<DataResult<IReadOnlyList<MemberModel>>> SaveToDbAsync(StringModel model);
         Task<DataResult<IReadOnlyList<MemberModel>>> GetAllWithResourcesAsync();
         Task<DataResult<IReadOnlyList<MemberModel>>> GetAllWithResourcesPagingAsync(PagingModel model);
         Task<DataResult<IReadOnlyList<MemberModel>>> GetAllAsync();

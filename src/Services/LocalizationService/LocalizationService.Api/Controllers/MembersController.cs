@@ -1,6 +1,7 @@
 ﻿using LocalizationService.Api.Models.Base.Concrete;
 using LocalizationService.Api.Models.MemberModels;
 using LocalizationService.Api.Services.Abstract;
+using LocalizationService.Api.Services.Redis.Abstract;
 using LocalizationService.Api.Utilities.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,10 +13,13 @@ namespace LocalizationService.Api.Controllers
     public class MembersController : ControllerBase
     {
         private readonly IMemberService _memberService;
+        private readonly IRedisService _redisService;
 
-        public MembersController(IMemberService memberService)
+        public MembersController(IMemberService memberService,
+                                 IRedisService redisService)
         {
             _memberService = memberService;
+            _redisService = redisService;
         }
 
         [HttpPost]
@@ -117,15 +121,19 @@ namespace LocalizationService.Api.Controllers
         }
 
         [HttpPost]
-        [Route("get-all-with-resources-by-memberkey")]
+        [Route("get-all-with-resources-by-memberkey-and-save")]
         [ProducesResponseType(typeof(DataResult<MemberModel>), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(DataResult<MemberModel>), (int)System.Net.HttpStatusCode.BadRequest)]
         [Authorize(Policy = "LocalizationStaticRead")]
-        public async Task<IActionResult> GetAllWithResourcesByMemberKeyAsync([FromBody] StringModel model)
+        public async Task<IActionResult> GetAllWithResourcesByMemberKeyAndSaveAsync([FromBody] StringModel model)
         {
-            var result = await _memberService.GetAllWithResourcesByMemberKeyAsync(model);
+            var result = await _memberService.SaveToDbAsync(model);
             if (result.Success)
-                return Ok(result);
+            {
+                var data = result.Data;
+                
+                
+            }
 
             return BadRequest(result);
         }
