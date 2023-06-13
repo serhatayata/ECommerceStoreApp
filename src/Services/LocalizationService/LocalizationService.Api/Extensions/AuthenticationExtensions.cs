@@ -12,10 +12,10 @@ namespace LocalizationService.Api.Extensions
             var identityServerUrl = configuration.GetSection("IdentityServerConfigurations:Url").Value;
             var identityServerAudience = configuration.GetSection("IdentityServerConfigurations:Audience").Value;
 
-            var identityServerStaticIssuer = configuration.GetSection("IdentityServerStaticConfigurations:Issuer").Value;
-            var identityServerStaticAudience = configuration.GetSection("IdentityServerStaticConfigurations:Audience").Value;
-            var identityServerStaticScheme = configuration.GetSection("IdentityServerStaticConfigurations:Scheme").Value;
-            var identityServerStaticSecretKey = configuration.GetSection("IdentityServerStaticConfigurations:SecretKey").Value;
+            var staticIssuer = configuration.GetSection("StaticConfigurations:Issuer").Value;
+            var staticAudience = configuration.GetSection("StaticConfigurations:Audience").Value;
+            var staticScheme = configuration.GetSection("StaticConfigurations:Scheme").Value;
+            var staticSecretKey = configuration.GetSection("StaticConfigurations:SecretKey").Value;
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
@@ -28,17 +28,19 @@ namespace LocalizationService.Api.Extensions
                         ClockSkew = TimeSpan.Zero
                     };
                 })
-                .AddJwtBearer(identityServerStaticScheme, options =>
+                .AddJwtBearer(staticScheme, options =>
                 {
                     options.TokenValidationParameters = new()
                     {
-                        ValidIssuer = identityServerStaticIssuer,
-                        ValidAudience = identityServerStaticAudience,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(identityServerStaticSecretKey)),
+                        ValidIssuer = staticIssuer,
+                        ValidAudience = staticAudience,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(staticSecretKey)),
+
                         ValidateIssuer = false,
                         ValidateAudience = false,
                         ValidateLifetime = false,
-                        ValidateIssuerSigningKey = true
+                        ValidateIssuerSigningKey = true,
+                        ClockSkew = TimeSpan.Zero
                     };
                 });
         }

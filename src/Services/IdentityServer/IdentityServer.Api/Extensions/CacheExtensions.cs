@@ -147,10 +147,6 @@ namespace IdentityServer.Api.Extensions
 
                     await redisService.SetAsync(localizationMemberKey, resultData, redisCacheDuration, databaseId);
                 }
-
-                values = redisService.GetKeyValuesByPrefix(localizationMemberKey, databaseId);
-
-                //Localization service istek atılacak ve redis'e kaydı yapılacak.
             });
         }
     }

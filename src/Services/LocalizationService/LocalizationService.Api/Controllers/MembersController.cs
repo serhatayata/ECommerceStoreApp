@@ -1,10 +1,13 @@
-﻿using LocalizationService.Api.Models.Base.Concrete;
+﻿using LocalizationService.Api.Attributes;
+using LocalizationService.Api.Models.Base.Concrete;
 using LocalizationService.Api.Models.MemberModels;
 using LocalizationService.Api.Services.Abstract;
 using LocalizationService.Api.Services.Redis.Abstract;
+using LocalizationService.Api.Utilities.Configuration;
 using LocalizationService.Api.Utilities.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace LocalizationService.Api.Controllers
 {

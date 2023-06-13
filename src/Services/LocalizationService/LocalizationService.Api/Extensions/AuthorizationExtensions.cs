@@ -6,7 +6,7 @@ namespace LocalizationService.Api.Extensions
     {
         public static void AddAuthorizationConfigurations(this IServiceCollection services, IConfiguration configuration)
         {
-            var identityServerStaticScheme = configuration.GetSection("IdentityServerStaticConfigurations:Scheme").Value;
+            var staticScheme = configuration.GetSection("StaticConfigurations:Scheme").Value;
 
             services.AddAuthorization(options =>
             {
@@ -35,8 +35,9 @@ namespace LocalizationService.Api.Extensions
 
                 options.AddPolicy("LocalizationStaticRead", policy =>
                 {
-                    policy.AddAuthenticationSchemes(identityServerStaticScheme);
-                    policy.RequireAuthenticatedUser();
+                    //policy.RequireAuthenticatedUser();
+                    policy.AddAuthenticationSchemes(staticScheme);
+                    policy.RequireClaim("scope", "localization_readpermission");
                 });
             });
         }
