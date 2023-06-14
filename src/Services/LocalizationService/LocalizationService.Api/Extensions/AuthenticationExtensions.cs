@@ -17,7 +17,7 @@ namespace LocalizationService.Api.Extensions
             var staticScheme = configuration.GetSection("StaticConfigurations:Scheme").Value;
             var staticSecretKey = configuration.GetSection("StaticConfigurations:SecretKey").Value;
 
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            services.AddAuthentication()
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
                 {
                     options.Authority = identityServerUrl; // IdentityServer
@@ -36,8 +36,8 @@ namespace LocalizationService.Api.Extensions
                         ValidAudience = staticAudience,
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(staticSecretKey)),
 
-                        ValidateIssuer = false,
-                        ValidateAudience = false,
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
                         ValidateLifetime = false,
                         ValidateIssuerSigningKey = true,
                         ClockSkew = TimeSpan.Zero

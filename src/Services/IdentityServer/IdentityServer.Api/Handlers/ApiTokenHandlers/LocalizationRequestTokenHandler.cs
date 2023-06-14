@@ -20,11 +20,11 @@ namespace IdentityServer.Api.Handlers.ApiTokenHandlers
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            var localizationStaticScheme = _configuration.GetSection("LocalizationSettings:Scheme").Value;
+            //var localizationStaticScheme = _configuration.GetSection("LocalizationSettings:Scheme").Value;
 
             var token = await _clientCredentialTokenService.GetToken(Utilities.Enums.EnumProjectType.LocalizationService, Models.ClientModels.ApiPermissionType.ReadPermission);
 
-            request.Headers.Authorization = new AuthenticationHeaderValue(localizationStaticScheme, token.Data);
+            request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, token.Data);
             var response = await base.SendAsync(request, cancellationToken);
 
             if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)

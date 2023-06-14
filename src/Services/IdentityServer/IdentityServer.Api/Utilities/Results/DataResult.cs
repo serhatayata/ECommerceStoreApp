@@ -1,10 +1,16 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace IdentityServer.Api.Utilities.Results
 {
     public class DataResult<T> : Result
     {
-        public DataResult(T data, bool success, object message, int statusCode) : base(success, message, statusCode)
+        public DataResult() : base(true)
+        {
+            
+        }
+
+        [JsonConstructor]
+        public DataResult(T data) : base(true)
         {
             Data = data;
         }
@@ -14,8 +20,7 @@ namespace IdentityServer.Api.Utilities.Results
             Data = data;
         }
 
-        [JsonConstructor]
-        public DataResult(T data) : base(true)
+        public DataResult(T data, bool success, object message, int statusCode) : base(success, message, statusCode)
         {
             Data = data;
         }

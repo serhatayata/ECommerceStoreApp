@@ -172,7 +172,7 @@ namespace IdentityServer.Api.Services.Redis.Concrete
             var db = _client.GetDatabase(databaseId);
 
             string jsonValue = JsonConvert.SerializeObject(value, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
-            await db.StringSetAsync(key, jsonValue, TimeSpan.FromSeconds(duration));
+            await db.StringSetAsync(key, jsonValue, TimeSpan.FromHours(duration));
         }
         #endregion
         #region Remove

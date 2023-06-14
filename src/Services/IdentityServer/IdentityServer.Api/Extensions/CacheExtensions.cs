@@ -121,7 +121,7 @@ namespace IdentityServer.Api.Extensions
                 if (!redisService.AnyKeyExistsByPrefix(localizationMemberKey, databaseId))
                 {
                     var gatewayClient = httpClientFactory.CreateClient("gateway");
-                    var result = await gatewayClient.PostGetResponseAsync<DataResult<IReadOnlyList<MemberDto>>, StringModel>("localization/members/get-all-with-resources-by-memberkey-and-save", new StringModel() { Value = localizationMemberKey });
+                    var result = await gatewayClient.PostGetResponseAsync<DataResult<List<MemberDto>>, StringModel>("localization/members/get-all-with-resources-by-memberkey-and-save", new StringModel() { Value = localizationMemberKey });
 
                     if (!result.Success)
                         throw new Exception("Localization data request not successful");

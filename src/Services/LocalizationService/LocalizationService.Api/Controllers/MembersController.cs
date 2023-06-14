@@ -1,13 +1,10 @@
-﻿using LocalizationService.Api.Attributes;
-using LocalizationService.Api.Models.Base.Concrete;
+﻿using LocalizationService.Api.Models.Base.Concrete;
 using LocalizationService.Api.Models.MemberModels;
 using LocalizationService.Api.Services.Abstract;
 using LocalizationService.Api.Services.Redis.Abstract;
-using LocalizationService.Api.Utilities.Configuration;
 using LocalizationService.Api.Utilities.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace LocalizationService.Api.Controllers
 {
@@ -125,20 +122,19 @@ namespace LocalizationService.Api.Controllers
 
         [HttpPost]
         [Route("get-all-with-resources-by-memberkey-and-save")]
-        [ProducesResponseType(typeof(DataResult<MemberModel>), (int)System.Net.HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(DataResult<MemberModel>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(DataResult<List<MemberModel>>), (int)System.Net.HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(DataResult<List<MemberModel>>), (int)System.Net.HttpStatusCode.BadRequest)]
         [Authorize(Policy = "LocalizationStaticRead")]
         public async Task<IActionResult> GetAllWithResourcesByMemberKeyAndSaveAsync([FromBody] StringModel model)
         {
             var result = await _memberService.SaveToDbAsync(model);
             if (result.Success)
             {
-                var data = result.Data;
-                
-                
+                var data = new SuccessDataResult<List<MemberModel>>(result.Data.ToList(), "deneme");
+                return Ok(data);
             }
 
-            return BadRequest(result);
+            return BadRequest(new ErrorDataResult<List<MemberModel>>(null));
         }
     }
 }

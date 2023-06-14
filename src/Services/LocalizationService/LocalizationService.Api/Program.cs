@@ -8,7 +8,6 @@ using LocalizationService.Api.Mapping;
 using LocalizationService.Api.Models.LogModels;
 using LocalizationService.Api.Services.ElasticSearch.Abstract;
 using LocalizationService.Api.Services.ElasticSearch.Concrete;
-using LocalizationService.Api.Utilities.Configuration;
 using LocalizationService.Api.Utilities.IoC;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Logging;
@@ -78,7 +77,7 @@ await LocalizationSeedData.LoadLocalizationSeedDataAsync(localizationDbContext, 
 builder.Services.ConfigureConsul(configuration);
 #endregion
 #region StaticHelpers
-SpecificConfigurationHelper.Initialize(configuration);
+
 #endregion
 
 builder.Services.AddEndpointsApiExplorer();

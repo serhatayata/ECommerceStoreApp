@@ -16,7 +16,8 @@ namespace IdentityServer.Api.Extensions
             {
                 options.Filters.Add(typeof(FluentValidationCustomValidationAttribute));
                 options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
-            }).AddJsonOptions(o =>
+            })
+            .AddJsonOptions(o =>
             {
                 o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
             });
