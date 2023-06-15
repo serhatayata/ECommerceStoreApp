@@ -13,11 +13,17 @@ namespace IdentityServer.Api.Extensions
             #region HttpClients
             string gatewayClient = configuration.GetSection($"SourceOriginSettings:{env}:Gateway").Value;
 
-            services.AddHttpClient("gateway", config =>
+            services.AddHttpClient("gateway-specific", config =>
             {
                 var baseAddress = $"{gatewayClient}";
                 config.BaseAddress = new Uri(baseAddress);
             }).AddHttpMessageHandler<LocalizationRequestTokenHandler>();
+
+            services.AddHttpClient("gateway", config =>
+            {
+                var baseAddress = $"{gatewayClient}";
+                config.BaseAddress = new Uri(baseAddress);
+            });
 
             #endregion
         }

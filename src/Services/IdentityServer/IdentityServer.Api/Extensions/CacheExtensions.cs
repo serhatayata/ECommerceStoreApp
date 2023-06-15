@@ -109,18 +109,13 @@ namespace IdentityServer.Api.Extensions
                 var values = new Dictionary<string, RedisValue>();
 
                 var localizationMemberKey = configuration.GetSection("LocalizationSettings:MemberKey").Value;
-                var localizationMemoryDuration1 = configuration.GetSection("LocalizationSettings:MemoryCache:Duration1").Get<int>();
-                var localizationMemoryDuration2 = configuration.GetSection("LocalizationSettings:MemoryCache:Duration2").Get<int>();
-
-                var localizationSuffix1 = configuration.GetSection("LocalizationSettings:MemoryCache:Suffix1").Value;
-                var localizationSuffix2 = configuration.GetSection("LocalizationSettings:MemoryCache:Suffix2").Value;
 
                 var redisCacheDuration = configuration.GetSection("LocalizationSettings:CacheDuration").Get<int>();
                 int databaseId = configuration.GetSection("RedisSettings:LocalizationCacheDbId").Get<int>();
 
                 if (!redisService.AnyKeyExistsByPrefix(localizationMemberKey, databaseId))
                 {
-                    var gatewayClient = httpClientFactory.CreateClient("gateway");
+                    var gatewayClient = httpClientFactory.CreateClient("gateway-specific");
                     var result = await gatewayClient.PostGetResponseAsync<DataResult<List<MemberDto>>, StringModel>("localization/members/get-all-with-resources-by-memberkey-and-save", new StringModel() { Value = localizationMemberKey });
 
                     if (!result.Success)
@@ -128,19 +123,7 @@ namespace IdentityServer.Api.Extensions
 
                     var resultData = result.Data;
 
-                    //MemoryCache1
-                    _ = memoryCache.Set($"{localizationMemberKey}-{localizationSuffix1}", resultData, new MemoryCacheEntryOptions()
-                    {
-                        AbsoluteExpiration = DateTime.Now.AddHours(localizationMemoryDuration1),
-                        Priority = CacheItemPriority.High
-                    });
-
-                    //MemoryCache2
-                    _ = memoryCache.Set($"{localizationMemberKey}-{localizationSuffix2}", resultData, new MemoryCacheEntryOptions()
-                    {
-                        AbsoluteExpiration = DateTime.Now.AddHours(localizationMemoryDuration2),
-                        Priority = CacheItemPriority.High
-                    });
+                    MemoryCacheExtensions.SaveLocalizationData(memoryCache, configuration, resultData);
 
                     if (redisService.AnyKeyExistsByPrefix(localizationMemberKey, databaseId))
                         return;

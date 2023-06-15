@@ -8,6 +8,7 @@ using IdentityServer.Api.DependencyResolvers.Autofac;
 using IdentityServer.Api.Entities.Identity;
 using IdentityServer.Api.Extensions;
 using IdentityServer.Api.Extensions.Authentication;
+using IdentityServer.Api.Extensions.MiddlewareExtensions;
 using IdentityServer.Api.Mapping;
 using IdentityServer.Api.Models.LogModels;
 using IdentityServer.Api.Models.Settings;
@@ -180,6 +181,9 @@ builder.Services.UseVerifyCodeTokenAuthentication();
 #region Cache Initialize
 await builder.Services.LocalizationCacheInitialize(configuration);
 #endregion
+#region Localization
+await builder.Services.AddLocalizationSettingsAsync(configuration);
+#endregion
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -203,6 +207,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseLocalizationMiddleware();
 app.UseIdentityServer();
 
 app.MapControllers();

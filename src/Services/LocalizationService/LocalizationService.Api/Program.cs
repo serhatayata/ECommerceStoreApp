@@ -76,9 +76,6 @@ await LocalizationSeedData.LoadLocalizationSeedDataAsync(localizationDbContext, 
 #region Consul
 builder.Services.ConfigureConsul(configuration);
 #endregion
-#region StaticHelpers
-
-#endregion
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

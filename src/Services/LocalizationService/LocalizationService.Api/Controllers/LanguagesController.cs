@@ -77,10 +77,24 @@ namespace LocalizationService.Api.Controllers
 
         [HttpPost]
         [Route("get-all")]
-        [ProducesResponseType(typeof(DataResult<LanguageModel>), (int)System.Net.HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(DataResult<LanguageModel>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(DataResult<List<LanguageModel>>), (int)System.Net.HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(DataResult<List<LanguageModel>>), (int)System.Net.HttpStatusCode.BadRequest)]
         [Authorize(Policy = "LocalizationRead")]
         public async Task<IActionResult> GetAllAsync()
+        {
+            var result = await _languageService.GetAllAsync();
+            if (result.Success)
+                return Ok(result);
+
+            return BadRequest(result);
+        }
+
+        [HttpPost]
+        [Route("get-all-for-clients")]
+        [ProducesResponseType(typeof(DataResult<List<LanguageModel>>), (int)System.Net.HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(DataResult<List<LanguageModel>>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(Policy = "LocalizationStaticRead")]
+        public async Task<IActionResult> GetAllForClientsAsync()
         {
             var result = await _languageService.GetAllAsync();
             if (result.Success)

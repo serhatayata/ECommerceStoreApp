@@ -4,7 +4,6 @@
     {
         public string Name { get; set; }
         public string MemberKey { get; set; }
-        public DateTime CreateDate { get; set; }
 
         public IReadOnlyList<ResourceDto> Resources { get; set; }
     }

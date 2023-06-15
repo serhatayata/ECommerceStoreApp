@@ -1,6 +1,6 @@
 ﻿using IdentityServer.Api.Middlewares;
 
-namespace IdentityServer.Api.Extensions
+namespace IdentityServer.Api.Extensions.MiddlewareExtensions
 {
     public static class ExceptionMiddlewareExtensions
     {
