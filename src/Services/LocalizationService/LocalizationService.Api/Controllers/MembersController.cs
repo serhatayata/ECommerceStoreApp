@@ -121,16 +121,16 @@ namespace LocalizationService.Api.Controllers
         }
 
         [HttpPost]
-        [Route("get-all-with-resources-by-memberkey-and-save")]
+        [Route("get-with-resources-by-memberkey-and-save")]
         [ProducesResponseType(typeof(DataResult<List<MemberModel>>), (int)System.Net.HttpStatusCode.OK)]
         [ProducesResponseType(typeof(DataResult<List<MemberModel>>), (int)System.Net.HttpStatusCode.BadRequest)]
         [Authorize(Policy = "LocalizationStaticRead")]
-        public async Task<IActionResult> GetAllWithResourcesByMemberKeyAndSaveAsync([FromBody] StringModel model)
+        public async Task<IActionResult> GetWithResourcesByMemberKeyAndSaveAsync([FromBody] StringModel model)
         {
             var result = await _memberService.SaveToDbAsync(model);
             if (result.Success)
             {
-                var data = new SuccessDataResult<List<MemberModel>>(result.Data.ToList(), "deneme");
+                var data = new SuccessDataResult<MemberModel>(result.Data);
                 return Ok(data);
             }
 

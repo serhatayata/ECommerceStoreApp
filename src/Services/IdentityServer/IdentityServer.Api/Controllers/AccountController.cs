@@ -17,6 +17,7 @@ using IdentityServer.Api.Models.IncludeOptions.Account;
 using IdentityServer.Api.Models.UserModels;
 using IdentityServer.Api.Services.Abstract;
 using IdentityServer.Api.Services.Concrete;
+using IdentityServer.Api.Services.Localization.Abstract;
 using IdentityServer.Api.Utilities;
 using IdentityServer.Api.Utilities.Results;
 using IdentityServer.Api.ViewModels.Account;
@@ -41,7 +42,7 @@ namespace IdentityServer.Api.Controllers
     /// The interaction service provides a way for the UI to communicate with identityserver for validation and context retrieval
     /// </summary>
     [SecurityHeaders]
-    public class AccountController : Controller
+    public class AccountController : BaseController
     {
         private readonly TestUserStore _users;
         private readonly IIdentityServerInteractionService _interaction;
@@ -53,6 +54,7 @@ namespace IdentityServer.Api.Controllers
         private readonly IApiScopeService _apiScopeService;
         private readonly IIdentityResourceService _identityResourceService;
         private readonly IUserService _userService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public AccountController(
             IIdentityServerInteractionService interaction,
@@ -64,7 +66,9 @@ namespace IdentityServer.Api.Controllers
             IApiScopeService apiScopeService,
             IIdentityResourceService identityResourceService,
             IUserService userService,
-            TestUserStore users = null)
+            ILocalizationService localizationService,
+            TestUserStore users = null,
+            IHttpContextAccessor httpContextAccessor = null) : base(localizationService)
         {
             // if the TestUserStore is not in DI, then we'll just use the global users collection
             // this is where you would plug in your own custom identity management library (e.g. ASP.NET Identity)
@@ -79,6 +83,7 @@ namespace IdentityServer.Api.Controllers
             _apiScopeService = apiScopeService;
             _identityResourceService = identityResourceService;
             _userService = userService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         /// <summary>
@@ -262,6 +267,21 @@ namespace IdentityServer.Api.Controllers
         public IActionResult AccessDenied()
         {
             return View();
+        }
+
+        /// <summary>
+        /// Entry point into the login workflow
+        /// </summary>
+        [HttpGet]
+        [AllowAnonymous]
+        [Route("test")]
+        public async Task<IActionResult> Test()
+        {
+            var acceptLanguage = _httpContextAccessor.HttpContext?.Request?.GetTypedHeaders()?.AcceptLanguage?.FirstOrDefault()?.Value;
+            var cccurrentCulture = acceptLanguage.HasValue ? acceptLanguage.Value : "tr-TR";
+
+            var currentCulture = Thread.CurrentThread.CurrentUICulture.Name ?? "tr-TR";
+            return Ok();
         }
 
         #region User

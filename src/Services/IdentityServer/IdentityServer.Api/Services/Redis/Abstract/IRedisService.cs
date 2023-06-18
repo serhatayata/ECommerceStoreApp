@@ -80,6 +80,13 @@ namespace IdentityServer.Api.Services.Redis.Abstract
         /// <returns></returns>
         string Get(string key);
         /// <summary>
+        /// Gets the key if it exists by databaseId
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="databaseId"></param>
+        /// <returns></returns>
+        string Get(string key, int databaseId);
+        /// <summary>
         /// Gets the key if it exists ASYNC
         /// </summary>
         /// <typeparam name="T"></typeparam>

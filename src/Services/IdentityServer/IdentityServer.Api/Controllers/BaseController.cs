@@ -1,38 +1,30 @@
-﻿using Microsoft.AspNetCore.Html;
+﻿using IdentityServer.Api.Services.Localization.Abstract;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using Newtonsoft.Json.Linq;
 
 namespace IdentityServer.Api.Controllers
 {
     public class BaseController : Controller
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly ILogger<BaseController> _logger;
-        private readonly IMemoryCache _memoryCache;
-        private readonly IConfiguration _configuration;
+        private readonly ILocalizationService _localizationService;
 
-        public BaseController(IHttpContextAccessor httpContextAccessor, 
-                              IMemoryCache memoryCache, 
-                              IConfiguration configuration,
-                              ILogger<BaseController> logger)
+        public BaseController(ILocalizationService localizationService)
         {
-            _httpContextAccessor = httpContextAccessor;
-            _logger = logger;
-            _memoryCache = memoryCache;
-            _configuration = configuration;
+            _localizationService = localizationService;
         }
 
-        public HtmlString Localize(string resourceKey, params object[] args)
+        public async Task<string> Localize(string resourceKey, params object[] args)
         {
             //var acceptLanguage = _httpContextAccessor.HttpContext?.Request?.GetTypedHeaders()?.AcceptLanguage?.FirstOrDefault()?.Value;
             //var currentCulture = acceptLanguage.HasValue ? acceptLanguage.Value : "tr-TR";
 
             var currentCulture = Thread.CurrentThread.CurrentUICulture.Name ?? "tr-TR";
 
-            //continue with memory , if not exists then send request and get response to save memory cache
-            //MemoryCacheExtensions.SaveLocalizationData
+            var data = await _localizationService.GetStringResource(currentCulture, resourceKey, args);
 
-            return new HtmlString(resourceKey);
+            return data;
         }
     }
 }

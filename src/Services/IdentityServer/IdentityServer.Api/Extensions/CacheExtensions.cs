@@ -1,6 +1,7 @@
 ﻿using IdentityServer.Api.Dtos.Localization;
 using IdentityServer.Api.Models.Base.Concrete;
 using IdentityServer.Api.Models.CacheModels;
+using IdentityServer.Api.Services.Localization.Abstract;
 using IdentityServer.Api.Services.Redis.Abstract;
 using IdentityServer.Api.Utilities.Results;
 using Microsoft.Extensions.Caching.Memory;
@@ -116,19 +117,24 @@ namespace IdentityServer.Api.Extensions
                 if (!redisService.AnyKeyExistsByPrefix(localizationMemberKey, databaseId))
                 {
                     var gatewayClient = httpClientFactory.CreateClient("gateway-specific");
-                    var result = await gatewayClient.PostGetResponseAsync<DataResult<List<MemberDto>>, StringModel>("localization/members/get-all-with-resources-by-memberkey-and-save", new StringModel() { Value = localizationMemberKey });
+                    var result = await gatewayClient.PostGetResponseAsync<DataResult<MemberDto>, StringModel>("localization/members/get-with-resources-by-memberkey-and-save", new StringModel() { Value = localizationMemberKey });
 
                     if (!result.Success)
                         throw new Exception("Localization data request not successful");
 
                     var resultData = result.Data;
+                    if (resultData == null)
+                        throw new Exception("Localization data is null from http request");
 
                     MemoryCacheExtensions.SaveLocalizationData(memoryCache, configuration, resultData);
 
                     if (redisService.AnyKeyExistsByPrefix(localizationMemberKey, databaseId))
                         return;
 
-                    await redisService.SetAsync(localizationMemberKey, resultData, redisCacheDuration, databaseId);
+                    foreach (var resource in resultData.Resources)
+                    {
+                        await redisService.SetAsync($"{localizationMemberKey}-{resource.LanguageCode}-{resource.Tag}", resource, redisCacheDuration, databaseId);
+                    }
                 }
             });
         }

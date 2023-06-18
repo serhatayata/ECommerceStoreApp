@@ -5,6 +5,8 @@ using IdentityServer.Api.Services.Abstract;
 using IdentityServer.Api.Services.Concrete;
 using IdentityServer.Api.Services.ElasticSearch.Abstract;
 using IdentityServer.Api.Services.ElasticSearch.Concrete;
+using IdentityServer.Api.Services.Localization.Abstract;
+using IdentityServer.Api.Services.Localization.Concrete;
 using IdentityServer.Api.Services.Redis.Abstract;
 using IdentityServer.Api.Services.Redis.Concrete;
 using IdentityServer.Api.Utilities.Security.Jwt;
@@ -30,6 +32,7 @@ namespace IdentityServer.Api.DependencyResolvers.Autofac
             builder.RegisterType<RedisService>().As<IRedisService>().SingleInstance();
             builder.RegisterType<ElasticSearchService>().As<IElasticSearchService>().SingleInstance();
             builder.RegisterType<JwtHelper>().As<IJwtHelper>().SingleInstance();
+            builder.RegisterType<LocalizationService>().As<ILocalizationService>().SingleInstance();
             #endregion
             #region VALIDATORS
             builder.RegisterType<ResourceOwnerPasswordCustomValidator>().As<IResourceOwnerPasswordValidator>().InstancePerDependency();

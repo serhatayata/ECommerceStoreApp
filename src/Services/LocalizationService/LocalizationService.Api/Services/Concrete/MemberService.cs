@@ -56,7 +56,7 @@ namespace LocalizationService.Api.Services.Concrete
             return result;
         }
 
-        public async Task<DataResult<IReadOnlyList<MemberModel>>> SaveToDbAsync(StringModel model)
+        public async Task<DataResult<MemberModel>> SaveToDbAsync(StringModel model)
         {
             var duration = _configuration.GetSection("LocalizationCacheSettings:Duration").Get<int>();
             var databaseId = _configuration.GetSection("LocalizationCacheSettings:DatabaseId").Get<int>();
@@ -65,11 +65,11 @@ namespace LocalizationService.Api.Services.Concrete
 
             if (anyExists)
             {
-                var cacheData = await _redisService.GetAsync<IReadOnlyList<MemberModel>>(model.Value);
-                return new SuccessDataResult<IReadOnlyList<MemberModel>>(cacheData);
+                var cacheData = await _redisService.GetAsync<MemberModel>(model.Value);
+                return new SuccessDataResult<MemberModel>(cacheData);
             }
 
-            var memberResult = await _unitOfWork.MemberRepository.GetAllWithResourcesByMemberKeyAsync(model);
+            var memberResult = await _unitOfWork.MemberRepository.GetAsync(model);
 
             if (memberResult.Success)
             {
@@ -94,12 +94,12 @@ namespace LocalizationService.Api.Services.Concrete
                         throw new Exception($"Error redis cache saving : {model.Value}");
                 });
 
-                var result = _mapper.Map<IReadOnlyList<MemberModel>>(data);
-                return new SuccessDataResult<IReadOnlyList<MemberModel>>(result);
+                var result = _mapper.Map<MemberModel>(data);
+                return new SuccessDataResult<MemberModel>(result);
             }
             else
             {
-                return new ErrorDataResult<IReadOnlyList<MemberModel>>();
+                return new ErrorDataResult<MemberModel>();
             }
         }
 

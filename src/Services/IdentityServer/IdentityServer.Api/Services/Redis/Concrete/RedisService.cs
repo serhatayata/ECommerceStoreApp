@@ -75,6 +75,12 @@ namespace IdentityServer.Api.Services.Redis.Concrete
             return _client.GetDatabase().StringGet(key);
         }
         #endregion
+        #region Get
+        public string Get(string key, int databaseId)
+        {
+            return _client.GetDatabase(databaseId).StringGet(key);
+        }
+        #endregion
         #region GetValuesByPrefix
         public RedisValue[] GetValuesByPrefix(string prefix, int databaseId = 1)
         {
