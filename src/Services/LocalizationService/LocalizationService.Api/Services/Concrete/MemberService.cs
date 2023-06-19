@@ -65,7 +65,7 @@ namespace LocalizationService.Api.Services.Concrete
 
             if (anyExists)
             {
-                var cacheData = await _redisService.GetAsync<MemberModel>(model.Value);
+                var cacheData = await _redisService.GetAsync<MemberModel>(model.Value, databaseId);
                 return new SuccessDataResult<MemberModel>(cacheData);
             }
 

@@ -281,6 +281,9 @@ namespace IdentityServer.Api.Controllers
             var cccurrentCulture = acceptLanguage.HasValue ? acceptLanguage.Value : "tr-TR";
 
             var currentCulture = Thread.CurrentThread.CurrentUICulture.Name ?? "tr-TR";
+
+            var testvalue = await this.Localize("test");
+
             return Ok();
         }
 

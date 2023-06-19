@@ -1,4 +1,5 @@
 ﻿using IdentityServer.Api.Dtos.Localization;
+using IdentityServer.Api.Models.Settings;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace IdentityServer.Api.Extensions
@@ -7,33 +8,30 @@ namespace IdentityServer.Api.Extensions
     {
         public static void SaveLocalizationData(IMemoryCache memoryCache, IConfiguration configuration, MemberDto data)
         {
-            var localizationMemberKey = configuration.GetSection("LocalizationSettings:MemberKey").Value;
-            var localizationMemoryDuration1 = configuration.GetSection("LocalizationSettings:MemoryCache:Duration1").Get<int>();
-            var localizationMemoryDuration2 = configuration.GetSection("LocalizationSettings:MemoryCache:Duration2").Get<int>();
+            var localizationSettings = configuration.GetSection("LocalizationSettings").Get<LocalizationSettings>();
 
-            var localizationSuffix1 = configuration.GetSection("LocalizationSettings:MemoryCache:Suffix1").Value;
-            var localizationSuffix2 = configuration.GetSection("LocalizationSettings:MemoryCache:Suffix2").Value;
+            var localizationMemberKey = localizationSettings.MemberKey;
+            var localizationMemoryDuration1 = localizationSettings.MemoryCache.Duration1;
+            var localizationMemoryDuration2 = localizationSettings.MemoryCache.Duration2;
+
+            var localizationSuffix1 = localizationSettings.MemoryCache.Suffix1;
+            var localizationSuffix2 = localizationSettings.MemoryCache.Suffix2;
 
             var memoryCache1Prefix = $"{localizationMemberKey}-{localizationSuffix1}";
             var memoryCache2Prefix = $"{localizationMemberKey}-{localizationSuffix2}";
-
-            string dummyData1 = $"{localizationMemberKey}-{localizationSuffix1}";
-            string dummyData2 = $"{localizationMemberKey}-{localizationSuffix2}";
 
             //MemoryCache1
             data.Resources.ForEach(d =>
             {
                 _ = memoryCache.Set($"{memoryCache1Prefix}-{d.LanguageCode}-{d.Tag}", d, new MemoryCacheEntryOptions()
                 {
-                    AbsoluteExpiration = DateTime.Now.AddHours(localizationMemoryDuration1),
-                    Priority = CacheItemPriority.High
+                    AbsoluteExpiration = DateTime.Now.AddHours(localizationMemoryDuration1)
                 });
             });
 
-            _ = memoryCache.Set($"{memoryCache2Prefix}", "dummy1", new MemoryCacheEntryOptions()
+            _ = memoryCache.Set($"{memoryCache1Prefix}", "dummy1", new MemoryCacheEntryOptions()
             {
-                AbsoluteExpiration = DateTime.Now.AddHours(localizationMemoryDuration1),
-                Priority = CacheItemPriority.High
+                AbsoluteExpiration = DateTime.Now.AddHours(localizationMemoryDuration1)
             });
 
             //MemoryCache2
@@ -41,15 +39,13 @@ namespace IdentityServer.Api.Extensions
             {
                 _ = memoryCache.Set($"{memoryCache2Prefix}-{d.LanguageCode}-{d.Tag}", d, new MemoryCacheEntryOptions()
                 {
-                    AbsoluteExpiration = DateTime.Now.AddHours(localizationMemoryDuration1),
-                    Priority = CacheItemPriority.High
+                    AbsoluteExpiration = DateTime.Now.AddHours(localizationMemoryDuration1)
                 });
             });
 
             _ = memoryCache.Set($"{memoryCache2Prefix}", "dummy2", new MemoryCacheEntryOptions()
             {
-                AbsoluteExpiration = DateTime.Now.AddHours(localizationMemoryDuration2),
-                Priority = CacheItemPriority.High
+                AbsoluteExpiration = DateTime.Now.AddHours(localizationMemoryDuration2)
             });
         }
     }

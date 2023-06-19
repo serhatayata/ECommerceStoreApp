@@ -1,6 +1,7 @@
 ﻿using IdentityServer.Api.Dtos.Localization;
 using IdentityServer.Api.Extensions;
 using IdentityServer.Api.Models.Base.Concrete;
+using IdentityServer.Api.Models.Settings;
 using IdentityServer.Api.Services.Localization.Abstract;
 using IdentityServer.Api.Services.Redis.Abstract;
 using IdentityServer.Api.Utilities.Results;
@@ -49,16 +50,19 @@ namespace IdentityServer.Api.Services.Localization.Concrete
             _configuration = configuration;
             _httpClientFactory = httpClientFactory;
 
-            _localizationMemberKey = _configuration.GetSection("LocalizationSettings:MemberKey").Value;
-            _localizationSuffix1 = _configuration.GetSection("LocalizationSettings:MemoryCache:Suffix1").Value;
-            _localizationSuffix2 = _configuration.GetSection("LocalizationSettings:MemoryCache:Suffix2").Value;
+            var localizationSettings = _configuration.GetSection("LocalizationSettings").Get<LocalizationSettings>();
+            var redisSettings = _configuration.GetSection("RedisSettings").Get<RedisSettings>();
 
-            _databaseId = _configuration.GetSection("RedisSettings:LocalizationCacheDbId").Get<int>();
+            _localizationMemberKey = localizationSettings.MemberKey;
+            _localizationSuffix1 = localizationSettings.MemoryCache.Suffix1;
+            _localizationSuffix2 = localizationSettings.MemoryCache.Suffix2;
 
-            _localizationMemoryDuration1 = _configuration.GetSection("LocalizationSettings:MemoryCache:Duration1").Get<int>();
-            _localizationMemoryDuration2 = _configuration.GetSection("LocalizationSettings:MemoryCache:Duration2").Get<int>();
+            _databaseId = redisSettings.LocalizationCacheDbId;
 
-            _redisCacheDuration = _configuration.GetSection("LocalizationSettings:CacheDuration").Get<int>();
+            _localizationMemoryDuration1 = localizationSettings.MemoryCache.Duration1;
+            _localizationMemoryDuration2 = localizationSettings.MemoryCache.Duration2;
+
+            _redisCacheDuration = localizationSettings.CacheDuration;
 
             _memoryCache1Prefix = $"{_localizationMemberKey}-{_localizationSuffix1}";
             _memoryCache2Prefix = $"{_localizationMemberKey}-{_localizationSuffix2}";
@@ -76,8 +80,7 @@ namespace IdentityServer.Api.Services.Localization.Concrete
             if (!string.IsNullOrWhiteSpace(memoryCacheValue))
                 return memoryCacheValue;
 
-            string dummyDataValue = this.GetLocalizedValue($"{_localizationMemberKey}") ?? string.Empty;
-            var memory1Any = _memoryCache.TryGetValue(dummyDataValue, out var mem1AnyValue);
+            var memory1Any = _memoryCache.TryGetValue(_memoryCache1Prefix, out var mem1AnyValue);
             if (memory1Any)
                 return string.Empty;
 
@@ -86,7 +89,6 @@ namespace IdentityServer.Api.Services.Localization.Concrete
             if (!string.IsNullOrWhiteSpace(memoryCacheValue2))
                 return memoryCacheValue2;
 
-            string dummyData2Value = this.GetLocalizedValue($"{_memoryCache2Prefix}") ?? string.Empty;
             var memory2Any = _memoryCache.TryGetValue(_memoryCache2Prefix, out var mem2AnyValue);
             if (memory2Any)
                 return string.Empty;
@@ -100,7 +102,7 @@ namespace IdentityServer.Api.Services.Localization.Concrete
             if (!string.IsNullOrWhiteSpace(redisValue))
                 return redisValue;
 
-            var result = _redisService.Get(redisValue);
+            var result = _redisService.Get(redisValue, _databaseId);
             return result;
         }
 

@@ -1,10 +1,12 @@
 ﻿using IdentityServer.Api.Dtos.Localization;
 using IdentityServer.Api.Models.Base.Concrete;
 using IdentityServer.Api.Models.CacheModels;
+using IdentityServer.Api.Models.Settings;
 using IdentityServer.Api.Services.Localization.Abstract;
 using IdentityServer.Api.Services.Redis.Abstract;
 using IdentityServer.Api.Utilities.Results;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Polly;
 using Serilog;
@@ -109,12 +111,23 @@ namespace IdentityServer.Api.Extensions
             {
                 var values = new Dictionary<string, RedisValue>();
 
-                var localizationMemberKey = configuration.GetSection("LocalizationSettings:MemberKey").Value;
+                var localizationSettings = configuration.GetSection("LocalizationSettings").Get<LocalizationSettings>();
+                var redisSettings = configuration.GetSection("RedisSettings").Get<RedisSettings>();
 
-                var redisCacheDuration = configuration.GetSection("LocalizationSettings:CacheDuration").Get<int>();
-                int databaseId = configuration.GetSection("RedisSettings:LocalizationCacheDbId").Get<int>();
+                var localizationMemberKey = localizationSettings.MemberKey;
+                var redisCacheDuration = localizationSettings.CacheDuration;
 
-                if (!redisService.AnyKeyExistsByPrefix(localizationMemberKey, databaseId))
+                var localizationSuffix1 = localizationSettings.MemoryCache.Suffix1;
+                var localizationSuffix2 = localizationSettings.MemoryCache.Suffix2;
+
+                var memoryCache1Prefix = $"{localizationMemberKey}-{localizationSuffix1}";
+                var memoryCache2Prefix = $"{localizationMemberKey}-{localizationSuffix2}";
+
+                int databaseId = redisSettings.LocalizationCacheDbId;
+
+                if (!redisService.AnyKeyExistsByPrefix(localizationMemberKey, databaseId) ||
+                     !memoryCache.TryGetValue(memoryCache1Prefix, out object cacheDummy1) || 
+                     !memoryCache.TryGetValue(memoryCache2Prefix, out object cacheDummy2))
                 {
                     var gatewayClient = httpClientFactory.CreateClient("gateway-specific");
                     var result = await gatewayClient.PostGetResponseAsync<DataResult<MemberDto>, StringModel>("localization/members/get-with-resources-by-memberkey-and-save", new StringModel() { Value = localizationMemberKey });
