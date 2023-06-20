@@ -1,5 +1,4 @@
 using Autofac;
-using Autofac.Core;
 using Autofac.Extensions.DependencyInjection;
 using IdentityServer.Api.CacheStores;
 using IdentityServer.Api.Data.Contexts;
@@ -13,6 +12,7 @@ using IdentityServer.Api.Mapping;
 using IdentityServer.Api.Models.LogModels;
 using IdentityServer.Api.Models.Settings;
 using IdentityServer.Api.Models.UserModels;
+using IdentityServer.Api.Services.Base.Concrete;
 using IdentityServer.Api.Services.ElasticSearch.Abstract;
 using IdentityServer.Api.Services.ElasticSearch.Concrete;
 using IdentityServer.Api.Services.Redis.Abstract;
@@ -22,11 +22,8 @@ using IdentityServer.Api.Services.Token.Concrete;
 using IdentityServer.Api.Utilities.IoC;
 using IdentityServer.Api.Utilities.Security.Jwt;
 using IdentityServer.Api.Validations.IdentityValidators;
-using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 #region SERVICES
 var builder = WebApplication.CreateBuilder(args);
@@ -179,10 +176,9 @@ builder.Services.UseVerifyCodeTokenAuthentication();
 //});
 
 #endregion
-#region Cache Initialize
-await builder.Services.LocalizationCacheInitialize(configuration);
-#endregion
 #region Localization
+builder.Services.AddHostedService<InitializeCacheService>();
+
 await builder.Services.AddLocalizationSettingsAsync(configuration);
 #endregion
 

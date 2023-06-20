@@ -1,7 +1,7 @@
 ﻿using IdentityServer.Api.Models.Base.Concrete;
 using IdentityServer.Api.Models.ClientModels;
 using IdentityServer.Api.Models.IncludeOptions.Account;
-using IdentityServer.Api.Services.Base;
+using IdentityServer.Api.Services.Base.Abstract;
 
 namespace IdentityServer.Api.Services.Abstract
 {

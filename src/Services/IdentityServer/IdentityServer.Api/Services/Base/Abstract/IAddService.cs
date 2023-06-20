@@ -2,9 +2,9 @@
 using IdentityServer.Api.Models.IncludeOptions;
 using IdentityServer.Api.Utilities.Results;
 
-namespace IdentityServer.Api.Services.Base
+namespace IdentityServer.Api.Services.Base.Abstract
 {
-    public interface IAddService<T,A> where A : class, IAddModel
+    public interface IAddService<T, A> where A : class, IAddModel
                                         where T : class, IModel
     {
         /// <summary>

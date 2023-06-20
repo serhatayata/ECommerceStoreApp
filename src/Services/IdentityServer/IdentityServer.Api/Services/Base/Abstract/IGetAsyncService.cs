@@ -2,9 +2,9 @@
 using IdentityServer.Api.Models.IncludeOptions;
 using IdentityServer.Api.Utilities.Results;
 
-namespace IdentityServer.Api.Services.Base
+namespace IdentityServer.Api.Services.Base.Abstract
 {
-    public interface IGetAsyncService<T,R,Y> where T : class, IModel
+    public interface IGetAsyncService<T, R, Y> where T : class, IModel
                                              where R : class, IModel
                                              where Y : IBaseIncludeOptions
     {

@@ -1,15 +1,15 @@
 ﻿using IdentityServer.Api.Models.Base.Abstract;
 using IdentityServer.Api.Utilities.Results;
 
-namespace IdentityServer.Api.Services.Base
+namespace IdentityServer.Api.Services.Base.Abstract
 {
-    public interface IDeleteAsyncService<D> where D : class, IDeleteModel
+    public interface IDeleteService<D> where D : class, IDeleteModel
     {
         /// <summary>
         /// Delete by <typeparamref name="D"/>
         /// </summary>
         /// <param name="id"><typeparamref name="D"/>Delete model</param>
         /// <returns><see cref="Result"/></returns>
-        Task<Result> DeleteAsync(D model);
+        Result Delete(D model);
     }
 }

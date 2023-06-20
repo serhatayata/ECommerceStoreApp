@@ -15,6 +15,8 @@ namespace IdentityServer.Api.Controllers
             _localizationService = localizationService;
         }
 
+        public string Culture { get; set; }
+
         public async Task<string> Localize(string resourceKey, params object[] args)
         {
             //var acceptLanguage = _httpContextAccessor.HttpContext?.Request?.GetTypedHeaders()?.AcceptLanguage?.FirstOrDefault()?.Value;

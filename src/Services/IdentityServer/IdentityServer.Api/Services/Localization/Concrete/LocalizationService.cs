@@ -102,7 +102,7 @@ namespace IdentityServer.Api.Services.Localization.Concrete
             if (!string.IsNullOrWhiteSpace(redisValue))
                 return redisValue;
 
-            var result = _redisService.Get(redisValue, _databaseId);
+            var result = _redisService.Get(redisKey, _databaseId);
             return result;
         }
 

@@ -2,7 +2,7 @@
 using IdentityServer.Api.Models.IncludeOptions;
 using IdentityServer.Api.Utilities.Results;
 
-namespace IdentityServer.Api.Services.Base
+namespace IdentityServer.Api.Services.Base.Abstract
 {
     public interface IGetAllAsyncService<T, Y> where T : class, IModel
                                                where Y : IBaseIncludeOptions

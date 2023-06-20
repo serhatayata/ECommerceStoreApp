@@ -1,7 +1,7 @@
 ﻿using IdentityServer.Api.Models.Base.Abstract;
 using IdentityServer.Api.Utilities.Results;
 
-namespace IdentityServer.Api.Services.Base
+namespace IdentityServer.Api.Services.Base.Abstract
 {
     public interface IUpdateAsyncService<T, U> where T : class, IModel
                                                where U : class, IUpdateModel
