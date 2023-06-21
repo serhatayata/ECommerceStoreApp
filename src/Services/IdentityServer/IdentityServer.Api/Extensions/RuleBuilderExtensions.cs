@@ -5,6 +5,14 @@ namespace IdentityServer.Api.Extensions
 {
     public static class RuleBuilderExtensions
     {
+        #region CustomMessage
+        public static IRuleBuilderOptions<T, string> CustomMessage<T>(this IRuleBuilder<T, string> ruleBuilder)
+        {
+            var options = ruleBuilder.With(InternationalPhoneNumber);
+
+            return options;
+        }
+        #endregion
         #region PasswordWithoutMessage
         public static IRuleBuilderOptions<T, string> PasswordWithoutMessage<T>(this IRuleBuilder<T, string> ruleBuilder)
         {

@@ -1,8 +1,6 @@
 ﻿using IdentityServer.Api.Services.Localization.Abstract;
-using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
-using Newtonsoft.Json.Linq;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace IdentityServer.Api.Controllers
 {
@@ -17,14 +15,21 @@ namespace IdentityServer.Api.Controllers
 
         public string Culture { get; set; }
 
-        public async Task<string> Localize(string resourceKey, params object[] args)
+        public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            //var acceptLanguage = _httpContextAccessor.HttpContext?.Request?.GetTypedHeaders()?.AcceptLanguage?.FirstOrDefault()?.Value;
-            //var currentCulture = acceptLanguage.HasValue ? acceptLanguage.Value : "tr-TR";
+            base.OnActionExecuting(filterContext);
 
-            var currentCulture = Thread.CurrentThread.CurrentUICulture.Name ?? "tr-TR";
+            var acceptLanguage = HttpContext?.Request?.GetTypedHeaders()?.AcceptLanguage?.FirstOrDefault()?.Value;
+            var currentCulture = acceptLanguage.HasValue ? acceptLanguage.Value : "tr-TR";
 
-            var data = await _localizationService.GetStringResource(currentCulture, resourceKey, args);
+            this.Culture = currentCulture.Value;
+        }
+
+        public async ValueTask<string> Localize(string resourceKey, params object[] args)
+        {
+            var currentCulture = this.Culture;
+
+            var data = _localizationService.GetStringResource(currentCulture, resourceKey, args);
 
             return data;
         }

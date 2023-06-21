@@ -8,7 +8,6 @@ using IdentityServer.Api.Utilities.Results;
 using Microsoft.Extensions.Caching.Memory;
 using Polly;
 using Serilog;
-using System.Net.Http;
 using System.Reflection;
 
 namespace IdentityServer.Api.Services.Localization.Concrete
@@ -68,12 +67,35 @@ namespace IdentityServer.Api.Services.Localization.Concrete
             _memoryCache2Prefix = $"{_localizationMemberKey}-{_localizationSuffix2}";
         }
 
-        public async Task<string> GetStringResource(string culture, string resourceKey, params object[] args)
+        public string this[string culture, string key, params object[] args]
         {
-            return await GetLocalizationData(culture, resourceKey, args);
+            get
+            {
+                var value = GetLocalizationData(culture, key, args);
+                return string.IsNullOrWhiteSpace(value) ? " " : value; 
+            }
         }
 
-        private async Task<string> GetLocalizationData(string currentCulture, string resourceKey, params object[] args)
+        public string this[string culture, string key]
+        {
+            get
+            {
+                var value = GetLocalizationData(culture, key);
+                return string.IsNullOrWhiteSpace(value) ? " " : value;
+            }
+        }
+
+        public string GetStringResource(string culture, string resourceKey, params object[] args)
+        {
+            return GetLocalizationData(culture, resourceKey, args);
+        }
+
+        public string GetStringResource(string culture, string resourceKey)
+        {
+            return GetLocalizationData(culture, resourceKey);
+        }
+
+        private string GetLocalizationData(string currentCulture, string resourceKey, params object[] args)
         {
             //Memory cache 1
             var memoryCacheValue = this.GetLocalizedValue($"{_memoryCache1Prefix}-{currentCulture}-{resourceKey}", args);
@@ -97,7 +119,7 @@ namespace IdentityServer.Api.Services.Localization.Concrete
             var redisValue = _redisService.Get(redisKey);
 
             if (!_redisService.AnyKeyExistsByPrefix(_localizationMemberKey, _databaseId))
-                await this.SetCacheValues();
+                this.SetCacheValues();
 
             if (!string.IsNullOrWhiteSpace(redisValue))
                 return redisValue;
@@ -106,30 +128,33 @@ namespace IdentityServer.Api.Services.Localization.Concrete
             return result;
         }
 
-        private async Task SetCacheValues()
+        private void SetCacheValues()
         {
-            var policy = Polly.Policy.Handle<Exception>()
-            .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
+            Task.Run(async () =>
             {
-                Log.Error("ERROR handling message: {ExceptionMessage} - Method : {ClassName}.{MethodName}",
-                                    ex.Message, nameof(LocalizationService),
-                                    MethodBase.GetCurrentMethod()?.Name);
-            });
+                var policy = Polly.Policy.Handle<Exception>()
+                .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
+                {
+                    Log.Error("ERROR handling message: {ExceptionMessage} - Method : {ClassName}.{MethodName}",
+                                        ex.Message, nameof(LocalizationService),
+                                        MethodBase.GetCurrentMethod()?.Name);
+                });
 
-            await policy.ExecuteAsync(async () =>
-            {
-                var gatewayClient = _httpClientFactory.CreateClient("gateway-specific");
-                var result = await gatewayClient.PostGetResponseAsync<DataResult<MemberDto>, StringModel>("localization/members/get-with-resources-by-memberkey-and-save", new StringModel() { Value = _localizationMemberKey });
+                await policy.ExecuteAsync(async () =>
+                {
+                    var gatewayClient = _httpClientFactory.CreateClient("gateway-specific");
+                    var result = await gatewayClient.PostGetResponseAsync<DataResult<MemberDto>, StringModel>("localization/members/get-with-resources-by-memberkey-and-save", new StringModel() { Value = _localizationMemberKey });
 
-                if (result == null || (!result?.Success ?? false))
-                    throw new Exception("Localization data request not successful");
+                    if (result == null || (!result?.Success ?? false))
+                        throw new Exception("Localization data request not successful");
 
-                foreach (var resource in result?.Data?.Resources ?? new List<ResourceDto>())
-                    await _redisService.SetAsync($"{_localizationMemberKey}-{resource.LanguageCode}-{resource.Tag}", resource, _redisCacheDuration, _databaseId);
+                    foreach (var resource in result?.Data?.Resources ?? new List<ResourceDto>())
+                        await _redisService.SetAsync($"{_localizationMemberKey}-{resource.LanguageCode}-{resource.Tag}", resource, _redisCacheDuration, _databaseId);
 
-                MemoryCacheExtensions.SaveLocalizationData(memoryCache: _memoryCache,
-                                                           configuration: _configuration,
-                                                           result.Data);
+                    MemoryCacheExtensions.SaveLocalizationData(memoryCache: _memoryCache,
+                                                               configuration: _configuration,
+                                                               result.Data);
+                });
             });
         }
 

@@ -277,10 +277,7 @@ namespace IdentityServer.Api.Controllers
         [Route("test")]
         public async Task<IActionResult> Test()
         {
-            var acceptLanguage = _httpContextAccessor.HttpContext?.Request?.GetTypedHeaders()?.AcceptLanguage?.FirstOrDefault()?.Value;
-            var cccurrentCulture = acceptLanguage.HasValue ? acceptLanguage.Value : "tr-TR";
-
-            var currentCulture = Thread.CurrentThread.CurrentUICulture.Name ?? "tr-TR";
+            var currentCulture = this.Culture;
 
             var testvalue = await this.Localize("test");
 
