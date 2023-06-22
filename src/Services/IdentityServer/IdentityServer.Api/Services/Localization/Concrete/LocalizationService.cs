@@ -97,24 +97,25 @@ namespace IdentityServer.Api.Services.Localization.Concrete
 
         private string GetLocalizationData(string currentCulture, string resourceKey, params object[] args)
         {
-            //Memory cache 1
-            var memoryCacheValue = this.GetLocalizedValue($"{_memoryCache1Prefix}-{currentCulture}-{resourceKey}", args);
-            if (!string.IsNullOrWhiteSpace(memoryCacheValue))
-                return memoryCacheValue;
+            #region Memory Cache
+            ////Memory cache 1
+            //var memoryCacheValue = this.GetLocalizedValue($"{_memoryCache1Prefix}-{currentCulture}-{resourceKey}", args);
+            //if (!string.IsNullOrWhiteSpace(memoryCacheValue))
+            //    return memoryCacheValue;
 
-            var memory1Any = _memoryCache.TryGetValue(_memoryCache1Prefix, out var mem1AnyValue);
-            if (memory1Any)
-                return string.Empty;
+            //var memory1Any = _memoryCache.TryGetValue(_memoryCache1Prefix, out var mem1AnyValue);
+            //if (memory1Any)
+            //    return string.Empty;
 
-            //Memory cache 2
-            var memoryCacheValue2 = this.GetLocalizedValue($"{_memoryCache2Prefix}-{currentCulture}-{resourceKey}", args);
-            if (!string.IsNullOrWhiteSpace(memoryCacheValue2))
-                return memoryCacheValue2;
+            ////Memory cache 2
+            //var memoryCacheValue2 = this.GetLocalizedValue($"{_memoryCache2Prefix}-{currentCulture}-{resourceKey}", args);
+            //if (!string.IsNullOrWhiteSpace(memoryCacheValue2))
+            //    return memoryCacheValue2;
 
-            var memory2Any = _memoryCache.TryGetValue(_memoryCache2Prefix, out var mem2AnyValue);
-            if (memory2Any)
-                return string.Empty;
-
+            //var memory2Any = _memoryCache.TryGetValue(_memoryCache2Prefix, out var mem2AnyValue);
+            //if (memory2Any)
+            //    return string.Empty;
+            #endregion
             string redisKey = $"{_localizationMemberKey}-{currentCulture}-{resourceKey}";
             var redisValue = _redisService.Get(redisKey);
 
@@ -151,9 +152,9 @@ namespace IdentityServer.Api.Services.Localization.Concrete
                     foreach (var resource in result?.Data?.Resources ?? new List<ResourceDto>())
                         await _redisService.SetAsync($"{_localizationMemberKey}-{resource.LanguageCode}-{resource.Tag}", resource, _redisCacheDuration, _databaseId);
 
-                    MemoryCacheExtensions.SaveLocalizationData(memoryCache: _memoryCache,
-                                                               configuration: _configuration,
-                                                               result.Data);
+                    //MemoryCacheExtensions.SaveLocalizationData(memoryCache: _memoryCache,
+                    //                                           configuration: _configuration,
+                    //                                           result.Data);
                 });
             });
         }
