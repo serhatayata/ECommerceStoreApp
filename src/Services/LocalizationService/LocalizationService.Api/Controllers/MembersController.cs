@@ -1,5 +1,6 @@
 ﻿using LocalizationService.Api.Models.Base.Concrete;
 using LocalizationService.Api.Models.MemberModels;
+using LocalizationService.Api.Models.ResourceModels;
 using LocalizationService.Api.Services.Abstract;
 using LocalizationService.Api.Services.Redis.Abstract;
 using LocalizationService.Api.Utilities.Results;
@@ -130,11 +131,11 @@ namespace LocalizationService.Api.Controllers
             var result = await _memberService.SaveToDbAsync(model);
             if (result.Success)
             {
-                var data = new SuccessDataResult<MemberModel>(result.Data);
+                var data = new SuccessDataResult<List<ResourceCacheModel>>(result.Data);
                 return Ok(data);
             }
 
-            return BadRequest(new ErrorDataResult<List<MemberModel>>(null));
+            return BadRequest(new ErrorDataResult<List<ResourceCacheModel>>(new List<ResourceCacheModel>()));
         }
     }
 }

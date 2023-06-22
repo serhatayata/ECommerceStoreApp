@@ -177,6 +177,31 @@ namespace LocalizationService.Api.Services.Redis.Concrete
             return keys.Count() < 1 ? false : true;
         }
         #endregion
+        #region GetAllByPrefixAsync
+        public List<T> GetAllByPrefix<T>(string key, int databaseId) where T : class
+        {
+            try
+            {
+                var keys = this.GetServer().Keys(database: databaseId,
+                                                 pattern: key + "*").ToList();
+
+                var result = new List<T>();
+
+                foreach (var keyItem in keys)
+                {
+                    string value = _client.GetDatabase(databaseId).StringGet(keyItem);
+
+                    result.Add(value.ToObject<T>());
+                }
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return new List<T>();
+            }
+        }
+        #endregion
 
         public async void RemoveByPattern(string pattern, int db)
         {

@@ -7,6 +7,7 @@ namespace LocalizationService.Api.Models.MemberModels
     {
         public string Name { get; set; }
         public string MemberKey { get; set; }
+        public string LocalizationPrefix { get; set; }
         public DateTime CreateDate { get; set; }
 
         public IReadOnlyList<Resource> Resources { get; set; }

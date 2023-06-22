@@ -24,6 +24,7 @@ namespace LocalizationService.Api.Mapping
             CreateMap<Resource, ResourceModel>().ReverseMap();
             CreateMap<Resource, ResourceAddModel>().ReverseMap();
             CreateMap<Resource, ResourceUpdateModel>().ReverseMap();
+            CreateMap<Resource, ResourceCacheModel>().ReverseMap();
             #endregion
         }
     }

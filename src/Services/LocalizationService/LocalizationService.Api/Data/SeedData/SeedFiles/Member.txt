@@ -1,4 +1,4 @@
-﻿Name,MemberKey
-IdentityMember1,IdentityV1
-CatalogMember1,CatalogV1
-BasketMember1,BasketV1
+﻿Name,MemberKey,LocalizationPrefix
+IdentityMember1,IdentityV1,IdentityV1
+CatalogMember1,CatalogV1,CatalogV1
+BasketMember1,BasketV1,BasketV1

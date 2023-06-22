@@ -236,7 +236,7 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
 
         public async Task<DataResult<Member>> GetAsync(StringModel model)
         {
-            var query = $"SELECT Id, Name, MemberKey, CreateDate FROM {_memberTable} WHERE MemberKey = @MemberKey";
+            var query = $"SELECT Id, Name, MemberKey, LocalizationPrefix, CreateDate FROM {_memberTable} WHERE MemberKey = @MemberKey";
             var result = await _readDbConnection.QuerySingleOrDefaultAsync<Member>(query, new { MemberKey = model.Value });
 
             if (result == null)

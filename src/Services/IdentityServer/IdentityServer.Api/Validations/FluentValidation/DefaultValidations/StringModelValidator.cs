@@ -1,15 +1,19 @@
 ﻿using FluentValidation;
+using IdentityServer.Api.Extensions;
 using IdentityServer.Api.Models.Base.Concrete;
 using IdentityServer.Api.Models.UserModels;
+using IdentityServer.Api.Services.Localization.Abstract;
 
 namespace IdentityServer.Api.Validations.FluentValidation.DefaultValidations
 {
     public class StringModelValidator : AbstractValidator<StringModel>
     {
-        public StringModelValidator()
+        public StringModelValidator(ILocalizationService localizer,
+                                    IHttpContextAccessor httpContextAccessor)
         {
-            RuleFor(x => x.Value).NotEmpty().WithMessage("Value cannot be empty");
-            RuleFor(x => x.Value).NotNull().WithMessage("Value cannot be null");
+            string culture = HttpExtensions.GetAcceptLanguage(httpContextAccessor);
+
+            RuleFor(x => x.Value).NotEmpty().NotNull().WithMessage(localizer[culture, "stringmodel.value.notempty"]);
         }
     }
 }

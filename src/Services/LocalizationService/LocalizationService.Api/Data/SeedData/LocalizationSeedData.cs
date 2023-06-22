@@ -73,6 +73,7 @@ namespace LocalizationService.Api.Data.SeedData
                                           {
                                               Name = m[0],
                                               MemberKey = m[1],
+                                              LocalizationPrefix = m[2],
                                               //MemberKey = RandomExtensions.RandomCode(memberCodeLength),
                                               CreateDate = DateTime.Now
                                           }).ToList();

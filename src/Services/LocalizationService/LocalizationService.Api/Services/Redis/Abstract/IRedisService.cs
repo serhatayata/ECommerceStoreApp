@@ -82,6 +82,15 @@ namespace LocalizationService.Api.Services.Redis.Abstract
         /// <param name="databaseId"></param>
         /// <returns></returns>
         Task<T> GetAsync<T>(string key, int databaseId) where T : class;
+
+        /// <summary>
+        /// Gets by prefix if it exists with databaseId ASYNC
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="databaseId"></param>
+        /// <returns></returns>
+        List<T> GetAllByPrefix<T>(string key, int databaseId) where T : class;
         /// <summary>
         /// Gets the key if it exists with databaseId ASYNC using filter
         /// </summary>

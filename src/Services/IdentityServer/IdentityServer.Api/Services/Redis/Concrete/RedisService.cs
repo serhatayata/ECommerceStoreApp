@@ -61,24 +61,33 @@ namespace IdentityServer.Api.Services.Redis.Concrete
             return _client.GetDatabase(db);
         }
 
-        #region Get<T>
+        #region Get
         public T Get<T>(string key) where T : class
         {
             string value = _client.GetDatabase().StringGet(key);
 
             return value.ToObject<T>();
         }
-        #endregion        
-        #region Get
+
         public string Get(string key)
         {
             return _client.GetDatabase().StringGet(key);
         }
-        #endregion
-        #region Get
+
         public string Get(string key, int databaseId)
         {
-            return _client.GetDatabase(databaseId).StringGet(key);
+            var value = _client.GetDatabase(databaseId).StringGet(key);
+
+            if (!string.IsNullOrWhiteSpace(value))
+                value.ToString();
+            return value;
+        }
+
+        public T Get<T>(string key, int databaseId) where T : class
+        {
+            string value = _client.GetDatabase(databaseId).StringGet(key);
+
+            return value.ToObject<T>();
         }
         #endregion
         #region GetValuesByPrefix

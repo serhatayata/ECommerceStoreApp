@@ -204,7 +204,6 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseLocalizationMiddleware();
 app.UseIdentityServer();
 
 app.MapControllers();

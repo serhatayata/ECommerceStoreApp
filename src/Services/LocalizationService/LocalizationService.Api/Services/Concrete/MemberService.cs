@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
-using AutoMapper.Execution;
 using LocalizationService.Api.Data.Repositories.Base;
-using LocalizationService.Api.Entities;
 using LocalizationService.Api.Models.Base.Concrete;
 using LocalizationService.Api.Models.MemberModels;
+using LocalizationService.Api.Models.ResourceModels;
 using LocalizationService.Api.Services.Abstract;
 using LocalizationService.Api.Services.Redis.Abstract;
 using LocalizationService.Api.Utilities.Results;
@@ -56,7 +55,7 @@ namespace LocalizationService.Api.Services.Concrete
             return result;
         }
 
-        public async Task<DataResult<MemberModel>> SaveToDbAsync(StringModel model)
+        public async Task<DataResult<List<ResourceCacheModel>>> SaveToDbAsync(StringModel model)
         {
             var duration = _configuration.GetSection("LocalizationCacheSettings:Duration").Get<int>();
             var databaseId = _configuration.GetSection("LocalizationCacheSettings:DatabaseId").Get<int>();
@@ -65,8 +64,8 @@ namespace LocalizationService.Api.Services.Concrete
 
             if (anyExists)
             {
-                var cacheData = await _redisService.GetAsync<MemberModel>(model.Value, databaseId);
-                return new SuccessDataResult<MemberModel>(cacheData);
+                var cacheData = _redisService.GetAllByPrefix<ResourceCacheModel>(model.Value, databaseId);
+                return new SuccessDataResult<List<ResourceCacheModel>>(cacheData);
             }
 
             var memberResult = await _unitOfWork.MemberRepository.GetAsync(model);
@@ -84,9 +83,14 @@ namespace LocalizationService.Api.Services.Concrete
                                                  MethodBase.GetCurrentMethod()?.Name);
                             });
 
+                var resources = _mapper.Map<List<ResourceCacheModel>>(data.Resources);
+
                 await policy.ExecuteAsync(async () =>
                 {
-                    await _redisService.SetAsync(model.Value, data, duration, databaseId);
+                    resources.ForEach(async r =>
+                    {
+                        await _redisService.SetAsync($"{data.LocalizationPrefix}-{r.LanguageCode}-{r.Tag}", r, duration, databaseId);
+                    });
 
                     var anyExists = _redisService.AnyKeyExistsByPrefix(model.Value, databaseId);
 
@@ -94,12 +98,12 @@ namespace LocalizationService.Api.Services.Concrete
                         throw new Exception($"Error redis cache saving : {model.Value}");
                 });
 
-                var result = _mapper.Map<MemberModel>(data);
-                return new SuccessDataResult<MemberModel>(result);
+                var result = _mapper.Map<List<ResourceCacheModel>>(data.Resources);
+                return new SuccessDataResult<List<ResourceCacheModel>>(result);
             }
             else
             {
-                return new ErrorDataResult<MemberModel>();
+                return new ErrorDataResult<List<ResourceCacheModel>>();
             }
         }
 

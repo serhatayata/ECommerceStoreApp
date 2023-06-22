@@ -62,7 +62,7 @@ namespace IdentityServer.Api.Services.Base.Concrete
                      !memoryCache.TryGetValue(memoryCache2Prefix, out object cacheDummy2))
                 {
                     var gatewayClient = httpClientFactory.CreateClient("gateway-specific");
-                    var result = await gatewayClient.PostGetResponseAsync<DataResult<MemberDto>, StringModel>("localization/members/get-with-resources-by-memberkey-and-save", new StringModel() { Value = localizationMemberKey });
+                    var result = await gatewayClient.PostGetResponseAsync<DataResult<List<ResourceDto>>, StringModel>("localization/members/get-with-resources-by-memberkey-and-save", new StringModel() { Value = localizationMemberKey });
 
                     if (!result.Success)
                         throw new Exception("Localization data request not successful");
@@ -71,12 +71,12 @@ namespace IdentityServer.Api.Services.Base.Concrete
                     if (resultData == null)
                         throw new Exception("Localization data is null from http request");
 
-                    MemoryCacheExtensions.SaveLocalizationData(memoryCache, _configuration, resultData);
+                    //MemoryCacheExtensions.SaveLocalizationData(memoryCache, _configuration, resultData);
 
                     if (redisService.AnyKeyExistsByPrefix(localizationMemberKey, databaseId))
                         return;
 
-                    foreach (var resource in resultData.Resources)
+                    foreach (var resource in resultData)
                     {
                         await redisService.SetAsync($"{localizationMemberKey}-{resource.LanguageCode}-{resource.Tag}", resource, redisCacheDuration, databaseId);
                     }

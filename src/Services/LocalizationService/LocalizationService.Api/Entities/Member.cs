@@ -17,6 +17,10 @@ namespace LocalizationService.Api.Entities
         /// </summary>
         public string MemberKey { get; set; }
         /// <summary>
+        /// Localization Prefix of the member
+        /// </summary>
+        public string LocalizationPrefix { get; set; }
+        /// <summary>
         /// Creation time of the member
         /// </summary>
         public DateTime CreateDate { get; set; }

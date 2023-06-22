@@ -1,5 +1,6 @@
 ﻿using LocalizationService.Api.Models.Base.Concrete;
 using LocalizationService.Api.Models.MemberModels;
+using LocalizationService.Api.Models.ResourceModels;
 using LocalizationService.Api.Utilities.Results;
 
 namespace LocalizationService.Api.Services.Abstract
@@ -9,7 +10,7 @@ namespace LocalizationService.Api.Services.Abstract
         Task<Result> AddAsync(MemberAddModel model);
         Task<Result> UpdateAsync(MemberUpdateModel model);
         Task<Result> DeleteAsync(StringModel model);
-        Task<DataResult<MemberModel>> SaveToDbAsync(StringModel model);
+        Task<DataResult<List<ResourceCacheModel>>> SaveToDbAsync(StringModel model);
         Task<DataResult<IReadOnlyList<MemberModel>>> GetAllWithResourcesAsync();
         Task<DataResult<IReadOnlyList<MemberModel>>> GetAllWithResourcesPagingAsync(PagingModel model);
         Task<DataResult<IReadOnlyList<MemberModel>>> GetAllAsync();

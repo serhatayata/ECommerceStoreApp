@@ -6,5 +6,6 @@ namespace LocalizationService.Api.Models.MemberModels
     {
         public string MemberKey { get; set; }
         public string Name { get; set; }
+        public string LocalizationPrefix { get; set; }
     }
 }
