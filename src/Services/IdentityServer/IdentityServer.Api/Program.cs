@@ -181,6 +181,9 @@ builder.Services.AddHostedService<InitializeCacheService>();
 
 await builder.Services.AddLocalizationSettingsAsync(configuration);
 #endregion
+#region Consul
+builder.Services.ConfigureConsul(configuration);
+#endregion
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -209,4 +212,8 @@ app.UseIdentityServer();
 app.MapControllers();
 #endregion
 
-app.Run();
+app.Start();
+
+app.RegisterWithConsul(app.Lifetime, configuration);
+
+app.WaitForShutdown();
