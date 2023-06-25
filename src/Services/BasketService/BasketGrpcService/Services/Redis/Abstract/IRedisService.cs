@@ -5,7 +5,8 @@ namespace BasketGrpcService.Services.Redis.Abstract
     public interface IRedisService
     {
         ConnectionMultiplexer GetConnection(int db = 1);
-        List<RedisKey> GetKeys(int db = 1);
+        RedisKey[] GetKeys(int db = 1);
+        RedisKey[] GetKeys(string prefix, int db = 1);
         IDatabase GetDatabase(int db = 1);
         IServer GetServer();
 
@@ -28,7 +29,7 @@ namespace BasketGrpcService.Services.Redis.Abstract
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        Task SetAsync(string key, object value);
+        Task<bool> SetAsync(string key, object value);
         /// <summary>
         /// Caching with a specific period of time
         /// </summary>
@@ -43,16 +44,16 @@ namespace BasketGrpcService.Services.Redis.Abstract
         /// <param name="value"></param>
         /// <param name="expiration"></param>
         /// <returns></returns>
-        Task SetAsync(string key, object value, int duration);
+        Task<bool> SetAsync(string key, object value, int duration);
         /// <summary>
         /// Caching with a specific period of time ASYNC by using databaseId
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        /// <param name="duration"></param>
-        /// <param name="databaseId"></param>
+        /// <param name="duration">as hour</param>
+        /// <param name="databaseId">databaseId of redis</param>
         /// <returns></returns>
-        Task SetAsync(string key, object value, int duration, int databaseId);
+        Task<bool> SetAsync(string key, object value, int duration, int databaseId);
         /// <summary>
         /// Gets the key if it exists
         /// </summary>
@@ -106,6 +107,16 @@ namespace BasketGrpcService.Services.Redis.Abstract
         /// </summary>
         /// <param name="key"></param>
         void Remove(string key);
+        /// <summary>
+        /// Removes the key from cache by databaseId
+        /// </summary>
+        /// <param name="key"></param>
+        bool Remove(string key, int databaseId);
+        /// <summary>
+        /// Removes the key from cache by databaseId
+        /// </summary>
+        /// <param name="key"></param>
+        Task<bool> RemoveAsync(string key, int databaseId);
 
         bool AnyKeyExistsByPrefix(string prefix, int databaseId);
         bool KeyExists(string key);

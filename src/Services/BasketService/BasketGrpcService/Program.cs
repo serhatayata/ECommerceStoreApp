@@ -6,6 +6,7 @@ using BasketGrpcService.Services.ElasticSearch.Abstract;
 using BasketGrpcService.Services.ElasticSearch.Concrete;
 using BasketGrpcService.Services.Grpc;
 using BasketGrpcService.DependencyResolvers.Autofac;
+using BasketGrpcService.Interceptors;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
@@ -18,8 +19,15 @@ var serilogConfig = ConfigurationExtension.serilogConfig;
 builder.Services.AddSingleton<IElasticSearchService, ElasticSearchService>();
 builder.Services.AddElasticSearchConfiguration();
 
+builder.Configuration.SetBasePath(Directory.GetCurrentDirectory());
+
+#region Startup DI
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+#endregion
 #region Configuration
 builder.Configuration.AddConfiguration(config);
+
+builder.Services.Configure<RedisOptions>(configuration.GetSection("RedisOptions"));
 #endregion
 #region Autofac
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
@@ -35,11 +43,22 @@ var elasticLogOptions = configuration.GetSection("ElasticSearchOptions").Get<Ela
 await elasticSearchService.CreateIndexAsync<LogDetail>(elasticLogOptions.LogIndex);
 #endregion
 
-builder.Services.AddGrpc();
+builder.ConfigureGrpc();
+
+builder.Services.AddGrpc(g =>
+{
+    g.Interceptors.Add<ExceptionInterceptor>();
+});
+builder.Services.AddGrpcReflection();
 
 var app = builder.Build();
 
 app.MapGrpcService<GrpcBasketService>();
 app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
+
+if (environment.IsDevelopment())
+{
+    app.MapGrpcReflectionService();
+}
 
 app.Run();
