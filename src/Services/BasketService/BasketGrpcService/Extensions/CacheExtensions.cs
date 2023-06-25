@@ -1,14 +1,13 @@
-﻿using LocalizationService.Api.Models.CacheModels;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
-namespace LocalizationService.Api.Extensions
+namespace BasketGrpcService.Extensions
 {
     public static class CacheExtensions
     {
         public static T CacheOrGet<T>(this StackExchange.Redis.IDatabase db,
-                               string key,
-                               int duration,
-                               Func<T> filter) where T : class
+                       string key,
+                       int duration,
+                       Func<T> filter) where T : class
         {
             if (!string.IsNullOrWhiteSpace(db.StringGet(key)))
             {
@@ -53,21 +52,6 @@ namespace LocalizationService.Api.Extensions
 
                 return result;
             }
-        }
-
-        public static string GetCacheKeyByModel(CacheKeyModel model)
-        {
-            var parameters = string.Join("-", model.Parameters);
-
-            var result = string.Join("-", 
-                             model.Prefix,
-                             model.ProjectName,
-                             model.ClassName,
-                             model.MethodName,
-                             model.Language,
-                             parameters);
-
-            return result;
         }
     }
 }
