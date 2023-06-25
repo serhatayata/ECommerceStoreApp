@@ -46,6 +46,10 @@ var elasticSearchService = scope.ServiceProvider.GetRequiredService<IElasticSear
 var elasticLogOptions = configuration.GetSection("ElasticSearchOptions").Get<ElasticSearchOptions>();
 await elasticSearchService.CreateIndexAsync<LogDetail>(elasticLogOptions.LogIndex);
 #endregion
+#region Consul
+builder.Services.ConfigureConsul(configuration);
+#endregion
+
 
 builder.ConfigureGrpc();
 
@@ -65,4 +69,8 @@ if (environment.IsDevelopment())
     app.MapGrpcReflectionService();
 }
 
-app.Run();
+app.Start();
+
+app.RegisterWithConsul(app.Lifetime, configuration);
+
+app.WaitForShutdown();
