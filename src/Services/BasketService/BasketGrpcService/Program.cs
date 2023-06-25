@@ -19,10 +19,14 @@ var serilogConfig = ConfigurationExtension.serilogConfig;
 builder.Services.AddSingleton<IElasticSearchService, ElasticSearchService>();
 builder.Services.AddElasticSearchConfiguration();
 
-builder.Configuration.SetBasePath(Directory.GetCurrentDirectory());
-
 #region Startup DI
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+#endregion
+#region Host
+builder.Host.AddHostExtensions(environment);
+#endregion
+#region Logging
+builder.Services.AddLogging();
 #endregion
 #region Configuration
 builder.Configuration.AddConfiguration(config);

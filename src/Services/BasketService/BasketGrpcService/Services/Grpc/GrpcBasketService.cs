@@ -21,8 +21,6 @@ namespace BasketGrpcService.Services.Grpc
         [AllowAnonymous]
         public override async Task<CustomerBasketResponse> GetBasketById(BasketRequest request, ServerCallContext context)
         {
-            throw new Exception("test1");
-
             var data = await _basketRepository.GetBasketAsync(request.Id);
 
             if (data != null)
