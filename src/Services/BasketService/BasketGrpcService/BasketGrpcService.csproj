@@ -39,6 +39,11 @@
 
   <ItemGroup>
     <Folder Include="google\api\" />
+    <Folder Include="IntegrationEvents\EventHandling\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\BuildingBlocks\EventBus\EventBus.Base\EventBus.Base.csproj" />
   </ItemGroup>
 
 </Project>
