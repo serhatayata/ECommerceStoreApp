@@ -14,7 +14,7 @@ namespace BasketGrpcService.Extensions
                 });
 
                 options.Listen(IPAddress.Any, ports.grpcPort, listenOptions => {
-                    listenOptions.Protocols = HttpProtocols.Http2;
+                    listenOptions.Protocols = HttpProtocols.Http1AndHttp2;
                 });
             });
         }

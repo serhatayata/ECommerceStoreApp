@@ -2,8 +2,6 @@
 using BasketGrpcService.Repositories.Abstract;
 using BasketGrpcService.Services.Redis.Abstract;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using StackExchange.Redis;
 
 namespace BasketGrpcService.Repositories.Concrete
 {
@@ -32,7 +30,7 @@ namespace BasketGrpcService.Repositories.Concrete
 
         public async Task<CustomerBasket> GetBasketAsync(string customerId)
         {
-            var data = await _redisService.GetAsync<CustomerBasket>(this.PrefixKey(customerId));
+            var data = await _redisService.GetAsync<CustomerBasket>(this.PrefixKey(customerId), _redisOptions.DatabaseId);
             return data;
         }
 
@@ -46,9 +44,8 @@ namespace BasketGrpcService.Repositories.Concrete
 
         public async Task<CustomerBasket> UpdateBasketAsync(CustomerBasket basket)
         {
-            var basketData = JsonConvert.SerializeObject(basket);
-            var isCreated = await _redisService.SetAsync(key: $"{_redisOptions.Prefix}{basket.BuyerId}", 
-                                                         value: basketData, 
+            var isCreated = await _redisService.SetAsync(key: this.PrefixKey(basket.BuyerId), 
+                                                         value: basket, 
                                                          duration: 1,
                                                          databaseId: _redisOptions.DatabaseId);
 
@@ -63,7 +60,7 @@ namespace BasketGrpcService.Repositories.Concrete
 
         private string PrefixKey(string key)
         {
-            return $"{_redisOptions.Prefix}-{key}";
+            return $"{_redisOptions.Prefix}{key}";
         }
     }
 }

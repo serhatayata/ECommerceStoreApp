@@ -1,4 +1,5 @@
 ﻿using BasketGrpcService.Extensions;
+using BasketGrpcService.Models;
 using BasketGrpcService.Services.Redis.Abstract;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Nest;
@@ -84,7 +85,6 @@ namespace BasketGrpcService.Services.Redis.Concrete
         public async Task<T> GetAsync<T>(string key, int databaseId) where T : class
         {
             string value = await _client.GetDatabase(databaseId).StringGetAsync(key);
-
             return value.ToObject<T>();
         }
         #endregion

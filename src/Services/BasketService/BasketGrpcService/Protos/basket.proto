@@ -1,10 +1,24 @@
 ﻿syntax = "proto3";
 
-option csharp_namespace = "BasketGrpcService.Protos";
+option csharp_namespace = "BasketGrpcService";
+import "google/api/annotations.proto";
+
+//   curl -d '{"id":"123"}' http://DOMAIN_NAME/getbasketbyid
 
 service BasketProtoService {
-	rpc GetBasketById(BasketRequest) returns (CustomerBasketResponse) {}
-	rpc UpdateBasket(CustomerBasketRequest) returns (CustomerBasketResponse) {}
+	rpc GetBasketById(BasketRequest) returns (CustomerBasketResponse) {
+		option (google.api.http) = {
+		  get: "/getbasketbyid"
+		  body: "*"
+		};
+	}
+
+	rpc UpdateBasket(CustomerBasketRequest) returns (CustomerBasketResponse) {
+		option (google.api.http) = {
+		  get: "/updatebasket"
+		  body: "*"
+		};
+	}
 }
 
 message BasketRequest {

@@ -50,13 +50,13 @@ await elasticSearchService.CreateIndexAsync<LogDetail>(elasticLogOptions.LogInde
 builder.Services.ConfigureConsul(configuration);
 #endregion
 
-
 builder.ConfigureGrpc();
 
 builder.Services.AddGrpc(g =>
 {
     g.Interceptors.Add<ExceptionInterceptor>();
-});
+}).AddJsonTranscoding();
+
 builder.Services.AddGrpcReflection();
 
 var app = builder.Build();

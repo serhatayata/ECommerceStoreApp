@@ -1,5 +1,4 @@
 ﻿using BasketGrpcService.Models;
-using BasketGrpcService.Protos;
 using BasketGrpcService.Repositories.Abstract;
 using Grpc.Core;
 using Microsoft.AspNetCore.Authorization;
@@ -40,7 +39,6 @@ namespace BasketGrpcService.Services.Grpc
         public override async Task<CustomerBasketResponse> UpdateBasket(CustomerBasketRequest request, ServerCallContext context)
         {
             var customerBasket = MapToCustomerBasket(request);
-
             var response = await _basketRepository.UpdateBasketAsync(customerBasket);
 
             if (response != null)
