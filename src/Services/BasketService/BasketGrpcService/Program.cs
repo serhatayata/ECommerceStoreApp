@@ -28,6 +28,10 @@ builder.Host.AddHostExtensions(environment);
 #region Logging
 builder.Services.AddLogging();
 #endregion
+#region Authorization-Authentication
+builder.Services.AddAuthenticationConfigurations(configuration);
+builder.Services.AddAuthorizationConfigurations(configuration);
+#endregion
 #region Configuration
 builder.Configuration.AddConfiguration(config);
 
@@ -60,6 +64,10 @@ builder.Services.AddGrpc(g =>
 builder.Services.AddGrpcReflection();
 
 var app = builder.Build();
+
+app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapGrpcService<GrpcBasketService>();
 app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");

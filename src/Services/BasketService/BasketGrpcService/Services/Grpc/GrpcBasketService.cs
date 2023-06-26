@@ -5,19 +5,16 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace BasketGrpcService.Services.Grpc
 {
+    [Authorize(Policy = "BasketReadOrWrite")]
     public class GrpcBasketService : BasketProtoService.BasketProtoServiceBase
     {
         private readonly IBasketRepository _basketRepository;
-        private readonly ILogger<GrpcBasketService> _logger;
 
-        public GrpcBasketService(IBasketRepository basketRepository, 
-                                 ILogger<GrpcBasketService> logger)
+        public GrpcBasketService(IBasketRepository basketRepository)
         {
             _basketRepository = basketRepository;
-            _logger = logger;
         }
 
-        [AllowAnonymous]
         public override async Task<CustomerBasketResponse> GetBasketById(BasketRequest request, ServerCallContext context)
         {
             var data = await _basketRepository.GetBasketAsync(request.Id);
