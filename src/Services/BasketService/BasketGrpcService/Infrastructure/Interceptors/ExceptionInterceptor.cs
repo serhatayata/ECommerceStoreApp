@@ -2,7 +2,7 @@
 using Grpc.Core;
 using Grpc.Core.Interceptors;
 
-namespace BasketGrpcService.Interceptors
+namespace BasketGrpcService.Infrastructure.Interceptors
 {
     public class ExceptionInterceptor : Interceptor
     {

@@ -42,5 +42,4 @@ message BasketItemResponse {
 	double unitprice = 4;
 	double oldunitprice = 5;
 	int32 quantity = 6;
-	string pictureurl = 7;
 }

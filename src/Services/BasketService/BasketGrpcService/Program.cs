@@ -1,12 +1,16 @@
-using Autofac.Extensions.DependencyInjection;
 using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using BasketGrpcService.DependencyResolvers.Autofac;
 using BasketGrpcService.Extensions;
+using BasketGrpcService.Infrastructure.Filters;
+using BasketGrpcService.Infrastructure.Interceptors;
 using BasketGrpcService.Models;
 using BasketGrpcService.Services.ElasticSearch.Abstract;
 using BasketGrpcService.Services.ElasticSearch.Concrete;
 using BasketGrpcService.Services.Grpc;
-using BasketGrpcService.DependencyResolvers.Autofac;
-using BasketGrpcService.Interceptors;
+using Microsoft.IdentityModel.Logging;
+using Microsoft.OpenApi.Models;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
@@ -16,11 +20,14 @@ IWebHostEnvironment environment = builder.Environment;
 var config = ConfigurationExtension.appConfig;
 var serilogConfig = ConfigurationExtension.serilogConfig;
 
-builder.Services.AddSingleton<IElasticSearchService, ElasticSearchService>();
 builder.Services.AddElasticSearchConfiguration();
 
+#region Controllers
+builder.Services.AddControllerSettings();
+#endregion
 #region Startup DI
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddSingleton<IElasticSearchService, ElasticSearchService>();
 #endregion
 #region Host
 builder.Host.AddHostExtensions(environment);
@@ -31,6 +38,8 @@ builder.Services.AddLogging();
 #region Authorization-Authentication
 builder.Services.AddAuthenticationConfigurations(configuration);
 builder.Services.AddAuthorizationConfigurations(configuration);
+
+IdentityModelEventSource.ShowPII = true;
 #endregion
 #region Configuration
 builder.Configuration.AddConfiguration(config);
@@ -53,15 +62,53 @@ await elasticSearchService.CreateIndexAsync<LogDetail>(elasticLogOptions.LogInde
 #region Consul
 builder.Services.ConfigureConsul(configuration);
 #endregion
+#region Swagger
+builder.Services.AddSwaggerGen(options => {
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Basket GRPC Http1/Http2 Service",
+        Version = "v1",
+        Description = "The Basket Service API"
+    });
 
-builder.ConfigureGrpc();
+    options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+    {
+        Type = SecuritySchemeType.OAuth2,
+        Flows = new OpenApiOAuthFlows()
+        {
+            ClientCredentials = new OpenApiOAuthFlow()
+            {
+                AuthorizationUrl = new Uri($"{builder.Configuration.GetValue<string>("IdentityUrlExternal")}/connect/authorize"),
+                TokenUrl = new Uri($"{builder.Configuration.GetValue<string>("IdentityUrlExternal")}/connect/token"),
+                Scopes = new Dictionary<string, string>() { { "basket_readpermission", "basket_writepermission" } }
+            }
+        }
+    });
 
+    options.OperationFilter<AuthorizeCheckOperationFilter>();
+});
+#endregion
+#region EventBus
+builder.Services.RegisterEventBus(configuration);
+builder.Services.SubscribeEvents();
+#endregion
+#region AddGrpc
 builder.Services.AddGrpc(g =>
 {
+    g.EnableDetailedErrors = true;
     g.Interceptors.Add<ExceptionInterceptor>();
-}).AddJsonTranscoding();
+});
 
 builder.Services.AddGrpcReflection();
+
+#region If we want to use gRPC for http1 request, we must enable AddJsonTranscoding to convert http request
+//builder.Services.AddGrpc(g =>
+//{
+//    g.EnableDetailedErrors = true;
+//    g.Interceptors.Add<ExceptionInterceptor>();
+//}).AddJsonTranscoding();
+#endregion
+#endregion
 
 var app = builder.Build();
 
@@ -70,11 +117,20 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapGrpcService<GrpcBasketService>();
-app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
+app.MapControllers();
 
 if (environment.IsDevelopment())
 {
+    app.UseDeveloperExceptionPage();
+
     app.MapGrpcReflectionService();
+
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.RoutePrefix = "";
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+    });
 }
 
 app.Start();
@@ -82,3 +138,8 @@ app.Start();
 app.RegisterWithConsul(app.Lifetime, configuration);
 
 app.WaitForShutdown();
+
+public partial class Program
+{
+    public static string appName = Assembly.GetExecutingAssembly().GetName().Name;
+}

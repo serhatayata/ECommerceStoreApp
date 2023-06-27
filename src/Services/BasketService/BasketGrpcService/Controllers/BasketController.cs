@@ -31,15 +31,17 @@ namespace BasketGrpcService.Controllers
             _logger = logger;
         }
 
-        [HttpGet("{id}")]
+        [Route("get-basket-byid")]
+        [HttpGet]
         [ProducesResponseType(typeof(CustomerBasket), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<CustomerBasket>> GetBasketByIdAsync(string id)
+        public async Task<ActionResult<CustomerBasket>> GetBasketByIdAsync([FromQuery] StringModel model)
         {
-            var basket = await _basketRepository.GetBasketAsync(id);
+            var basket = await _basketRepository.GetBasketAsync(model.Value);
 
-            return Ok(basket ?? new CustomerBasket(id));
+            return Ok(basket ?? new CustomerBasket(model.Value));
         }
 
+        [Route("update-basket")]
         [HttpPost]
         [ProducesResponseType(typeof(CustomerBasket), (int)HttpStatusCode.OK)]
         public async Task<ActionResult<CustomerBasket>> UpdateBasketAsync([FromBody] CustomerBasket value)
@@ -80,7 +82,7 @@ namespace BasketGrpcService.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "ERROR Publishing integration event: {IntegrationEventId} from {AppName}", eventMessage.Id, Program.AppName);
+                _logger.LogError(ex, "ERROR Publishing integration event: {IntegrationEventId} from {AppName}", eventMessage.Id, Program.appName);
 
                 throw;
             }
@@ -89,11 +91,12 @@ namespace BasketGrpcService.Controllers
         }
 
         // DELETE api/values/5
-        [HttpDelete("{id}")]
+        [Route("delete-basket")]
+        [HttpDelete]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
-        public async Task DeleteBasketByIdAsync(string id)
+        public async Task DeleteBasketByIdAsync([FromBody] StringModel model)
         {
-            await _basketRepository.DeleteBasketAsync(id);
+            await _basketRepository.DeleteBasketAsync(model.Value);
         }
     }
 }

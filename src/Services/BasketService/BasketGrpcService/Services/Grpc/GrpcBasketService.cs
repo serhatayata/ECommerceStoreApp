@@ -59,7 +59,6 @@ namespace BasketGrpcService.Services.Grpc
             {
                 Id = item.Id,
                 Oldunitprice = (double)item.OldUnitPrice,
-                Pictureurl = item.PictureUrl,
                 Productid = item.ProductId,
                 Productname = item.ProductName,
                 Quantity = item.Quantity,
@@ -80,7 +79,6 @@ namespace BasketGrpcService.Services.Grpc
             {
                 Id = item.Id,
                 OldUnitPrice = (decimal)item.Oldunitprice,
-                PictureUrl = item.Pictureurl,
                 ProductId = item.Productid,
                 ProductName = item.Productname,
                 Quantity = item.Quantity,
