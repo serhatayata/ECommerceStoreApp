@@ -6,7 +6,8 @@ namespace BasketGrpcService.Validations.FluentValidation.gRPC
     {
         public BasketRequestValidator()
         {
-            RuleFor(request => request.Id).NotEmpty().NotNull().WithMessage("Id is mandatory.");
+            RuleFor(request => request.Id).NotEmpty().WithMessage("Id is mandatory.");
+            RuleFor(request => request.Id).NotNull().WithMessage("Id is mandatory.");
         }
     }
 }

@@ -36,8 +36,12 @@ namespace BasketGrpcService.Extensions
 
             services.AddValidatorsFromAssemblyContaining<CustomerBasketValidator>();
             services.AddValidatorsFromAssemblyContaining<BasketItemValidator>();
+            services.AddValidatorsFromAssemblyContaining<BasketCheckoutValidator>();
 
-            services.AddFluentValidationAutoValidation();
+            services.AddFluentValidationAutoValidation(config =>
+            {
+                config.DisableDataAnnotationsValidation = true;
+            });
         }
     }
 }

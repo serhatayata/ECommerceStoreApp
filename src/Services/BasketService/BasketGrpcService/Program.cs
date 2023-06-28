@@ -8,6 +8,8 @@ using BasketGrpcService.Models;
 using BasketGrpcService.Services.ElasticSearch.Abstract;
 using BasketGrpcService.Services.ElasticSearch.Concrete;
 using BasketGrpcService.Services.Grpc;
+using BasketGrpcService.Services.Token.Abstract;
+using BasketGrpcService.Services.Token.Concrete;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
@@ -26,8 +28,13 @@ builder.Services.AddElasticSearchConfiguration();
 builder.Services.AddControllerSettings();
 #endregion
 #region Startup DI
-builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSingleton<IElasticSearchService, ElasticSearchService>();
+builder.Services.AddTransient<IClientCredentialsTokenService, ClientCredentialsTokenService>();
+#endregion
+#region Http
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+//builder.Services.AddHttpClients(configuration);
 #endregion
 #region Host
 builder.Host.AddHostExtensions(environment);
@@ -108,6 +115,9 @@ builder.Services.AddGrpcReflection();
 //    g.Interceptors.Add<ExceptionInterceptor>();
 //}).AddJsonTranscoding();
 #endregion
+#endregion
+#region Localization
+//await builder.Services.AddLocalizationSettingsAsync(configuration);
 #endregion
 
 var app = builder.Build();

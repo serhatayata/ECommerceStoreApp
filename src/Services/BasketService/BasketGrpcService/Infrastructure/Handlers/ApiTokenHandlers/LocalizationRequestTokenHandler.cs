@@ -1,16 +1,17 @@
-﻿using IdentityServer.Api.Models.ExceptionModels;
-using IdentityServer.Api.Services.Token.Abstract;
+﻿using BasketGrpcService.Models;
+using BasketGrpcService.Services.Token.Abstract;
+using BasketGrpcService.Utilities.Enums;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Net.Http.Headers;
 
-namespace IdentityServer.Api.Handlers.ApiTokenHandlers
+namespace BasketGrpcService.Infrastructure.Handlers.ApiTokenHandlers
 {
     public class LocalizationRequestTokenHandler : DelegatingHandler
     {
         private readonly IClientCredentialsTokenService _clientCredentialTokenService;
         private readonly IConfiguration _configuration;
 
-        public LocalizationRequestTokenHandler(IClientCredentialsTokenService clientCredentialTokenService, 
+        public LocalizationRequestTokenHandler(IClientCredentialsTokenService clientCredentialTokenService,
                                                IConfiguration configuration)
         {
             _clientCredentialTokenService = clientCredentialTokenService;
@@ -21,7 +22,7 @@ namespace IdentityServer.Api.Handlers.ApiTokenHandlers
         {
             //var localizationStaticScheme = _configuration.GetSection("LocalizationSettings:Scheme").Value;
 
-            var token = await _clientCredentialTokenService.GetToken(Utilities.Enums.EnumProjectType.LocalizationService, Models.ClientModels.ApiPermissionType.ReadPermission);
+            var token = await _clientCredentialTokenService.GetToken(EnumProjectType.LocalizationService, ApiPermissionType.ReadPermission);
 
             request.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, token.Data);
             var response = await base.SendAsync(request, cancellationToken);

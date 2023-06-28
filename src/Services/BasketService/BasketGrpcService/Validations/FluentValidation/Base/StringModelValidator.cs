@@ -7,7 +7,8 @@ namespace BasketGrpcService.Validations.FluentValidation.Base
     {
         public StringModelValidator()
         {
-            RuleFor(request => request.Value).NotEmpty().NotNull().WithMessage("Value is mandatory.");
+            RuleFor(request => request.Value).NotEmpty().WithMessage("Value is mandatory.");
+            RuleFor(request => request.Value).NotNull().WithMessage("Value cannot be null.");
         }
     }
 }

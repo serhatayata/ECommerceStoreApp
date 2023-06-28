@@ -8,7 +8,9 @@ namespace BasketGrpcService.Validations.FluentValidation
     {
         public CustomerBasketValidator()
         {
-            RuleFor(request => request.BuyerId).NotEmpty().NotNull().WithMessage("Buyer id is mandatory.");
+            RuleFor(request => request.BuyerId).NotEmpty().WithMessage("Buyer id is mandatory.");
+
+            RuleFor(request => request.BuyerId).NotNull().WithMessage("Buyer id is mandatory.");
 
             RuleForEach(request => request.Items).SetValidator(new BasketItemValidator());
         }
