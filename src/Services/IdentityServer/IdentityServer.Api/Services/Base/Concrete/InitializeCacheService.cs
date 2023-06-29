@@ -32,7 +32,7 @@ namespace IdentityServer.Api.Services.Base.Concrete
             var memoryCache = scope.ServiceProvider.GetRequiredService<IMemoryCache>();
 
             var policy = Polly.Policy.Handle<Exception>()
-                        .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
+                        .WaitAndRetryAsync(5, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
                         {
                             Log.Error("ERROR handling message: {ExceptionMessage} - Method : {ClassName}.{MethodName}",
                                                 ex.Message, nameof(InitializeCacheService),
@@ -52,19 +52,14 @@ namespace IdentityServer.Api.Services.Base.Concrete
                 var localizationSuffix1 = localizationSettings.MemoryCache.Suffix1;
                 var localizationSuffix2 = localizationSettings.MemoryCache.Suffix2;
 
-                var memoryCache1Prefix = $"{localizationMemberKey}-{localizationSuffix1}";
-                var memoryCache2Prefix = $"{localizationMemberKey}-{localizationSuffix2}";
-
                 int databaseId = redisSettings.LocalizationCacheDbId;
 
-                if (!redisService.AnyKeyExistsByPrefix(localizationMemberKey, databaseId) ||
-                     !memoryCache.TryGetValue(memoryCache1Prefix, out object cacheDummy1) ||
-                     !memoryCache.TryGetValue(memoryCache2Prefix, out object cacheDummy2))
+                if (!redisService.AnyKeyExistsByPrefix(localizationMemberKey, databaseId))
                 {
                     var gatewayClient = httpClientFactory.CreateClient("gateway-specific");
                     var result = await gatewayClient.PostGetResponseAsync<DataResult<List<ResourceDto>>, StringModel>("localization/members/get-with-resources-by-memberkey-and-save", new StringModel() { Value = localizationMemberKey });
 
-                    if (!result.Success)
+                    if (!result?.Success ?? true)
                         throw new Exception("Localization data request not successful");
 
                     var resultData = result.Data;

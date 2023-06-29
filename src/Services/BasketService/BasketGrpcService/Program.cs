@@ -31,11 +31,6 @@ builder.Services.AddControllerSettings();
 builder.Services.AddSingleton<IElasticSearchService, ElasticSearchService>();
 builder.Services.AddTransient<IClientCredentialsTokenService, ClientCredentialsTokenService>();
 #endregion
-#region Http
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-//builder.Services.AddHttpClients(configuration);
-#endregion
 #region Host
 builder.Host.AddHostExtensions(environment);
 #endregion
@@ -52,6 +47,11 @@ IdentityModelEventSource.ShowPII = true;
 builder.Configuration.AddConfiguration(config);
 
 builder.Services.Configure<RedisOptions>(configuration.GetSection("RedisOptions"));
+#endregion
+#region Http
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddHttpClients(configuration);
 #endregion
 #region Autofac
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
@@ -117,7 +117,7 @@ builder.Services.AddGrpcReflection();
 #endregion
 #endregion
 #region Localization
-//await builder.Services.AddLocalizationSettingsAsync(configuration);
+await builder.Services.AddLocalizationSettingsAsync(configuration);
 #endregion
 
 var app = builder.Build();

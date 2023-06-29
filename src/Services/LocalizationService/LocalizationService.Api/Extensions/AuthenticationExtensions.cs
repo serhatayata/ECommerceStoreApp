@@ -30,15 +30,19 @@ namespace LocalizationService.Api.Extensions
                 })
                 .AddJwtBearer(staticScheme, options =>
                 {
+                    var key = Encoding.UTF8.GetBytes(staticSecretKey);
+                    options.SaveToken = true;
+                    options.RequireHttpsMetadata = false;
+
                     options.TokenValidationParameters = new()
                     {
-                        ValidIssuer = staticIssuer,
-                        ValidAudience = staticAudience,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(staticSecretKey)),
+                        //ValidIssuer = staticIssuer,
+                        //ValidAudience = staticAudience,
+                        IssuerSigningKey = new SymmetricSecurityKey(key),
 
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = false,
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
                         ClockSkew = TimeSpan.Zero
                     };
