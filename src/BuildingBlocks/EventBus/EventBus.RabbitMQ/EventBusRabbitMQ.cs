@@ -71,9 +71,7 @@ namespace EventBus.RabbitMQ
         public override void Publish(IntegrationEvent @event)
         {
             if (!persistentConnection.IsConnected)
-            {
                 persistentConnection.TryConnect();
-            }
 
             var policy = Polly.Policy.Handle<BrokerUnreachableException>()
                 .Or<SocketException>()
@@ -99,7 +97,7 @@ namespace EventBus.RabbitMQ
                 var properties = consumerChannel.CreateBasicProperties();
                 properties.DeliveryMode = 2; // persistent
 
-                // If queue doesn't exists, this would create it and then publish. But queue should be created by consumers.
+                //If queue doesn't exists, this would create it and then publish. But queue should be created by consumers.
                 //consumerChannel.QueueDeclare(queue: GetSubName(eventName), // Ensure queue exists while publishing
                 //                     durable: true,
                 //                     exclusive: false,

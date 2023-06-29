@@ -56,6 +56,8 @@ namespace BasketGrpcService.Controllers
         public async Task<ActionResult> CheckoutAsync([FromBody] BasketCheckout basketCheckout, [FromHeader(Name = "x-requestid")] string requestId)
         {
             var userId = _identityService.GetUserIdentity();
+            if (string.IsNullOrWhiteSpace(userId))
+                return BadRequest();
 
             basketCheckout.RequestId = (Guid.TryParse(requestId, out Guid guid) && guid != Guid.Empty) ?
                 guid : basketCheckout.RequestId;
@@ -63,11 +65,9 @@ namespace BasketGrpcService.Controllers
             var basket = await _basketRepository.GetBasketAsync(userId);
 
             if (basket == null)
-            {
                 return BadRequest();
-            }
 
-            var userName = this.HttpContext.User.FindFirst(x => x.Type == ClaimTypes.Name).Value;
+            var userName = this.HttpContext.User.FindFirst(x => x.Type == ClaimTypes.Name)?.Value;
 
             var eventMessage = new UserCheckoutAcceptedIntegrationEvent(userId, userName, basketCheckout.City, basketCheckout.Street,
                 basketCheckout.State, basketCheckout.Country, basketCheckout.ZipCode, basketCheckout.CardNumber, basketCheckout.CardHolderName,

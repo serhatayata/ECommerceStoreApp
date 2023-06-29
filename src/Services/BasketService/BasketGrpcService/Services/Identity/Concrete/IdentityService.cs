@@ -13,7 +13,7 @@ namespace BasketGrpcService.Services.Identity.Concrete
 
         public string GetUserIdentity()
         {
-            return _context.HttpContext.User.FindFirst("sub").Value;
+            return _context.HttpContext.User.FindFirst("sub")?.Value;
         }
     }
 }

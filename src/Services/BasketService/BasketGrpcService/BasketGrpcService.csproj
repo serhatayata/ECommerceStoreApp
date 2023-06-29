@@ -40,7 +40,6 @@
 
   <ItemGroup>
     <Folder Include="google\api\" />
-    <Folder Include="IntegrationEvents\EventHandling\" />
   </ItemGroup>
 
   <ItemGroup>

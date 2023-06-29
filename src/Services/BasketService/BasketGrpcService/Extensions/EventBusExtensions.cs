@@ -1,8 +1,8 @@
-﻿using EventBus.Base;
+﻿using BasketGrpcService.IntegrationEvents.EventHandling;
+using BasketGrpcService.IntegrationEvents.Events;
+using EventBus.Base;
 using EventBus.Base.Abstraction;
-using EventBus.Base.SubManagers;
 using EventBus.Factory;
-using EventBus.RabbitMQ;
 using RabbitMQ.Client;
 
 namespace BasketGrpcService.Extensions;
@@ -13,9 +13,7 @@ public static class EventBusExtensions
         var subscriptionClientName = configuration["SubscriptionClientName"];
         var retryCount = 5;
         if (!string.IsNullOrEmpty(configuration["EventBusRetryCount"]))
-        {
             retryCount = int.Parse(configuration["EventBusRetryCount"]);
-        }
 
         services.AddSingleton<IEventBus>(sp =>
         {
@@ -55,7 +53,7 @@ public static class EventBusExtensions
 
         var eventBus = scope.ServiceProvider.GetRequiredService<IEventBus>();
 
-        //eventBus.Subscribe<ProductPriceChangedIntegrationEvent, ProductPriceChangedIntegrationEventHandler>();
-        //eventBus.Subscribe<OrderStartedIntegrationEvent, OrderStartedIntegrationEventHandler>();
+        eventBus.Subscribe<ProductPriceChangedIntegrationEvent, ProductPriceChangedIntegrationEventHandler>();
+        eventBus.Subscribe<OrderStartedIntegrationEvent, OrderStartedIntegrationEventHandler>();
     }
 }

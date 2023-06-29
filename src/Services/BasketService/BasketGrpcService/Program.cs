@@ -5,6 +5,7 @@ using BasketGrpcService.Extensions;
 using BasketGrpcService.Infrastructure.Filters;
 using BasketGrpcService.Infrastructure.Interceptors;
 using BasketGrpcService.Models;
+using BasketGrpcService.Models.Settings;
 using BasketGrpcService.Services.ElasticSearch.Abstract;
 using BasketGrpcService.Services.ElasticSearch.Concrete;
 using BasketGrpcService.Services.Grpc;
@@ -50,6 +51,7 @@ IdentityModelEventSource.ShowPII = true;
 builder.Configuration.AddConfiguration(config);
 
 builder.Services.Configure<RedisOptions>(configuration.GetSection("RedisOptions"));
+builder.Services.Configure<LocalizationSettings>(configuration.GetSection("LocalizationSettings"));
 #endregion
 #region Http
 builder.Services.AddHttpContextAccessor();

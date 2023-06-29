@@ -1,4 +1,5 @@
 ﻿using BasketGrpcService.Models;
+using BasketGrpcService.Models.Settings;
 using BasketGrpcService.Repositories.Abstract;
 using BasketGrpcService.Services.Redis.Abstract;
 using Microsoft.Extensions.Options;
