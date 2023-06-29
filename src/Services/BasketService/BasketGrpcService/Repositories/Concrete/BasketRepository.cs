@@ -46,7 +46,7 @@ namespace BasketGrpcService.Repositories.Concrete
         {
             var isCreated = await _redisService.SetAsync(key: this.PrefixKey(basket.BuyerId), 
                                                          value: basket, 
-                                                         duration: 1,
+                                                         duration: 24,
                                                          databaseId: _redisOptions.DatabaseId);
 
             if (!isCreated)

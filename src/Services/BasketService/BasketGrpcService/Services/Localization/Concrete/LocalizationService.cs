@@ -125,7 +125,7 @@ namespace BasketGrpcService.Services.Localization.Concrete
 
         private string? GetLocalizedValue(string key, params object[] args)
         {
-            var value = _memoryCache.Get<string>(key);
+            var value = _redisService.Get<string>(key, _databaseId);
 
             return (args == null || args.Length == 0) ?
                        value :

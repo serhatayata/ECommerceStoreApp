@@ -6,6 +6,7 @@
         public MemoryCacheSettings MemoryCache { get; set; }
         public int CacheDuration { get; set; }
         public string Scheme { get; set; }
+        public int DatabaseId { get; set; }
     }
 
     public class MemoryCacheSettings

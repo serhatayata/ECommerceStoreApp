@@ -48,10 +48,7 @@ namespace IdentityServer.Api.Services.Base.Concrete
                 var localizationMemberKey = localizationSettings.MemberKey;
                 var redisCacheDuration = localizationSettings.CacheDuration;
 
-                var localizationSuffix1 = localizationSettings.MemoryCache.Suffix1;
-                var localizationSuffix2 = localizationSettings.MemoryCache.Suffix2;
-
-                int databaseId = redisSettings.LocalizationCacheDbId;
+                int databaseId = localizationSettings.DatabaseId;
 
                 if (!redisService.AnyKeyExistsByPrefix(localizationMemberKey, databaseId))
                 {

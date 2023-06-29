@@ -6,6 +6,7 @@ namespace BasketGrpcService.Services.Redis.Abstract
     {
         ConnectionMultiplexer GetConnection(int db = 1);
         List<RedisKey> GetKeys(int db = 1);
+        RedisKey[] GetKeys(string prefix, int db = 1);
         IDatabase GetDatabase(int db = 1);
         IServer GetServer();
 
@@ -52,7 +53,7 @@ namespace BasketGrpcService.Services.Redis.Abstract
         /// <param name="duration"></param>
         /// <param name="databaseId"></param>
         /// <returns></returns>
-        Task SetAsync(string key, object value, int duration, int databaseId);
+        Task<bool> SetAsync(string key, object value, int duration, int databaseId);
         /// <summary>
         /// Gets the key if it exists
         /// </summary>
@@ -123,6 +124,7 @@ namespace BasketGrpcService.Services.Redis.Abstract
         /// </summary>
         /// <param name="key"></param>
         void Remove(string key);
+        Task<bool> RemoveAsync(string key, int databaseId);
 
         bool AnyKeyExistsByPrefix(string prefix, int databaseId);
         bool KeyExists(string key, int databaseId);

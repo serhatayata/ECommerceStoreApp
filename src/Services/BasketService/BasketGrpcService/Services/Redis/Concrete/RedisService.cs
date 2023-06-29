@@ -16,7 +16,7 @@ namespace BasketGrpcService.Services.Redis.Concrete
 
         public RedisService(IConfiguration configuration)
         {
-            _connectionString = configuration?.GetSection("RedisSettings:ConnectionString")?.Value ?? string.Empty;
+            _connectionString = configuration?.GetSection("RedisOptions:ConnectionString")?.Value ?? string.Empty;
             var connectionStrings = _connectionString.Split(",");
 
             _configurationOptions = new ConfigurationOptions()
@@ -41,6 +41,15 @@ namespace BasketGrpcService.Services.Redis.Concrete
             _configurationOptions.DefaultDatabase = db;
             var _client = ConnectionMultiplexer.Connect(_configurationOptions);
             return _client.GetServer(_client.GetEndPoints().First()).Keys(db).ToList();
+        }
+
+        public RedisKey[] GetKeys(string prefix, int databaseId = 1)
+        {
+            var configurationOptions = GetConfigurationOptions(databaseId);
+            var _client = ConnectionMultiplexer.Connect(configurationOptions);
+            var keys = this.GetServer().Keys(database: databaseId, pattern: prefix + "*").ToArray();
+
+            return keys;
         }
 
         public ConnectionMultiplexer GetConnection(int db = 1)
@@ -182,18 +191,23 @@ namespace BasketGrpcService.Services.Redis.Concrete
         }
         #endregion
         #region SetAsync by DatabaseId and TimeSpan
-        public async Task SetAsync(string key, object value, int duration, int databaseId)
+        public async Task<bool> SetAsync(string key, object value, int duration, int databaseId)
         {
             var db = _client.GetDatabase(databaseId);
 
             string jsonValue = JsonConvert.SerializeObject(value, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
-            await db.StringSetAsync(key, jsonValue, TimeSpan.FromHours(duration));
+            return await db.StringSetAsync(key, jsonValue, TimeSpan.FromHours(duration));
         }
         #endregion
         #region Remove
         public void Remove(string key)
         {
             _client.GetDatabase().KeyDelete(key);
+        }
+
+        public async Task<bool> RemoveAsync(string key, int databaseId)
+        {
+            return await _client.GetDatabase(databaseId).KeyDeleteAsync(key);
         }
         #endregion
         #region KeyExists
@@ -268,6 +282,29 @@ namespace BasketGrpcService.Services.Redis.Concrete
             {
                 await _client.GetDatabase().KeyDeleteAsync(key);
             }
+        }
+
+        private ConfigurationOptions GetConfigurationOptions(int databaseId = 1)
+        {
+            var connectionStrings = _connectionString.Split(",");
+
+            var configurationOptions = new ConfigurationOptions()
+            {
+                AbortOnConnectFail = false,
+                AsyncTimeout = 10000,
+                ConnectTimeout = 10000,
+                KeepAlive = 180
+                //ServiceName = ServiceName, AllowAdmin = true
+            };
+
+            foreach (var item in connectionStrings)
+            {
+                configurationOptions.EndPoints.Add(item);
+            }
+
+            configurationOptions.DefaultDatabase = databaseId;
+
+            return configurationOptions;
         }
     }
 }
