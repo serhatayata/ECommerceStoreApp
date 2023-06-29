@@ -8,6 +8,8 @@ using BasketGrpcService.Models;
 using BasketGrpcService.Services.ElasticSearch.Abstract;
 using BasketGrpcService.Services.ElasticSearch.Concrete;
 using BasketGrpcService.Services.Grpc;
+using BasketGrpcService.Services.Redis.Abstract;
+using BasketGrpcService.Services.Redis.Concrete;
 using BasketGrpcService.Services.Token.Abstract;
 using BasketGrpcService.Services.Token.Concrete;
 using Microsoft.IdentityModel.Logging;
@@ -29,6 +31,7 @@ builder.Services.AddControllerSettings();
 #endregion
 #region Startup DI
 builder.Services.AddSingleton<IElasticSearchService, ElasticSearchService>();
+builder.Services.AddSingleton<IRedisService, RedisService>();
 builder.Services.AddTransient<IClientCredentialsTokenService, ClientCredentialsTokenService>();
 #endregion
 #region Host
@@ -118,6 +121,7 @@ builder.Services.AddGrpcReflection();
 #endregion
 #region Localization
 await builder.Services.AddLocalizationSettingsAsync(configuration);
+await builder.Services.AddLocalizationDataAsync(configuration);
 #endregion
 
 var app = builder.Build();

@@ -5,8 +5,7 @@ namespace BasketGrpcService.Services.Redis.Abstract
     public interface IRedisService
     {
         ConnectionMultiplexer GetConnection(int db = 1);
-        RedisKey[] GetKeys(int db = 1);
-        RedisKey[] GetKeys(string prefix, int db = 1);
+        List<RedisKey> GetKeys(int db = 1);
         IDatabase GetDatabase(int db = 1);
         IServer GetServer();
 
@@ -29,7 +28,7 @@ namespace BasketGrpcService.Services.Redis.Abstract
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        Task<bool> SetAsync(string key, object value);
+        Task SetAsync(string key, object value);
         /// <summary>
         /// Caching with a specific period of time
         /// </summary>
@@ -44,16 +43,16 @@ namespace BasketGrpcService.Services.Redis.Abstract
         /// <param name="value"></param>
         /// <param name="expiration"></param>
         /// <returns></returns>
-        Task<bool> SetAsync(string key, object value, int duration);
+        Task SetAsync(string key, object value, int duration);
         /// <summary>
         /// Caching with a specific period of time ASYNC by using databaseId
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        /// <param name="duration">as hour</param>
-        /// <param name="databaseId">databaseId of redis</param>
+        /// <param name="duration"></param>
+        /// <param name="databaseId"></param>
         /// <returns></returns>
-        Task<bool> SetAsync(string key, object value, int duration, int databaseId);
+        Task SetAsync(string key, object value, int duration, int databaseId);
         /// <summary>
         /// Gets the key if it exists
         /// </summary>
@@ -62,11 +61,37 @@ namespace BasketGrpcService.Services.Redis.Abstract
         /// <returns></returns>        
         T Get<T>(string key) where T : class;
         /// <summary>
+        /// Gets values by prefix
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        RedisValue[] GetValuesByPrefix(string prefix, int databaseId);
+        /// <summary>
+        /// Gets key and values by prefix
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        Dictionary<string, RedisValue> GetKeyValuesByPrefix(string prefix, int databaseId);
+        /// <summary>
         /// Gets the key if it exists
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
         string Get(string key);
+        /// <summary>
+        /// Gets the key if it exists by databaseId
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="databaseId"></param>
+        /// <returns></returns>
+        string Get(string key, int databaseId);
+        /// <summary>
+        /// Gets the key if it exists by databaseId
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="databaseId"></param>
+        /// <returns></returns>
+        T Get<T>(string key, int databaseId) where T : class;
         /// <summary>
         /// Gets the key if it exists ASYNC
         /// </summary>
@@ -83,15 +108,6 @@ namespace BasketGrpcService.Services.Redis.Abstract
         /// <param name="databaseId"></param>
         /// <returns></returns>
         Task<T> GetAsync<T>(string key, int databaseId) where T : class;
-
-        /// <summary>
-        /// Gets by prefix if it exists with databaseId ASYNC
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="key"></param>
-        /// <param name="databaseId"></param>
-        /// <returns></returns>
-        List<T> GetAllByPrefix<T>(string key, int databaseId) where T : class;
         /// <summary>
         /// Gets the key if it exists with databaseId ASYNC using filter
         /// </summary>
@@ -107,19 +123,11 @@ namespace BasketGrpcService.Services.Redis.Abstract
         /// </summary>
         /// <param name="key"></param>
         void Remove(string key);
-        /// <summary>
-        /// Removes the key from cache by databaseId
-        /// </summary>
-        /// <param name="key"></param>
-        bool Remove(string key, int databaseId);
-        /// <summary>
-        /// Removes the key from cache by databaseId
-        /// </summary>
-        /// <param name="key"></param>
-        Task<bool> RemoveAsync(string key, int databaseId);
 
         bool AnyKeyExistsByPrefix(string prefix, int databaseId);
+        bool KeyExists(string key, int databaseId);
         bool KeyExists(string key);
+        Task<bool> KeyExistsAsync(string key, int databaseId);
         Task<bool> KeyExistsAsync(string key);
         void RemoveByPattern(string pattern, int db = 1);
     }

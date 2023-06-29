@@ -1,5 +1,4 @@
-﻿using Autofac.Core;
-using IdentityServer.Api.Dtos.Localization;
+﻿using IdentityServer.Api.Dtos.Localization;
 using IdentityServer.Api.Extensions;
 using IdentityServer.Api.Models.Base.Concrete;
 using IdentityServer.Api.Models.Settings;

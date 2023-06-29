@@ -137,5 +137,22 @@ namespace LocalizationService.Api.Controllers
 
             return BadRequest(new ErrorDataResult<List<ResourceCacheModel>>(new List<ResourceCacheModel>()));
         }
+
+        [HttpPost]
+        [Route("get-with-resources-by-memberkey-and-save-default")]
+        [ProducesResponseType(typeof(DataResult<List<MemberModel>>), (int)System.Net.HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(DataResult<List<MemberModel>>), (int)System.Net.HttpStatusCode.BadRequest)]
+        [Authorize(Policy = "LocalizationRead")]
+        public async Task<IActionResult> GetWithResourcesByMemberKeyAndSaveDefaultAsync([FromBody] StringModel model)
+        {
+            var result = await _memberService.SaveToDbAsync(model);
+            if (result.Success)
+            {
+                var data = new SuccessDataResult<List<ResourceCacheModel>>(result.Data);
+                return Ok(data);
+            }
+
+            return BadRequest(new ErrorDataResult<List<ResourceCacheModel>>(new List<ResourceCacheModel>()));
+        }
     }
 }

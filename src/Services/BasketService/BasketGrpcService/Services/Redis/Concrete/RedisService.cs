@@ -16,12 +16,31 @@ namespace BasketGrpcService.Services.Redis.Concrete
 
         public RedisService(IConfiguration configuration)
         {
-            _connectionString = configuration?.GetSection("RedisOptions:ConnectionString")?.Value ?? string.Empty;
+            _connectionString = configuration?.GetSection("RedisSettings:ConnectionString")?.Value ?? string.Empty;
             var connectionStrings = _connectionString.Split(",");
 
-            _configurationOptions = GetConfigurationOptions();
+            _configurationOptions = new ConfigurationOptions()
+            {
+                AbortOnConnectFail = false,
+                AsyncTimeout = 10000,
+                ConnectTimeout = 10000,
+                KeepAlive = 180
+                //ServiceName = ServiceName, AllowAdmin = true
+            };
+
+            foreach (var item in connectionStrings)
+            {
+                _configurationOptions.EndPoints.Add(item);
+            }
 
             _client = ConnectionMultiplexer.Connect(_configurationOptions);
+        }
+
+        public List<RedisKey> GetKeys(int db = 1)
+        {
+            _configurationOptions.DefaultDatabase = db;
+            var _client = ConnectionMultiplexer.Connect(_configurationOptions);
+            return _client.GetServer(_client.GetEndPoints().First()).Keys(db).ToList();
         }
 
         public ConnectionMultiplexer GetConnection(int db = 1)
@@ -42,35 +61,70 @@ namespace BasketGrpcService.Services.Redis.Concrete
             return _client.GetDatabase(db);
         }
 
-        #region GetKeys
-        public RedisKey[] GetKeys(int db = 1)
-        {
-            var configurationOptions = GetConfigurationOptions(db);
-            var _client = ConnectionMultiplexer.Connect(configurationOptions);
-            return this.GetServer().Keys(db).ToArray();
-        }
-
-        public RedisKey[] GetKeys(string prefix, int databaseId = 1)
-        {
-            var configurationOptions = GetConfigurationOptions(databaseId);
-            var _client = ConnectionMultiplexer.Connect(configurationOptions);
-            var keys = this.GetServer().Keys(database: databaseId, pattern: prefix + "*").ToArray();
-
-            return keys;
-        }
-        #endregion
-        #region Get<T>
+        #region Get
         public T Get<T>(string key) where T : class
         {
             string value = _client.GetDatabase().StringGet(key);
 
             return value.ToObject<T>();
         }
-        #endregion        
-        #region Get
+
         public string Get(string key)
         {
             return _client.GetDatabase().StringGet(key);
+        }
+
+        public string Get(string key, int databaseId)
+        {
+            var value = _client.GetDatabase(databaseId).StringGet(key);
+
+            if (!string.IsNullOrWhiteSpace(value))
+                value.ToString();
+            return value;
+        }
+
+        public T Get<T>(string key, int databaseId) where T : class
+        {
+            string value = _client.GetDatabase(databaseId).StringGet(key);
+
+            return value.ToObject<T>();
+        }
+        #endregion
+        #region GetValuesByPrefix
+        public RedisValue[] GetValuesByPrefix(string prefix, int databaseId = 1)
+        {
+            var server = this.GetServer();
+
+            var keys = server.Keys(database: databaseId,
+                                   pattern: prefix + "*").ToArray();
+
+            RedisValue[] values = _client.GetDatabase(databaseId).StringGet(keys);
+            return values;
+        }
+        #endregion
+        #region GetKeyValuesByPrefix
+        public Dictionary<string, RedisValue> GetKeyValuesByPrefix(string prefix, int databaseId = 1)
+        {
+            var values = new Dictionary<string, RedisValue>();
+
+            var server = this.GetServer();
+
+            if (!server.IsConnected)
+                return values;
+
+            var keys = server.Keys(database: databaseId,
+                                   pattern: prefix + "*").ToArray();
+
+            if (keys == null || keys?.Count() < 1)
+                return values;
+
+            foreach (var key in keys)
+            {
+                var value = _client.GetDatabase().StringGet(key);
+                values.Add(key, value);
+            }
+
+            return values;
         }
         #endregion
         #region GetAsync<T>
@@ -85,6 +139,7 @@ namespace BasketGrpcService.Services.Redis.Concrete
         public async Task<T> GetAsync<T>(string key, int databaseId) where T : class
         {
             string value = await _client.GetDatabase(databaseId).StringGetAsync(key);
+
             return value.ToObject<T>();
         }
         #endregion
@@ -107,10 +162,10 @@ namespace BasketGrpcService.Services.Redis.Concrete
         }
         #endregion
         #region SetAsync
-        public async Task<bool> SetAsync(string key, object value)
+        public async Task SetAsync(string key, object value)
         {
             string jsonValue = JsonConvert.SerializeObject(value, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
-            return await _client.GetDatabase().StringSetAsync(key, jsonValue);
+            await _client.GetDatabase().StringSetAsync(key, jsonValue);
         }
         #endregion
         #region Set
@@ -121,34 +176,24 @@ namespace BasketGrpcService.Services.Redis.Concrete
         }
         #endregion
         #region SetAsync with TimeSpan
-        public async Task<bool> SetAsync(string key, object value, int duration)
+        public async Task SetAsync(string key, object value, int duration)
         {
-            return await _client.GetDatabase().StringSetAsync(key, value.ToJson(), TimeSpan.FromMinutes(duration));
+            await _client.GetDatabase().StringSetAsync(key, value.ToJson(), TimeSpan.FromMinutes(duration));
         }
         #endregion
         #region SetAsync by DatabaseId and TimeSpan
-        public async Task<bool> SetAsync(string key, object value, int duration, int databaseId)
+        public async Task SetAsync(string key, object value, int duration, int databaseId)
         {
             var db = _client.GetDatabase(databaseId);
 
             string jsonValue = JsonConvert.SerializeObject(value, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
-            return await db.StringSetAsync(key, jsonValue, TimeSpan.FromHours(duration));
+            await db.StringSetAsync(key, jsonValue, TimeSpan.FromHours(duration));
         }
         #endregion
         #region Remove
         public void Remove(string key)
         {
             _client.GetDatabase().KeyDelete(key);
-        }
-
-        public bool Remove(string key, int databaseId)
-        {
-            return _client.GetDatabase(databaseId).KeyDelete(key);
-        }
-
-        public async Task<bool> RemoveAsync(string key, int databaseId)
-        {
-            return await _client.GetDatabase(databaseId).KeyDeleteAsync(key);
         }
         #endregion
         #region KeyExists
@@ -159,6 +204,11 @@ namespace BasketGrpcService.Services.Redis.Concrete
 
             return _client.GetDatabase().KeyExists(key);
         }
+
+        public bool KeyExists(string key, int databaseId)
+        {
+            return _client.GetDatabase(databaseId).KeyExists(key);
+        }
         #endregion
         #region KeyExistsAsync
         public async Task<bool> KeyExistsAsync(string key)
@@ -168,9 +218,9 @@ namespace BasketGrpcService.Services.Redis.Concrete
             return await _client.GetDatabase().KeyExistsAsync(key);
         }
 
-        public void Dispose()
+        public async Task<bool> KeyExistsAsync(string key, int databaseId)
         {
-            _client.Close();
+            return await _client.GetDatabase(databaseId).KeyExistsAsync(key);
         }
         #endregion
         #region AnyKeyExistsByPrefix
@@ -187,31 +237,11 @@ namespace BasketGrpcService.Services.Redis.Concrete
             return keys.Count() < 1 ? false : true;
         }
         #endregion
-        #region GetAllByPrefixAsync
-        public List<T> GetAllByPrefix<T>(string key, int databaseId) where T : class
+
+        public void Dispose()
         {
-            try
-            {
-                var keys = this.GetServer().Keys(database: databaseId,
-                                                 pattern: key + "*").ToList();
-
-                var result = new List<T>();
-
-                foreach (var keyItem in keys)
-                {
-                    string value = _client.GetDatabase(databaseId).StringGet(keyItem);
-
-                    result.Add(value.ToObject<T>());
-                }
-
-                return result;
-            }
-            catch (Exception ex)
-            {
-                return new List<T>();
-            }
+            _client.Close();
         }
-        #endregion
 
         public async void RemoveByPattern(string pattern, int db)
         {
@@ -238,29 +268,6 @@ namespace BasketGrpcService.Services.Redis.Concrete
             {
                 await _client.GetDatabase().KeyDeleteAsync(key);
             }
-        }
-
-        private ConfigurationOptions GetConfigurationOptions(int databaseId = 1)
-        {
-            var connectionStrings = _connectionString.Split(",");
-
-            var configurationOptions = new ConfigurationOptions()
-            {
-                AbortOnConnectFail = false,
-                AsyncTimeout = 10000,
-                ConnectTimeout = 10000,
-                KeepAlive = 180
-                //ServiceName = ServiceName, AllowAdmin = true
-            };
-
-            foreach (var item in connectionStrings)
-            {
-                configurationOptions.EndPoints.Add(item);
-            }
-
-            configurationOptions.DefaultDatabase = databaseId;
-
-            return configurationOptions;
         }
     }
 }

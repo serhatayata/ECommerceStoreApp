@@ -1,8 +1,13 @@
 ﻿using BasketGrpcService.Dtos.Localization;
+using BasketGrpcService.Models;
+using BasketGrpcService.Models.Settings;
+using BasketGrpcService.Services.Redis.Abstract;
 using BasketGrpcService.Utilities.Results;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.Extensions.Caching.Memory;
 using Polly;
 using Serilog;
+using StackExchange.Redis;
 using System.Globalization;
 using System.Reflection;
 
@@ -28,7 +33,7 @@ namespace BasketGrpcService.Extensions
 
             await policy.ExecuteAsync(async () =>
             {
-                var gatewayClient = httpClientFactory.CreateClient("gateway-specific");
+                var gatewayClient = httpClientFactory.CreateClient("gateway");
                 var languageResult = await gatewayClient.PostGetResponseAsync<DataResult<List<LanguageDto>>, string>("localization/languages/get-all-for-clients", string.Empty);
 
                 if (languageResult == null || languageResult?.Data == null || !languageResult.Success)
@@ -45,6 +50,59 @@ namespace BasketGrpcService.Extensions
                     options.SupportedCultures = cultures;
                     options.SupportedUICultures = cultures;
                 });
+            });
+        }
+
+        public static async Task AddLocalizationDataAsync(this IServiceCollection services, IConfiguration configuration)
+        {
+            var serviceProvider = services.BuildServiceProvider();
+            using var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();
+
+            var redisService = scope.ServiceProvider.GetRequiredService<IRedisService>();
+            var httpClientFactory = scope.ServiceProvider.GetRequiredService<IHttpClientFactory>();
+
+            var policy = Polly.Policy.Handle<Exception>()
+                        .WaitAndRetryAsync(5, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
+                        {
+                            Log.Error("ERROR handling message: {ExceptionMessage} - Method : {ClassName}.{MethodName}",
+                                                ex.Message, nameof(AddLocalizationDataAsync),
+                                                MethodBase.GetCurrentMethod()?.Name);
+                        });
+
+            await policy.ExecuteAsync(async () =>
+            {
+                var values = new Dictionary<string, RedisValue>();
+
+                var localizationSettings = configuration.GetSection("LocalizationSettings").Get<LocalizationSettings>();
+                var redisSettings = configuration.GetSection("RedisOptions").Get<RedisOptions>();
+
+                var localizationMemberKey = localizationSettings.MemberKey;
+                var redisCacheDuration = localizationSettings.CacheDuration;
+
+                int databaseId = localizationSettings.DatabaseId;
+
+                if (!redisService.AnyKeyExistsByPrefix(localizationMemberKey, databaseId))
+                {
+                    var gatewayClient = httpClientFactory.CreateClient("gateway");
+                    var result = await gatewayClient.PostGetResponseAsync<DataResult<List<ResourceDto>>, StringModel>("localization/members/get-with-resources-by-memberkey-and-save-default", new StringModel() { Value = localizationMemberKey });
+
+                    if (!result?.Success ?? true)
+                        throw new Exception("Localization data request not successful");
+
+                    var resultData = result.Data;
+                    if (resultData == null)
+                        throw new Exception("Localization data is null from http request");
+
+                    //MemoryCacheExtensions.SaveLocalizationData(memoryCache, _configuration, resultData);
+
+                    if (redisService.AnyKeyExistsByPrefix(localizationMemberKey, databaseId))
+                        return;
+
+                    foreach (var resource in resultData)
+                    {
+                        await redisService.SetAsync($"{localizationMemberKey}-{resource.LanguageCode}-{resource.Tag}", resource, redisCacheDuration, databaseId);
+                    }
+                }
             });
         }
     }
