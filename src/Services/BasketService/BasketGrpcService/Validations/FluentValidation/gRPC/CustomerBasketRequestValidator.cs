@@ -1,14 +1,20 @@
-﻿using FluentValidation;
+﻿using BasketGrpcService.Extensions;
+using BasketGrpcService.Services.Localization.Abstract;
+using FluentValidation;
 
 namespace BasketGrpcService.Validations.FluentValidation.gRPC
 {
     public class CustomerBasketRequestValidator : AbstractValidator<CustomerBasketRequest>
     {
-        public CustomerBasketRequestValidator()
+        public CustomerBasketRequestValidator(ILocalizationService localizer,
+                                              IHttpContextAccessor httpContextAccessor)
         {
-            RuleFor(request => request.Buyerid).NotEmpty().NotNull().WithMessage("Buyer id is mandatory.");
+            string culture = HttpExtensions.GetAcceptLanguage(httpContextAccessor);
 
-            RuleForEach(request => request.Items).SetValidator(new BasketItemResponseValidator());
+            RuleFor(request => request.Buyerid).NotEmpty().WithMessage(localizer[culture, "customerbasketrequest.buyerid.notempty"]);
+            RuleFor(request => request.Buyerid).NotNull().WithMessage(localizer[culture, "customerbasketrequest.buyerid.notnull"]);
+
+            RuleForEach(request => request.Items).SetValidator(new BasketItemResponseValidator(localizer, httpContextAccessor));
         }
     }
 }
