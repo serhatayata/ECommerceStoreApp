@@ -1,10 +1,9 @@
 ﻿using CatalogService.Api.Data.Contexts.Connections.Abstract;
 using Dapper;
-using LocalizationService.Api.Data.Contexts.Connections.Abstract;
 using Microsoft.Data.SqlClient;
 using System.Data;
 
-namespace LocalizationService.Api.Data.Contexts.Connections.Concrete
+namespace CatalogService.Api.Data.Contexts.Connections.Concrete
 {
     public class CatalogReadDbConnection : ICatalogReadDbConnection, IDisposable
     {

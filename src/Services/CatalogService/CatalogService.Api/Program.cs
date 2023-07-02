@@ -1,8 +1,12 @@
+using Autofac.Extensions.DependencyInjection;
+using Autofac;
 using CatalogService.Api.Data.Contexts;
 using CatalogService.Api.Extensions;
 using CatalogService.Api.Utilities.IoC;
 using Microsoft.EntityFrameworkCore;
 using System;
+using CatalogService.Api.DependencyResolvers.Autofac;
+using CatalogService.Api.Mapping;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
@@ -29,8 +33,14 @@ ServiceTool.Create(builder.Services);
 string defaultConnString = configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(defaultConnString, b => b.MigrationsAssembly(assembly)), ServiceLifetime.Transient);
 #endregion
+#region Autofac
+builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
+builder.Host.ConfigureContainer<ContainerBuilder>(builder => builder.RegisterModule(new AutofacBusinessModule()));
+#endregion
+#region AutoMapper
+builder.Services.AddAutoMapper(typeof(MapProfile).Assembly);
+#endregion
 
-builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

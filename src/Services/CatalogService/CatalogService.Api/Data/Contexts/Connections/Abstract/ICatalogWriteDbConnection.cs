@@ -1,7 +1,7 @@
 ﻿using CatalogService.Api.Data.Contexts.Connections.Abstract;
 using System.Data;
 
-namespace LocalizationService.Api.Data.Contexts.Connections.Abstract
+namespace CatalogService.Api.Data.Contexts.Connections.Abstract
 {
     public interface ICatalogWriteDbConnection : ICatalogReadDbConnection
     {

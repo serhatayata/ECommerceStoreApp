@@ -41,14 +41,10 @@
 
   <ItemGroup>
     <Folder Include="Data\EntityConfigurations\" />
-    <Folder Include="Data\Repositories\EntityFramework\Abstract\" />
-    <Folder Include="Data\Repositories\EntityFramework\Concrete\" />
     <Folder Include="Data\SeedData\SeedFiles\" />
     <Folder Include="Grpc\" />
     <Folder Include="Infrastructure\" />
     <Folder Include="IntegrationEvents\" />
-    <Folder Include="Mapping\" />
-    <Folder Include="DependencyResolvers\" />
     <Folder Include="Services\" />
     <Folder Include="Validations\" />
     <Folder Include="Proto\" />

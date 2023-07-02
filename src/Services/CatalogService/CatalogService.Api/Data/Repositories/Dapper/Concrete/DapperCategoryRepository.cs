@@ -22,7 +22,17 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
             throw new NotImplementedException();
         }
 
+        public Task<DataResult<IReadOnlyList<Category>>> GetAllByParentId()
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<DataResult<Category>> GetAsync(IntModel model)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<DataResult<Category>> GetByName()
         {
             throw new NotImplementedException();
         }
