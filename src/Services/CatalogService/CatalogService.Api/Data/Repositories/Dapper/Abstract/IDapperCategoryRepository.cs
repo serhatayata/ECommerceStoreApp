@@ -7,6 +7,9 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Abstract;
 
 public interface IDapperCategoryRepository : IGenericRepository<Category, IntModel>
 {
-    Task<DataResult<Category>> GetByName();
-    Task<DataResult<IReadOnlyList<Category>>> GetAllByParentId();
+    Task<DataResult<Category>> GetWithProducts(IntModel model);
+    Task<DataResult<Category>> GetByName(StringModel model);
+    Task<DataResult<Category>> GetByNameWithProducts(StringModel model);
+    Task<DataResult<IReadOnlyList<Category>>> GetAllByParentId(IntModel model);
+    Task<DataResult<IReadOnlyList<Category>>> GetAllWithProductsByParentId(IntModel model);
 }

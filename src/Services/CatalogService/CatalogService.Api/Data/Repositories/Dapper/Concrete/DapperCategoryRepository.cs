@@ -4,6 +4,8 @@ using CatalogService.Api.Data.Repositories.Dapper.Abstract;
 using CatalogService.Api.Entities;
 using CatalogService.Api.Models.Base.Concrete;
 using CatalogService.Api.Utilities.Results;
+using Microsoft.EntityFrameworkCore;
+using System.Data.Common;
 
 namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
 {
@@ -28,37 +30,160 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
             _productTable = dbContext.GetTableNameWithScheme<Product>();
         }
 
-        public Task<Result> AddAsync(Category entity)
+        public async Task<Result> AddAsync(Category entity)
+        {
+            _dbContext.Connection.Open();
+            using var transaction = _dbContext.Connection.BeginTransaction();
+            try
+            {
+                _dbContext.Database.UseTransaction(transaction as DbTransaction);
+                //Check if category exists
+                bool categoryExists = await _dbContext.Categories.AnyAsync(l => l.Name == entity.Name);
+                if (categoryExists)
+                    return new ErrorResult("Category already exists");
+
+                //Add category, with SELECT CAST... we get the added category's id
+                var addQuery = $"INSERT INTO {_categoryTable}(ParentId,Name,Link,Line) VALUES (@ParentId,@Name,@Link,@Line);SELECT CAST(SCOPE_IDENTITY() as int)";
+                var categoryId = await _writeDbConnection.QuerySingleOrDefaultAsync<int>(sql: addQuery,
+                                                                              transaction: transaction,
+                                                                              param: new { ParentId = entity.ParentId,
+                                                                                           Name = entity.Name,
+                                                                                           Link = entity.Link,
+                                                                                           Line = entity.Line });
+                if (categoryId == 0)
+                    return new ErrorResult("Category not added");
+
+                transaction.Commit();
+                return new SuccessResult();
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _dbContext.Connection.Close();
+            }
+        }
+
+        public async Task<Result> DeleteAsync(IntModel model)
+        {
+            _dbContext.Connection.Open();
+            using var transaction = _dbContext.Connection.BeginTransaction();
+
+            try
+            {
+                bool categoryExists = await _dbContext.Categories.AnyAsync(l => l.Id == model.Value);
+                if (!categoryExists)
+                    return new ErrorResult("Category does not exist");
+
+                //Delete query
+                var deleteQuery = $"DELETE FROM {_categoryTable} WHERE Id=@Id";
+                var result = await _writeDbConnection.ExecuteAsync(sql: deleteQuery,
+                                                                   transaction: transaction,
+                                                                   param: new { Id = model.Value });
+
+                transaction.Commit();
+
+                return result > 0 ? new SuccessResult() : new ErrorResult("Member not added");
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _dbContext.Connection.Close();
+            }
+        }
+
+        public async Task<Result> UpdateAsync(Category entity)
+        {
+            _dbContext.Connection.Open();
+            using var transaction = _dbContext.Connection.BeginTransaction();
+
+            try
+            {
+                var categoryExists = await _dbContext.Categories.FirstOrDefaultAsync(l => l.Id == entity.Id);
+                if (categoryExists == null)
+                    return new ErrorResult("Category does not exist");
+
+                bool categoryNameExists = await _dbContext.Categories.AnyAsync(l => l.Id != entity.Id && l.Name == entity.Name);
+                if (categoryNameExists)
+                    return new ErrorResult("Category name already exists");
+
+                //Update query
+                var updateQuery = $"UPDATE {_categoryTable} " +
+                                  $"SET Name = @Name, ParentId = @ParentId, Line = @Line " +
+                                  $"WHERE Id=@Id";
+
+                var result = await _writeDbConnection.ExecuteAsync(sql: updateQuery,
+                                                                   transaction: transaction,
+                                                                   param: new
+                                                                   {
+                                                                       Id = entity.Id,
+                                                                       Name = entity.Name,
+                                                                       ParentId = entity.ParentId,
+                                                                       Line = entity.Line
+                                                                   });
+
+                transaction.Commit();
+
+                return result > 0 ? new SuccessResult() : new ErrorResult("Member not added");
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _dbContext.Connection.Close();
+            }
+        }
+
+        public async Task<DataResult<IReadOnlyList<Category>>> GetAllAsync()
+        {
+            var query = $"SELECT Id,ParentId,Name,Link,Line,CreateDate,UpdateDate FROM {_categoryTable}";
+
+            var result = await _readDbConnection.QueryAsync<Category>(query);
+            return new DataResult<IReadOnlyList<Category>>(result);
+        }
+
+        public async Task<DataResult<IReadOnlyList<Category>>> GetAllByParentId(IntModel model)
+        {
+            var query = $"SELECT * FROM {_categoryTable} " +
+                        $"WHERE ";
+
+            var result = await _readDbConnection.QueryAsync<Category>(sql: query,
+                                                                      param: new {  });
+
+            return new DataResult<IReadOnlyList<Category>>(result);
+        }
+
+        public Task<DataResult<IReadOnlyList<Category>>> GetAllWithProductsByParentId(IntModel model)
         {
             throw new NotImplementedException();
         }
 
-        public Task<Result> DeleteAsync(IntModel model)
+        public async Task<DataResult<Category>> GetAsync(IntModel model)
         {
             throw new NotImplementedException();
         }
 
-        public Task<DataResult<IReadOnlyList<Category>>> GetAllAsync()
+        public async Task<DataResult<Category>> GetWithProducts(IntModel model)
         {
             throw new NotImplementedException();
         }
 
-        public Task<DataResult<IReadOnlyList<Category>>> GetAllByParentId()
+        public async Task<DataResult<Category>> GetByName(StringModel model)
         {
             throw new NotImplementedException();
         }
 
-        public Task<DataResult<Category>> GetAsync(IntModel model)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<DataResult<Category>> GetByName()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Result> UpdateAsync(Category entity)
+        public async Task<DataResult<Category>> GetByNameWithProducts(StringModel model)
         {
             throw new NotImplementedException();
         }

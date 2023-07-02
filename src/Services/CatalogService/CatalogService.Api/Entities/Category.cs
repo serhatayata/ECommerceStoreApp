@@ -31,7 +31,7 @@ public class Category : IEntity
     /// <summary>
     /// Update date of the category
     /// </summary>
-    public DateTime UpdateTime { get; set; }
+    public DateTime UpdateDate { get; set; }
 
     public ICollection<Product> Products { get; set; }
 }
