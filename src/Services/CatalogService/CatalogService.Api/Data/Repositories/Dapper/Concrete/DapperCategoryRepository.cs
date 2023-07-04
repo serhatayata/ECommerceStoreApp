@@ -4,6 +4,7 @@ using CatalogService.Api.Data.Repositories.Dapper.Abstract;
 using CatalogService.Api.Entities;
 using CatalogService.Api.Models.Base.Concrete;
 using CatalogService.Api.Utilities.Results;
+using Dapper;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
 
@@ -146,7 +147,7 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
 
         public async Task<DataResult<IReadOnlyList<Category>>> GetAllAsync()
         {
-            var query = $"SELECT Id,ParentId,Name,Link,Line,CreateDate,UpdateDate FROM {_categoryTable}";
+            var query = $"SELECT * FROM {_categoryTable}";
 
             var result = await _readDbConnection.QueryAsync<Category>(query);
             return new DataResult<IReadOnlyList<Category>>(result);
@@ -155,37 +156,114 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
         public async Task<DataResult<IReadOnlyList<Category>>> GetAllByParentId(IntModel model)
         {
             var query = $"SELECT * FROM {_categoryTable} " +
-                        $"WHERE ";
+                        $"WHERE ParentId = @ParentId";
 
             var result = await _readDbConnection.QueryAsync<Category>(sql: query,
-                                                                      param: new {  });
+                                                                      param: new { ParentId = model.Value });
 
             return new DataResult<IReadOnlyList<Category>>(result);
         }
 
-        public Task<DataResult<IReadOnlyList<Category>>> GetAllWithProductsByParentId(IntModel model)
+        public async Task<DataResult<IReadOnlyList<Category>>> GetAllWithProductsByParentId(IntModel model)
         {
-            throw new NotImplementedException();
+            var query = $"SELECT c.*, p.Id AS ProductId, p.* FROM {_categoryTable} c " +
+                        $"INNER JOIN {_productTable} p ON c.Id = p.CategoryId" +
+                        $"WHERE c.ParentId = @ParentId";
+
+            var categoryDictionary = new Dictionary<int, Category>();
+
+            var result = await _dbContext.Connection.QueryAsync<Category, Product, Category>(query, (category,product) =>
+            {
+                Category? categoryEntry;
+
+                if (!categoryDictionary.TryGetValue(category.Id, out categoryEntry))
+                {
+                    categoryEntry = category;
+                    categoryEntry.Products = new List<Product>();
+                    categoryDictionary.Add(categoryEntry.Id, categoryEntry);
+                }
+                if (product != null)
+                    categoryEntry.Products.Add(product);
+
+                return categoryEntry;
+            }, splitOn: "ProductId", param: new { ParentId = model.Value });
+
+            var filteredResult = result.DistinctBy(c => c.Id).ToList();
+            return new DataResult<IReadOnlyList<Category>>(filteredResult);
         }
 
         public async Task<DataResult<Category>> GetAsync(IntModel model)
         {
-            throw new NotImplementedException();
+            var query = $"SELECT * FROM {_categoryTable} " +
+                        $"WHERE Id = @Id";
+
+            var result = await _readDbConnection.QuerySingleOrDefaultAsync<Category>(sql: query, param: new { Id = model.Value });
+            return new DataResult<Category>(result);
         }
 
         public async Task<DataResult<Category>> GetWithProducts(IntModel model)
         {
-            throw new NotImplementedException();
+            var query = $"SELECT c.*, p.Id AS ProductId, p.* FROM {_categoryTable} c " +
+            $"INNER JOIN {_productTable} p ON c.Id = p.CategoryId" +
+            $"WHERE c.Id = @Id";
+
+            var categoryDictionary = new Dictionary<int, Category>();
+
+            var result = await _dbContext.Connection.QueryAsync<Category, Product, Category>(query, (category, product) =>
+            {
+                Category? categoryEntry;
+
+                if (!categoryDictionary.TryGetValue(category.Id, out categoryEntry))
+                {
+                    categoryEntry = category;
+                    categoryEntry.Products = new List<Product>();
+                    categoryDictionary.Add(categoryEntry.Id, categoryEntry);
+                }
+                if (product != null)
+                    categoryEntry.Products.Add(product);
+
+                return categoryEntry;
+            }, splitOn: "ProductId", param: new { Id = model.Value });
+
+            var filteredResult = result.DistinctBy(c => c.Id).FirstOrDefault();
+            return new DataResult<Category>(filteredResult);
         }
 
         public async Task<DataResult<Category>> GetByName(StringModel model)
         {
-            throw new NotImplementedException();
+            var query = $"SELECT * FROM {_categoryTable} " +
+                        $"WHERE Name = @Name";
+
+            var result = await _readDbConnection.QuerySingleOrDefaultAsync<Category>(sql: query, param: new { Name = model.Value });
+            return new DataResult<Category>(result);
         }
 
         public async Task<DataResult<Category>> GetByNameWithProducts(StringModel model)
         {
-            throw new NotImplementedException();
+            var query = $"SELECT c.*, p.Id AS ProductId, p.* FROM {_categoryTable} c " +
+                        $"INNER JOIN {_productTable} p ON c.Id = p.CategoryId" +
+                        $"WHERE c.Name = @Name";
+
+            var categoryDictionary = new Dictionary<int, Category>();
+
+            var result = await _dbContext.Connection.QueryAsync<Category, Product, Category>(query, (category, product) =>
+            {
+                Category? categoryEntry;
+
+                if (!categoryDictionary.TryGetValue(category.Id, out categoryEntry))
+                {
+                    categoryEntry = category;
+                    categoryEntry.Products = new List<Product>();
+                    categoryDictionary.Add(categoryEntry.Id, categoryEntry);
+                }
+                if (product != null)
+                    categoryEntry.Products.Add(product);
+
+                return categoryEntry;
+            }, splitOn: "ProductId", param: new { Name = model.Value });
+
+            var filteredResult = result.DistinctBy(c => c.Id).FirstOrDefault();
+            return new DataResult<Category>(filteredResult);
         }
     }
 }
