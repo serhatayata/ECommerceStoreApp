@@ -9,6 +9,10 @@ namespace CatalogService.Api.Entities
         /// </summary>
         public int Id { get; set; }
         /// <summary>
+        /// Id of the comment
+        /// </summary>
+        public string Code { get; set; }
+        /// <summary>
         /// Product id of the comment
         /// </summary>
         public int ProductId { get; set; }
