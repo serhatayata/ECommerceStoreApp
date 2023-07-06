@@ -2,12 +2,12 @@
 using CatalogService.Api.Data.Contexts.Connections.Abstract;
 using CatalogService.Api.Data.Repositories.Dapper.Abstract;
 using CatalogService.Api.Entities;
-using CatalogService.Api.Extensions;
 using CatalogService.Api.Models.Base.Concrete;
 using CatalogService.Api.Utilities.Encryption;
 using CatalogService.Api.Utilities.Results;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
+using Result = CatalogService.Api.Utilities.Results.Result;
 
 namespace CatalogService.Api.Data.Repositories.Dapper.Concrete;
 
@@ -40,19 +40,22 @@ public class DapperCommentRepository : IDapperCommentRepository
     {
         _dbContext.Connection.Open();
         using var transaction = _dbContext.Connection.BeginTransaction();
+
         try
         {
             _dbContext.Database.UseTransaction(transaction as DbTransaction);
 
-            var commentUserQuery = $"SELECT * FROM {_commentTable} WHERE UserId = @UserId";
-            var commentUserExists = await _readDbConnection.QuerySingleOrDefaultAsync<int>(sql: commentUserQuery, param: new { UserId = entity.UserId });
-            if (commentUserExists != 0)
+            var commentUserQuery = $"SELECT * FROM {_commentTable} WHERE UserId = @UserId AND ProductId = @ProductId";
+            var commentUserExists = await _readDbConnection.QuerySingleOrDefaultAsync<Comment>(sql: commentUserQuery, 
+                                                                                               param: new { UserId = entity.UserId, ProductId = entity.ProductId });
+            if (commentUserExists != null)
                 return new ErrorResult("User comment for this product already exists");
-
+            //One comment to current product for a user (Changeable later)
             string generatedCode = HashCreator.Sha256_Hash(entity.ProductId.ToString(),
                                                            entity.Name,
                                                            entity.Surname,
-                                                           entity.UserId);
+                                                           entity.UserId,
+                                                           DateTime.Now.ToString());
 
             var addQuery = $"INSERT INTO {_commentTable}" +
                            $"(ProductId,UserId,Content,Name,Surname,Email) " +
@@ -93,7 +96,21 @@ public class DapperCommentRepository : IDapperCommentRepository
 
         try
         {
-            
+            _dbContext.Database.UseTransaction(transaction as DbTransaction);
+
+            bool commentExists = await _dbContext.Comments.AnyAsync(l => l.Id == model.Value);
+            if (!commentExists)
+                return new ErrorResult("Comment does not exist");
+
+            //Delete query
+            var deleteQuery = $"DELETE FROM {_commentTable} WHERE Id=@Id";
+            var result = await _writeDbConnection.ExecuteAsync(sql: deleteQuery,
+                                                               transaction: transaction,
+                                                               param: new { Id = model.Value });
+
+            transaction.Commit();
+
+            return result > 0 ? new SuccessResult() : new ErrorResult("Comment not deleted");
         }
         catch (Exception ex)
         {
@@ -106,33 +123,152 @@ public class DapperCommentRepository : IDapperCommentRepository
         }
     }
 
-    public Task<Result> DeleteByCodeAsync(StringModel model)
+    public async Task<Result> DeleteByCodeAsync(StringModel model)
     {
-        throw new NotImplementedException();
+        _dbContext.Connection.Open();
+        using var transaction = _dbContext.Connection.BeginTransaction();
+
+        try
+        {
+            _dbContext.Database.UseTransaction(transaction as DbTransaction);
+
+            bool commentExists = await _dbContext.Comments.AnyAsync(l => l.Code == model.Value);
+            if (!commentExists)
+                return new ErrorResult("Comment does not exist");
+
+            //Delete query
+            var deleteQuery = $"DELETE FROM {_commentTable} WHERE Code=@Code";
+            var result = await _writeDbConnection.ExecuteAsync(sql: deleteQuery,
+                                                               transaction: transaction,
+                                                               param: new { Code = model.Value });
+
+            transaction.Commit();
+
+            return result > 0 ? new SuccessResult() : new ErrorResult("Comment not deleted");
+        }
+        catch (Exception ex)
+        {
+            transaction.Rollback();
+            throw new Exception(ex.Message);
+        }
+        finally
+        {
+            _dbContext.Connection.Close();
+        }
     }
 
-    public Task<Result> UpdateAsync(Comment entity)
+    public async Task<Result> UpdateAsync(Comment entity)
     {
-        throw new NotImplementedException();
+        _dbContext.Connection.Open();
+        using var transaction = _dbContext.Connection.BeginTransaction();
+
+        try
+        {
+            var commentExists = await _dbContext.Comments.FirstOrDefaultAsync(l => l.Id == entity.Id);
+            if (commentExists == null)
+                return new ErrorResult("Comment does not exist");
+
+            //Update query
+            var updateQuery = $"UPDATE {_commentTable} " +
+                              $"SET Content = @Content " +
+                              $"WHERE Id=@Id";
+
+            var result = await _writeDbConnection.ExecuteAsync(sql: updateQuery,
+                                                               transaction: transaction,
+                                                               param: new { Content = entity.Content, Id = entity.Id });
+
+            transaction.Commit();
+
+            return result > 0 ? new SuccessResult() : new ErrorResult("Content not updated");
+        }
+        catch (Exception ex)
+        {
+            transaction.Rollback();
+            throw new Exception(ex.Message);
+        }
+        finally
+        {
+            _dbContext.Connection.Close();
+        }
     }
 
-    public Task<DataResult<IReadOnlyList<Comment>>> GetAllAsync()
+    public async Task<Result> UpdateByCodeAsync(Comment entity)
     {
-        throw new NotImplementedException();
+        _dbContext.Connection.Open();
+        using var transaction = _dbContext.Connection.BeginTransaction();
+
+        try
+        {
+            var commentExists = await _dbContext.Comments.FirstOrDefaultAsync(l => l.Code == entity.Code);
+            if (commentExists == null)
+                return new ErrorResult("Comment does not exist");
+
+            //Update query
+            var updateQuery = $"UPDATE {_commentTable} " +
+                              $"SET Content = @Content " +
+                              $"WHERE Code=@Code";
+
+            var result = await _writeDbConnection.ExecuteAsync(sql: updateQuery,
+                                                               transaction: transaction,
+                                                               param: new { Content = entity.Content, Code = entity.Code });
+
+            transaction.Commit();
+
+            return result > 0 ? new SuccessResult() : new ErrorResult("Content not updated");
+        }
+        catch (Exception ex)
+        {
+            transaction.Rollback();
+            throw new Exception(ex.Message);
+        }
+        finally
+        {
+            _dbContext.Connection.Close();
+        }
     }
 
-    public Task<DataResult<IReadOnlyList<Comment>>> GetAllByProductId(IntModel model)
+    public async Task<DataResult<IReadOnlyList<Comment>>> GetAllAsync()
     {
-        throw new NotImplementedException();
+        var query = $"SELECT * FROM {_commentTable}";
+
+        var result = await _readDbConnection.QueryAsync<Comment>(query);
+        return new DataResult<IReadOnlyList<Comment>>(result);
     }
 
-    public Task<DataResult<IReadOnlyList<Comment>>> GetAllByUserId(IntModel model)
+    public async Task<DataResult<IReadOnlyList<Comment>>> GetAllByProductId(IntModel model)
     {
-        throw new NotImplementedException();
+        var query = $"SELECT * FROM {_commentTable} WHERE ProductId = @ProductId";
+
+        var result = await _readDbConnection.QueryAsync<Comment>(sql: query,
+                                                                 param: new { ProductId = model.Value });
+
+        return new DataResult<IReadOnlyList<Comment>>(result);
     }
 
-    public Task<DataResult<Comment>> GetAsync(IntModel model)
+    public async Task<DataResult<IReadOnlyList<Comment>>> GetAllByUserId(IntModel model)
     {
-        throw new NotImplementedException();
+        var query = $"SELECT * FROM {_commentTable} WHERE UserId = @UserId";
+        var result = await _readDbConnection.QueryAsync<Comment>(sql: query,
+                                                                 param: new { UserId = model.Value });
+
+        return new DataResult<IReadOnlyList<Comment>>(result);
+    }
+
+    public async Task<DataResult<Comment>> GetAsync(IntModel model)
+    {
+        var query = $"SELECT * FROM {_commentTable} WHERE Id = @Id";
+        var result = await _readDbConnection.QuerySingleOrDefaultAsync<Comment>(sql: query, 
+                                                                                param: new { Id = model.Value });
+
+        return new DataResult<Comment>(result);
+    }
+
+    public async Task<DataResult<Comment>> GetByCodeAsync(IntModel model)
+    {
+        var query = $"SELECT * FROM {_commentTable} WHERE Code = @Code";
+        var result = await _readDbConnection.QuerySingleOrDefaultAsync<Comment>(sql: query,
+                                                                                param: new { Code = model.Value });
+
+        return new DataResult<Comment>(result);
     }
 }

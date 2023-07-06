@@ -87,7 +87,7 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
 
                 transaction.Commit();
 
-                return result > 0 ? new SuccessResult() : new ErrorResult("Member not added");
+                return result > 0 ? new SuccessResult() : new ErrorResult("Member not deleted");
             }
             catch (Exception ex)
             {
