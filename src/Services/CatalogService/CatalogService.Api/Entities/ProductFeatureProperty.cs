@@ -15,6 +15,7 @@ namespace CatalogService.Api.Entities
         /// <summary>
         /// Description of the property
         /// </summary>
+        public string Name { get; set; }
         public string Description { get; set; }
 
         /// <summary>

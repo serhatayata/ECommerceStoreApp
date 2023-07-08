@@ -7,6 +7,11 @@ namespace CatalogService.Api.Controllers
     [ApiController]
     public class CatalogController : ControllerBase
     {
+        [HttpGet]
+        [Route("test")]
+        public async Task Test()
+        {
 
+        }
     }
 }
