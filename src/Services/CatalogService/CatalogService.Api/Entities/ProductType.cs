@@ -16,5 +16,9 @@ namespace CatalogService.Api.Entities
         /// Description of the product
         /// </summary>
         public string Description { get; set; }
+        /// <summary>
+        /// One to many products
+        /// </summary>
+        public virtual ICollection<Product> Products { get; set; }
     }
 }

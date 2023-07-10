@@ -25,4 +25,6 @@ public class ProductFeature : IEntity
     /// Product entity FK
     /// </summary>
     public Product Product { get; set; }
+
+    public virtual ICollection<ProductFeatureProperty> ProductFeatureProperties { get; set; }
 }

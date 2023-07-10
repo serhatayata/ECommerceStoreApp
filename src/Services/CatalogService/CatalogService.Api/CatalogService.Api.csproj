@@ -40,7 +40,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\EntityConfigurations\" />
     <Folder Include="Data\SeedData\SeedFiles\" />
     <Folder Include="Grpc\" />
     <Folder Include="Infrastructure\" />

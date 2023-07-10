@@ -5,31 +5,47 @@ namespace CatalogService.Api.Data.Repositories.Base;
 
 public class UnitOfWork : IUnitOfWork
 {
-    public UnitOfWork(IDapperLanguageRepository languageRepository, 
-                      IDapperMemberRepository memberRepository, 
-                      IDapperResourceRepository resourceRepository,
-                      IEfLanguageRepository efLanguageRepository,
-                      IEfMemberRepository efMemberRepository,
-                      IEfResourceRepository efResourceRepository)
+    public UnitOfWork(IDapperBrandRepository dapperBrandRepository, 
+                      IDapperCategoryRepository dapperCategoryRepository, 
+                      IDapperCommentRepository dapperCommentRepository, 
+                      IDapperFeatureRepository dapperFeatureRepository, 
+                      IDapperProductRepository dapperProductRepository, 
+                      IEfBrandRepository efBrandRepository, 
+                      IEfCategoryRepository efCategoryRepository, 
+                      IEfCommentRepository efCommentRepository, 
+                      IEfFeatureRepository efFeatureRepository, 
+                      IEfProductRepository efProductRepository)
     {
-        LanguageRepository = languageRepository;
-        MemberRepository = memberRepository;
-        ResourceRepository = resourceRepository;
-        EfLanguageRepository = efLanguageRepository;
-        EfMemberRepository = efMemberRepository;
-        EfResourceRepository = efResourceRepository;
+        DapperBrandRepository = dapperBrandRepository;
+        DapperCategoryRepository = dapperCategoryRepository;
+        DapperCommentRepository = dapperCommentRepository;
+        DapperFeatureRepository = dapperFeatureRepository;
+        DapperProductRepository = dapperProductRepository;
+
+        EfBrandRepository = efBrandRepository;
+        EfCategoryRepository = efCategoryRepository;
+        EfCommentRepository = efCommentRepository;
+        EfFeatureRepository = efFeatureRepository;
+        EfProductRepository = efProductRepository;
     }
 
-    public IDapperLanguageRepository LanguageRepository { get;}
+    public IDapperBrandRepository DapperBrandRepository { get; }
 
-    public IDapperMemberRepository MemberRepository { get; }
+    public IDapperCategoryRepository DapperCategoryRepository { get; }
 
-    public IDapperResourceRepository ResourceRepository { get; }
+    public IDapperCommentRepository DapperCommentRepository { get; }
 
+    public IDapperFeatureRepository DapperFeatureRepository { get; }
 
-    public IEfLanguageRepository EfLanguageRepository { get; }
+    public IDapperProductRepository DapperProductRepository { get; }
 
-    public IEfMemberRepository EfMemberRepository { get; }
+    public IEfBrandRepository EfBrandRepository { get; }
 
-    public IEfResourceRepository EfResourceRepository { get; }
+    public IEfCategoryRepository EfCategoryRepository { get; }
+
+    public IEfCommentRepository EfCommentRepository { get; }
+
+    public IEfFeatureRepository EfFeatureRepository { get; }
+
+    public IEfProductRepository EfProductRepository { get; }
 }

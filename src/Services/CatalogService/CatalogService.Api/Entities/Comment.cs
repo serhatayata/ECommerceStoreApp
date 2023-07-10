@@ -36,6 +36,14 @@ namespace CatalogService.Api.Entities
         /// Email of the user
         /// </summary>
         public string Email { get; set; }
+        /// <summary>
+        /// Creation date of the comment
+        /// </summary>
+        public DateTime CreateDate { get; set; }
+        /// <summary>
+        /// Update date of the comment
+        /// </summary>
+        public DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// Product entity FK

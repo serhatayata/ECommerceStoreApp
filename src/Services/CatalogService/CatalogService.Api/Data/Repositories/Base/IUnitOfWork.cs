@@ -5,12 +5,16 @@ namespace CatalogService.Api.Data.Repositories.Base
 {
     public interface IUnitOfWork
     {
-        IDapperLanguageRepository LanguageRepository { get; }
-        IDapperMemberRepository MemberRepository { get; }
-        IDapperResourceRepository ResourceRepository { get; }
+        IDapperBrandRepository DapperBrandRepository { get; }
+        IDapperCategoryRepository DapperCategoryRepository { get; }
+        IDapperCommentRepository DapperCommentRepository { get; }
+        IDapperFeatureRepository DapperFeatureRepository { get; }
+        IDapperProductRepository DapperProductRepository { get; }
 
-        IEfLanguageRepository EfLanguageRepository { get; }
-        IEfMemberRepository EfMemberRepository { get; }
-        IEfResourceRepository EfResourceRepository { get; }
+        IEfBrandRepository EfBrandRepository { get; }
+        IEfCategoryRepository EfCategoryRepository { get; }
+        IEfCommentRepository EfCommentRepository { get; }
+        IEfFeatureRepository EfFeatureRepository { get; }
+        IEfProductRepository EfProductRepository { get; }
     }
 }

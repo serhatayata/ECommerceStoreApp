@@ -12,4 +12,6 @@ public class Feature : IEntity
     /// Name of the feature
     /// </summary>
     public string Name { get; set; }
+
+    public ICollection<ProductFeature> ProductFeatures { get; set; }
 }

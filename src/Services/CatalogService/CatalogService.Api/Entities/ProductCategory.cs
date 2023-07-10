@@ -1,4 +1,5 @@
 ﻿using CatalogService.Api.Entities.Abstract;
+using System.ComponentModel.DataAnnotations;
 
 namespace CatalogService.Api.Entities
 {

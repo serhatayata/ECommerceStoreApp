@@ -57,5 +57,13 @@ namespace CatalogService.Api.Entities
         /// Brand entity FK
         /// </summary>
         public Brand Brand { get; set; }
+        /// <summary>
+        /// One to many product features
+        /// </summary>
+        public ICollection<ProductFeature> ProductFeatures { get; set; }
+        /// <summary>
+        /// One to many comments
+        /// </summary>
+        public ICollection<Comment> Comments { get; set; }
     }
 }
