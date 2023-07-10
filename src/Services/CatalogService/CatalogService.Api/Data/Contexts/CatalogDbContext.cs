@@ -1,4 +1,5 @@
-﻿using CatalogService.Api.Entities;
+﻿using CatalogService.Api.Data.EntityConfigurations;
+using CatalogService.Api.Entities;
 using CatalogService.Api.Entities.Abstract;
 using CatalogService.Api.Utilities.IoC;
 using Microsoft.EntityFrameworkCore;
@@ -43,7 +44,15 @@ namespace CatalogService.Api.Data.Contexts
         {
             base.OnModelCreating(modelBuilder);
 
-            //modelBuilder.ApplyConfiguration(new ResourceEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new BrandEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new CategoryEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new CommentEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new FeatureEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ProductCategoryEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ProductEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ProductFeatureEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ProductFeaturePropertyEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ProductTypeEntityTypeConfiguration());
         }
 
         public string GetTableNameWithScheme<T>() where T : class, IEntity
