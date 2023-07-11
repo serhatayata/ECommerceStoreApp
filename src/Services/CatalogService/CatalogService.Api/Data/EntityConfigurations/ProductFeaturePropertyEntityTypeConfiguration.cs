@@ -16,8 +16,6 @@ namespace CatalogService.Api.Data.EntityConfigurations
             builder.Property(b => b.Name).HasColumnType("nvarchar(100)");
 
             builder.Property(b => b.Description).HasColumnType("nvarchar(500)");
-
-            builder.Property(b => b.ProductFeatureId).IsRequired(true);
         }
     }
 }

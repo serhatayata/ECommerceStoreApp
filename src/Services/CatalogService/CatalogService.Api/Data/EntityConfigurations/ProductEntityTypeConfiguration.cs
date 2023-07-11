@@ -23,21 +23,17 @@ namespace CatalogService.Api.Data.EntityConfigurations
 
             builder.Property(b => b.ProductCode).HasColumnType("nvarchar(100)");
 
-            builder.Property(b => b.ProductTypeId).IsRequired(true);
-
-            builder.Property(b => b.BrandId).IsRequired(false);
-
             builder.Property(c => c.CreateDate).HasDefaultValueSql("getdate()");
 
             builder.HasOne(c => c.Brand)
                        .WithMany(p => p.Products)
                        .HasForeignKey(c => c.BrandId)
-                       .OnDelete(DeleteBehavior.SetNull);
+                       .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(c => c.ProductType)
                        .WithMany(p => p.Products)
                        .HasForeignKey(c => c.ProductTypeId)
-                       .OnDelete(DeleteBehavior.SetNull);
+                       .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

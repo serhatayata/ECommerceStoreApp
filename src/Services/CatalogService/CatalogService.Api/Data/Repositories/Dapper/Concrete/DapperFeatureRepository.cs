@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
 using Dapper;
 using AutoMapper.Features;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace CatalogService.Api.Data.Repositories.Dapper.Concrete;
 
@@ -418,52 +419,64 @@ public class DapperFeatureRepository : IDapperFeatureRepository
     public async Task<DataResult<IReadOnlyList<ProductFeatureProperty>>> GetAllFeatureProperties(int featureId, int productId)
     {
         var query = $"SELECT pf.*, pfp.Id AS ProductFeaturePropertyId, pfp.* FROM {_productFeatureTable} pf " +
-                    $"INNER JOIN {_productFeaturePropertyTable} pfp ON pfp.ProductFeatureId = pf.Id" +
+                    $"INNER JOIN {_productFeaturePropertyTable} pfp ON pfp.ProductFeatureId = pf.Id " +
                     $"WHERE pf.FeatureId = @FeatureId AND pf.ProductId = @ProductId";
 
-        var featurePropertyDictionary = new Dictionary<int, ProductFeatureProperty>();
+        var featureDictionary = new Dictionary<int, ProductFeature>();
 
-        var result = await _dbContext.Connection.QueryAsync<ProductFeatureProperty, ProductFeature, ProductFeatureProperty>(query, (productFeatureProperty, productFeature) =>
+        var result = await _dbContext.Connection.QueryAsync<ProductFeature, ProductFeatureProperty, ProductFeature>(query, (productFeature, productFeatureProperty) =>
         {
-            ProductFeatureProperty? productFeaturePropertyEntry;
+            ProductFeature? productFeatureEntry;
 
-            if (!featurePropertyDictionary.TryGetValue(productFeatureProperty.Id, out productFeaturePropertyEntry))
+            if (!featureDictionary.TryGetValue(productFeature.Id, out productFeatureEntry))
             {
-                productFeaturePropertyEntry = productFeatureProperty;
-                productFeaturePropertyEntry.ProductFeature = productFeature;
-                featurePropertyDictionary.Add(productFeaturePropertyEntry.Id, productFeaturePropertyEntry);
+                productFeatureEntry = productFeature;
+                productFeatureEntry.ProductFeatureProperties = new List<ProductFeatureProperty>();
+                featureDictionary.Add(productFeatureEntry.Id, productFeatureEntry);
             }
+            if (productFeatureProperty != null)
+                productFeatureEntry.ProductFeatureProperties.Add(productFeatureProperty);
 
-            return productFeaturePropertyEntry;
+            return productFeatureEntry;
         }, splitOn: "ProductFeaturePropertyId", param: new { FeatureId = featureId, ProductId = productId });
 
-        var filteredResult = result.DistinctBy(c => c.Id).ToList();
+        var resultData = result.FirstOrDefault();
+        if (resultData == null)
+            return new DataResult<IReadOnlyList<ProductFeatureProperty>>(new List<ProductFeatureProperty>());
+
+        var filteredResult = resultData.ProductFeatureProperties.DistinctBy(c => c.Id).ToList();
         return new DataResult<IReadOnlyList<ProductFeatureProperty>>(filteredResult);
     }
 
     public async Task<DataResult<IReadOnlyList<ProductFeatureProperty>>> GetAllFeaturePropertiesByProductFeatureId(IntModel model)
     {
         var query = $"SELECT pf.*, pfp.Id AS ProductFeaturePropertyId, pfp.* FROM {_productFeatureTable} pf " +
-                    $"INNER JOIN {_productFeaturePropertyTable} pfp ON pfp.ProductFeatureId = pf.Id" +
+                    $"INNER JOIN {_productFeaturePropertyTable} pfp ON pfp.ProductFeatureId = pf.Id " +
                     $"WHERE pf.Id = @ProductFeatureId";
 
-        var featurePropertyDictionary = new Dictionary<int, ProductFeatureProperty>();
+        var featureDictionary = new Dictionary<int, ProductFeature>();
 
-        var result = await _dbContext.Connection.QueryAsync<ProductFeatureProperty, ProductFeature, ProductFeatureProperty>(query, (productFeatureProperty, productFeature) =>
+        var result = await _dbContext.Connection.QueryAsync<ProductFeature, ProductFeatureProperty, ProductFeature>(query, (productFeature, productFeatureProperty) =>
         {
-            ProductFeatureProperty? productFeaturePropertyEntry;
+            ProductFeature? productFeatureEntry;
 
-            if (!featurePropertyDictionary.TryGetValue(productFeatureProperty.Id, out productFeaturePropertyEntry))
+            if (!featureDictionary.TryGetValue(productFeature.Id, out productFeatureEntry))
             {
-                productFeaturePropertyEntry = productFeatureProperty;
-                productFeaturePropertyEntry.ProductFeature = productFeature;
-                featurePropertyDictionary.Add(productFeaturePropertyEntry.Id, productFeaturePropertyEntry);
+                productFeatureEntry = productFeature;
+                productFeatureEntry.ProductFeatureProperties = new List<ProductFeatureProperty>();
+                featureDictionary.Add(productFeatureEntry.Id, productFeatureEntry);
             }
+            if (productFeatureProperty != null)
+                productFeatureEntry.ProductFeatureProperties.Add(productFeatureProperty);
 
-            return productFeaturePropertyEntry;
+            return productFeatureEntry;
         }, splitOn: "ProductFeaturePropertyId", param: new { ProductFeatureId = model.Value });
 
-        var filteredResult = result.DistinctBy(c => c.Id).ToList();
+        var resultData = result.FirstOrDefault();
+        if (resultData == null)
+            return new DataResult<IReadOnlyList<ProductFeatureProperty>>(new List<ProductFeatureProperty>());
+
+        var filteredResult = resultData.ProductFeatureProperties.DistinctBy(c => c.Id).ToList();
         return new DataResult<IReadOnlyList<ProductFeatureProperty>>(filteredResult);
     }
 }

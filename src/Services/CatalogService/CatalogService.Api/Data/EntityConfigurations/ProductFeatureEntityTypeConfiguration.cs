@@ -13,6 +13,8 @@ namespace CatalogService.Api.Data.EntityConfigurations
             builder.HasKey(p => p.Id);
             builder.Property(p => p.Id).ValueGeneratedOnAdd();
 
+            builder.HasIndex(p => new { p.FeatureId, p.ProductId });
+
             builder.HasOne(p => p.Product)
                        .WithMany(p => p.ProductFeatures)
                        .HasForeignKey(c => c.ProductId)

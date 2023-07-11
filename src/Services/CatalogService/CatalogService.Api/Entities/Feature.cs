@@ -1,4 +1,5 @@
 ﻿using CatalogService.Api.Entities.Abstract;
+using Microsoft.EntityFrameworkCore;
 
 namespace CatalogService.Api.Entities;
 

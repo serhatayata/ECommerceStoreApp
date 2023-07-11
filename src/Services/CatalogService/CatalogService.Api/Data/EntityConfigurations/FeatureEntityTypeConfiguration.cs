@@ -14,6 +14,7 @@ namespace CatalogService.Api.Data.EntityConfigurations
             builder.Property(b => b.Id).ValueGeneratedOnAdd();
 
             builder.Property(b => b.Name).HasColumnType("nvarchar(100)");
+            builder.HasIndex(b => b.Name).IsUnique(true);
         }
     }
 }

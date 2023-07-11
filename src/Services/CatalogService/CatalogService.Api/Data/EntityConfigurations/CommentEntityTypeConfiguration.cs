@@ -36,7 +36,7 @@ namespace CatalogService.Api.Data.EntityConfigurations
                        .WithMany(p => p.Comments)
                        .HasForeignKey(c => c.ProductId)
                        .IsRequired()
-                       .OnDelete(DeleteBehavior.SetNull);
+                       .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

@@ -15,10 +15,6 @@ namespace CatalogService.Api.Data.EntityConfigurations
 
             builder.Property(b => b.Name).HasColumnType("nvarchar(10)");
 
-            builder.Property(b => b.ParentId).IsRequired(false);
-
-            builder.Property(b => b.Line).IsRequired(false);
-
             builder.Property(c => c.CreateDate).HasDefaultValueSql("getdate()");
         }
     }
