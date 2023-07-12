@@ -52,8 +52,6 @@ public class DapperCommentRepository : IDapperCommentRepository
                 return new ErrorResult("User comment for this product already exists");
             //One comment to current product for a user (Changeable later)
             string generatedCode = HashCreator.Sha256_Hash(entity.ProductId.ToString(),
-                                                           entity.Name,
-                                                           entity.Surname,
                                                            entity.UserId,
                                                            DateTime.Now.ToString());
 

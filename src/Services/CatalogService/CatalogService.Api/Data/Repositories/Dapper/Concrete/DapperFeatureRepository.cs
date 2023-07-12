@@ -1,14 +1,12 @@
-﻿using CatalogService.Api.Data.Contexts.Connections.Abstract;
-using CatalogService.Api.Data.Contexts;
+﻿using CatalogService.Api.Data.Contexts;
+using CatalogService.Api.Data.Contexts.Connections.Abstract;
 using CatalogService.Api.Data.Repositories.Dapper.Abstract;
 using CatalogService.Api.Entities;
 using CatalogService.Api.Models.Base.Concrete;
 using CatalogService.Api.Utilities.Results;
+using Dapper;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
-using Dapper;
-using AutoMapper.Features;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace CatalogService.Api.Data.Repositories.Dapper.Concrete;
 
