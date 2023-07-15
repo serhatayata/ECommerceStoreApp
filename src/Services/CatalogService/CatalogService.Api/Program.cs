@@ -31,7 +31,7 @@ ServiceTool.Create(builder.Services);
 #endregion
 #region DbContext
 string defaultConnString = configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(defaultConnString, b => b.MigrationsAssembly(assembly)), ServiceLifetime.Transient);
+builder.Services.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(defaultConnString, b => b.MigrationsAssembly(assembly)), ServiceLifetime.Scoped);
 #endregion
 #region Autofac
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());

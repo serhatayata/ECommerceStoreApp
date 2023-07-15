@@ -1,4 +1,5 @@
-﻿using CatalogService.Api.Data.Repositories.Dapper.Abstract;
+﻿using CatalogService.Api.Data.Repositories.Base;
+using CatalogService.Api.Data.Repositories.Dapper.Abstract;
 using CatalogService.Api.Models.Base.Concrete;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -9,11 +10,13 @@ namespace CatalogService.Api.Controllers
     [ApiController]
     public class CatalogController : ControllerBase
     {
-        private readonly IDapperFeatureRepository _dapperFeatureRepository;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IDapperBrandRepository _brandRepository;
 
-        public CatalogController(IDapperFeatureRepository dapperFeatureRepository)
+        public CatalogController(IUnitOfWork unitOfWork, IDapperBrandRepository dapperBrandRepository)
         {
-            _dapperFeatureRepository = dapperFeatureRepository;
+            _unitOfWork = unitOfWork;
+            _brandRepository = dapperBrandRepository;
         }
 
         [HttpGet]
@@ -22,7 +25,13 @@ namespace CatalogService.Api.Controllers
         {
             int x = 1;
             int y = 4;
-            var result = await _dapperFeatureRepository.GetAllFeaturePropertiesByProductFeatureId(new IntModel() { Value = 2 });
+            var result = await _brandRepository.UpdateAsync(new Entities.Brand()
+            {
+                Id = 1,
+                Name = "test2.1",
+                Description = "test descr 2.1"
+            });
+
             return Ok(result);
         }
     }

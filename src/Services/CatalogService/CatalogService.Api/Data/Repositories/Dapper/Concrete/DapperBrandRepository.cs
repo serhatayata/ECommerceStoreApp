@@ -19,7 +19,9 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
         private readonly string _brandTable;
         private readonly string _productTable;
 
-        public DapperBrandRepository(ICatalogDbContext dbContext, ICatalogReadDbConnection readDbConnection, ICatalogWriteDbConnection writeDbConnection)
+        public DapperBrandRepository(ICatalogDbContext dbContext, 
+                                     ICatalogReadDbConnection readDbConnection, 
+                                     ICatalogWriteDbConnection writeDbConnection)
         {
             _dbContext = dbContext;
             _readDbConnection = readDbConnection;
@@ -32,36 +34,34 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
         public async Task<Result> AddAsync(Brand entity)
         {
             _dbContext.Connection.Open();
-            using var transaction = _dbContext.Connection.BeginTransaction();
-
-            try
+            using (var transaction = _dbContext.Connection.BeginTransaction())
             {
-                _dbContext.Database.UseTransaction(transaction as DbTransaction);
-                //Check if brand exists
-                bool brandExists = await _dbContext.Brands.AnyAsync(l => l.Name == entity.Name);
-                if (brandExists)
-                    return new ErrorResult("Brand already exists");
+                try
+                {
+                    _dbContext.Database.UseTransaction(transaction as DbTransaction);
 
-                //Add brand, with SELECT CAST... we get the added brand's id
-                var addQuery = $"INSERT INTO {_brandTable}(Name,Description) VALUES (@Name,@Description);SELECT CAST(SCOPE_IDENTITY() as int)";
-                var brandId = await _writeDbConnection.QuerySingleOrDefaultAsync<int>(sql: addQuery,
-                                                                                      transaction: transaction,
-                                                                                      param: new { Name = entity.Name, Description = entity.Description });
+                    //Add brand, with SELECT CAST... we get the added brand's id
+                    var addQuery = $"INSERT INTO {_brandTable}(Name,Description) VALUES (@Name,@Description);SELECT CAST(SCOPE_IDENTITY() as int)";
 
-                if (brandId == 0)
-                    return new ErrorResult("Brand not added");
+                    var brandId = await _writeDbConnection.QuerySingleOrDefaultAsync<int>(sql: addQuery,
+                                                                                          transaction: transaction,
+                                                                                          param: new { Name = entity.Name, Description = entity.Description });
 
-                transaction.Commit();
-                return new SuccessResult();
-            }
-            catch (Exception ex)
-            {
-                transaction.Rollback();
-                throw new Exception(ex.Message);
-            }
-            finally
-            {
-                _dbContext.Connection.Close();
+                    if (brandId == 0)
+                        return new ErrorResult("Brand not added");
+
+                    transaction.Commit();
+                    return new SuccessResult();
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new Exception(ex.Message);
+                }
+                finally
+                {
+                    _dbContext.Connection.Close();
+                }
             }
         }
 
@@ -71,9 +71,7 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
             using var transaction = _dbContext.Connection.BeginTransaction();
             try
             {
-                bool brandExists = await _dbContext.Brands.AnyAsync(l => l.Id == model.Value);
-                if (!brandExists)
-                    return new ErrorResult("Brand does not exist");
+                _dbContext.Database.UseTransaction(transaction as DbTransaction);
 
                 //Delete query
                 var deleteQuery = $"DELETE FROM {_brandTable} WHERE Id=@Id";
@@ -103,13 +101,7 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
 
             try
             {
-                var brandExists = await _dbContext.Brands.FirstOrDefaultAsync(l => l.Id == entity.Id);
-                if (brandExists == null)
-                    return new ErrorResult("Brand does not exist");
-
-                bool brandNameExists = await _dbContext.Brands.AnyAsync(b => b.Id != brandExists.Id && b.Name == entity.Name);
-                if (brandNameExists)
-                    return new ErrorResult("Brand name already exists");
+                _dbContext.Database.UseTransaction(transaction as DbTransaction);
 
                 //Update query
                 var updateQuery = $"UPDATE {_brandTable} " +
@@ -117,23 +109,53 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
 
                 var result = await _writeDbConnection.ExecuteAsync(sql: updateQuery,
                                                                    transaction: transaction,
-                                                                   param: new { Name = entity.Name, 
+                                                                   param: new { 
+                                                                                Name = entity.Name, 
                                                                                 Description = entity.Description, 
-                                                                                Id = entity.Id });
+                                                                                Id = entity.Id 
+                                                                              });
 
                 transaction.Commit();
 
                 return result > 0 ? new SuccessResult() : new ErrorResult("Brand not updated");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                transaction.Rollback();
+                throw new Exception(ex.Message);
             }
             finally
             {
-
+                _dbContext.Connection.Close();
             }
+        }
+
+        public async Task<DataResult<Brand>> GetAsync(IntModel model)
+        {
+            var query = $"SELECT b.*, p.Id AS ProductId, p.* FROM {_brandTable} p " +
+                        $"INNER JOIN {_productTable} p ON p.BrandId = b.Id " +
+                        $"WHERE b.Id = @Id";
+
+            var brandDictionary = new Dictionary<int, Brand>();
+
+            var result = await _dbContext.Connection.QueryAsync<Brand, Product, Brand>(query, (brand, product) =>
+            {
+                Brand? brandEntry;
+
+                if (!brandDictionary.TryGetValue(brand.Id, out brandEntry))
+                {
+                    brandEntry = brand;
+                    brandEntry.Products = new List<Product>();
+                    brandDictionary.Add(brand.Id, brandEntry);
+                }
+                if (product != null)
+                    brandEntry.Products.Add(product);
+
+                return brandEntry;
+            }, splitOn: "ProductId", param: new { Id = model.Value });
+
+            var filteredResult = result.DistinctBy(c => c.Id).FirstOrDefault();
+            return new DataResult<Brand>(filteredResult);
         }
 
         public  async Task<DataResult<IReadOnlyList<Brand>>> GetAllAsync()
@@ -161,22 +183,6 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
 
             var filteredResult = result.DistinctBy(b => b.Id).ToList();
             return new DataResult<IReadOnlyList<Brand>>(filteredResult);
-        }
-
-        public async Task<DataResult<Brand>> GetAsync(IntModel model)
-        {
-            var query = $"SELECT Id, Name, Description FROM {_brandTable} WHERE Id = @Id";
-            var result = await _readDbConnection.QuerySingleOrDefaultAsync<Brand>(query, new { Id = model.Value });
-
-            if (result == null)
-                return new ErrorDataResult<Brand>(result);
-
-            var productQuery = $"SELECT p.* FROM {_productTable} WHERE BrandId = @BrandId";
-            var productResult = await _dbContext.Connection.QueryAsync<Product>(sql: productQuery, 
-                                                                                param: new { BrandId = result.Id });
-
-            result.Products = productResult.ToList();
-            return new DataResult<Brand>(result);
         }
     }
 }

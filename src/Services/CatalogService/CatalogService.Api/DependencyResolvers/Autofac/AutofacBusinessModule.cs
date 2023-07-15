@@ -5,6 +5,8 @@ using CatalogService.Api.Data.Contexts.Connections.Concrete;
 using CatalogService.Api.Data.Repositories.Base;
 using CatalogService.Api.Data.Repositories.Dapper.Abstract;
 using CatalogService.Api.Data.Repositories.Dapper.Concrete;
+using CatalogService.Api.Data.Repositories.EntityFramework.Abstract;
+using CatalogService.Api.Data.Repositories.EntityFramework.Concrete;
 
 namespace CatalogService.Api.DependencyResolvers.Autofac
 {
@@ -26,6 +28,12 @@ namespace CatalogService.Api.DependencyResolvers.Autofac
             builder.RegisterType<DapperCommentRepository>().As<IDapperCommentRepository>().InstancePerDependency();
             builder.RegisterType<DapperFeatureRepository>().As<IDapperFeatureRepository>().InstancePerDependency();
             builder.RegisterType<DapperProductRepository>().As<IDapperProductRepository>().InstancePerDependency();
+
+            builder.RegisterType<EfBrandRepository>().As<IEfBrandRepository>().InstancePerDependency();
+            builder.RegisterType<EfCategoryRepository>().As<IEfCategoryRepository>().InstancePerDependency();
+            builder.RegisterType<EfCommentRepository>().As<IEfCommentRepository>().InstancePerDependency();
+            builder.RegisterType<EfFeatureRepository>().As<IEfFeatureRepository>().InstancePerDependency();
+            builder.RegisterType<EfProductRepository>().As<IEfProductRepository>().InstancePerDependency();
             #endregion
         }
     }

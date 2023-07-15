@@ -79,6 +79,8 @@ public class DapperFeatureRepository : IDapperFeatureRepository
 
         try
         {
+            _dbContext.Database.UseTransaction(transaction as DbTransaction);
+
             bool featureExists = await _dbContext.Features.AnyAsync(l => l.Id == model.Value);
             if (!featureExists)
                 return new ErrorResult("Feature does not exist");

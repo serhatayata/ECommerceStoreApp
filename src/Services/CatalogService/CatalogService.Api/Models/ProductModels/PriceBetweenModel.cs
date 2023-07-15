@@ -2,8 +2,14 @@
 
 namespace CatalogService.Api.Models.ProductModels;
 
-public class PriceModel : IModel
+public class PriceBetweenModel : IModel
 {
+    /// <summary>
+    /// Minimum price of the criteria
+    /// </summary>
     public decimal MinimumPrice { get; set; }
+    /// <summary>
+    /// Maximum price of the criteria
+    /// </summary>
     public decimal MaximumPrice { get; set; }
 }
