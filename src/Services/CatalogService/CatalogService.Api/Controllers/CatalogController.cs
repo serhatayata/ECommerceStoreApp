@@ -11,12 +11,10 @@ namespace CatalogService.Api.Controllers
     public class CatalogController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IDapperBrandRepository _brandRepository;
 
-        public CatalogController(IUnitOfWork unitOfWork, IDapperBrandRepository dapperBrandRepository)
+        public CatalogController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _brandRepository = dapperBrandRepository;
         }
 
         [HttpGet]
@@ -25,11 +23,13 @@ namespace CatalogService.Api.Controllers
         {
             int x = 1;
             int y = 4;
-            var result = await _brandRepository.UpdateAsync(new Entities.Brand()
+            var result = await _unitOfWork.DapperCategoryRepository.AddAsync(new Entities.Category()
             {
-                Id = 1,
-                Name = "test2.1",
-                Description = "test descr 2.1"
+                UpdateDate = DateTime.Now,
+                Line = 2,
+                Name = "cat2c",
+                Link = "cat2c",
+                ParentId = 2
             });
 
             return Ok(result);

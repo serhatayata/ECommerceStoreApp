@@ -132,7 +132,7 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
 
         public async Task<DataResult<Brand>> GetAsync(IntModel model)
         {
-            var query = $"SELECT b.*, p.Id AS ProductId, p.* FROM {_brandTable} p " +
+            var query = $"SELECT b.*, p.Id AS ProductId, p.* FROM {_brandTable} b " +
                         $"INNER JOIN {_productTable} p ON p.BrandId = b.Id " +
                         $"WHERE b.Id = @Id";
 
@@ -160,8 +160,15 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
 
         public  async Task<DataResult<IReadOnlyList<Brand>>> GetAllAsync()
         {
+            var query = $"SELECT * FROM {_brandTable}";
+            var result = await _readDbConnection.QueryAsync<Brand>(sql: query);
+            return new DataResult<IReadOnlyList<Brand>>(result);
+        }
+
+        public async Task<DataResult<IReadOnlyList<Brand>>> GetAllWithProductsAsync()
+        {
             var query = $"SELECT b.*, p.Id as ProductId, p.* FROM {_brandTable} b " +
-                        $"INNER JOIN {_productTable} p ON p.Id = b.ProductId";
+                        $"LEFT OUTER JOIN {_productTable} p ON p.BrandId = b.Id";
 
             var brandDictionary = new Dictionary<int, Brand>();
 
@@ -175,7 +182,7 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
                     brandEntry.Products = new List<Product>();
                     brandDictionary.Add(brandEntry.Id, brandEntry);
                 }
-                if (product != null)
+                if (product != null && product.Id > 0)
                     brandEntry.Products.Add(product);
 
                 return brandEntry;

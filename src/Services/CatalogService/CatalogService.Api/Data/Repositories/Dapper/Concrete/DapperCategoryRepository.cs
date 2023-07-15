@@ -38,19 +38,20 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
             try
             {
                 _dbContext.Database.UseTransaction(transaction as DbTransaction);
-                //Check if category exists
-                bool categoryExists = await _dbContext.Categories.AnyAsync(l => l.Name == entity.Name);
-                if (categoryExists)
-                    return new ErrorResult("Category already exists");
 
                 //Add category, with SELECT CAST... we get the added category's id
-                var addQuery = $"INSERT INTO {_categoryTable}(ParentId,Name,Link,Line) VALUES (@ParentId,@Name,@Link,@Line);SELECT CAST(SCOPE_IDENTITY() as int)";
+                var addQuery = $"INSERT INTO {_categoryTable}(ParentId,Name,Link,Line,UpdateDate) " +
+                               $"VALUES (@ParentId,@Name,@Link,@Line,@UpdateDate);" +
+                               $"SELECT CAST(SCOPE_IDENTITY() as int)";
+
                 var categoryId = await _writeDbConnection.QuerySingleOrDefaultAsync<int>(sql: addQuery,
                                                                               transaction: transaction,
                                                                               param: new { ParentId = entity.ParentId,
                                                                                            Name = entity.Name,
                                                                                            Link = entity.Link,
-                                                                                           Line = entity.Line });
+                                                                                           Line = entity.Line,
+                                                                                           UpdateDate = entity.UpdateDate
+                                                                              });
                 if (categoryId == 0)
                     return new ErrorResult("Category not added");
 

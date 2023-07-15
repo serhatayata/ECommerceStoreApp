@@ -11,7 +11,7 @@ public class Category : IEntity
     /// <summary>
     /// ParentId of the category
     /// </summary>
-    public int ParentId { get; set; }
+    public int? ParentId { get; set; }
     /// <summary>
     /// Name of the category
     /// </summary>
@@ -32,6 +32,11 @@ public class Category : IEntity
     /// Update date of the category
     /// </summary>
     public DateTime UpdateDate { get; set; }
+    /// <summary>
+    /// Parent Category
+    /// </summary>
+    public virtual Category ParentCategory { get; set; }
 
-    public ICollection<Product> Products { get; set; }
+    public virtual ICollection<Product> Products { get; set; }
+    public virtual ICollection<Category> SubCategories { get; set; }
 }
