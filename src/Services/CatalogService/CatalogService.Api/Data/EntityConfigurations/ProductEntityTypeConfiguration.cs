@@ -28,12 +28,12 @@ namespace CatalogService.Api.Data.EntityConfigurations
             builder.HasOne(c => c.Brand)
                        .WithMany(p => p.Products)
                        .HasForeignKey(c => c.BrandId)
-                       .OnDelete(DeleteBehavior.Cascade);
+                       .OnDelete(DeleteBehavior.SetNull);
 
             builder.HasOne(c => c.ProductType)
                        .WithMany(p => p.Products)
                        .HasForeignKey(c => c.ProductTypeId)
-                       .OnDelete(DeleteBehavior.Cascade);
+                       .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

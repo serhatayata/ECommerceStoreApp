@@ -45,30 +45,32 @@ public class DapperCommentRepository : IDapperCommentRepository
         {
             _dbContext.Database.UseTransaction(transaction as DbTransaction);
 
-            var commentUserQuery = $"SELECT * FROM {_commentTable} WHERE UserId = @UserId AND ProductId = @ProductId";
-            var commentUserExists = await _readDbConnection.QuerySingleOrDefaultAsync<Comment>(sql: commentUserQuery, 
-                                                                                               param: new { UserId = entity.UserId, ProductId = entity.ProductId });
-            if (commentUserExists != null)
-                return new ErrorResult("User comment for this product already exists");
-            //One comment to current product for a user (Changeable later)
-            string generatedCode = HashCreator.Sha256_Hash(entity.ProductId.ToString(),
-                                                           entity.UserId,
-                                                           DateTime.Now.ToString());
+            //var commentUserQuery = $"SELECT * FROM {_commentTable} WHERE UserId = @UserId AND ProductId = @ProductId";
+            //var commentUserExists = await _readDbConnection.QuerySingleOrDefaultAsync<Comment>(sql: commentUserQuery, 
+            //                                                                                   param: new { UserId = entity.UserId, ProductId = entity.ProductId });
+            //if (commentUserExists != null)
+            //    return new ErrorResult("User comment for this product already exists");
+            ////One comment to current product for a user (Changeable later)
+            //string generatedCode = HashCreator.Sha256_Hash(entity.ProductId.ToString(),
+            //                                               entity.UserId,
+            //                                               DateTime.Now.ToString());
 
             var addQuery = $"INSERT INTO {_commentTable}" +
-                           $"(ProductId,UserId,Content,Name,Surname,Email) " +
-                           $"VALUES (@ProductId,@Code,@UserId,@Content,@Name,@Surname,@Email);SELECT CAST(SCOPE_IDENTITY() as int)";
+                           $"(ProductId,Code,UserId,Content,Name,Surname,Email,UpdateDate) " +
+                           $"VALUES (@ProductId,@Code,@UserId,@Content,@Name,@Surname,@Email,@UpdateDate);SELECT CAST(SCOPE_IDENTITY() as int)";
 
             var commentId = await _writeDbConnection.QuerySingleOrDefaultAsync<int>(sql: addQuery,
                                                                           transaction: transaction,
                                                                           param: new {
                                                                               ProductId = entity.ProductId,
-                                                                              Code = generatedCode,
+                                                                              Code = entity.Code,
                                                                               UserId = entity.UserId,
                                                                               Content = entity.Content,
                                                                               Name = entity.Name,
                                                                               Surname = entity.Surname,
-                                                                              Email = entity.Email });
+                                                                              Email = entity.Email,
+                                                                              UpdateDate = entity.UpdateDate
+                                                                          });
 
             if (commentId == 0)
                 return new ErrorResult("Comment not added");
@@ -95,10 +97,6 @@ public class DapperCommentRepository : IDapperCommentRepository
         try
         {
             _dbContext.Database.UseTransaction(transaction as DbTransaction);
-
-            bool commentExists = await _dbContext.Comments.AnyAsync(l => l.Id == model.Value);
-            if (!commentExists)
-                return new ErrorResult("Comment does not exist");
 
             //Delete query
             var deleteQuery = $"DELETE FROM {_commentTable} WHERE Id=@Id";
@@ -130,10 +128,6 @@ public class DapperCommentRepository : IDapperCommentRepository
         {
             _dbContext.Database.UseTransaction(transaction as DbTransaction);
 
-            bool commentExists = await _dbContext.Comments.AnyAsync(l => l.Code == model.Value);
-            if (!commentExists)
-                return new ErrorResult("Comment does not exist");
-
             //Delete query
             var deleteQuery = $"DELETE FROM {_commentTable} WHERE Code=@Code";
             var result = await _writeDbConnection.ExecuteAsync(sql: deleteQuery,
@@ -162,9 +156,7 @@ public class DapperCommentRepository : IDapperCommentRepository
 
         try
         {
-            var commentExists = await _dbContext.Comments.FirstOrDefaultAsync(l => l.Id == entity.Id);
-            if (commentExists == null)
-                return new ErrorResult("Comment does not exist");
+            _dbContext.Database.UseTransaction(transaction as DbTransaction);
 
             //Update query
             var updateQuery = $"UPDATE {_commentTable} " +
@@ -197,9 +189,7 @@ public class DapperCommentRepository : IDapperCommentRepository
 
         try
         {
-            var commentExists = await _dbContext.Comments.FirstOrDefaultAsync(l => l.Code == entity.Code);
-            if (commentExists == null)
-                return new ErrorResult("Comment does not exist");
+            _dbContext.Database.UseTransaction(transaction as DbTransaction);
 
             //Update query
             var updateQuery = $"UPDATE {_commentTable} " +
@@ -243,7 +233,7 @@ public class DapperCommentRepository : IDapperCommentRepository
         return new DataResult<IReadOnlyList<Comment>>(result);
     }
 
-    public async Task<DataResult<IReadOnlyList<Comment>>> GetAllByUserId(IntModel model)
+    public async Task<DataResult<IReadOnlyList<Comment>>> GetAllByUserId(StringModel model)
     {
         var query = $"SELECT * FROM {_commentTable} WHERE UserId = @UserId";
         var result = await _readDbConnection.QueryAsync<Comment>(sql: query,
@@ -261,7 +251,7 @@ public class DapperCommentRepository : IDapperCommentRepository
         return new DataResult<Comment>(result);
     }
 
-    public async Task<DataResult<Comment>> GetByCodeAsync(IntModel model)
+    public async Task<DataResult<Comment>> GetByCodeAsync(StringModel model)
     {
         var query = $"SELECT * FROM {_commentTable} WHERE Code = @Code";
         var result = await _readDbConnection.QuerySingleOrDefaultAsync<Comment>(sql: query,

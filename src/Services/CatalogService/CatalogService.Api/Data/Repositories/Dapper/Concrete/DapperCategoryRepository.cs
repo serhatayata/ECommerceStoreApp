@@ -76,9 +76,7 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
 
             try
             {
-                bool categoryExists = await _dbContext.Categories.AnyAsync(l => l.Id == model.Value);
-                if (!categoryExists)
-                    return new ErrorResult("Category does not exist");
+                _dbContext.Database.UseTransaction(transaction as DbTransaction);
 
                 //Delete query
                 var deleteQuery = $"DELETE FROM {_categoryTable} WHERE Id=@Id";
@@ -108,17 +106,11 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
 
             try
             {
-                var categoryExists = await _dbContext.Categories.FirstOrDefaultAsync(l => l.Id == entity.Id);
-                if (categoryExists == null)
-                    return new ErrorResult("Category does not exist");
-
-                bool categoryNameExists = await _dbContext.Categories.AnyAsync(l => l.Id != entity.Id && l.Name == entity.Name);
-                if (categoryNameExists)
-                    return new ErrorResult("Category name already exists");
+                _dbContext.Database.UseTransaction(transaction as DbTransaction);
 
                 //Update query
                 var updateQuery = $"UPDATE {_categoryTable} " +
-                                  $"SET Name = @Name, ParentId = @ParentId, Line = @Line " +
+                                  $"SET Name = @Name, ParentId = @ParentId, Line = @Line, Link = @Link " +
                                   $"WHERE Id=@Id";
 
                 var result = await _writeDbConnection.ExecuteAsync(sql: updateQuery,
@@ -128,7 +120,8 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
                                                                        Id = entity.Id,
                                                                        Name = entity.Name,
                                                                        ParentId = entity.ParentId,
-                                                                       Line = entity.Line
+                                                                       Line = entity.Line,
+                                                                       Link = entity.Link
                                                                    });
 
                 transaction.Commit();
@@ -168,7 +161,7 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
         public async Task<DataResult<IReadOnlyList<Category>>> GetAllWithProductsByParentId(IntModel model)
         {
             var query = $"SELECT c.*, p.Id AS ProductId, p.* FROM {_categoryTable} c " +
-                        $"INNER JOIN {_productTable} p ON c.Id = p.CategoryId" +
+                        $"LEFT OUTER JOIN {_productTable} p ON p.CategoryId = c.Id " +
                         $"WHERE c.ParentId = @ParentId";
 
             var categoryDictionary = new Dictionary<int, Category>();
@@ -183,7 +176,7 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
                     categoryEntry.Products = new List<Product>();
                     categoryDictionary.Add(categoryEntry.Id, categoryEntry);
                 }
-                if (product != null)
+                if (product != null && product.Id > 0)
                     categoryEntry.Products.Add(product);
 
                 return categoryEntry;
@@ -205,8 +198,8 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
         public async Task<DataResult<Category>> GetWithProducts(IntModel model)
         {
             var query = $"SELECT c.*, p.Id AS ProductId, p.* FROM {_categoryTable} c " +
-            $"INNER JOIN {_productTable} p ON c.Id = p.CategoryId" +
-            $"WHERE c.Id = @Id";
+                        $"LEFT OUTER JOIN {_productTable} p ON p.CategoryId = c.Id " +
+                        $"WHERE c.Id = @Id";
 
             var categoryDictionary = new Dictionary<int, Category>();
 
@@ -220,7 +213,7 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
                     categoryEntry.Products = new List<Product>();
                     categoryDictionary.Add(categoryEntry.Id, categoryEntry);
                 }
-                if (product != null)
+                if (product != null && product.Id > 0)
                     categoryEntry.Products.Add(product);
 
                 return categoryEntry;
@@ -242,7 +235,7 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
         public async Task<DataResult<Category>> GetByNameWithProducts(StringModel model)
         {
             var query = $"SELECT c.*, p.Id AS ProductId, p.* FROM {_categoryTable} c " +
-                        $"INNER JOIN {_productTable} p ON c.Id = p.CategoryId" +
+                        $"INNER JOIN {_productTable} p ON p.CategoryId = c.Id " +
                         $"WHERE c.Name = @Name";
 
             var categoryDictionary = new Dictionary<int, Category>();
@@ -257,7 +250,7 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
                     categoryEntry.Products = new List<Product>();
                     categoryDictionary.Add(categoryEntry.Id, categoryEntry);
                 }
-                if (product != null)
+                if (product != null && product.Id > 0)
                     categoryEntry.Products.Add(product);
 
                 return categoryEntry;

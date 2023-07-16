@@ -35,11 +35,11 @@ namespace CatalogService.Api.Entities
         /// <summary>
         /// Type id of the product
         /// </summary>
-        public int ProductTypeId { get; set; }
+        public int? ProductTypeId { get; set; }
         /// <summary>
         /// Brand if of the product
         /// </summary>
-        public int BrandId { get; set; }
+        public int? BrandId { get; set; }
         /// <summary>
         /// Create date of the product
         /// </summary>
@@ -52,11 +52,11 @@ namespace CatalogService.Api.Entities
         /// <summary>
         /// Product type entity FK
         /// </summary>
-        public ProductType ProductType { get; set; }
+        public ProductType? ProductType { get; set; }
         /// <summary>
         /// Brand entity FK
         /// </summary>
-        public Brand Brand { get; set; }
+        public Brand? Brand { get; set; }
         /// <summary>
         /// One to many product features
         /// </summary>
