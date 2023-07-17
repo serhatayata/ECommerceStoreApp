@@ -3,7 +3,10 @@ using CatalogService.Api.Entities;
 using CatalogService.Api.Entities.Abstract;
 using CatalogService.Api.Utilities.IoC;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
+using System.Reflection;
 
 namespace CatalogService.Api.Data.Contexts
 {
@@ -64,6 +67,81 @@ namespace CatalogService.Api.Data.Contexts
                 return entityType?.GetTableName() ?? string.Empty;
 
             return $"{schema}.{tableName}";
+        }
+
+        public string GetKeyColumnName<T>() where T : class, IEntity
+        {
+            PropertyInfo[] properties = typeof(T).GetProperties();
+
+            foreach (PropertyInfo property in properties)
+            {
+                object[] keyAttributes = property.GetCustomAttributes(typeof(KeyAttribute), true);
+
+                if (keyAttributes != null && keyAttributes.Length > 0)
+                {
+                    object[] columnAttributes = property.GetCustomAttributes(typeof(ColumnAttribute), true);
+
+                    if (columnAttributes != null && columnAttributes.Length > 0)
+                    {
+                        ColumnAttribute columnAttribute = (ColumnAttribute)columnAttributes[0];
+                        return columnAttribute?.Name ?? string.Empty;
+                    }
+                    else
+                    {
+                        return property.Name;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public string GetColumns<T>(bool excludeKey = false) where T : class, IEntity
+        {
+            var type = typeof(T);
+            var columns = string.Join(", ", type.GetProperties()
+                .Where(p => !excludeKey || !p.IsDefined(typeof(KeyAttribute)))
+                .Select(p =>
+                {
+                    var columnAttr = p.GetCustomAttribute<ColumnAttribute>();
+                    return columnAttr != null ? columnAttr.Name : p.Name;
+                }));
+
+            return columns;
+        }
+
+        public string GetPropertyNames<T>(bool excludeKey = false) where T : class, IEntity
+        {
+            var properties = typeof(T).GetProperties()
+                .Where(p => !excludeKey || p.GetCustomAttribute<KeyAttribute>() == null);
+
+            var values = string.Join(", ", properties.Select(p =>
+            {
+                return $"@{p.Name}";
+            }));
+
+            return values;
+        }
+
+        public IEnumerable<PropertyInfo> GetProperties<T>(bool excludeKey = false) where T : class, IEntity
+        {
+            var properties = typeof(T).GetProperties()
+                .Where(p => !excludeKey || p.GetCustomAttribute<KeyAttribute>() == null);
+
+            return properties;
+        }
+
+        public string GetKeyPropertyName<T>()
+        {
+            var properties = typeof(T).GetProperties()
+                .Where(p => p.GetCustomAttribute<KeyAttribute>() != null);
+
+            if (properties.Any())
+            {
+                return properties?.FirstOrDefault()?.Name ?? string.Empty;
+            }
+
+            return null;
         }
     }
 }

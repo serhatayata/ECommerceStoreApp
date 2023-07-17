@@ -22,8 +22,8 @@ public class DapperFeatureRepository : IDapperFeatureRepository
     private string _productFeaturePropertyTable;
 
     public DapperFeatureRepository(ICatalogDbContext dbContext,
-                                    ICatalogReadDbConnection readDbConnection,
-                                    ICatalogWriteDbConnection writeDbConnection)
+                                   ICatalogReadDbConnection readDbConnection,
+                                   ICatalogWriteDbConnection writeDbConnection)
     {
         _dbContext = dbContext;
         _readDbConnection = readDbConnection;
@@ -42,10 +42,6 @@ public class DapperFeatureRepository : IDapperFeatureRepository
         try
         {
             _dbContext.Database.UseTransaction(transaction as DbTransaction);
-            //Check if feature exists
-            bool featureExists = await _dbContext.Features.AnyAsync(l => l.Name == entity.Name);
-            if (featureExists)
-                return new ErrorResult("Feature already exists");
 
             //Add feature, with SELECT CAST... we get the added feature's id
             var addQuery = $"INSERT INTO {_featureTable}(Name) VALUES (@Name);SELECT CAST(SCOPE_IDENTITY() as int)";
@@ -81,10 +77,6 @@ public class DapperFeatureRepository : IDapperFeatureRepository
         {
             _dbContext.Database.UseTransaction(transaction as DbTransaction);
 
-            bool featureExists = await _dbContext.Features.AnyAsync(l => l.Id == model.Value);
-            if (!featureExists)
-                return new ErrorResult("Feature does not exist");
-
             //Delete query
             var deleteQuery = $"DELETE FROM {_featureTable} WHERE Id=@Id";
             var result = await _writeDbConnection.ExecuteAsync(sql: deleteQuery,
@@ -113,13 +105,7 @@ public class DapperFeatureRepository : IDapperFeatureRepository
 
         try
         {
-            var featureExists = await _dbContext.Features.FirstOrDefaultAsync(l => l.Id == entity.Id);
-            if (featureExists == null)
-                return new ErrorResult("Feature does not exist");
-
-            bool featureNameExists = await _dbContext.Features.AnyAsync(l => l.Id != entity.Id && l.Name == entity.Name);
-            if (featureNameExists)
-                return new ErrorResult("Feature name already exists");
+            _dbContext.Database.UseTransaction(transaction as DbTransaction);
 
             //Update query
             var updateQuery = $"UPDATE {_featureTable} " +
@@ -157,29 +143,29 @@ public class DapperFeatureRepository : IDapperFeatureRepository
         {
             _dbContext.Database.UseTransaction(transaction as DbTransaction);
             //Check if product feature exists
-            var query = $"SELECT * FROM {_productFeatureTable} " +
-                        $"WHERE ProductId = @ProductId AND FeatureId = @FeatureId";
+            //var query = $"SELECT * FROM {_productFeatureTable} " +
+            //            $"WHERE ProductId = @ProductId AND FeatureId = @FeatureId";
 
-            var result = await _readDbConnection
-                                    .QuerySingleOrDefaultAsync<ProductFeature>(sql: query,
-                                                                              param: new
-                                                                              {
-                                                                                  ProductId = entity.ProductId,
-                                                                                  FeatureId = entity.FeatureId
-                                                                              });
-            if (result == null)
-                return new ErrorResult("Product feature already exists");
+            //var result = await _readDbConnection
+            //                        .QuerySingleOrDefaultAsync<ProductFeature>(sql: query,
+            //                                                                  param: new
+            //                                                                  {
+            //                                                                      ProductId = entity.ProductId,
+            //                                                                      FeatureId = entity.FeatureId
+            //                                                                  });
+            //if (result == null)
+            //    return new ErrorResult("Product feature already exists");
 
             //Add feature, with SELECT CAST... we get the added product feature's id
-            var addQuery = $"INSERT INTO {_featureTable}(ProductId,FeatureId) VALUES (@ProductId,@FeatureId);SELECT CAST(SCOPE_IDENTITY() as int)";
-            var featureId = await _writeDbConnection.QuerySingleOrDefaultAsync<int>(sql: addQuery,
+            var addQuery = $"INSERT INTO {_productFeatureTable}(ProductId,FeatureId) VALUES (@ProductId,@FeatureId);SELECT CAST(SCOPE_IDENTITY() as int)";
+            var productFeatureId = await _writeDbConnection.QuerySingleOrDefaultAsync<int>(sql: addQuery,
                                                                                     transaction: transaction,
                                                                                     param: new
                                                                                     {
                                                                                         ProductId = entity.ProductId,
                                                                                         FeatureId = entity.FeatureId
                                                                                     });
-            if (featureId == 0)
+            if (productFeatureId == 0)
                 return new ErrorResult("Product feature not added");
 
             transaction.Commit();
@@ -204,18 +190,18 @@ public class DapperFeatureRepository : IDapperFeatureRepository
         {
             _dbContext.Database.UseTransaction(transaction as DbTransaction);
             //Check if product feature property exists
-            var query = $"SELECT * FROM {_productFeaturePropertyTable} " +
-                        $"WHERE Id = @Id AND ProductFeatureId = @ProductFeatureId";
+            //var query = $"SELECT * FROM {_productFeaturePropertyTable} " +
+            //            $"WHERE Id = @Id AND ProductFeatureId = @ProductFeatureId";
 
-            var result = await _readDbConnection
-                                    .QuerySingleOrDefaultAsync<ProductFeatureProperty>(sql: query,
-                                                                              param: new
-                                                                              {
-                                                                                  Id = entity.Id,
-                                                                                  ProductFeatureId = entity.ProductFeatureId
-                                                                              });
-            if (result == null)
-                return new ErrorResult("Product feature already exists");
+            //var result = await _readDbConnection
+            //                        .QuerySingleOrDefaultAsync<ProductFeatureProperty>(sql: query,
+            //                                                                  param: new
+            //                                                                  {
+            //                                                                      Id = entity.Id,
+            //                                                                      ProductFeatureId = entity.ProductFeatureId
+            //                                                                  });
+            //if (result == null)
+            //    return new ErrorResult("Product feature already exists");
 
             //Add feature, with SELECT CAST... we get the added product feature property's id
             var addQuery = $"INSERT INTO {_productFeaturePropertyTable}(ProductFeatureId,Name,Description) " +
@@ -254,19 +240,21 @@ public class DapperFeatureRepository : IDapperFeatureRepository
 
         try
         {
+            _dbContext.Database.UseTransaction(transaction as DbTransaction);
+
             //Check if product feature exists
-            var query = $"SELECT * FROM {_productFeatureTable} " +
-                        $"WHERE Id = @Id";
+            //var query = $"SELECT * FROM {_productFeatureTable} " +
+            //            $"WHERE Id = @Id";
 
-            var getResult = await _readDbConnection
-                                    .QuerySingleOrDefaultAsync<ProductFeature>(sql: query,
-                                                                              param: new
-                                                                              {
-                                                                                  Id = entity.Value
-                                                                              });
+            //var getResult = await _readDbConnection
+            //                        .QuerySingleOrDefaultAsync<ProductFeature>(sql: query,
+            //                                                                  param: new
+            //                                                                  {
+            //                                                                      Id = entity.Value
+            //                                                                  });
 
-            if (getResult == null)
-                return new ErrorResult("Product feature does not exist");
+            //if (getResult == null)
+            //    return new ErrorResult("Product feature does not exist");
 
             //Delete query
             var deleteQuery = $"DELETE FROM {_productFeatureTable} WHERE Id=@Id";
@@ -296,19 +284,21 @@ public class DapperFeatureRepository : IDapperFeatureRepository
 
         try
         {
+            _dbContext.Database.UseTransaction(transaction as DbTransaction);
+
             //Check if product feature property exists
-            var query = $"SELECT * FROM {_productFeaturePropertyTable} " +
-                        $"WHERE Id = @Id";
+            //var query = $"SELECT * FROM {_productFeaturePropertyTable} " +
+            //            $"WHERE Id = @Id";
 
-            var getResult = await _readDbConnection
-                                    .QuerySingleOrDefaultAsync<ProductFeatureProperty>(sql: query,
-                                                                              param: new
-                                                                              {
-                                                                                  Id = entity.Value
-                                                                              });
+            //var getResult = await _readDbConnection
+            //                        .QuerySingleOrDefaultAsync<ProductFeatureProperty>(sql: query,
+            //                                                                  param: new
+            //                                                                  {
+            //                                                                      Id = entity.Value
+            //                                                                  });
 
-            if (getResult == null)
-                return new ErrorResult("Product feature property does not exist");
+            //if (getResult == null)
+            //    return new ErrorResult("Product feature property does not exist");
 
             //Delete query
             var deleteQuery = $"DELETE FROM {_productFeaturePropertyTable} WHERE Id=@Id";
@@ -350,32 +340,16 @@ public class DapperFeatureRepository : IDapperFeatureRepository
 
     public async Task<DataResult<IReadOnlyList<Feature>>> GetAllFeaturesByProductId(IntModel model)
     {
-        {
-            var query = $"SELECT f.*, pf.FeatureId AS FeatureId, pf.* FROM {_featureTable} f " +
-                        $"INNER JOIN {_productFeatureTable} pf ON pf.FeatureId = f.Id " +
-                        $"WHERE pf.ProductId = @ProductId";
-
-            var result = await _dbContext.Connection.QueryAsync<Feature, ProductFeature, Feature>(query, (feature, productFeature) =>
-            {
-                return feature;
-            }, splitOn: "FeatureId", param: new { ProductId = model.Value });
-
-            var filteredResult = result.DistinctBy(c => c.Id).ToList();
-            return new DataResult<IReadOnlyList<Feature>>(filteredResult);
-        }
-    }
-
-    public async Task<DataResult<IReadOnlyList<Feature>>> GetAllFeaturesWithPropertiesByProductId(IntModel model)
-    {
-        var query = $"SELECT f.*, pf.FeatureId AS FeatureId, pf.*, p.Id AS ProductId, p.* FROM {_featureTable} f " +
-                    $"INNER JOIN {_productFeatureTable} pf ON pf.FeatureId = f.Id " +
-                    $"INNER JOIN {_productTable} p ON p.Id = pf.ProductId " +
-                    $"WHERE pf.ProductId = @ProductId";
+        var query = $"SELECT f.*, " +
+                    $"pf.Id as ProductFeatureId, pf.FeatureId, pf.ProductId, " +
+                    $"p.Id AS PrdId , p.* FROM {_featureTable} f " +
+                    $"LEFT OUTER JOIN {_productFeatureTable} pf ON pf.FeatureId = f.Id " +
+                    $"LEFT OUTER JOIN {_productTable} p ON p.Id = pf.ProductId " +
+                    $"WHERE p.Id = @Id";
 
         var featureDictionary = new Dictionary<int, Feature>();
 
-        var result = await _dbContext.Connection.QueryAsync<Feature, ProductFeature, Product, Feature>(query,
-        (feature, productFeature, product) =>
+        var result = await _dbContext.Connection.QueryAsync<Feature, ProductFeature, Product, Feature>(query, (feature, productFeature, product) =>
         {
             Feature? featureEntry;
 
@@ -383,17 +357,113 @@ public class DapperFeatureRepository : IDapperFeatureRepository
             {
                 featureEntry = feature;
                 featureEntry.ProductFeatures = new List<ProductFeature>();
+                featureEntry.ProductFeatures.Add(new ProductFeature()
+                {
+                    Product = product,
+                    FeatureId = feature.Id,
+                    ProductId = product.Id
+                }); 
                 featureDictionary.Add(featureEntry.Id, featureEntry);
             }
-
-            if (productFeature != null)
-                featureEntry.ProductFeatures.Add(productFeature);
-
-            if (productFeature != null && product != null)
-                productFeature.Product = product;
+            else
+            {
+                var isPfpExists = featureDictionary.First(f => f.Key == feature.Id).Value.ProductFeatures.Any(s => s.Id == productFeature.Id);
+                if (!isPfpExists)
+                    featureDictionary.First(f => f.Key == feature.Id).Value.ProductFeatures.Add(new ProductFeature()
+                    {
+                        Product = product,
+                        FeatureId = feature.Id,
+                        ProductId = product.Id
+                    });
+            }                
 
             return featureEntry;
-        }, splitOn: "ProductId", param: new { ParentId = model.Value });
+        }, splitOn: "ProductFeatureId,PrdId", param: new { Id = model.Value });
+
+        var filteredResult = result.DistinctBy(c => c.Id).ToList();
+        return new DataResult<IReadOnlyList<Feature>>(filteredResult);
+    }
+
+    public async Task<DataResult<IReadOnlyList<Feature>>> GetAllFeaturesWithPropertiesByProductId(IntModel model)
+    {
+        var query = $"SELECT f.*, " +
+                    $"pf.Id as ProductFeatureId, pf.FeatureId, pf.ProductId, " +
+                    $"pfp.Id as ProductFeaturePropertyId, pfp.*, " +
+                    $"p.Id AS PrdId , p.* FROM {_featureTable} f " +
+                    $"LEFT OUTER JOIN {_productFeatureTable} pf ON pf.FeatureId = f.Id " +
+                    $"LEFT OUTER JOIN {_productFeaturePropertyTable} pfp ON pfp.ProductFeatureId = pf.Id " +
+                    $"LEFT OUTER JOIN {_productTable} p ON p.Id = pf.ProductId " +
+                    $"WHERE p.Id = @Id";
+
+        var featureDictionary = new Dictionary<int, Feature>();
+
+        var result = await _dbContext.Connection.QueryAsync<Feature, ProductFeature, ProductFeatureProperty ,Product, Feature>(query, 
+        (feature, productFeature, productFeatureProperty,product) =>
+        {
+            Feature? featureEntry;
+
+            if (!featureDictionary.TryGetValue(feature.Id, out featureEntry))
+            {
+                featureEntry = feature;
+                featureEntry.ProductFeatures = new List<ProductFeature>();
+                featureEntry.ProductFeatures.Add(new ProductFeature()
+                {
+                    Product = product,
+                    FeatureId = feature.Id,
+                    ProductId = product.Id,
+                    ProductFeatureProperties = new List<ProductFeatureProperty>()
+                    {
+                        new ProductFeatureProperty()
+                        {
+                            Name = productFeatureProperty.Name,
+                            Description = productFeatureProperty.Description,
+                            ProductFeatureId = productFeature.Id
+                        }
+                    }
+                });
+
+                featureDictionary.Add(featureEntry.Id, featureEntry);
+            }
+            else
+            {
+                var pfExisting = featureDictionary.First(f => f.Key == feature.Id).Value.ProductFeatures.FirstOrDefault(s => s.Id == productFeature.Id);
+                if (pfExisting != null)
+                {
+                    var productFeaturePropertyExists = featureDictionary.First(f => f.Key == feature.Id)
+                                                            .Value.ProductFeatures.
+                                                                FirstOrDefault(s => s.Id == productFeature.Id)?
+                                                                   .ProductFeatureProperties?.Any(c => c.Id == productFeatureProperty.Id) ?? false;
+
+                    if (!productFeaturePropertyExists)
+                    {
+
+                    }
+
+
+                    .Add(new ProductFeature()
+                    {
+                        Product = product,
+                        FeatureId = feature.Id,
+                        ProductId = product.Id,
+                        ProductFeatureProperties = new List<ProductFeatureProperty>()
+                        {
+                            new ProductFeatureProperty()
+                            {
+                                Name = productFeatureProperty.Name,
+                                Description = productFeatureProperty.Description,
+                                ProductFeatureId = productFeature.Id
+                            }
+                        }
+                    });
+                }
+                else
+                {
+                    
+                }
+            }
+
+            return featureEntry;
+        }, splitOn: "ProductFeatureId,ProductFeaturePropertyId,PrdId", param: new { Id = model.Value });
 
         var filteredResult = result.DistinctBy(c => c.Id).ToList();
         return new DataResult<IReadOnlyList<Feature>>(filteredResult);

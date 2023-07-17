@@ -23,7 +23,8 @@ namespace CatalogService.Api.Controllers
         {
             int x = 1;
             int y = 4;
-            var result = await _unitOfWork.DapperCommentRepository.GetByCodeAsync(new StringModel("asd1"));
+
+            var result = await _unitOfWork.DapperFeatureRepository.GetAllFeaturesWithPropertiesByProductId(new IntModel(14));
 
             return Ok(result);
         }

@@ -3,6 +3,7 @@ using CatalogService.Api.Entities.Abstract;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using System.Data;
+using System.Reflection;
 
 namespace CatalogService.Api.Data.Contexts
 {
@@ -25,5 +26,9 @@ namespace CatalogService.Api.Data.Contexts
         public DbSet<Feature> Features { get; set; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
         string GetTableNameWithScheme<T>() where T : class, IEntity;
+        string GetKeyColumnName<T>() where T : class, IEntity;
+        string GetColumns<T>(bool excludeKey = false) where T : class, IEntity;
+        string GetPropertyNames<T>(bool excludeKey = false) where T : class, IEntity;
+        IEnumerable<PropertyInfo> GetProperties<T>(bool excludeKey = false) where T : class, IEntity;
     }
 }
