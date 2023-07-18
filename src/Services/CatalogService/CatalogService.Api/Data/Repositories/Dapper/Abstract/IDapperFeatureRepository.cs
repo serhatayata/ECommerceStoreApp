@@ -14,7 +14,6 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Abstract
         Task<Result> DeleteProductFeaturePropertyAsync(IntModel entity);
 
         Task<DataResult<IReadOnlyList<Feature>>> GetAllFeaturesByProductId(IntModel model);
-        Task<DataResult<IReadOnlyList<Feature>>> GetAllFeaturesWithPropertiesByProductId(IntModel model);
         Task<DataResult<IReadOnlyList<ProductFeatureProperty>>> GetAllFeaturePropertiesByProductFeatureId(IntModel model);
         Task<DataResult<IReadOnlyList<ProductFeatureProperty>>> GetAllFeatureProperties(int featureId, int productId);
         Task<DataResult<IReadOnlyList<Product>>> GetFeatureProducts(IntModel model);

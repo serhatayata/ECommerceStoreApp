@@ -121,7 +121,7 @@ public class DapperProductRepository : IDapperProductRepository
             //Update query
             var updateQuery = $"UPDATE {_productTable} " +
                               $"SET Name = @Name, Description = @Description, Price = @Price, " +
-                              $"AvailableStock = @AvailableStock, Link = @Link, ProductTypeId = @ProductTypeId " +
+                              $"AvailableStock = @AvailableStock, Link = @Link, ProductTypeId = @ProductTypeId, " +
                               $"BrandId = @BrandId, UpdateDate = @UpdateDate " +
                               $"WHERE Id=@Id";
 
