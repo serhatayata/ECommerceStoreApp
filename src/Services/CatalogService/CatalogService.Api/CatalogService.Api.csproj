@@ -15,6 +15,8 @@
     <PackageReference Include="Dapper" Version="2.0.143" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.5.2" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.55.0" />
+    <PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.55.0" />
     <PackageReference Include="IdentityModel" Version="6.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.4" />
@@ -41,12 +43,10 @@
 
   <ItemGroup>
     <Folder Include="Data\SeedData\SeedFiles\" />
-    <Folder Include="Grpc\" />
     <Folder Include="Infrastructure\" />
     <Folder Include="IntegrationEvents\" />
-    <Folder Include="Services\" />
+    <Folder Include="Services\Grpc\" />
     <Folder Include="Validations\" />
-    <Folder Include="Proto\" />
   </ItemGroup>
 
 </Project>
