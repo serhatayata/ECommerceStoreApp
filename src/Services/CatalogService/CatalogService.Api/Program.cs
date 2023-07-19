@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using CatalogService.Api.DependencyResolvers.Autofac;
 using CatalogService.Api.Mapping;
+using CatalogService.Api.Infrastructure.Interceptors;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
@@ -40,23 +42,45 @@ builder.Host.ConfigureContainer<ContainerBuilder>(builder => builder.RegisterMod
 #region AutoMapper
 builder.Services.AddAutoMapper(typeof(MapProfile).Assembly);
 #endregion
+#region AddGrpc
+builder.Services.AddGrpc(g =>
+{
+    g.EnableDetailedErrors = true;
+    g.Interceptors.Add<ExceptionInterceptor>();
+});
 
+builder.Services.AddGrpcReflection();
+
+#region If we want to use gRPC for http1 request, we must enable AddJsonTranscoding to convert http request
+//builder.Services.AddGrpc(g =>
+//{
+//    g.EnableDetailedErrors = true;
+//    g.Interceptors.Add<ExceptionInterceptor>();
+//}).AddJsonTranscoding();
+#endregion
+#endregion
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 #endregion
 
-
 var app = builder.Build();
-
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+
+    app.MapGrpcReflectionService();
+}
+
 app.Run();
+
+public partial class Program
+{
+    public static string appName = Assembly.GetExecutingAssembly().GetName().Name;
+}

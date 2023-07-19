@@ -1,50 +1,65 @@
 ﻿syntax = "proto3";
 
 option csharp_namespace = "CatalogService.Api";
-import "google/api/annotations.proto";
 import "google/protobuf/any.proto";
+import "google/api/annotations.proto";
 import "Protos/common.proto";
 
 //   curl -d '{"id":"123"}' http://DOMAIN_NAME/get
 
 service BrandProtoService {
-	rpc AddAsync(BrandAddUpdateModel) returns (GrpcResponseModel) {
+	rpc AddAsync(GrpcBrandAddUpdateModel) returns (GrpcResponseModel) {
 		option (google.api.http) = {
 		  get: "/brand/add"
 		  body: '*'
 		};
 	}
 
-	rpc DeleteAsync(IntModel) returns (GrpcResponseModel) {
+	rpc DeleteAsync(GrpcIntModel) returns (GrpcResponseModel) {
 		option (google.api.http) = {
 		  get: "/brand/delete"
 		  body: '*'
 		};
 	}
 
-	rpc UpdateAsync(BrandAddUpdateModel) returns (GrpcResponseModel) {
+	rpc UpdateAsync(GrpcBrandAddUpdateModel) returns (GrpcResponseModel) {
 		option (google.api.http) = {
 		  get: "/brand/update"
 		  body: '*'
 		};
 	}
 
-	rpc GetAsync(BrandAddUpdateModel) returns (GrpcResponseModel) {
+	rpc GetAsync(GrpcBrandAddUpdateModel) returns (GrpcResponseModel) {
 		option (google.api.http) = {
 		  get: "/brand/get"
 		  body: '*'
 		};
 	}
+
+	rpc GetAllAsync(GrpcEmptyModel) returns (google.protobuf.Any) {
+		option (google.api.http) = {
+		  get: "/brand/getall"
+		  body: '*'
+		};
+	}
+
+	rpc GetAllWithProductsAsync(GrpcEmptyModel) returns (google.protobuf.Any) {
+		option (google.api.http) = {
+		  get: "/brand/getall-with-products"
+		  body: '*'
+		};
+	}
 }
 
-message BrandAddUpdateModel {
+
+message GrpcBrandAddUpdateModel {
 	string name = 1;
 	string description = 2;
 }
 
 message GrpcResponseModel {
 	bool success = 1;
-	object message = 2;
+	google.protobuf.Any message = 2;
 	int32 statusCode = 3;
 	string messageCode = 4;
 }

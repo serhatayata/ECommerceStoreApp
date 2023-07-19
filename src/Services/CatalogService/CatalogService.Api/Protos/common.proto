@@ -1,18 +1,22 @@
-﻿//
+﻿syntax = "proto3";
 
-message IntModel {
+message GrpcEmptyModel {
+
+}
+
+message GrpcIntModel {
 	int32 value = 1;
 }
 
-message StringModel {
+message GrpcStringModel {
 	string value = 1;
 }
 
-message BoolModel {
+message GrpcBoolModel {
 	bool value = 1;
 }
 
-message PagingModel {
+message GrpcPagingModel {
 	int32 page = 1;
 	int32 pageSize = 2;
 }
