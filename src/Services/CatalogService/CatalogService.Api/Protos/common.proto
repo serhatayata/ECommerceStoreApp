@@ -1,5 +1,7 @@
 ﻿syntax = "proto3";
 
+import "google/protobuf/any.proto";
+
 message GrpcEmptyModel {
 
 }
@@ -19,4 +21,11 @@ message GrpcBoolModel {
 message GrpcPagingModel {
 	int32 page = 1;
 	int32 pageSize = 2;
+}
+
+message GrpcResponseModel {
+	bool success = 1;
+	google.protobuf.Any message = 2;
+	int32 statusCode = 3;
+	string messageCode = 4;
 }

@@ -47,7 +47,7 @@ public class EfCategoryRepository : IEfCategoryRepository
                                         .SetProperty(p => p.Name, entity.Name)
                                         .SetProperty(p => p.Link, entity.Link)
                                         .SetProperty(p => p.Line, entity.Line)
-                                        .SetProperty(p => p.UpdateDate, entity.UpdateDate);
+                                        .SetProperty(p => p.UpdateDate, entity.UpdateDate));
 
             return result > 0 ?
                 new SuccessResult("Category updated") : new ErrorResult("Category not updated");

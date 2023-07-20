@@ -29,21 +29,21 @@ service BrandProtoService {
 		};
 	}
 
-	rpc GetAsync(GrpcBrandAddUpdateModel) returns (GrpcResponseModel) {
+	rpc GetAsync(GrpcIntModel) returns (GrpcBrand) {
 		option (google.api.http) = {
 		  get: "/brand/get"
 		  body: '*'
 		};
 	}
 
-	rpc GetAllAsync(GrpcEmptyModel) returns (google.protobuf.Any) {
+	rpc GetAllAsync(GrpcEmptyModel) returns (ListGrpcBrand) {
 		option (google.api.http) = {
 		  get: "/brand/getall"
 		  body: '*'
 		};
 	}
 
-	rpc GetAllWithProductsAsync(GrpcEmptyModel) returns (google.protobuf.Any) {
+	rpc GetAllWithProductsAsync(GrpcEmptyModel) returns (ListGrpcBrand) {
 		option (google.api.http) = {
 		  get: "/brand/getall-with-products"
 		  body: '*'
@@ -51,15 +51,16 @@ service BrandProtoService {
 	}
 }
 
-
 message GrpcBrandAddUpdateModel {
 	string name = 1;
 	string description = 2;
 }
 
-message GrpcResponseModel {
-	bool success = 1;
-	google.protobuf.Any message = 2;
-	int32 statusCode = 3;
-	string messageCode = 4;
+message ListGrpcBrand {
+	repeated GrpcBrand brands = 1;
+}
+
+message GrpcBrand {
+	string name = 1;
+	string description = 2;
 }

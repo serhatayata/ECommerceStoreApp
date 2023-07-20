@@ -132,30 +132,11 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
 
         public async Task<DataResult<Brand>> GetAsync(IntModel model)
         {
-            var query = $"SELECT b.*, p.Id AS ProductId, p.* FROM {_brandTable} b " +
-                        $"INNER JOIN {_productTable} p ON p.BrandId = b.Id " +
-                        $"WHERE b.Id = @Id";
+            var query = $"SELECT * FROM {_brandTable} " +
+                        $"WHERE Id = @Id";
 
-            var brandDictionary = new Dictionary<int, Brand>();
-
-            var result = await _dbContext.Connection.QueryAsync<Brand, Product, Brand>(query, (brand, product) =>
-            {
-                Brand? brandEntry;
-
-                if (!brandDictionary.TryGetValue(brand.Id, out brandEntry))
-                {
-                    brandEntry = brand;
-                    brandEntry.Products = new List<Product>();
-                    brandDictionary.Add(brand.Id, brandEntry);
-                }
-                if (product != null)
-                    brandEntry.Products.Add(product);
-
-                return brandEntry;
-            }, splitOn: "ProductId", param: new { Id = model.Value });
-
-            var filteredResult = result.DistinctBy(c => c.Id).FirstOrDefault();
-            return new DataResult<Brand>(filteredResult);
+            var result = await _readDbConnection.QuerySingleOrDefaultAsync<Brand>(sql: query, param: new { Id = model.Value });
+            return new DataResult<Brand>(result);
         }
 
         public  async Task<DataResult<IReadOnlyList<Brand>>> GetAllAsync()

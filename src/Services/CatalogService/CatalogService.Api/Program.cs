@@ -9,6 +9,7 @@ using CatalogService.Api.DependencyResolvers.Autofac;
 using CatalogService.Api.Mapping;
 using CatalogService.Api.Infrastructure.Interceptors;
 using System.Reflection;
+using CatalogService.Api.Services.Grpc.Concrete;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
@@ -68,6 +69,9 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
+
+app.MapGrpcService<GrpcBrandService>();
+
 app.MapControllers();
 
 if (app.Environment.IsDevelopment())

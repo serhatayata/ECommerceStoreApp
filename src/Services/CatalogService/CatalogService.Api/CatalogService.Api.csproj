@@ -54,6 +54,7 @@
   <ItemGroup>
     <Folder Include="Data\SeedData\SeedFiles\" />
     <Folder Include="IntegrationEvents\" />
+    <Folder Include="Services\Grpc\Abstract\" />
     <Folder Include="Validations\" />
   </ItemGroup>
 
