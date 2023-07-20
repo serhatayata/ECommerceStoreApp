@@ -1,34 +1,112 @@
-﻿using CatalogService.Api.Data.Repositories.EntityFramework.Abstract;
+﻿using CatalogService.Api.Data.Contexts;
+using CatalogService.Api.Data.Repositories.EntityFramework.Abstract;
 using CatalogService.Api.Entities;
 using CatalogService.Api.Models.Base.Concrete;
 using CatalogService.Api.Utilities.Results;
+using Microsoft.EntityFrameworkCore;
 
 namespace CatalogService.Api.Data.Repositories.EntityFramework.Concrete;
 
 public class EfCommentRepository : IEfCommentRepository
 {
-    public Task<Result> AddAsync(Comment entity)
+    private readonly ICatalogDbContext _catalogDbContext;
+    private readonly ILogger<EfCommentRepository> _logger;
+
+    public EfCommentRepository(
+        ICatalogDbContext catalogDbContext, 
+        ILogger<EfCommentRepository> logger)
     {
-        throw new NotImplementedException();
+        _catalogDbContext = catalogDbContext;
+        _logger = logger;
     }
 
-    public Task<Result> DeleteAsync(IntModel model)
+    public async Task<Result> AddAsync(Comment entity)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var result = await _catalogDbContext.Comments.AddAsync(entity);
+
+            if (result.State == Microsoft.EntityFrameworkCore.EntityState.Added)
+                return new SuccessResult("Comment added");
+            return new ErrorResult("Comment not added");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("{0} - {1} - Exception : {2}", nameof(this.AddAsync), "Comment not added", ex.Message);
+            return new ErrorResult("Comment not added");
+        }
     }
 
-    public Task<DataResult<IReadOnlyList<Comment>>> GetAllAsync()
+    public async Task<Result> UpdateAsync(Comment entity)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var result = await _catalogDbContext.Comments.Where(b => b.Id == entity.Id)
+                                    .ExecuteUpdateAsync(b => b
+                                        .SetProperty(p => p.Code, entity.Code)
+                                        .SetProperty(p => p.ProductId, entity.ProductId)
+                                        .SetProperty(p => p.UserId,entity.UserId)
+                                        .SetProperty(p => p.Content, entity.Content)
+                                        .SetProperty(p => p.Name, entity.Name)
+                                        .SetProperty(p => p.Surname, entity.Surname)
+                                        .SetProperty(p => p.Email, entity.Email)
+                                        .SetProperty(p => p.UpdateDate, entity.UpdateDate));
+
+            return result > 0 ?
+                new SuccessResult("Comment updated") : new ErrorResult("Comment not updated");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("{0} - {1} - Exception : {2}", nameof(this.UpdateAsync), "Comment not updated", ex.Message);
+            return new ErrorResult("Comment not updated");
+        }
     }
 
-    public Task<DataResult<Comment>> GetAsync(IntModel model)
+    public async Task<Result> DeleteAsync(IntModel model)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var result = await _catalogDbContext.Comments.Where(b => b.Id == model.Value)
+                                                            .ExecuteDeleteAsync();
+
+            return result > 0 ?
+                new SuccessResult("Comment deleted") : new ErrorResult("Comment not deleted");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("{0} - {1} - Exception : {2}", nameof(this.DeleteAsync), "Comment not deleted", ex.Message);
+            return new ErrorResult("Comment not deleted");
+        }
     }
 
-    public Task<Result> UpdateAsync(Comment entity)
+    public async Task<Result> DeleteByCodeAsync(StringModel model)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var result = await _catalogDbContext.Comments.Where(b => b.Code == model.Value)
+                                                            .ExecuteDeleteAsync();
+
+            return result > 0 ?
+                new SuccessResult("Comment deleted") : new ErrorResult("Comment not deleted");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("{0} - {1} - Exception : {2}", nameof(this.DeleteByCodeAsync), "Comment not deleted", ex.Message);
+            return new ErrorResult("Comment not deleted");
+        }
+    }
+
+    public async Task<DataResult<IReadOnlyList<Comment>>> GetAllAsync()
+    {
+        var result = await _catalogDbContext.Comments.ToListAsync();
+
+        return new DataResult<IReadOnlyList<Comment>>(result);
+    }
+
+    public async Task<DataResult<Comment>> GetAsync(IntModel model)
+    {
+        var result = await _catalogDbContext.Comments.FirstOrDefaultAsync(p => p.Id == model.Value);
+
+        return new DataResult<Comment>(result);
     }
 }

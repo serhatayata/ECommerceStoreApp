@@ -82,7 +82,7 @@ public class EfBrandRepository : IEfBrandRepository
 
     public async Task<DataResult<Brand>> GetAsync(IntModel model)
     {
-        var result = await _catalogDbContext.Brands.FirstOrDefaultAsync();
+        var result = await _catalogDbContext.Brands.FirstOrDefaultAsync(b => b.Id == model.Value);
 
         return new DataResult<Brand>(result);
     }

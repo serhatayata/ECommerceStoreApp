@@ -85,7 +85,7 @@ public class EfCategoryRepository : IEfCategoryRepository
 
     public async Task<DataResult<Category>> GetAsync(IntModel model)
     {
-        var result = await _catalogDbContext.Categories.FirstOrDefaultAsync();
+        var result = await _catalogDbContext.Categories.FirstOrDefaultAsync(c => c.Id == model.Value);
 
         return new DataResult<Category>(result);
     }
