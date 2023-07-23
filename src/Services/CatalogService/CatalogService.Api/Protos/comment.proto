@@ -1,1 +1,79 @@
 ﻿syntax = "proto3";
+
+option csharp_namespace = "CatalogService.Api";
+
+import "Protos/product.proto";
+import "Protos/common.proto";
+import "google/protobuf/any.proto";
+import "google/api/annotations.proto";
+
+service CommentProtoService {
+	rpc GetAsync(GrpcIntModel) returns (GrpcCommentModel) {
+		option (google.api.http) = {
+		  get: "/comment/get"
+		  body: '*'
+		};
+	}
+
+	rpc GetByCodeAsync(GrpcStringModel) returns (GrpcCommentModel) {
+		option (google.api.http) = {
+		  get: "/comment/get-bycode"
+		  body: '*'
+		};
+	}
+
+	rpc GetAllAsync(GrpcEmptyModel) returns (ListGrpcCommentModel) {
+		option (google.api.http) = {
+		  get: "/comment/getall"
+		  body: '*'
+		};
+	}
+
+	rpc GetAllByProductId(GrpcIntModel) returns (ListGrpcComment) {
+		option (google.api.http) = {
+		  get: "/comment/getall-byproductid"
+		  body: '*'
+		};
+	}
+
+	rpc GetAllByUserId(GrpcStringModel) returns (ListGrpcCommentModel) {
+		option (google.api.http) = {
+		  get: "/comment/getall-byproductid"
+		  body: '*'
+		};
+	}
+}
+
+// ENTITY MODELS
+
+message ListGrpcComment {
+	repeated GrpcComment comments = 1;
+}
+
+message GrpcComment {
+	string code = 1;
+	int32 productId = 2;
+	string userId = 3;
+	string content = 4;
+	string name = 5;
+	string surname = 6;
+	string email = 7;
+
+	GrpcProduct product = 8;
+}
+
+// NEEDED MODELS
+
+message ListGrpcCommentModel {
+	repeated GrpcCommentModel comments = 1;
+}
+
+message GrpcCommentModel {
+	string code = 1;
+	int32 productId = 2;
+	string userId = 3;
+	string content = 4;
+	string name = 5;
+	string surname = 6;
+	string email = 7;
+}

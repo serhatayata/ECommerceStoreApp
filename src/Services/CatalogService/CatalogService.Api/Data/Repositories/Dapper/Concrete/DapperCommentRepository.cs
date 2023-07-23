@@ -5,6 +5,7 @@ using CatalogService.Api.Entities;
 using CatalogService.Api.Models.Base.Concrete;
 using CatalogService.Api.Utilities.Encryption;
 using CatalogService.Api.Utilities.Results;
+using Dapper;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
 using Result = CatalogService.Api.Utilities.Results.Result;
@@ -235,11 +236,28 @@ public class DapperCommentRepository : IDapperCommentRepository
 
     public async Task<DataResult<IReadOnlyList<Comment>>> GetAllByUserId(StringModel model)
     {
-        var query = $"SELECT * FROM {_commentTable} WHERE UserId = @UserId";
-        var result = await _readDbConnection.QueryAsync<Comment>(sql: query,
-                                                                 param: new { UserId = model.Value });
+        var query = $"SELECT co.*, p.Id AS ProductId, p.* FROM {_commentTable} co " +
+                    $"INNER JOIN {_productTable} p ON p.Id = co.ProductId " +
+                    $"WHERE UserId = @UserId";
 
-        return new DataResult<IReadOnlyList<Comment>>(result);
+        var commentDictionary = new Dictionary<int, Comment>();
+
+        var result = await _dbContext.Connection.QueryAsync<Comment, Product, Comment>(query, (comment, product) =>
+        {
+            Comment? commentEntry;
+
+            if (!commentDictionary.TryGetValue(comment.Id, out commentEntry))
+            {
+                commentEntry = comment;
+                commentDictionary.Add(commentEntry.Id, commentEntry);
+            }
+            if (product != null && product.Id > 0)
+                commentEntry.Product = product;
+
+            return commentEntry;
+        }, splitOn: "ProductId", param: new { UserId = model.Value });
+
+        return new DataResult<IReadOnlyList<Comment>>(result.ToList());
     }
 
     public async Task<DataResult<Comment>> GetAsync(IntModel model)

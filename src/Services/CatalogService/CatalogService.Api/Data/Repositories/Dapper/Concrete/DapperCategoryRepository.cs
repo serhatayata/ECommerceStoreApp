@@ -18,6 +18,7 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
 
         private string _categoryTable;
         private string _productTable;
+        private string _productCategoriesTable;
 
         public DapperCategoryRepository(ICatalogDbContext dbContext, 
                                         ICatalogReadDbConnection readDbConnection, 
@@ -29,6 +30,7 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
 
             _categoryTable = dbContext.GetTableNameWithScheme<Category>();
             _productTable = dbContext.GetTableNameWithScheme<Product>();
+            _productCategoriesTable = dbContext.GetTableNameWithScheme<ProductCategory>();
         }
 
         public async Task<Result> AddAsync(Category entity)
@@ -161,7 +163,8 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
         public async Task<DataResult<IReadOnlyList<Category>>> GetAllWithProductsByParentId(IntModel model)
         {
             var query = $"SELECT c.*, p.Id AS ProductId, p.* FROM {_categoryTable} c " +
-                        $"LEFT OUTER JOIN {_productTable} p ON p.CategoryId = c.Id " +
+                        $"LEFT OUTER JOIN {_productCategoriesTable} pc ON pc.CategoryId = c.Id " +
+                        $"LEFT OUTER JOIN {_productTable} p ON p.Id = pc.ProductId " +
                         $"WHERE c.ParentId = @ParentId";
 
             var categoryDictionary = new Dictionary<int, Category>();
@@ -173,6 +176,8 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
                 if (!categoryDictionary.TryGetValue(category.Id, out categoryEntry))
                 {
                     categoryEntry = category;
+                    if (category.ParentId != null && category.ParentId > 0)
+                        categoryEntry.ParentCategory = _dbContext.Categories.FirstOrDefault(s => s.Id == category.ParentId);
                     categoryEntry.Products = new List<Product>();
                     categoryDictionary.Add(categoryEntry.Id, categoryEntry);
                 }
@@ -198,7 +203,8 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
         public async Task<DataResult<Category>> GetWithProducts(IntModel model)
         {
             var query = $"SELECT c.*, p.Id AS ProductId, p.* FROM {_categoryTable} c " +
-                        $"LEFT OUTER JOIN {_productTable} p ON p.CategoryId = c.Id " +
+                        $"LEFT OUTER JOIN {_productCategoriesTable} pc ON pc.CategoryId = c.Id " +
+                        $"LEFT OUTER JOIN {_productTable} p ON p.Id = pc.ProductId " +
                         $"WHERE c.Id = @Id";
 
             var categoryDictionary = new Dictionary<int, Category>();
@@ -235,7 +241,8 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
         public async Task<DataResult<Category>> GetByNameWithProducts(StringModel model)
         {
             var query = $"SELECT c.*, p.Id AS ProductId, p.* FROM {_categoryTable} c " +
-                        $"INNER JOIN {_productTable} p ON p.CategoryId = c.Id " +
+                        $"LEFT OUTER JOIN {_productCategoriesTable} pc ON pc.CategoryId = c.Id " +
+                        $"LEFT OUTER JOIN {_productTable} p ON p.Id = pc.ProductId " +
                         $"WHERE c.Name = @Name";
 
             var categoryDictionary = new Dictionary<int, Category>();

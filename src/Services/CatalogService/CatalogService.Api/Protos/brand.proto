@@ -4,39 +4,19 @@ option csharp_namespace = "CatalogService.Api";
 import "google/protobuf/any.proto";
 import "google/api/annotations.proto";
 import "Protos/common.proto";
+import "Protos/product.proto";
 
 //   curl -d '{"id":"123"}' http://DOMAIN_NAME/get
 
 service BrandProtoService {
-	rpc AddAsync(GrpcBrandAddUpdateModel) returns (GrpcResponseModel) {
-		option (google.api.http) = {
-		  get: "/brand/add"
-		  body: '*'
-		};
-	}
-
-	rpc DeleteAsync(GrpcIntModel) returns (GrpcResponseModel) {
-		option (google.api.http) = {
-		  get: "/brand/delete"
-		  body: '*'
-		};
-	}
-
-	rpc UpdateAsync(GrpcBrandAddUpdateModel) returns (GrpcResponseModel) {
-		option (google.api.http) = {
-		  get: "/brand/update"
-		  body: '*'
-		};
-	}
-
-	rpc GetAsync(GrpcIntModel) returns (GrpcBrand) {
+	rpc GetAsync(GrpcIntModel) returns (GrpcBrandModel) {
 		option (google.api.http) = {
 		  get: "/brand/get"
 		  body: '*'
 		};
 	}
 
-	rpc GetAllAsync(GrpcEmptyModel) returns (ListGrpcBrand) {
+	rpc GetAllAsync(GrpcEmptyModel) returns (ListGrpcBrandModel) {
 		option (google.api.http) = {
 		  get: "/brand/getall"
 		  body: '*'
@@ -51,10 +31,7 @@ service BrandProtoService {
 	}
 }
 
-message GrpcBrandAddUpdateModel {
-	string name = 1;
-	string description = 2;
-}
+// ENTITY MODELS
 
 message ListGrpcBrand {
 	repeated GrpcBrand brands = 1;
@@ -63,4 +40,18 @@ message ListGrpcBrand {
 message GrpcBrand {
 	string name = 1;
 	string description = 2;
+
+	repeated GrpcProduct products = 3;
+}
+
+// NEEDED MODELS
+
+message ListGrpcBrandModel {
+	repeated GrpcBrandModel brands = 1;
+}
+
+message GrpcBrandModel {
+	string name = 1;
+	string description = 2;
+
 }

@@ -19,7 +19,38 @@ public class MapProfile : Profile
         CreateMap<Result, GrpcResponseModel>().ReverseMap();
         #endregion
 
-        CreateMap<Brand, GrpcBrandAddUpdateModel>().ReverseMap();
+        #region BRAND
         CreateMap<Brand, GrpcBrand>().ReverseMap();
+        CreateMap<IEnumerable<Brand>, ListGrpcBrand>()
+                .ForMember(dest => dest.Brands, opt => opt.MapFrom(s => s));
+
+        CreateMap<Brand, GrpcBrandModel>().ReverseMap();
+        CreateMap<IEnumerable<Brand>, ListGrpcBrandModel>()
+                .ForMember(dest => dest.Brands, opt => opt.MapFrom(s => s));
+        #endregion
+        #region PRODUCT
+        CreateMap<GrpcProduct, Product>().ReverseMap();
+
+        CreateMap<ProductType, GrpcProductType>().ReverseMap();
+        #endregion
+        #region CATEGORY
+        CreateMap<Category, GrpcCategory>().ReverseMap();
+        CreateMap<IEnumerable<Category>, ListGrpcCategory>()
+            .ForMember(dest => dest.Categories, opt => opt.MapFrom(s => s));
+
+        CreateMap<Category, GrpcCategoryModel>().ReverseMap();
+        CreateMap<IEnumerable<Category>, ListGrpcCategoryModel>()
+            .ForMember(dest => dest.Categories, opt => opt.MapFrom(s => s));
+        #endregion
+        #region COMMENT
+        CreateMap<Comment, GrpcComment>().ReverseMap();
+        CreateMap<IEnumerable<Comment>, ListGrpcComment>()
+            .ForMember(dest => dest.Comments, opt => opt.MapFrom(s => s));
+
+        CreateMap<Comment, GrpcCommentModel>().ReverseMap();
+        CreateMap<IEnumerable<Comment>, ListGrpcCommentModel>()
+            .ForMember(dest => dest.Comments, opt => opt.MapFrom(s => s));
+        #endregion
+
     }
 }

@@ -1,1 +1,89 @@
 ﻿syntax = "proto3";
+
+option csharp_namespace = "CatalogService.Api";
+
+import "Protos/product.proto";
+import "Protos/common.proto";
+import "google/protobuf/any.proto";
+import "google/api/annotations.proto";
+
+service CategoryProtoService {
+
+	rpc GetAsync(GrpcIntModel) returns (GrpcCategoryModel) {
+		option (google.api.http) = {
+		  get: "/category/get"
+		  body: '*'
+		};
+	}
+
+	rpc GetWithProductsAsync(GrpcIntModel) returns (GrpcCategory) {
+		option (google.api.http) = {
+		  get: "/category/get-with-products"
+		  body: '*'
+		};
+	}
+
+	rpc GetByNameAsync(GrpcStringModel) returns (GrpcCategoryModel) {
+		option (google.api.http) = {
+		  get: "/category/get-by-name"
+		  body: '*'
+		};
+	}
+
+	rpc GetByNameWithProductsAsync(GrpcStringModel) returns (GrpcCategory) {
+		option (google.api.http) = {
+		  get: "/category/get-byname-with-products"
+		  body: '*'
+		};
+	}
+
+	rpc GetAllAsync(GrpcEmptyModel) returns (ListGrpcCategoryModel) {
+		option (google.api.http) = {
+		  get: "/category/getall"
+		  body: '*'
+		};
+	}
+
+	rpc GetAllByParentIdAsync(GrpcIntModel) returns (ListGrpcCategoryModel) {
+		option (google.api.http) = {
+		  get: "/category/getall-by-parentid"
+		  body: '*'
+		};
+	}
+
+	rpc GetAllWithProductsByParentId(GrpcIntModel) returns (ListGrpcCategory) {
+		option (google.api.http) = {
+		  get: "/category/getall-with-products-by-parentid"
+		  body: '*'
+		};
+	}
+}
+
+// ENTITY MODELS
+
+message ListGrpcCategory {
+	repeated GrpcCategory categories = 1;
+}
+
+message GrpcCategory {
+	string name = 1;
+	string link = 2;
+	int32 line = 3;
+	
+	GrpcCategory parentCategory = 4;
+
+	repeated GrpcCategory categories = 5;
+	repeated GrpcProduct products = 6;
+}
+
+// NEEDED MODELS
+
+message ListGrpcCategoryModel {
+	repeated GrpcCategoryModel categories = 1;
+}
+
+message GrpcCategoryModel {
+	string name = 1;
+	string link = 2;
+	int32 line = 3;
+}
