@@ -73,6 +73,7 @@ app.UseAuthorization();
 app.MapGrpcService<GrpcBrandService>();
 app.MapGrpcService<GrpcCategoryService>();
 app.MapGrpcService<GrpcCommentService>();
+app.MapGrpcService<GrpcFeatureService>();
 
 app.MapControllers();
 

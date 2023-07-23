@@ -1,1 +1,75 @@
 ﻿syntax = "proto3";
+
+option csharp_namespace = "CatalogService.Api";
+
+import "Protos/product.proto";
+import "Protos/common.proto";
+import "google/protobuf/any.proto";
+import "google/api/annotations.proto";
+
+service FeatureProtoService {
+
+	rpc GetAsync(GrpcIntModel) returns (GrpcFeatureModel) {
+		option (google.api.http) = {
+		  get: "/feature/get"
+		  body: '*'
+		};
+	}
+
+	rpc GetAllAsync(GrpcEmptyModel) returns (ListGrpcFeatureModel) {
+		option (google.api.http) = {
+		  get: "/feature/getall"
+		  body: '*'
+		};
+	}
+
+	rpc GetAllFeaturesByProductId(GrpcIntModel) returns (ListGrpcFeature) {
+		option (google.api.http) = {
+		  get: "/feature/getall-features-byproductid"
+		  body: '*'
+		};
+	}
+	
+	rpc GetFeatureProducts(GrpcIntModel) returns (ListGrpcProductModel) {
+		option (google.api.http) = {
+		  get: "/feature/get-feature-products"
+		  body: '*'
+		};
+	}
+
+	rpc GetAllFeatureProperties(GrpcProductFeaturePropertyModel) returns (ListGrpcProductFeaturePropertyModel) {
+		option (google.api.http) = {
+		  get: "/feature/get-all-featureproperties"
+		  body: '*'
+		};
+	}
+
+	rpc GetAllFeaturePropertiesByProductFeatureId(GrpcIntModel) returns (ListGrpcProductFeaturePropertyModel) {
+		option (google.api.http) = {
+		  get: "/feature/get-all-feature-properties-by-productfeatureid"
+		  body: '*'
+		};
+	}
+}
+
+// ENTITIES
+
+message ListGrpcFeature {
+	repeated GrpcFeature features = 1;
+}
+
+message GrpcFeature {
+	string name = 1;
+
+	GrpcProductFeaturePropertyModel productFeatures = 2;
+}
+
+// NEEDED MODELS
+
+message ListGrpcFeatureModel {
+	repeated GrpcFeatureModel features = 1;
+}
+
+message GrpcFeatureModel {
+	string name = 1;
+}

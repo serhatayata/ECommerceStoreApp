@@ -30,6 +30,8 @@ public class MapProfile : Profile
         #endregion
         #region PRODUCT
         CreateMap<GrpcProduct, Product>().ReverseMap();
+        CreateMap<IEnumerable<Product>, ListGrpcProductModel>()
+            .ForMember(dest => dest.Products, opt => opt.MapFrom(s => s));
 
         CreateMap<ProductType, GrpcProductType>().ReverseMap();
         #endregion
@@ -51,6 +53,14 @@ public class MapProfile : Profile
         CreateMap<IEnumerable<Comment>, ListGrpcCommentModel>()
             .ForMember(dest => dest.Comments, opt => opt.MapFrom(s => s));
         #endregion
+        #region FEATURE
+        CreateMap<Feature, GrpcFeature>().ReverseMap();
+        CreateMap<IEnumerable<Feature>, ListGrpcFeature>()
+            .ForMember(dest => dest.Features, opt => opt.MapFrom(s => s));
 
+        CreateMap<Feature, GrpcFeatureModel>().ReverseMap();
+        CreateMap<IEnumerable<Feature>, ListGrpcFeatureModel>()
+            .ForMember(dest => dest.Features, opt => opt.MapFrom(s => s));
+        #endregion
     }
 }

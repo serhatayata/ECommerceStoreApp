@@ -4,6 +4,8 @@ option csharp_namespace = "CatalogService.Api";
 
 import "google/api/money.proto";
 
+// ENTITIES
+
 message GrpcProduct {
 	string name = 1;
 	string description = 2;
@@ -15,6 +17,7 @@ message GrpcProduct {
 	//google.type.Money price = 6;
 }
 
+// NEEDED MODELS
 
 message GrpcProductModel {
 	string name = 1;
@@ -25,7 +28,20 @@ message GrpcProductModel {
 	string price = 6;
 }
 
+message ListGrpcProductModel {
+	repeated GrpcProductModel products = 1;
+}
+
 message GrpcProductType {
 	string name = 1;
 	string description = 2;
+}
+
+message GrpcProductFeaturePropertyModel {
+	int32 productId = 1;
+	int32 featureId = 2;
+}
+
+message ListGrpcProductFeaturePropertyModel {
+	repeated GrpcProductFeaturePropertyModel productFeatureProperties = 1;
 }
