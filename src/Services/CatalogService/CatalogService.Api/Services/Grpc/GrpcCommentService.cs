@@ -26,7 +26,7 @@ namespace CatalogService.Api.Services.Grpc
             var result = await _dapperCommentRepository.GetAsync(model);
             var resultModel = _mapper.Map<GrpcCommentModel>(result.Data);
 
-            return await Task.FromResult(resultModel);
+            return resultModel;
         }
 
         public override async Task<GrpcCommentModel> GetByCodeAsync(GrpcStringModel request, ServerCallContext context)
@@ -36,14 +36,14 @@ namespace CatalogService.Api.Services.Grpc
             var result = await _dapperCommentRepository.GetByCodeAsync(model);
             var resultModel = _mapper.Map<GrpcCommentModel>(result.Data);
 
-            return await Task.FromResult(resultModel);
+            return resultModel;
         }
         public override async Task<ListGrpcCommentModel> GetAllAsync(GrpcEmptyModel request, ServerCallContext context)
         {
             var result = await _dapperCommentRepository.GetAllAsync();
             var resultModel = _mapper.Map<ListGrpcCommentModel>(result.Data);
 
-            return await Task.FromResult(resultModel);
+            return resultModel;
         }
 
         public override async Task<ListGrpcComment> GetAllByProductId(GrpcIntModel request, ServerCallContext context)
@@ -53,7 +53,7 @@ namespace CatalogService.Api.Services.Grpc
             var result = await _dapperCommentRepository.GetAllByProductId(model);
             var resultModel = _mapper.Map<ListGrpcComment>(result.Data);
 
-            return await Task.FromResult(resultModel);
+            return resultModel;
         }
 
         public override async Task<ListGrpcCommentModel> GetAllByUserId(GrpcStringModel request, ServerCallContext context)
@@ -63,7 +63,7 @@ namespace CatalogService.Api.Services.Grpc
             var result = await _dapperCommentRepository.GetAllByUserId(model);
             var resultModel = _mapper.Map<ListGrpcCommentModel>(result.Data);
 
-            return await Task.FromResult(resultModel);
+            return resultModel;
         }
     }
 }

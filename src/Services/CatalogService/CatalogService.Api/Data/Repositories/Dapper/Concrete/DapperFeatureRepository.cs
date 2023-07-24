@@ -384,6 +384,53 @@ public class DapperFeatureRepository : IDapperFeatureRepository
         return new DataResult<IReadOnlyList<Feature>>(filteredResult);
     }
 
+    public async Task<DataResult<IReadOnlyList<Feature>>> GetAllFeaturesByProductCode(StringModel model)
+    {
+        var query = $"SELECT f.*, " +
+                    $"pf.Id as ProductFeatureId, pf.FeatureId, pf.ProductId, " +
+                    $"p.Id AS PrdId , p.* FROM {_featureTable} f " +
+                    $"LEFT OUTER JOIN {_productFeatureTable} pf ON pf.FeatureId = f.Id " +
+                    $"LEFT OUTER JOIN {_productTable} p ON p.Id = pf.ProductId " +
+                    $"WHERE p.ProductCode = @ProductCode";
+
+        var featureDictionary = new Dictionary<int, Feature>();
+
+        var result = await _dbContext.Connection.QueryAsync<Feature, ProductFeature, Product, Feature>(query, (feature, productFeature, product) =>
+        {
+            Feature? featureEntry;
+
+            if (!featureDictionary.TryGetValue(feature.Id, out featureEntry))
+            {
+                featureEntry = feature;
+                featureEntry.ProductFeatures = new List<ProductFeature>();
+                featureEntry.ProductFeatures.Add(new ProductFeature()
+                {
+                    Product = product,
+                    Feature = feature,
+                    FeatureId = feature.Id,
+                    ProductId = product.Id
+                });
+                featureDictionary.Add(featureEntry.Id, featureEntry);
+            }
+            else
+            {
+                var isPfpExists = featureDictionary.First(f => f.Key == feature.Id).Value.ProductFeatures.Any(s => s.Id == productFeature.Id);
+                if (!isPfpExists)
+                    featureDictionary.First(f => f.Key == feature.Id).Value.ProductFeatures.Add(new ProductFeature()
+                    {
+                        Product = product,
+                        FeatureId = feature.Id,
+                        ProductId = product.Id
+                    });
+            }
+
+            return featureEntry;
+        }, splitOn: "ProductFeatureId,PrdId", param: new { ProductCode = model.Value });
+
+        var filteredResult = result.DistinctBy(c => c.Id).ToList();
+        return new DataResult<IReadOnlyList<Feature>>(filteredResult);
+    }
+
     public async Task<DataResult<IReadOnlyList<Product>>> GetFeatureProducts(IntModel model)
     {
         var query = $"SELECT p.*, pf.Id AS ProductFeatureId, pf.* FROM {_productTable} p " +

@@ -2,7 +2,33 @@
 
 option csharp_namespace = "CatalogService.Api";
 
-import "google/api/money.proto";
+import "Protos/common.proto";
+import "google/protobuf/any.proto";
+import "google/api/annotations.proto";
+
+service ProductProtoService {
+
+	rpc GetByProductCodeAsync(GrpcStringModel) returns (GrpcProductModel) {
+		option (google.api.http) = {
+		  get: "/product/get-byproductcode"
+		  body: '*'
+		};
+	}
+
+	rpc GetAllAsync(GrpcEmptyModel) returns (ListGrpcProductModel) {
+		option (google.api.http) = {
+		  get: "/product/get-all"
+		  body: '*'
+		};
+	}
+
+	rpc GetAllBetweenPricesAsync(GrpcPriceBetweenModel) returns (ListGrpcProductModel) {
+		option (google.api.http) = {
+		  get: "/product/getall-betweenprices"
+		  body: '*'
+		};
+	}
+}
 
 // ENTITIES
 
@@ -14,7 +40,20 @@ message GrpcProduct {
 	string productCode = 5;
 	string price = 6;
 
-	//google.type.Money price = 6;
+	
+}
+
+message GrpcProductFeature {
+	int32 productId = 1;
+	int32 featureId = 2;
+}
+
+message GrpcProductFeatureProperty {
+	int32 productFeatureId = 1;
+	string name = 2;
+	string description = 3;
+
+	GrpcProductFeature productFeature = 4;
 }
 
 // NEEDED MODELS
@@ -37,9 +76,20 @@ message GrpcProductType {
 	string description = 2;
 }
 
-message GrpcProductFeaturePropertyModel {
+message GrpcProductFeatureModel {
 	int32 productId = 1;
 	int32 featureId = 2;
+
+	GrpcProductModel product = 3;
+}
+
+message ListGrpcProductFeatureModel {
+	repeated GrpcProductFeatureModel productFeatureProperties = 1;
+}
+
+message GrpcProductFeaturePropertyModel {
+	string name = 2;
+	string description = 3;
 }
 
 message ListGrpcProductFeaturePropertyModel {

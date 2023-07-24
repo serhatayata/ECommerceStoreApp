@@ -8,10 +8,8 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Abstract;
 
 public interface IDapperProductRepository : IGenericRepository<Product, IntModel>
 {
-    Task<DataResult<Product>> GetByProductCode(StringModel model);
-    Task<DataResult<Product>> GetWithComments(IntModel model);
-    Task<DataResult<Product>> GetWithFeatures(IntModel model);
-    Task<DataResult<IReadOnlyList<Product>>> GetAllByProductTypeId(IntModel model);
-    Task<DataResult<IReadOnlyList<Product>>> GetAllByBrandId(IntModel model);
-    Task<DataResult<IReadOnlyList<Product>>> GetAllBetweenPrices(PriceBetweenModel model);
+    Task<DataResult<Product>> GetByProductCodeAsync(StringModel model);
+    Task<DataResult<IReadOnlyList<Product>>> GetAllByProductTypeIdAsync(IntModel model);
+    Task<DataResult<IReadOnlyList<Product>>> GetAllByBrandIdAsync(IntModel model);
+    Task<DataResult<IReadOnlyList<Product>>> GetAllBetweenPricesAsync(PriceBetweenModel model);
 }

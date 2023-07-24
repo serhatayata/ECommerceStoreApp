@@ -29,3 +29,8 @@ message GrpcResponseModel {
 	int32 statusCode = 3;
 	string messageCode = 4;
 }
+
+message GrpcPriceBetweenModel {
+	double minimumPrice = 1;
+	double maximumPrice = 2;
+}

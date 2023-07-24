@@ -26,7 +26,7 @@ namespace CatalogService.Api.Services.Grpc
             var result = await _dapperCategoryRepository.GetAsync(model);
             var resultModel = _mapper.Map<GrpcCategoryModel>(result.Data);
 
-            return await Task.FromResult(resultModel);
+            return resultModel;
         }
 
         public override async Task<GrpcCategoryModel> GetByNameAsync(GrpcStringModel request, ServerCallContext context)
@@ -36,7 +36,7 @@ namespace CatalogService.Api.Services.Grpc
             var result = await _dapperCategoryRepository.GetByName(model);
             var resultModel = _mapper.Map<GrpcCategoryModel>(result.Data);
 
-            return await Task.FromResult(resultModel);
+            return resultModel;
         }
 
         public override async Task<GrpcCategory> GetByNameWithProductsAsync(GrpcStringModel request, ServerCallContext context)
@@ -46,7 +46,7 @@ namespace CatalogService.Api.Services.Grpc
             var result = await _dapperCategoryRepository.GetByNameWithProducts(model);
             var resultModel = _mapper.Map<GrpcCategory>(result.Data);
 
-            return await Task.FromResult(resultModel);
+            return resultModel;
         }
 
         public override async Task<GrpcCategory> GetWithProductsAsync(GrpcIntModel request, ServerCallContext context)
@@ -56,7 +56,7 @@ namespace CatalogService.Api.Services.Grpc
             var result = await _dapperCategoryRepository.GetWithProducts(model);
             var resultModel = _mapper.Map<GrpcCategory>(result.Data);
 
-            return await Task.FromResult(resultModel);
+            return resultModel;
         }
 
         public override async Task<ListGrpcCategoryModel> GetAllAsync(GrpcEmptyModel request, ServerCallContext context)
@@ -64,7 +64,7 @@ namespace CatalogService.Api.Services.Grpc
             var result = await _dapperCategoryRepository.GetAllAsync();
             var resultModel = _mapper.Map<ListGrpcCategoryModel>(result.Data);
 
-            return await Task.FromResult(resultModel);
+            return resultModel;
         }
 
         public override async Task<ListGrpcCategoryModel> GetAllByParentIdAsync(GrpcIntModel request, ServerCallContext context)
@@ -74,7 +74,7 @@ namespace CatalogService.Api.Services.Grpc
             var result = await _dapperCategoryRepository.GetAllByParentId(model);
             var resultModel = _mapper.Map<ListGrpcCategoryModel>(result.Data);
 
-            return await Task.FromResult(resultModel);
+            return resultModel;
         }
 
         public override async Task<ListGrpcCategory> GetAllWithProductsByParentId(GrpcIntModel request, ServerCallContext context)
@@ -84,7 +84,7 @@ namespace CatalogService.Api.Services.Grpc
             var result = await _dapperCategoryRepository.GetAllWithProductsByParentId(model);
             var resultModel = _mapper.Map<ListGrpcCategory>(result.Data);
 
-            return await Task.FromResult(resultModel);
+            return resultModel;
         }
     }
 }

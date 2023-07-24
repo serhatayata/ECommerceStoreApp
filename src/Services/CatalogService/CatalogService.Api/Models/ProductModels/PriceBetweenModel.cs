@@ -4,6 +4,17 @@ namespace CatalogService.Api.Models.ProductModels;
 
 public class PriceBetweenModel : IModel
 {
+    public PriceBetweenModel()
+    {
+        
+    }
+
+    public PriceBetweenModel(decimal minimumPrice, decimal maximumPrice)
+    {
+        this.MinimumPrice = minimumPrice;
+        this.MaximumPrice = maximumPrice;
+    }
+
     /// <summary>
     /// Minimum price of the criteria
     /// </summary>

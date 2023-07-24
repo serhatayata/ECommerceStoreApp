@@ -26,7 +26,7 @@ namespace CatalogService.Api.Services.Grpc
             var result = await _dapperFeatureRepository.GetAsync(model);
             var resultModel = _mapper.Map<GrpcFeatureModel>(result.Data);
 
-            return await Task.FromResult(resultModel);
+            return resultModel;
         }
 
         public override async Task<ListGrpcFeatureModel> GetAllAsync(GrpcEmptyModel request, ServerCallContext context)
@@ -34,7 +34,7 @@ namespace CatalogService.Api.Services.Grpc
             var result = await _dapperFeatureRepository.GetAllAsync();
             var resultModel = _mapper.Map<ListGrpcFeatureModel>(result.Data);
 
-            return await Task.FromResult(resultModel);
+            return resultModel;
         }
 
         public override async Task<ListGrpcFeature> GetAllFeaturesByProductId(GrpcIntModel request, ServerCallContext context)
@@ -44,7 +44,17 @@ namespace CatalogService.Api.Services.Grpc
             var result = await _dapperFeatureRepository.GetAllFeaturesByProductId(model);
             var resultModel = _mapper.Map<ListGrpcFeature>(result.Data);
 
-            return await Task.FromResult(resultModel);
+            return resultModel;
+        }
+
+        public override async Task<ListGrpcFeatureModel> GetAllFeaturesByProductCode(GrpcStringModel request, ServerCallContext context)
+        {
+            var model = _mapper.Map<StringModel>(request);
+
+            var result = await _dapperFeatureRepository.GetAllFeaturesByProductCode(model);
+            var resultModel = _mapper.Map<ListGrpcFeatureModel>(result.Data);
+
+            return resultModel;
         }
 
         public override async Task<ListGrpcProductModel> GetFeatureProducts(GrpcIntModel request, ServerCallContext context)
@@ -54,15 +64,15 @@ namespace CatalogService.Api.Services.Grpc
             var result = await _dapperFeatureRepository.GetFeatureProducts(model);
             var resultModel = _mapper.Map<ListGrpcProductModel>(result.Data);
 
-            return await Task.FromResult(resultModel);
+            return resultModel;
         }
 
-        public override async Task<ListGrpcProductFeaturePropertyModel> GetAllFeatureProperties(GrpcProductFeaturePropertyModel request, ServerCallContext context)
+        public override async Task<ListGrpcProductFeaturePropertyModel> GetAllFeatureProperties(GrpcProductFeatureModel request, ServerCallContext context)
         {
             var result = await _dapperFeatureRepository.GetAllFeatureProperties(request.FeatureId,request.ProductId);
             var resultModel = _mapper.Map<ListGrpcProductFeaturePropertyModel>(result.Data);
 
-            return await Task.FromResult(resultModel);
+            return resultModel;
         }
 
         public override async Task<ListGrpcProductFeaturePropertyModel> GetAllFeaturePropertiesByProductFeatureId(GrpcIntModel request, ServerCallContext context)
@@ -72,7 +82,7 @@ namespace CatalogService.Api.Services.Grpc
             var result = await _dapperFeatureRepository.GetAllFeaturePropertiesByProductFeatureId(model);
             var resultModel = _mapper.Map<ListGrpcProductFeaturePropertyModel>(result.Data);
 
-            return await Task.FromResult(resultModel);
+            return resultModel;
         }
     }
 }

@@ -29,6 +29,13 @@ service FeatureProtoService {
 		  body: '*'
 		};
 	}
+
+	rpc GetAllFeaturesByProductCode(GrpcStringModel) returns (ListGrpcFeatureModel) {
+		option (google.api.http) = {
+		  get: "/feature/getall-features-byproductcode"
+		  body: '*'
+		};
+	}
 	
 	rpc GetFeatureProducts(GrpcIntModel) returns (ListGrpcProductModel) {
 		option (google.api.http) = {
@@ -37,7 +44,7 @@ service FeatureProtoService {
 		};
 	}
 
-	rpc GetAllFeatureProperties(GrpcProductFeaturePropertyModel) returns (ListGrpcProductFeaturePropertyModel) {
+	rpc GetAllFeatureProperties(GrpcProductFeatureModel) returns (ListGrpcProductFeaturePropertyModel) {
 		option (google.api.http) = {
 		  get: "/feature/get-all-featureproperties"
 		  body: '*'
@@ -61,7 +68,7 @@ message ListGrpcFeature {
 message GrpcFeature {
 	string name = 1;
 
-	GrpcProductFeaturePropertyModel productFeatures = 2;
+	repeated GrpcProductFeatureModel productFeatures = 2;
 }
 
 // NEEDED MODELS

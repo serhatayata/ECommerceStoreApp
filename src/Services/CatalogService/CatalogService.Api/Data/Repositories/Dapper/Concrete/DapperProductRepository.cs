@@ -164,76 +164,13 @@ public class DapperProductRepository : IDapperProductRepository
         return new DataResult<Product>(result);
     }
 
-    public async Task<DataResult<Product>> GetByProductCode(StringModel model)
+    public async Task<DataResult<Product>> GetByProductCodeAsync(StringModel model)
     {
         var query = $"SELECT TOP 1 * FROM {_productTable} WHERE ProductCode = @ProductCode";
 
         var result = await _readDbConnection.QuerySingleOrDefaultAsync<Product>(sql: query,
                                                                                 param: new { ProductCode = model.Value });
         return new DataResult<Product>(result);
-    }
-
-    public async Task<DataResult<Product>> GetWithComments(IntModel model)
-    {
-        var query = $"SELECT p.*, c.Id AS CommentId, c.* FROM {_productTable} p " +
-                    $"INNER JOIN {_commentTable} c ON c.ProductId = p.Id " +
-                    $"WHERE p.Id = @Id";
-
-        var productDictionary = new Dictionary<int, Product>();
-
-        var result = await _dbContext.Connection.QueryAsync<Product, Comment, Product>(query, (product, comment) =>
-        {
-            Product? productEntry;
-
-            if (!productDictionary.TryGetValue(product.Id, out productEntry))
-            {
-                productEntry = product;
-                productEntry.Comments = new List<Comment>();
-                productDictionary.Add(product.Id, productEntry);
-            }
-            if (comment != null)
-                productEntry.Comments.Add(comment);
-
-            return productEntry;
-        }, splitOn: "CommentId", param: new { Id = model.Value });
-
-        var filteredResult = result.DistinctBy(c => c.Id).FirstOrDefault();
-        return new DataResult<Product>(filteredResult);
-    }
-
-    public async Task<DataResult<Product>> GetWithFeatures(IntModel model)
-    {
-        var query = $"SELECT p.*, f.Id AS FeatureId ,f.Name, FROM {_productTable} " +
-                    $"INNER JOIN {_productFeatureTable} pf ON pf.ProductId = p.Id " +
-                    $"INNER JOIN {_featureTable} f ON f.Id = pf.FeatureId " +
-                    $"WHERE p.Id = @Id";
-
-        var productDictionary = new Dictionary<int, Product>();
-
-        var result = await _dbContext.Connection.QueryAsync<Product, Feature, Product>(query, (product, feature) =>
-        {
-            Product? productEntry;
-
-            if (!productDictionary.TryGetValue(product.Id, out productEntry))
-            {
-                productEntry = product;
-                productEntry.ProductFeatures = new List<ProductFeature>();
-                productDictionary.Add(productEntry.Id, productEntry);
-            }
-
-            if (feature != null)
-                product.ProductFeatures.Add(new ProductFeature()
-                {
-                    Feature = feature,
-                    FeatureId = feature.Id,
-                    ProductId = product.Id
-                });
-
-            return productEntry;
-        }, splitOn: "FeatureId", param: new { Id = model.Value });
-
-        var filteredResult = result.DistinctBy(c => c.Id).FirstOrDefault();
-        return new DataResult<Product>(filteredResult);
     }
 
     public async Task<DataResult<IReadOnlyList<Product>>> GetAllAsync()
@@ -244,7 +181,7 @@ public class DapperProductRepository : IDapperProductRepository
         return new DataResult<IReadOnlyList<Product>>(result);
     }
 
-    public async Task<DataResult<IReadOnlyList<Product>>> GetAllBetweenPrices(PriceBetweenModel model)
+    public async Task<DataResult<IReadOnlyList<Product>>> GetAllBetweenPricesAsync(PriceBetweenModel model)
     {
         var query = $"SELECT * FROM {_productTable} WHERE Price >= @MinimumPrice AND Price <= @MaximumPrice";
 
@@ -256,7 +193,7 @@ public class DapperProductRepository : IDapperProductRepository
         return new DataResult<IReadOnlyList<Product>>(result);
     }
 
-    public async Task<DataResult<IReadOnlyList<Product>>> GetAllByBrandId(IntModel model)
+    public async Task<DataResult<IReadOnlyList<Product>>> GetAllByBrandIdAsync(IntModel model)
     {
         var query = $"SELECT * FROM {_productTable} WHERE BrandId = @BrandId";
 
@@ -268,7 +205,7 @@ public class DapperProductRepository : IDapperProductRepository
         return new DataResult<IReadOnlyList<Product>>(result);
     }
 
-    public async Task<DataResult<IReadOnlyList<Product>>> GetAllByProductTypeId(IntModel model)
+    public async Task<DataResult<IReadOnlyList<Product>>> GetAllByProductTypeIdAsync(IntModel model)
     {
         var query = $"SELECT * FROM {_productTable} WHERE ProductTypeId = @ProductTypeId";
 

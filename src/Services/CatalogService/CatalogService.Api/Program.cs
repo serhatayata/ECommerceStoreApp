@@ -10,6 +10,8 @@ using CatalogService.Api.Mapping;
 using CatalogService.Api.Infrastructure.Interceptors;
 using System.Reflection;
 using CatalogService.Api.Services.Grpc;
+using CatalogService.Api.Services.Cache.Abstract;
+using CatalogService.Api.Services.Cache.Concrete;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
@@ -24,10 +26,13 @@ builder.Services.AddControllerSettings();
 #region SERVICES
 
 #region Startup DI
-//builder.Services.AddSingleton<IElasticSearchService, ElasticSearchService>();
+builder.Services.AddSingleton<IRedisService, RedisService>();
 #endregion
 #region Host
 builder.Host.AddHostExtensions(environment);
+#endregion
+#region Http
+builder.Services.AddHttpContextAccessor();
 #endregion
 #region ServiceTool
 ServiceTool.Create(builder.Services);
@@ -74,6 +79,7 @@ app.MapGrpcService<GrpcBrandService>();
 app.MapGrpcService<GrpcCategoryService>();
 app.MapGrpcService<GrpcCommentService>();
 app.MapGrpcService<GrpcFeatureService>();
+app.MapGrpcService<GrpcProductService>();
 
 app.MapControllers();
 

@@ -30,10 +30,18 @@ public class MapProfile : Profile
         #endregion
         #region PRODUCT
         CreateMap<GrpcProduct, Product>().ReverseMap();
+        CreateMap<GrpcProductModel, Product>().ReverseMap();
         CreateMap<IEnumerable<Product>, ListGrpcProductModel>()
             .ForMember(dest => dest.Products, opt => opt.MapFrom(s => s));
 
         CreateMap<ProductType, GrpcProductType>().ReverseMap();
+
+        CreateMap<ProductFeature, GrpcProductFeature>().ReverseMap();
+        CreateMap<ProductFeature, GrpcProductFeatureModel>().ReverseMap();
+        CreateMap<ProductFeatureProperty, GrpcProductFeaturePropertyModel>().ReverseMap();
+
+        CreateMap<IEnumerable<ProductFeatureProperty>, ListGrpcProductFeaturePropertyModel>()
+            .ForMember(dest => dest.ProductFeatureProperties, opt => opt.MapFrom(s => s));
         #endregion
         #region CATEGORY
         CreateMap<Category, GrpcCategory>().ReverseMap();

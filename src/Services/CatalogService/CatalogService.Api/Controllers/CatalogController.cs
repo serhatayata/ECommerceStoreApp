@@ -24,7 +24,7 @@ namespace CatalogService.Api.Controllers
             int x = 1;
             int y = 4;
 
-            var result = await _unitOfWork.DapperProductRepository.GetAllByProductTypeId(new IntModel());
+            var result = await _unitOfWork.DapperProductRepository.GetAllByProductTypeIdAsync(new IntModel());
             return Ok(result);
         }
     }
