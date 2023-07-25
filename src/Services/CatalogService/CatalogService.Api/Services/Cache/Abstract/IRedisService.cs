@@ -117,7 +117,7 @@ namespace CatalogService.Api.Services.Cache.Abstract
         /// <param name="duration"></param>
         /// <param name="databaseId"></param>
         /// <returns><see cref="{T}"/></returns>
-        Task<T> GetAsync<T>(string key, int databaseId, int duration, Func<T> filter) where T : class;
+        Task<T> GetAsync<T>(string key, int databaseId, int duration, Func<Task<T>> filter) where T : class;
 
         /// <summary>
         /// Removes the key from cache

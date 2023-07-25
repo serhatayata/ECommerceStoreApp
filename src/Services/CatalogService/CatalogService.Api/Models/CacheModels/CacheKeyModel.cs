@@ -2,6 +2,27 @@
 {
     public class CacheKeyModel
     {
+        public CacheKeyModel()
+        {
+            
+        }
+
+        public CacheKeyModel(
+            string projectName,
+            string className,
+            string methodName,
+            string language,
+            string prefix,
+            string[] parameters)
+        {
+            this.ProjectName = projectName;
+            this.ClassName = className;
+            this.MethodName = methodName;
+            this.Language = language;
+            this.Prefix = prefix;
+            this.Parameters = parameters;
+        }
+
         /// <summary>
         /// Project name of the source
         /// </summary>

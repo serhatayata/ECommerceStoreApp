@@ -33,7 +33,7 @@ namespace CatalogService.Api.Extensions
         public static async Task<T> CacheOrGetAsync<T>(this StackExchange.Redis.IDatabase db,
                                string key,
                                int duration,
-                               Func<T> filter) where T : class
+                               Func<Task<T>> filter) where T : class
         {
             if (!string.IsNullOrWhiteSpace(await db.StringGetAsync(key)))
             {
@@ -42,7 +42,7 @@ namespace CatalogService.Api.Extensions
             }
             else
             {
-                var result = filter();
+                var result = await filter();
 
                 if (result != null)
                 {
@@ -57,15 +57,13 @@ namespace CatalogService.Api.Extensions
 
         public static string GetCacheKeyByModel(CacheKeyModel model)
         {
-            var parameters = string.Join("-", model.Parameters);
-
             var result = string.Join("-",
                              model.Prefix,
                              model.ProjectName,
                              model.ClassName,
                              model.MethodName,
                              model.Language,
-                             parameters);
+                             model.Parameters != null && model.Parameters.Count() > 0 ? string.Join("-", model.Parameters) : string.Empty);
 
             return result;
         }

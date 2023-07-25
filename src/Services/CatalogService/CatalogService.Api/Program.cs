@@ -12,6 +12,7 @@ using System.Reflection;
 using CatalogService.Api.Services.Grpc;
 using CatalogService.Api.Services.Cache.Abstract;
 using CatalogService.Api.Services.Cache.Concrete;
+using CatalogService.Api.Models.CacheModels;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
@@ -30,6 +31,9 @@ builder.Services.AddSingleton<IRedisService, RedisService>();
 #endregion
 #region Host
 builder.Host.AddHostExtensions(environment);
+#endregion
+#region Configuration
+builder.Services.Configure<RedisOptions>(configuration.GetSection("RedisOptions"));
 #endregion
 #region Http
 builder.Services.AddHttpContextAccessor();

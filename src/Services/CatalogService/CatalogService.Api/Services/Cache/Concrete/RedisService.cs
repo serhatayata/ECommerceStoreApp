@@ -150,7 +150,7 @@ namespace CatalogService.Api.Services.Cache.Concrete
         }
         #endregion
         #region GetAsync<T> with Func
-        public async Task<T> GetAsync<T>(string key, int databaseId, int duration, Func<T> filter) where T : class
+        public async Task<T> GetAsync<T>(string key, int databaseId, int duration, Func<Task<T>> filter) where T : class
         {
             return await _client.GetDatabase(databaseId).CacheOrGetAsync<T>(key, duration, filter);
         }
