@@ -2,20 +2,19 @@
 using CatalogService.Api.Models.CacheModels;
 using CatalogService.Api.Utilities.IoC;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 namespace CatalogService.Api.Services.Grpc.Abstract
 {
-    public abstract class BaseGrpcBrandService : BrandProtoService.BrandProtoServiceBase
+    public abstract class BaseGrpcCategoryService : CategoryProtoService.CategoryProtoServiceBase
     {
         private IHttpContextAccessor _httpContextAccessor;
-        
-        protected BaseGrpcBrandService()
+
+        protected BaseGrpcCategoryService()
         {
             var httpContextAccessor = ServiceTool.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
 
             this.Language = this.GetAcceptLanguage(httpContextAccessor);
-            this.ProjectName = System.Reflection.Assembly.GetEntryAssembly()?.GetName()?.Name ?? nameof(BaseGrpcBrandService);
+            this.ProjectName = System.Reflection.Assembly.GetEntryAssembly()?.GetName()?.Name ?? nameof(BaseGrpcCategoryService);
             this.ClassName = MethodBase.GetCurrentMethod()?.DeclaringType?.Name ?? this.GetType().Name;
         }
 
@@ -33,8 +32,8 @@ namespace CatalogService.Api.Services.Grpc.Abstract
         }
 
         public string GetCacheKey(
-            string methodName, 
-            string[] parameters = null, 
+            string methodName,
+            string[] parameters = null,
             string prefix = null)
         {
             var cacheKeyModel = new CacheKeyModel(this.ProjectName,

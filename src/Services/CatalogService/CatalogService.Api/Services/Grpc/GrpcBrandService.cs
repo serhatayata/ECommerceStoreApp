@@ -35,35 +35,47 @@ namespace CatalogService.Api.Services.Grpc
 
         public override async Task<GrpcBrandModel> GetAsync(GrpcIntModel request, ServerCallContext context)
         {
-            var cacheKey = this.GetCacheKey(System.Reflection.MethodBase.GetCurrentMethod()?.Name ?? nameof(GetAsync));
-            return _redisService.GetAsync<GrpcBrandModel>(
-                cacheKey, 
-                _redisOptions.DatabaseId, 
-                _redisOptions.Duration,
-                async () =>
-                {
-                    var requestModel = _mapper.Map<IntModel>(request);
-                    var result = await _dapperBrandRepository.GetAsync(requestModel);
+            var requestModel = _mapper.Map<IntModel>(request);
+            var result = await _dapperBrandRepository.GetAsync(requestModel);
 
-                    var resultData = _mapper.Map<GrpcBrandModel>(result.Data);
-                    return resultData;
-                });
+            var resultData = _mapper.Map<GrpcBrandModel>(result.Data);
+            return resultData;
         }
 
         public override async Task<ListGrpcBrandModel> GetAllAsync(GrpcEmptyModel request, ServerCallContext context)
         {
-            var result = await _dapperBrandRepository.GetAllAsync();
-            var resultData = _mapper.Map<ListGrpcBrandModel>(result.Data);
+            var cacheKey = this.GetCacheKey(nameof(GetAllAsync));
+            var result = await _redisService.GetAsync<ListGrpcBrandModel>(
+                cacheKey,
+                _redisOptions.DatabaseId,
+                _redisOptions.Duration,
+                async () =>
+                {
+                    var result = await _dapperBrandRepository.GetAllAsync();
+                    var resultData = _mapper.Map<ListGrpcBrandModel>(result.Data);
 
-            return resultData;
+                    return resultData;
+                });
+
+            return result;
         }
 
         public override async Task<ListGrpcBrand> GetAllWithProductsAsync(GrpcEmptyModel request, ServerCallContext context)
         {
-            var result = await _dapperBrandRepository.GetAllWithProductsAsync();
-            var resultData = _mapper.Map<ListGrpcBrand>(result.Data);
+            var cacheKey = this.GetCacheKey(nameof(GetAllWithProductsAsync));
+            var result = await _redisService.GetAsync<ListGrpcBrand>(
+                cacheKey,
+                _redisOptions.DatabaseId,
+                _redisOptions.Duration,
+                async () =>
+                {
+                    var result = await _dapperBrandRepository.GetAllWithProductsAsync();
+                    var resultData = _mapper.Map<ListGrpcBrand>(result.Data);
 
-            return resultData;
+                    return resultData;
+                });
+
+            return result;
         }
     }
 }

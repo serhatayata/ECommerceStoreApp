@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
 using CatalogService.Api.Data.Repositories.Dapper.Abstract;
 using CatalogService.Api.Models.Base.Concrete;
+using CatalogService.Api.Services.Grpc.Abstract;
 using Grpc.Core;
 
 namespace CatalogService.Api.Services.Grpc
 {
-    public class GrpcProductService : ProductProtoService.ProductProtoServiceBase
+    public class GrpcProductService : BaseGrpcProductService
     {
         private readonly IDapperProductRepository _dapperProductRepository;
         private readonly IMapper _mapper;

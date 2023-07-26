@@ -2,11 +2,12 @@
 using CatalogService.Api.Data.Repositories.Dapper.Abstract;
 using CatalogService.Api.Data.Repositories.EntityFramework.Abstract;
 using CatalogService.Api.Models.Base.Concrete;
+using CatalogService.Api.Services.Grpc.Abstract;
 using Grpc.Core;
 
 namespace CatalogService.Api.Services.Grpc
 {
-    public class GrpcCategoryService : CategoryProtoService.CategoryProtoServiceBase
+    public class GrpcCategoryService : BaseGrpcCategoryService
     {
         private readonly IDapperCategoryRepository _dapperCategoryRepository;
         private readonly IEfCategoryRepository _efCategoryRepository;

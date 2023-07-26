@@ -57,15 +57,7 @@ namespace CatalogService.Api.Extensions
 
         public static string GetCacheKeyByModel(CacheKeyModel model)
         {
-            var result = string.Join("-",
-                             model.Prefix,
-                             model.ProjectName,
-                             model.ClassName,
-                             model.MethodName,
-                             model.Language,
-                             model.Parameters != null && model.Parameters.Count() > 0 ? string.Join("-", model.Parameters) : string.Empty);
-
-            return result;
+            return string.Join("-", model.GetModelValuesAsList());
         }
 
         public static string GetCacheKey(string[] parameters, string prefix = "")
@@ -75,6 +67,5 @@ namespace CatalogService.Api.Extensions
             var result = string.Join("-", prefix, values);
             return result;
         }
-
     }
 }

@@ -11,14 +11,12 @@
             string projectName,
             string className,
             string methodName,
-            string language,
             string prefix,
             string[] parameters)
         {
             this.ProjectName = projectName;
             this.ClassName = className;
             this.MethodName = methodName;
-            this.Language = language;
             this.Prefix = prefix;
             this.Parameters = parameters;
         }
@@ -35,19 +33,36 @@
         /// Method name of the class
         /// </summary>
         public string MethodName { get; set; }
-        /// <summary>
-        /// Language of the source method name
-        /// </summary>
-        public string Language { get; set; } = "tr-TR";
 
         /// <summary>
         /// Prefix of the source
         /// </summary>
-        public string Prefix { get; set; } = string.Empty;
+        public string Prefix { get; set; }
 
         /// <summary>
         /// Optional parameters
         /// </summary>
         public string[] Parameters { get; set; }
+
+        public string[] GetModelValuesAsList()
+        {
+            var values = new List<string>();
+            if (!string.IsNullOrWhiteSpace(this.Prefix))
+                values.Add(this.Prefix);
+
+            if (!string.IsNullOrWhiteSpace(this.ProjectName))
+                values.Add(this.ProjectName);
+
+            if (!string.IsNullOrWhiteSpace(this.ClassName))
+                values.Add(this.ClassName);
+
+            if (!string.IsNullOrWhiteSpace(this.MethodName))
+                values.Add(this.MethodName);
+
+            if (this.Parameters != null && this.Parameters.Count() > 0)
+                values.AddRange(this.Parameters);
+
+            return values.ToArray();
+        }
     }
 }

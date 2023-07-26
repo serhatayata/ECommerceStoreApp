@@ -2,11 +2,12 @@
 using CatalogService.Api.Data.Repositories.Dapper.Abstract;
 using CatalogService.Api.Data.Repositories.Dapper.Concrete;
 using CatalogService.Api.Models.Base.Concrete;
+using CatalogService.Api.Services.Grpc.Abstract;
 using Grpc.Core;
 
 namespace CatalogService.Api.Services.Grpc
 {
-    public class GrpcFeatureService : FeatureProtoService.FeatureProtoServiceBase
+    public class GrpcFeatureService : BaseGrpcFeatureService
     {
         private readonly IDapperFeatureRepository _dapperFeatureRepository;
         private readonly IMapper _mapper;
