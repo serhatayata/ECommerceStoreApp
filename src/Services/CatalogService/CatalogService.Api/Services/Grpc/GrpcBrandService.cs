@@ -44,7 +44,7 @@ namespace CatalogService.Api.Services.Grpc
 
         public override async Task<ListGrpcBrandModel> GetAllAsync(GrpcEmptyModel request, ServerCallContext context)
         {
-            var cacheKey = this.GetCacheKey(nameof(GetAllAsync));
+            var cacheKey = this.CurrentCacheKey(nameof(GetAllAsync));
             var result = await _redisService.GetAsync<ListGrpcBrandModel>(
                 cacheKey,
                 _redisOptions.DatabaseId,
@@ -62,7 +62,7 @@ namespace CatalogService.Api.Services.Grpc
 
         public override async Task<ListGrpcBrand> GetAllWithProductsAsync(GrpcEmptyModel request, ServerCallContext context)
         {
-            var cacheKey = this.GetCacheKey(nameof(GetAllWithProductsAsync));
+            var cacheKey = this.CurrentCacheKey(nameof(GetAllWithProductsAsync));
             var result = await _redisService.GetAsync<ListGrpcBrand>(
                 cacheKey,
                 _redisOptions.DatabaseId,

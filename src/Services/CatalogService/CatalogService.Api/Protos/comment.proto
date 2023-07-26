@@ -29,9 +29,9 @@ service CommentProtoService {
 		};
 	}
 
-	rpc GetAllByProductId(GrpcIntModel) returns (ListGrpcComment) {
+	rpc GetAllByProductCode(GrpcIntModel) returns (ListGrpcComment) {
 		option (google.api.http) = {
-		  get: "/comment/getall-byproductid"
+		  get: "/comment/getall-byproductcode"
 		  body: '*'
 		};
 	}

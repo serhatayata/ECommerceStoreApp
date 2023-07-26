@@ -5,8 +5,8 @@ using System.Reflection;
 
 namespace CatalogService.Api.Services.Grpc.Abstract
 {
-    public abstract class BaseGrpcProductService : ProductProtoService.ProductProtoServiceBase
-    {
+    public abstract class BaseGrpcProductService : ProductProtoService.ProductProtoServiceBase, IBaseGrpcService
+    {   
         private IHttpContextAccessor _httpContextAccessor;
 
         protected BaseGrpcProductService()
@@ -22,7 +22,7 @@ namespace CatalogService.Api.Services.Grpc.Abstract
         public string ProjectName { get; private set; }
         public string ClassName { get; private set; }
 
-        private string GetAcceptLanguage(IHttpContextAccessor httpContextAccessor)
+        public string GetAcceptLanguage(IHttpContextAccessor httpContextAccessor)
         {
             var acceptLanguage = httpContextAccessor?.HttpContext?.Request?.GetTypedHeaders()?.AcceptLanguage?.FirstOrDefault()?.Value ?? string.Empty;
             var currentCulture = acceptLanguage.HasValue ? acceptLanguage.Value : "tr-TR";
@@ -31,19 +31,7 @@ namespace CatalogService.Api.Services.Grpc.Abstract
             return culture;
         }
 
-        public string GetCacheKey(
-            string methodName,
-            string[] parameters = null,
-            string prefix = null)
-        {
-            var cacheKeyModel = new CacheKeyModel(this.ProjectName,
-                                                  this.ClassName,
-                                                  methodName,
-                                                  prefix,
-                                                  parameters);
-
-            var cacheKey = CacheExtensions.GetCacheKeyByModel(cacheKeyModel);
-            return cacheKey;
-        }
+        public string CurrentCacheKey(string methodName, string prefix = null, params string[] parameters)
+            => CacheExtensions.GetCacheKey(methodName, this.ProjectName, this.ClassName, prefix, parameters);
     }
 }

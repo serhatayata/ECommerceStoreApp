@@ -60,12 +60,21 @@ namespace CatalogService.Api.Extensions
             return string.Join("-", model.GetModelValuesAsList());
         }
 
-        public static string GetCacheKey(string[] parameters, string prefix = "")
+        public static string GetCacheKey(
+            string methodName,
+            string projectName,
+            string className,
+            string prefix = null,
+            params string[] parameters)
         {
-            var values = string.Join("-", parameters);
+            var cacheKeyModel = new CacheKeyModel(projectName,
+                                                  className,
+                                                  methodName,
+                                                  prefix,
+                                                  parameters);
 
-            var result = string.Join("-", prefix, values);
-            return result;
+            var cacheKey = CacheExtensions.GetCacheKeyByModel(cacheKeyModel);
+            return cacheKey;
         }
     }
 }

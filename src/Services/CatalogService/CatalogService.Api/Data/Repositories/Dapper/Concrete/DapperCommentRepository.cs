@@ -234,6 +234,16 @@ public class DapperCommentRepository : IDapperCommentRepository
         return new DataResult<IReadOnlyList<Comment>>(result);
     }
 
+    public async Task<DataResult<IReadOnlyList<Comment>>> GetAllByProductCode(IntModel model)
+    {
+        var query = $"SELECT * FROM {_commentTable} WHERE ProductCode = @ProductCode";
+
+        var result = await _readDbConnection.QueryAsync<Comment>(sql: query,
+                                                                 param: new { ProductCode = model.Value });
+
+        return new DataResult<IReadOnlyList<Comment>>(result);
+    }
+
     public async Task<DataResult<IReadOnlyList<Comment>>> GetAllByUserId(StringModel model)
     {
         var query = $"SELECT co.*, p.Id AS ProductId, p.* FROM {_commentTable} co " +
