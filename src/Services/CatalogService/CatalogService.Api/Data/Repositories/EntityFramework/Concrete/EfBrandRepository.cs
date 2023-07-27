@@ -4,6 +4,7 @@ using CatalogService.Api.Entities;
 using CatalogService.Api.Models.Base.Concrete;
 using CatalogService.Api.Utilities.Results;
 using Microsoft.EntityFrameworkCore;
+using System.Data.Common;
 
 namespace CatalogService.Api.Data.Repositories.EntityFramework.Concrete;
 
@@ -22,54 +23,98 @@ public class EfBrandRepository : IEfBrandRepository
 
     public async Task<Result> AddAsync(Brand entity)
     {
-        try
+        _catalogDbContext.Connection.Open();
+        using (var transaction = _catalogDbContext.Connection.BeginTransaction())
         {
-            var result = await _catalogDbContext.Brands.AddAsync(entity);
+            try
+            {
+                _catalogDbContext.Database.UseTransaction(transaction as DbTransaction);
 
-            if (result.State == Microsoft.EntityFrameworkCore.EntityState.Added)
+                await _catalogDbContext.Brands.AddAsync(entity);
+
+                var result = _catalogDbContext.SaveChanges();
+
+                if (result < 1)
+                    return new ErrorResult("Brand not added");
+
+                transaction.Commit();
                 return new SuccessResult("Brand added");
-            return new ErrorResult("Brand not added");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("{0} - {1} - Exception : {2}", nameof(this.AddAsync), "Brand not added", ex.Message);
-            return new ErrorResult("Brand not added");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("{0} - {1} - Exception : {2}", nameof(this.AddAsync), "Brand not added", ex.Message);
+                return new ErrorResult("Brand not added");
+            }
+            finally
+            {
+                _catalogDbContext.Connection.Close();
+            }
         }
     }
 
     public async Task<Result> UpdateAsync(Brand entity)
     {
-        try
+        _catalogDbContext.Connection.Open();
+        using (var transaction = _catalogDbContext.Connection.BeginTransaction())
         {
-            var result = await _catalogDbContext.Brands.Where(b => b.Id == entity.Id)
-                                    .ExecuteUpdateAsync(b => b
-                                        .SetProperty(p => p.Name, entity.Name)
-                                        .SetProperty(p => p.Description, entity.Description));
+            try
+            {
+                _catalogDbContext.Database.UseTransaction(transaction as DbTransaction);
 
-            return result > 0 ? 
-                new SuccessResult("Brand updated") : new ErrorResult("Brand not updated");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("{0} - {1} - Exception : {2}", nameof(this.UpdateAsync), "Brand not updated", ex.Message);
-            return new ErrorResult("Brand not updated");
+                var result = await _catalogDbContext.Brands.Where(b => b.Id == entity.Id)
+                                        .ExecuteUpdateAsync(b => b
+                                            .SetProperty(p => p.Name, entity.Name)
+                                            .SetProperty(b => b.Description, entity.Description));
+
+                _catalogDbContext.SaveChanges();
+
+                if (result < 1)
+                    return new ErrorResult("Brand not updated");
+
+                transaction.Commit();
+                return new SuccessResult("Brand updated");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("{0} - {1} - Exception : {2}", nameof(this.UpdateAsync), "Brand not updated", ex.Message);
+                return new ErrorResult("Brand not updated");
+            }
+            finally
+            {
+                _catalogDbContext.Connection.Close();
+            }
         }
     }
 
     public async Task<Result> DeleteAsync(IntModel model)
     {
-        try
+        _catalogDbContext.Connection.Open();
+        using (var transaction = _catalogDbContext.Connection.BeginTransaction())
         {
-            var result = await _catalogDbContext.Brands.Where(b => b.Id == model.Value)
-                                                       .ExecuteDeleteAsync();
+            try
+            {
+                _catalogDbContext.Database.UseTransaction(transaction as DbTransaction);
 
-            return result > 0 ?
-                new SuccessResult("Brand deleted") : new ErrorResult("Brand not deleted");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("{0} - {1} - Exception : {2}", nameof(this.DeleteAsync), "Brand not deleted", ex.Message);
-            return new ErrorResult("Brand not deleted");
+                var result = await _catalogDbContext.Brands.Where(b => b.Id == model.Value)
+                                                           .ExecuteDeleteAsync();
+
+                _catalogDbContext.SaveChanges();
+
+                if (result < 1)
+                    return new ErrorResult("Brand not deleted");
+
+                transaction.Commit();
+                return new SuccessResult("Brand deleted");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("{0} - {1} - Exception : {2}", nameof(this.DeleteAsync), "Brand not deleted", ex.Message);
+                return new ErrorResult("Brand not deleted");
+            }
+            finally
+            {
+                _catalogDbContext.Connection.Close();
+            }
         }
     }
 

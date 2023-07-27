@@ -338,6 +338,16 @@ public class DapperFeatureRepository : IDapperFeatureRepository
         return new DataResult<IReadOnlyList<Feature>>(result);
     }
 
+    public async Task<DataResult<IReadOnlyList<Feature>>> GetAllPagedAsync(PagingModel model)
+    {
+        var query = $"SELECT * FROM {_featureTable} " +
+                    $"ORDER BY Id DESC OFFSET (@Page-1) * @PageSize ROWS FETCH NEXT @PageSize ROWS ONLY";
+
+        var result = await _readDbConnection.QueryAsync<Feature>(sql: query,
+                                                                 param: new { Page = model.Page, PageSize = model.PageSize });
+        return new DataResult<IReadOnlyList<Feature>>(result);
+    }
+
     public async Task<DataResult<IReadOnlyList<Feature>>> GetAllFeaturesByProductId(IntModel model)
     {
         var query = $"SELECT f.*, " +

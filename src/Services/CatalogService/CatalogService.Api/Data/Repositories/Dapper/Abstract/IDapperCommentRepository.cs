@@ -9,6 +9,7 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Abstract
     {
         Task<DataResult<Comment>> GetByCodeAsync(StringModel model);
         Task<DataResult<IReadOnlyList<Comment>>> GetAllByProductId(IntModel model);
+        Task<DataResult<IReadOnlyList<Comment>>> GetAllPagedAsync(PagingModel model);
         Task<DataResult<IReadOnlyList<Comment>>> GetAllByProductCode(IntModel model);
         Task<DataResult<IReadOnlyList<Comment>>> GetAllByUserId(StringModel model);
         Task<Result> DeleteByCodeAsync(StringModel model);

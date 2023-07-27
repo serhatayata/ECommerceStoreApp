@@ -181,6 +181,16 @@ public class DapperProductRepository : IDapperProductRepository
         return new DataResult<IReadOnlyList<Product>>(result);
     }
 
+    public async Task<DataResult<IReadOnlyList<Product>>> GetAllPagedAsync(PagingModel model)
+    {
+        var query = $"SELECT * FROM {_productTable} " +
+                    $"ORDER BY Id DESC OFFSET (@Page-1) * @PageSize ROWS FETCH NEXT @PageSize ROWS ONLY";
+
+        var result = await _readDbConnection.QueryAsync<Product>(sql: query,
+                                                                 param: new { Page = model.Page, PageSize = model.PageSize });
+        return new DataResult<IReadOnlyList<Product>>(result);
+    }
+
     public async Task<DataResult<IReadOnlyList<Product>>> GetAllBetweenPricesAsync(PriceBetweenModel model)
     {
         var query = $"SELECT * FROM {_productTable} WHERE Price >= @MinimumPrice AND Price <= @MaximumPrice";

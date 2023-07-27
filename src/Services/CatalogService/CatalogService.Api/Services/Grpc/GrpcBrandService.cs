@@ -44,7 +44,7 @@ namespace CatalogService.Api.Services.Grpc
 
         public override async Task<ListGrpcBrandModel> GetAllAsync(GrpcEmptyModel request, ServerCallContext context)
         {
-            var cacheKey = this.CurrentCacheKey(nameof(GetAllAsync));
+            var cacheKey = this.CurrentCacheKey(methodName: nameof(GetAllAsync));
             var result = await _redisService.GetAsync<ListGrpcBrandModel>(
                 cacheKey,
                 _redisOptions.DatabaseId,
@@ -60,9 +60,29 @@ namespace CatalogService.Api.Services.Grpc
             return result;
         }
 
+        public override async Task<ListGrpcBrandModel> GetAllPagedAsync(GrpcPagingModel request, ServerCallContext context)
+        {
+            var cacheKey = this.CurrentCacheKey(methodName: nameof(GetAllPagedAsync), 
+                                                parameters: new string[] { request.Page.ToString(), request.PageSize.ToString() });
+            var result = await _redisService.GetAsync<ListGrpcBrandModel>(
+                cacheKey,
+                _redisOptions.DatabaseId,
+                _redisOptions.Duration,
+                async () =>
+                {
+                    var requestModel = _mapper.Map<PagingModel>(request);
+                    var result = await _dapperBrandRepository.GetAllPagedAsync(requestModel);
+                    var resultData = _mapper.Map<ListGrpcBrandModel>(result.Data);
+
+                    return resultData;
+                });
+
+            return result;
+        }
+
         public override async Task<ListGrpcBrand> GetAllWithProductsAsync(GrpcEmptyModel request, ServerCallContext context)
         {
-            var cacheKey = this.CurrentCacheKey(nameof(GetAllWithProductsAsync));
+            var cacheKey = this.CurrentCacheKey(methodName: nameof(GetAllWithProductsAsync));
             var result = await _redisService.GetAsync<ListGrpcBrand>(
                 cacheKey,
                 _redisOptions.DatabaseId,

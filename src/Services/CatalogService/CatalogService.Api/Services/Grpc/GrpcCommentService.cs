@@ -105,5 +105,10 @@ namespace CatalogService.Api.Services.Grpc
 
             return result;
         }
+
+        public override Task<ListGrpcCommentModel> GetAllPagedAsync(GrpcPagingModel request, ServerCallContext context)
+        {
+            return base.GetAllPagedAsync(request, context);
+        }
     }
 }

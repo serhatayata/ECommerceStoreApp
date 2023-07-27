@@ -13,7 +13,7 @@ namespace CatalogService.Api.Data.EntityConfigurations
             builder.HasKey(b => b.Id);
             builder.Property(b => b.Id).ValueGeneratedOnAdd();
 
-            builder.Property(b => b.Name).HasColumnType("nvarchar(10)");
+            builder.Property(b => b.Name).HasColumnType("nvarchar(100)");
 
             builder.Property(r => r.Description).HasColumnType("nvarchar(300)");
         }

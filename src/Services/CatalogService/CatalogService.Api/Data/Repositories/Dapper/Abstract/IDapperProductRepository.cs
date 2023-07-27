@@ -10,6 +10,7 @@ public interface IDapperProductRepository : IGenericRepository<Product, IntModel
 {
     Task<DataResult<Product>> GetByProductCodeAsync(StringModel model);
     Task<DataResult<IReadOnlyList<Product>>> GetAllByProductTypeIdAsync(IntModel model);
+    Task<DataResult<IReadOnlyList<Product>>> GetAllPagedAsync(PagingModel model);
     Task<DataResult<IReadOnlyList<Product>>> GetAllByBrandIdAsync(IntModel model);
     Task<DataResult<IReadOnlyList<Product>>> GetAllBetweenPricesAsync(PriceBetweenModel model);
 }

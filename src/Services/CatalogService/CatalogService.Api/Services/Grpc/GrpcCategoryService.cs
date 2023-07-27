@@ -87,6 +87,26 @@ namespace CatalogService.Api.Services.Grpc
             return result;
         }
 
+        public override async Task<ListGrpcCategoryModel> GetAllPagedAsync(GrpcPagingModel request, ServerCallContext context)
+        {
+            var cacheKey = this.CurrentCacheKey(methodName: nameof(GetAllPagedAsync),
+                                                parameters: new string[] { request.Page.ToString(), request.PageSize.ToString() });
+            var result = await _redisService.GetAsync<ListGrpcCategoryModel>(
+                cacheKey,
+                _redisOptions.DatabaseId,
+                _redisOptions.Duration,
+                async () =>
+                {
+                    var requestModel = _mapper.Map<PagingModel>(request);
+                    var result = await _dapperCategoryRepository.GetAllPagedAsync(requestModel);
+                    var resultModel = _mapper.Map<ListGrpcCategoryModel>(result.Data);
+
+                    return resultModel;
+                });
+
+            return result;
+        }
+
         public override async Task<ListGrpcCategoryModel> GetAllByParentIdAsync(GrpcIntModel request, ServerCallContext context)
         {
             var cacheKey = this.CurrentCacheKey(methodName: nameof(GetAllByParentIdAsync), parameters: request.Value.ToString());

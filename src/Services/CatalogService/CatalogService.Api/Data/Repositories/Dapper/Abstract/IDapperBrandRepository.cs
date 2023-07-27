@@ -8,4 +8,5 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Abstract;
 public interface IDapperBrandRepository : IGenericRepository<Brand, IntModel>
 {
     Task<DataResult<IReadOnlyList<Brand>>> GetAllWithProductsAsync();
+    Task<DataResult<IReadOnlyList<Brand>>> GetAllPagedAsync(PagingModel model);
 }

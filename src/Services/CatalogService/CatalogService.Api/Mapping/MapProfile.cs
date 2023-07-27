@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CatalogService.Api.Entities;
 using CatalogService.Api.Models.Base.Concrete;
+using CatalogService.Api.Models.BrandModels;
 using CatalogService.Api.Utilities.Results;
 
 namespace CatalogService.Api.Mapping;
@@ -9,6 +10,7 @@ public class MapProfile : Profile
 {
     public MapProfile()
     {
+        #region GRPC
         #region GENERAL
         CreateMap<IntModel, GrpcIntModel>().ReverseMap();
         CreateMap<StringModel, GrpcStringModel>().ReverseMap();
@@ -69,6 +71,14 @@ public class MapProfile : Profile
         CreateMap<Feature, GrpcFeatureModel>().ReverseMap();
         CreateMap<IEnumerable<Feature>, ListGrpcFeatureModel>()
             .ForMember(dest => dest.Features, opt => opt.MapFrom(s => s));
+        #endregion
+        #endregion
+
+        #region OTHER
+        CreateMap<BrandAddModel, Brand>().ReverseMap();
+        CreateMap<BrandUpdateModel, Brand>().ReverseMap();
+
+
         #endregion
     }
 }

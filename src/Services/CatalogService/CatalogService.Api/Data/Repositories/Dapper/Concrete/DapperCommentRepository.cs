@@ -224,6 +224,16 @@ public class DapperCommentRepository : IDapperCommentRepository
         return new DataResult<IReadOnlyList<Comment>>(result);
     }
 
+    public async Task<DataResult<IReadOnlyList<Comment>>> GetAllPagedAsync(PagingModel model)
+    {
+        var query = $"SELECT * FROM {_commentTable} " +
+                    $"ORDER BY Id DESC OFFSET (@Page-1) * @PageSize ROWS FETCH NEXT @PageSize ROWS ONLY";
+
+        var result = await _readDbConnection.QueryAsync<Comment>(sql: query,
+                                                                 param: new { Page = model.Page, PageSize = model.PageSize });
+        return new DataResult<IReadOnlyList<Comment>>(result);
+    }
+
     public async Task<DataResult<IReadOnlyList<Comment>>> GetAllByProductId(IntModel model)
     {
         var query = $"SELECT * FROM {_commentTable} WHERE ProductId = @ProductId";

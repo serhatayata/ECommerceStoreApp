@@ -146,6 +146,15 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
             return new DataResult<IReadOnlyList<Brand>>(result);
         }
 
+        public async Task<DataResult<IReadOnlyList<Brand>>> GetAllPagedAsync(PagingModel model)
+        {
+            var query = $"SELECT * FROM {_brandTable} " +
+                        $"ORDER BY Id DESC OFFSET (@Page-1) * @PageSize ROWS FETCH NEXT @PageSize ROWS ONLY";
+            var result = await _readDbConnection.QueryAsync<Brand>(sql: query,
+                                                                   param: new { Page = model.Page, PageSize = model.PageSize});
+            return new DataResult<IReadOnlyList<Brand>>(result);
+        }
+
         public async Task<DataResult<IReadOnlyList<Brand>>> GetAllWithProductsAsync()
         {
             var query = $"SELECT b.*, p.Id as ProductId, p.* FROM {_brandTable} b " +

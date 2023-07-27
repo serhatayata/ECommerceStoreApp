@@ -23,6 +23,13 @@ service FeatureProtoService {
 		};
 	}
 
+	rpc GetAllPagedAsync(GrpcPagingModel) returns (ListGrpcFeatureModel) {
+		option (google.api.http) = {
+		  get: "/feature/getall-paged"
+		  body: '*'
+		};
+	}
+
 	rpc GetAllFeaturesByProductId(GrpcIntModel) returns (ListGrpcFeature) {
 		option (google.api.http) = {
 		  get: "/feature/getall-features-byproductid"

@@ -29,6 +29,13 @@ service CommentProtoService {
 		};
 	}
 
+	rpc GetAllPagedAsync(GrpcPagingModel) returns (ListGrpcCommentModel) {
+		option (google.api.http) = {
+		  get: "/comment/getall-paged"
+		  body: '*'
+		};
+	}
+
 	rpc GetAllByProductCode(GrpcIntModel) returns (ListGrpcComment) {
 		option (google.api.http) = {
 		  get: "/comment/getall-byproductcode"
