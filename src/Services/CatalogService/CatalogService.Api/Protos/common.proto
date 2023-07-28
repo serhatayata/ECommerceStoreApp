@@ -23,13 +23,6 @@ message GrpcPagingModel {
 	int32 pageSize = 2;
 }
 
-message GrpcResponseModel {
-	bool success = 1;
-	google.protobuf.Any message = 2;
-	int32 statusCode = 3;
-	string messageCode = 4;
-}
-
 message GrpcPriceBetweenModel {
 	double minimumPrice = 1;
 	double maximumPrice = 2;

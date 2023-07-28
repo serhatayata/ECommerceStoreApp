@@ -16,9 +16,6 @@ public class MapProfile : Profile
         CreateMap<StringModel, GrpcStringModel>().ReverseMap();
         CreateMap<BoolModel, GrpcBoolModel>().ReverseMap();
         CreateMap<PagingModel, GrpcPagingModel>().ReverseMap();
-
-
-        CreateMap<Result, GrpcResponseModel>().ReverseMap();
         #endregion
 
         #region BRAND
@@ -74,7 +71,8 @@ public class MapProfile : Profile
         #endregion
         #endregion
 
-        #region OTHER
+        #region SERVICES
+        CreateMap<BrandModel, Brand>().ReverseMap();
         CreateMap<BrandAddModel, Brand>().ReverseMap();
         CreateMap<BrandUpdateModel, Brand>().ReverseMap();
 

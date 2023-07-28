@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CatalogService.Api.Data.Repositories.Base;
 using CatalogService.Api.Data.Repositories.Dapper.Abstract;
 using CatalogService.Api.Data.Repositories.Dapper.Concrete;
 using CatalogService.Api.Models.Base.Concrete;
@@ -12,18 +13,18 @@ namespace CatalogService.Api.Services.Grpc
 {
     public class GrpcCommentService : BaseGrpcCommentService
     {
-        private readonly IDapperCommentRepository _dapperCommentRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IRedisService _redisService;
         private RedisOptions _redisOptions;
 
         public GrpcCommentService(
-            IDapperCommentRepository dapperCommentRepository, 
+            IUnitOfWork unitOfWork,
             IMapper mapper,
             IRedisService redisService,
             IOptions<RedisOptions> redisOptions)
         {
-            _dapperCommentRepository = dapperCommentRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _redisService = redisService;
             _redisOptions = redisOptions.Value;
@@ -33,7 +34,7 @@ namespace CatalogService.Api.Services.Grpc
         {
             var model = _mapper.Map<IntModel>(request);
 
-            var result = await _dapperCommentRepository.GetAsync(model);
+            var result = await _unitOfWork.DapperCommentRepository.GetAsync(model);
             var resultModel = _mapper.Map<GrpcCommentModel>(result.Data);
 
             return resultModel;
@@ -43,7 +44,7 @@ namespace CatalogService.Api.Services.Grpc
         {
             var model = _mapper.Map<StringModel>(request);
 
-            var result = await _dapperCommentRepository.GetByCodeAsync(model);
+            var result = await _unitOfWork.DapperCommentRepository.GetByCodeAsync(model);
             var resultModel = _mapper.Map<GrpcCommentModel>(result.Data);
 
             return resultModel;
@@ -57,7 +58,7 @@ namespace CatalogService.Api.Services.Grpc
                 _redisOptions.Duration,
                 async () =>
                 {
-                    var result = await _dapperCommentRepository.GetAllAsync();
+                    var result = await _unitOfWork.DapperCommentRepository.GetAllAsync();
                     var resultModel = _mapper.Map<ListGrpcCommentModel>(result.Data);
 
                     return resultModel;
@@ -77,7 +78,7 @@ namespace CatalogService.Api.Services.Grpc
                 {
                     var model = _mapper.Map<IntModel>(request);
 
-                    var result = await _dapperCommentRepository.GetAllByProductCode(model);
+                    var result = await _unitOfWork.DapperCommentRepository.GetAllByProductCode(model);
                     var resultModel = _mapper.Map<ListGrpcComment>(result.Data);
 
                     return resultModel;
@@ -97,7 +98,7 @@ namespace CatalogService.Api.Services.Grpc
                 {
                     var model = _mapper.Map<StringModel>(request);
 
-                    var result = await _dapperCommentRepository.GetAllByUserId(model);
+                    var result = await _unitOfWork.DapperCommentRepository.GetAllByUserId(model);
                     var resultModel = _mapper.Map<ListGrpcCommentModel>(result.Data);
 
                     return resultModel;

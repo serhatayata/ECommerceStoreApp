@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CatalogService.Api.Data.Repositories.Base;
 using CatalogService.Api.Data.Repositories.Dapper.Abstract;
 using CatalogService.Api.Data.Repositories.EntityFramework.Abstract;
 using CatalogService.Api.Models.Base.Concrete;
@@ -12,18 +13,18 @@ namespace CatalogService.Api.Services.Grpc
 {
     public class GrpcCategoryService : BaseGrpcCategoryService
     {
-        private readonly IDapperCategoryRepository _dapperCategoryRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IRedisService _redisService;
         private readonly RedisOptions _redisOptions;
 
         public GrpcCategoryService(
-            IDapperCategoryRepository dapperCategoryRepository, 
+            IUnitOfWork unitOfWork,
             IMapper mapper,
             IRedisService redisService,
             IOptions<RedisOptions> redisOptions)
         {
-            _dapperCategoryRepository = dapperCategoryRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _redisService = redisService;
             _redisOptions = redisOptions.Value;
@@ -33,7 +34,7 @@ namespace CatalogService.Api.Services.Grpc
         {
             var model = _mapper.Map<IntModel>(request);
 
-            var result = await _dapperCategoryRepository.GetAsync(model);
+            var result = await _unitOfWork.DapperCategoryRepository.GetAsync(model);
             var resultModel = _mapper.Map<GrpcCategoryModel>(result.Data);
 
             return resultModel;
@@ -43,7 +44,7 @@ namespace CatalogService.Api.Services.Grpc
         {
             var model = _mapper.Map<StringModel>(request);
 
-            var result = await _dapperCategoryRepository.GetByName(model);
+            var result = await _unitOfWork.DapperCategoryRepository.GetByName(model);
             var resultModel = _mapper.Map<GrpcCategoryModel>(result.Data);
 
             return resultModel;
@@ -53,7 +54,7 @@ namespace CatalogService.Api.Services.Grpc
         {
             var model = _mapper.Map<StringModel>(request);
 
-            var result = await _dapperCategoryRepository.GetByNameWithProducts(model);
+            var result = await _unitOfWork.DapperCategoryRepository.GetByNameWithProducts(model);
             var resultModel = _mapper.Map<GrpcCategory>(result.Data);
 
             return resultModel;
@@ -63,7 +64,7 @@ namespace CatalogService.Api.Services.Grpc
         {
             var model = _mapper.Map<IntModel>(request);
 
-            var result = await _dapperCategoryRepository.GetWithProducts(model);
+            var result = await _unitOfWork.DapperCategoryRepository.GetWithProducts(model);
             var resultModel = _mapper.Map<GrpcCategory>(result.Data);
 
             return resultModel;
@@ -78,7 +79,7 @@ namespace CatalogService.Api.Services.Grpc
                 _redisOptions.Duration,
                 async () =>
                 {
-                    var result = await _dapperCategoryRepository.GetAllAsync();
+                    var result = await _unitOfWork.DapperCategoryRepository.GetAllAsync();
                     var resultModel = _mapper.Map<ListGrpcCategoryModel>(result.Data);
 
                     return resultModel;
@@ -98,7 +99,7 @@ namespace CatalogService.Api.Services.Grpc
                 async () =>
                 {
                     var requestModel = _mapper.Map<PagingModel>(request);
-                    var result = await _dapperCategoryRepository.GetAllPagedAsync(requestModel);
+                    var result = await _unitOfWork.DapperCategoryRepository.GetAllPagedAsync(requestModel);
                     var resultModel = _mapper.Map<ListGrpcCategoryModel>(result.Data);
 
                     return resultModel;
@@ -118,7 +119,7 @@ namespace CatalogService.Api.Services.Grpc
                 {
                     var model = _mapper.Map<IntModel>(request);
 
-                    var result = await _dapperCategoryRepository.GetAllByParentId(model);
+                    var result = await _unitOfWork.DapperCategoryRepository.GetAllByParentId(model);
                     var resultModel = _mapper.Map<ListGrpcCategoryModel>(result.Data);
 
                     return resultModel;
@@ -138,7 +139,7 @@ namespace CatalogService.Api.Services.Grpc
                 {
                     var model = _mapper.Map<IntModel>(request);
 
-                    var result = await _dapperCategoryRepository.GetAllWithProductsByParentId(model);
+                    var result = await _unitOfWork.DapperCategoryRepository.GetAllWithProductsByParentId(model);
                     var resultModel = _mapper.Map<ListGrpcCategory>(result.Data);
 
                     return resultModel;

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CatalogService.Api.Data.Repositories.Base;
 using CatalogService.Api.Data.Repositories.Dapper.Abstract;
 using CatalogService.Api.Data.Repositories.EntityFramework.Abstract;
 using CatalogService.Api.Entities;
@@ -16,18 +17,18 @@ namespace CatalogService.Api.Services.Grpc
 {
     public class GrpcBrandService : BaseGrpcBrandService
     {
-        private readonly IDapperBrandRepository _dapperBrandRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IRedisService _redisService;
         private readonly IMapper _mapper;
         private readonly RedisOptions _redisOptions;
 
         public GrpcBrandService(
-            IDapperBrandRepository dapperBrandRepository,
+            IUnitOfWork unitOfWork,
             IRedisService redisService,
             IMapper mapper,
             IOptions<RedisOptions> redisOptions) 
         {
-            _dapperBrandRepository = dapperBrandRepository;
+            _unitOfWork = unitOfWork;
             _redisService = redisService;
             _mapper = mapper;
             _redisOptions = redisOptions.Value;
@@ -36,7 +37,7 @@ namespace CatalogService.Api.Services.Grpc
         public override async Task<GrpcBrandModel> GetAsync(GrpcIntModel request, ServerCallContext context)
         {
             var requestModel = _mapper.Map<IntModel>(request);
-            var result = await _dapperBrandRepository.GetAsync(requestModel);
+            var result = await _unitOfWork.DapperBrandRepository.GetAsync(requestModel);
 
             var resultData = _mapper.Map<GrpcBrandModel>(result.Data);
             return resultData;
@@ -51,7 +52,7 @@ namespace CatalogService.Api.Services.Grpc
                 _redisOptions.Duration,
                 async () =>
                 {
-                    var result = await _dapperBrandRepository.GetAllAsync();
+                    var result = await _unitOfWork.DapperBrandRepository.GetAllAsync();
                     var resultData = _mapper.Map<ListGrpcBrandModel>(result.Data);
 
                     return resultData;
@@ -71,7 +72,7 @@ namespace CatalogService.Api.Services.Grpc
                 async () =>
                 {
                     var requestModel = _mapper.Map<PagingModel>(request);
-                    var result = await _dapperBrandRepository.GetAllPagedAsync(requestModel);
+                    var result = await _unitOfWork.DapperBrandRepository.GetAllPagedAsync(requestModel);
                     var resultData = _mapper.Map<ListGrpcBrandModel>(result.Data);
 
                     return resultData;
@@ -89,7 +90,7 @@ namespace CatalogService.Api.Services.Grpc
                 _redisOptions.Duration,
                 async () =>
                 {
-                    var result = await _dapperBrandRepository.GetAllWithProductsAsync();
+                    var result = await _unitOfWork.DapperBrandRepository.GetAllWithProductsAsync();
                     var resultData = _mapper.Map<ListGrpcBrand>(result.Data);
 
                     return resultData;

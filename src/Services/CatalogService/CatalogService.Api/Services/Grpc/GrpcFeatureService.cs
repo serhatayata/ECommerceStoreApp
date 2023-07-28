@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CatalogService.Api.Data.Repositories.Base;
 using CatalogService.Api.Data.Repositories.Dapper.Abstract;
 using CatalogService.Api.Data.Repositories.Dapper.Concrete;
 using CatalogService.Api.Models.Base.Concrete;
@@ -12,18 +13,18 @@ namespace CatalogService.Api.Services.Grpc
 {
     public class GrpcFeatureService : BaseGrpcFeatureService
     {
-        private readonly IDapperFeatureRepository _dapperFeatureRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IRedisService _redisService;
         private RedisOptions _redisOptions;
 
         public GrpcFeatureService(
-            IDapperFeatureRepository dapperFeatureRepository, 
+            IUnitOfWork unitOfWork,
             IMapper mapper,
             IRedisService redisService,
             IOptions<RedisOptions> redisOptions)
         {
-            _dapperFeatureRepository = dapperFeatureRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _redisService = redisService;
             _redisOptions = redisOptions.Value;
@@ -33,7 +34,7 @@ namespace CatalogService.Api.Services.Grpc
         {
             var model = _mapper.Map<IntModel>(request);
 
-            var result = await _dapperFeatureRepository.GetAsync(model);
+            var result = await _unitOfWork.DapperFeatureRepository.GetAsync(model);
             var resultModel = _mapper.Map<GrpcFeatureModel>(result.Data);
 
             return resultModel;
@@ -48,7 +49,7 @@ namespace CatalogService.Api.Services.Grpc
                 _redisOptions.Duration,
                 async () =>
                 {
-                    var result = await _dapperFeatureRepository.GetAllAsync();
+                    var result = await _unitOfWork.DapperFeatureRepository.GetAllAsync();
                     var resultModel = _mapper.Map<ListGrpcFeatureModel>(result.Data);
 
                     return resultModel;
@@ -68,7 +69,7 @@ namespace CatalogService.Api.Services.Grpc
                 {
                     var model = _mapper.Map<IntModel>(request);
 
-                    var result = await _dapperFeatureRepository.GetAllFeaturesByProductId(model);
+                    var result = await _unitOfWork.DapperFeatureRepository.GetAllFeaturesByProductId(model);
                     var resultModel = _mapper.Map<ListGrpcFeature>(result.Data);
 
                     return resultModel;
@@ -88,7 +89,7 @@ namespace CatalogService.Api.Services.Grpc
                 {
                     var model = _mapper.Map<StringModel>(request);
 
-                    var result = await _dapperFeatureRepository.GetAllFeaturesByProductCode(model);
+                    var result = await _unitOfWork.DapperFeatureRepository.GetAllFeaturesByProductCode(model);
                     var resultModel = _mapper.Map<ListGrpcFeatureModel>(result.Data);
 
                     return resultModel;
@@ -108,7 +109,7 @@ namespace CatalogService.Api.Services.Grpc
                 {
                     var model = _mapper.Map<IntModel>(request);
 
-                    var result = await _dapperFeatureRepository.GetFeatureProducts(model);
+                    var result = await _unitOfWork.DapperFeatureRepository.GetFeatureProducts(model);
                     var resultModel = _mapper.Map<ListGrpcProductModel>(result.Data);
 
                     return resultModel;
@@ -127,7 +128,7 @@ namespace CatalogService.Api.Services.Grpc
                 _redisOptions.Duration,
                 async () =>
                 {
-                    var result = await _dapperFeatureRepository.GetAllFeatureProperties(request.FeatureId, request.ProductId);
+                    var result = await _unitOfWork.DapperFeatureRepository.GetAllFeatureProperties(request.FeatureId, request.ProductId);
                     var resultModel = _mapper.Map<ListGrpcProductFeaturePropertyModel>(result.Data);
 
                     return resultModel;
@@ -147,7 +148,7 @@ namespace CatalogService.Api.Services.Grpc
                 {
                     var model = _mapper.Map<IntModel>(request);
 
-                    var result = await _dapperFeatureRepository.GetAllFeaturePropertiesByProductFeatureId(model);
+                    var result = await _unitOfWork.DapperFeatureRepository.GetAllFeaturePropertiesByProductFeatureId(model);
                     var resultModel = _mapper.Map<ListGrpcProductFeaturePropertyModel>(result.Data);
 
                     return resultModel;

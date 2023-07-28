@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CatalogService.Api.Data.Repositories.Base;
 using CatalogService.Api.Data.Repositories.Dapper.Abstract;
 using CatalogService.Api.Data.Repositories.Dapper.Concrete;
 using CatalogService.Api.Models.Base.Concrete;
@@ -12,18 +13,18 @@ namespace CatalogService.Api.Services.Grpc
 {
     public class GrpcProductService : BaseGrpcProductService
     {
-        private readonly IDapperProductRepository _dapperProductRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IRedisService _redisService;
         private RedisOptions _redisOptions;
 
         public GrpcProductService(
-            IDapperProductRepository dapperProductRepository, 
+            IUnitOfWork unitOfWork,
             IMapper mapper,
             IRedisService redisService,
             IOptions<RedisOptions> redisOptions)
         {
-            _dapperProductRepository = dapperProductRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _redisService = redisService;
             _redisOptions = redisOptions.Value;
@@ -33,7 +34,7 @@ namespace CatalogService.Api.Services.Grpc
         {
             var requestData = _mapper.Map<StringModel>(request);
 
-            var result = await _dapperProductRepository.GetByProductCodeAsync(requestData);
+            var result = await _unitOfWork.DapperProductRepository.GetByProductCodeAsync(requestData);
             var resultData = _mapper.Map<GrpcProductModel>(result.Data);
 
             return resultData;
@@ -48,7 +49,7 @@ namespace CatalogService.Api.Services.Grpc
                 _redisOptions.Duration,
             async () =>
             {
-                var result = await _dapperProductRepository.GetAllAsync();
+                var result = await _unitOfWork.DapperProductRepository.GetAllAsync();
                 var resultData = _mapper.Map<ListGrpcProductModel>(result.Data);
 
                 return resultData;
@@ -70,7 +71,7 @@ namespace CatalogService.Api.Services.Grpc
                     var minimumPrice = Convert.ToDecimal(request.MinimumPrice);
                     var maximumPrice = Convert.ToDecimal(request.MaximumPrice);
 
-                    var result = await _dapperProductRepository.GetAllBetweenPricesAsync(new Models.ProductModels.PriceBetweenModel(minimumPrice, maximumPrice));
+                    var result = await _unitOfWork.DapperProductRepository.GetAllBetweenPricesAsync(new Models.ProductModels.PriceBetweenModel(minimumPrice, maximumPrice));
                     var resultData = _mapper.Map<ListGrpcProductModel>(result.Data);
 
                     return resultData;

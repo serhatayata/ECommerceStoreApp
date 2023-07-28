@@ -3,6 +3,7 @@ using CatalogService.Api.Data.Repositories.Base;
 using CatalogService.Api.Entities;
 using CatalogService.Api.Models.Base.Concrete;
 using CatalogService.Api.Models.BrandModels;
+using CatalogService.Api.Services.Base.Abstract;
 using CatalogService.Api.Utilities.Results;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -13,15 +14,11 @@ namespace CatalogService.Api.Controllers
     [ApiController]
     public class BrandController : BaseController
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
+        private readonly IBrandService _brandService;
 
-        public BrandController(
-            IUnitOfWork unitOfWork,
-            IMapper mapper)
+        public BrandController(IBrandService brandService)
         {
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
+            _brandService = brandService;
         }
 
         [HttpPost]
@@ -29,9 +26,7 @@ namespace CatalogService.Api.Controllers
         [ProducesResponseType(typeof(Result), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> AddAsync(BrandAddModel model)
         {
-            var requestModel = _mapper.Map<Brand>(model);
-            var result = await _unitOfWork.EfBrandRepository.AddAsync(requestModel);
-
+            var result = await _brandService.AddAsync(model);
             return result.Success ? Ok(result) : BadRequest(result);
         }
 
@@ -40,9 +35,7 @@ namespace CatalogService.Api.Controllers
         [ProducesResponseType(typeof(Result), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> UpdateAsync(BrandUpdateModel model)
         {
-            var requestModel = _mapper.Map<Brand>(model);
-            var result = await _unitOfWork.EfBrandRepository.UpdateAsync(requestModel);
-
+            var result = await _brandService.UpdateAsync(model);
             return result.Success ? Ok(result) : BadRequest(result);
         }
 
@@ -51,8 +44,43 @@ namespace CatalogService.Api.Controllers
         [ProducesResponseType(typeof(Result), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> DeleteAsync(IntModel model)
         {
-            var result = await _unitOfWork.EfBrandRepository.DeleteAsync(model);
+            var result = await _brandService.DeleteAsync(model);
+            return result.Success ? Ok(result) : BadRequest(result);
+        }
 
+        [HttpGet]
+        [Route("get")]
+        [ProducesResponseType(typeof(Result), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetAsync(IntModel model)
+        {
+            var result = await _brandService.GetAsync(model);
+            return result.Success ? Ok(result) : BadRequest(result);
+        }
+
+        [HttpGet]
+        [Route("getall")]
+        [ProducesResponseType(typeof(Result), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetAllAsync()
+        {
+            var result = await _brandService.GetAllAsync();
+            return result.Success ? Ok(result) : BadRequest(result);
+        }
+
+        [HttpGet]
+        [Route("getall-paged")]
+        [ProducesResponseType(typeof(Result), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetAllPagedAsync(PagingModel model)
+        {
+            var result = await _brandService.GetAllPagedAsync(model);
+            return result.Success ? Ok(result) : BadRequest(result);
+        }
+
+        [HttpGet]
+        [Route("getall-withproducts")]
+        [ProducesResponseType(typeof(Result), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetAllWithProductsAsync()
+        {
+            var result = await _brandService.GetAllWithProductsAsync();
             return result.Success ? Ok(result) : BadRequest(result);
         }
     }
