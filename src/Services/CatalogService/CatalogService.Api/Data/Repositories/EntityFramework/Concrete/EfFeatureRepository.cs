@@ -5,6 +5,7 @@ using CatalogService.Api.Models.Base.Concrete;
 using CatalogService.Api.Utilities.Results;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
+using System.Linq.Expressions;
 
 namespace CatalogService.Api.Data.Repositories.EntityFramework.Concrete;
 
@@ -78,6 +79,20 @@ public class EfFeatureRepository : IEfFeatureRepository
         var result = await _catalogDbContext.Features.FirstOrDefaultAsync(f => f.Id == model.Value);
 
         return new DataResult<Feature>(result);
+    }
+
+    public async Task<DataResult<Feature>> GetAsync(Expression<Func<Feature, bool>> predicate)
+    {
+        var result = await _catalogDbContext.Features.FirstOrDefaultAsync(predicate);
+
+        return new DataResult<Feature>(result);
+    }
+
+    public async Task<DataResult<IReadOnlyList<Feature>>> GetAllAsync(Expression<Func<Feature, bool>> predicate)
+    {
+        var result = await _catalogDbContext.Features.Where(predicate).ToListAsync();
+
+        return new DataResult<IReadOnlyList<Feature>>(result);
     }
 
     public async Task<DataResult<IReadOnlyList<Feature>>> GetAllAsync()

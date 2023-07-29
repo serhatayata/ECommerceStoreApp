@@ -14,23 +14,25 @@ namespace CatalogService.Api.Services.Base.Concrete
         private readonly IEfBrandRepository _efBrandRepository;
         private readonly IDapperBrandRepository _dapperBrandRepository;
         private readonly IMapper _mapper;
-        private readonly ILogger<BrandService> _logger;
 
         public BrandService(
             IEfBrandRepository efBrandRepository, 
             IDapperBrandRepository dapperBrandRepository, 
-            IMapper mapper, 
-            ILogger<BrandService> logger)
+            IMapper mapper)
         {
             _efBrandRepository = efBrandRepository;
             _dapperBrandRepository = dapperBrandRepository;
             _mapper = mapper;
-            _logger = logger;
         }
 
         public async Task<Result> AddAsync(BrandAddModel model)
         {
             var mappedModel = _mapper.Map<Brand>(model);
+
+            //Same name check
+            var nameExists = _efBrandRepository.GetAsync(b => b.Name == model.Name);
+            if (nameExists != null)
+                return new ErrorResult("Brand name already exists");
 
             var result = await _efBrandRepository.AddAsync(mappedModel);
             return result;
@@ -39,6 +41,10 @@ namespace CatalogService.Api.Services.Base.Concrete
         public async Task<Result> UpdateAsync(BrandUpdateModel model)
         {
             var mappedModel = _mapper.Map<Brand>(model);
+            //Same name check
+            var nameExists = _efBrandRepository.GetAsync(b => b.Name == model.Name && b.Id != model.Id);
+            if (nameExists != null)
+                return new ErrorResult("Brand name already exists");
 
             var result = await _efBrandRepository.UpdateAsync(mappedModel);
             return result;

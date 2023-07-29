@@ -2,6 +2,7 @@
 using CatalogService.Api.Entities;
 using CatalogService.Api.Models.Base.Concrete;
 using CatalogService.Api.Models.BrandModels;
+using CatalogService.Api.Models.CategoryModels;
 using CatalogService.Api.Utilities.Results;
 
 namespace CatalogService.Api.Mapping;
@@ -76,7 +77,9 @@ public class MapProfile : Profile
         CreateMap<BrandAddModel, Brand>().ReverseMap();
         CreateMap<BrandUpdateModel, Brand>().ReverseMap();
 
-
+        CreateMap<CategoryModel, Category>().ReverseMap();
+        CreateMap<CategoryAddModel, Category>().ReverseMap();
+        CreateMap<CategoryUpdateModel, Category>().ReverseMap();
         #endregion
     }
 }

@@ -5,6 +5,7 @@ using CatalogService.Api.Models.Base.Concrete;
 using CatalogService.Api.Utilities.Results;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
+using System.Linq.Expressions;
 
 namespace CatalogService.Api.Data.Repositories.EntityFramework.Concrete;
 
@@ -118,6 +119,20 @@ public class EfBrandRepository : IEfBrandRepository
         }
     }
 
+    public async Task<DataResult<Brand>> GetAsync(Expression<Func<Brand, bool>> predicate)
+    {
+        var result = await _catalogDbContext.Brands.FirstOrDefaultAsync(predicate);
+
+        return new DataResult<Brand>(result);
+    }
+
+    public async Task<DataResult<IReadOnlyList<Brand>>> GetAllAsync(Expression<Func<Brand, bool>> predicate)
+    {
+        var result = await _catalogDbContext.Brands.Where(predicate).ToListAsync();
+
+        return new DataResult<IReadOnlyList<Brand>>(result);
+    }
+
     public async Task<DataResult<IReadOnlyList<Brand>>> GetAllAsync()
     {
         var result = await _catalogDbContext.Brands.ToListAsync();
@@ -131,4 +146,5 @@ public class EfBrandRepository : IEfBrandRepository
 
         return new DataResult<Brand>(result);
     }
+
 }

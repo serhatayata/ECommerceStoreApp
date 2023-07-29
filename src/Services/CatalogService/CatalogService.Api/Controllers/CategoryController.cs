@@ -24,6 +24,8 @@ namespace CatalogService.Api.Controllers
         public async Task<IActionResult> AddAsync(CategoryAddModel model)
         {
             
+
+
         }
     }
 }

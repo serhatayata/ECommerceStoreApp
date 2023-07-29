@@ -4,6 +4,7 @@ using CatalogService.Api.Entities;
 using CatalogService.Api.Models.Base.Concrete;
 using CatalogService.Api.Utilities.Results;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace CatalogService.Api.Data.Repositories.EntityFramework.Concrete;
 
@@ -109,6 +110,20 @@ public class EfProductRepository : IEfProductRepository
         var result = await _catalogDbContext.Products.FirstOrDefaultAsync(p => p.ProductCode == model.Value);
 
         return new DataResult<Product>(result);
+    }
+
+    public async Task<DataResult<Product>> GetAsync(Expression<Func<Product, bool>> predicate)
+    {
+        var result = await _catalogDbContext.Products.FirstOrDefaultAsync(predicate);
+
+        return new DataResult<Product>(result);
+    }
+
+    public async Task<DataResult<IReadOnlyList<Product>>> GetAllAsync(Expression<Func<Product, bool>> predicate)
+    {
+        var result = await _catalogDbContext.Products.Where(predicate).ToListAsync();
+
+        return new DataResult<IReadOnlyList<Product>>(result);
     }
 
     public async Task<DataResult<IReadOnlyList<Product>>> GetAllAsync()

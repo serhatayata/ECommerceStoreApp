@@ -8,4 +8,5 @@ namespace CatalogService.Api.Data.Repositories.EntityFramework.Abstract;
 public interface IEfCommentRepository : IGenericRepository<Comment, IntModel>
 {
     Task<Result> DeleteByCodeAsync(StringModel model);
+    Task<Result> UpdateByCodeAsync(Comment entity);
 }

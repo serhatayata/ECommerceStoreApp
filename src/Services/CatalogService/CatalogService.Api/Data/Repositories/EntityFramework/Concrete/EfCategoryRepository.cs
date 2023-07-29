@@ -4,6 +4,7 @@ using CatalogService.Api.Entities;
 using CatalogService.Api.Models.Base.Concrete;
 using CatalogService.Api.Utilities.Results;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace CatalogService.Api.Data.Repositories.EntityFramework.Concrete;
 
@@ -74,6 +75,20 @@ public class EfCategoryRepository : IEfCategoryRepository
             _logger.LogError("{0} - {1} - Exception : {2}", nameof(this.DeleteAsync), "Category not deleted", ex.Message);
             return new ErrorResult("Category not deleted");
         }
+    }
+
+    public async Task<DataResult<Category>> GetAsync(Expression<Func<Category, bool>> predicate)
+    {
+        var result = await _catalogDbContext.Categories.FirstOrDefaultAsync(predicate);
+
+        return new DataResult<Category>(result);
+    }
+
+    public async Task<DataResult<IReadOnlyList<Category>>> GetAllAsync(Expression<Func<Category, bool>> predicate)
+    {
+        var result = await _catalogDbContext.Categories.Where(predicate).ToListAsync();
+
+        return new DataResult<IReadOnlyList<Category>>(result);
     }
 
     public async Task<DataResult<IReadOnlyList<Category>>> GetAllAsync()
