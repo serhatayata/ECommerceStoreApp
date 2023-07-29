@@ -4,6 +4,21 @@ namespace CatalogService.Api.Models.BrandModels
 {
     public class BrandUpdateModel : IModel
     {
+        public BrandUpdateModel()
+        {
+            
+        }
+
+        public BrandUpdateModel(
+            int id,
+            string name,
+            string description)
+        {
+            this.Id = id;
+            this.Name = name;
+            this.Description = description;
+        }
+
         /// <summary>
         /// Id of the brand
         /// </summary>

@@ -24,6 +24,7 @@ namespace CatalogService.Api.Controllers
         [HttpPost]
         [Route("add")]
         [ProducesResponseType(typeof(Result), (int)HttpStatusCode.OK)]
+        [ProducesErrorResponseType(typeof(Result))]
         public async Task<IActionResult> AddAsync(BrandAddModel model)
         {
             var result = await _brandService.AddAsync(model);
@@ -33,6 +34,7 @@ namespace CatalogService.Api.Controllers
         [HttpPut]
         [Route("update")]
         [ProducesResponseType(typeof(Result), (int)HttpStatusCode.OK)]
+        [ProducesErrorResponseType(typeof(Result))]
         public async Task<IActionResult> UpdateAsync(BrandUpdateModel model)
         {
             var result = await _brandService.UpdateAsync(model);
@@ -42,6 +44,7 @@ namespace CatalogService.Api.Controllers
         [HttpDelete]
         [Route("delete")]
         [ProducesResponseType(typeof(Result), (int)HttpStatusCode.OK)]
+        [ProducesErrorResponseType(typeof(Result))]
         public async Task<IActionResult> DeleteAsync(IntModel model)
         {
             var result = await _brandService.DeleteAsync(model);
@@ -50,7 +53,8 @@ namespace CatalogService.Api.Controllers
 
         [HttpGet]
         [Route("get")]
-        [ProducesResponseType(typeof(Result), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(DataResult<BrandModel>), (int)HttpStatusCode.OK)]
+        [ProducesErrorResponseType(typeof(DataResult<BrandModel>))]
         public async Task<IActionResult> GetAsync(IntModel model)
         {
             var result = await _brandService.GetAsync(model);
@@ -59,7 +63,8 @@ namespace CatalogService.Api.Controllers
 
         [HttpGet]
         [Route("getall")]
-        [ProducesResponseType(typeof(Result), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(DataResult<IReadOnlyList<BrandModel>>), (int)HttpStatusCode.OK)]
+        [ProducesErrorResponseType(typeof(DataResult<IReadOnlyList<BrandModel>>))]
         public async Task<IActionResult> GetAllAsync()
         {
             var result = await _brandService.GetAllAsync();
@@ -68,7 +73,8 @@ namespace CatalogService.Api.Controllers
 
         [HttpGet]
         [Route("getall-paged")]
-        [ProducesResponseType(typeof(Result), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(DataResult<IReadOnlyList<BrandModel>>), (int)HttpStatusCode.OK)]
+        [ProducesErrorResponseType(typeof(DataResult<IReadOnlyList<BrandModel>>))]
         public async Task<IActionResult> GetAllPagedAsync(PagingModel model)
         {
             var result = await _brandService.GetAllPagedAsync(model);
@@ -77,7 +83,8 @@ namespace CatalogService.Api.Controllers
 
         [HttpGet]
         [Route("getall-withproducts")]
-        [ProducesResponseType(typeof(Result), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(DataResult<IReadOnlyList<BrandModel>>), (int)HttpStatusCode.OK)]
+        [ProducesErrorResponseType(typeof(DataResult<IReadOnlyList<BrandModel>>))]
         public async Task<IActionResult> GetAllWithProductsAsync()
         {
             var result = await _brandService.GetAllWithProductsAsync();

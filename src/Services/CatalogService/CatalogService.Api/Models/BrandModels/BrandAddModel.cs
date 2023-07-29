@@ -4,6 +4,19 @@ namespace CatalogService.Api.Models.BrandModels
 {
     public class BrandAddModel : IModel
     {
+        public BrandAddModel()
+        {
+            
+        }
+
+        public BrandAddModel(
+            string name, 
+            string description)
+        {
+            this.Name = name;
+            this.Description = description;
+        }
+
         /// <summary>
         /// Name of the brand
         /// </summary>
