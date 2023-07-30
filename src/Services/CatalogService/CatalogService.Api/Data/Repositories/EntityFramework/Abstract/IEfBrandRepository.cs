@@ -4,6 +4,6 @@ using CatalogService.Api.Models.Base.Concrete;
 
 namespace CatalogService.Api.Data.Repositories.EntityFramework.Abstract;
 
-public interface IEfBrandRepository : IGenericRepository<Brand, IntModel>
+public interface IEfBrandRepository : IEfGenericRepository<Brand, IntModel>
 {
 }

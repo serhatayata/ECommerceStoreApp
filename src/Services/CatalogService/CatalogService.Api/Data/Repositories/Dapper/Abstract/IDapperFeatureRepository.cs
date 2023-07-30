@@ -5,7 +5,7 @@ using CatalogService.Api.Utilities.Results;
 
 namespace CatalogService.Api.Data.Repositories.Dapper.Abstract
 {
-    public interface IDapperFeatureRepository : IGenericRepository<Feature, IntModel>
+    public interface IDapperFeatureRepository : IDapperGenericRepository<Feature, IntModel>
     {
         Task<Result> AddProductFeatureAsync(ProductFeature entity);
         Task<Result> DeleteProductFeatureAsync(IntModel entity);

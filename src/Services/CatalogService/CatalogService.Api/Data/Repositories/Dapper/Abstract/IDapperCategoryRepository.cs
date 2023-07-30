@@ -5,7 +5,7 @@ using CatalogService.Api.Utilities.Results;
 
 namespace CatalogService.Api.Data.Repositories.Dapper.Abstract;
 
-public interface IDapperCategoryRepository : IGenericRepository<Category, IntModel>
+public interface IDapperCategoryRepository : IDapperGenericRepository<Category, IntModel>
 {
     Task<DataResult<Category>> GetWithProducts(IntModel model);
     Task<DataResult<Category>> GetByName(StringModel model);

@@ -6,7 +6,7 @@ using CatalogService.Api.Utilities.Results;
 
 namespace CatalogService.Api.Data.Repositories.Dapper.Abstract;
 
-public interface IDapperProductRepository : IGenericRepository<Product, IntModel>
+public interface IDapperProductRepository : IDapperGenericRepository<Product, IntModel>
 {
     Task<DataResult<Product>> GetByProductCodeAsync(StringModel model);
     Task<DataResult<IReadOnlyList<Product>>> GetAllByProductTypeIdAsync(IntModel model);

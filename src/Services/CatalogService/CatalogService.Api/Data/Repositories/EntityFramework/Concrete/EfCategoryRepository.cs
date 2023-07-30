@@ -4,76 +4,118 @@ using CatalogService.Api.Entities;
 using CatalogService.Api.Models.Base.Concrete;
 using CatalogService.Api.Utilities.Results;
 using Microsoft.EntityFrameworkCore;
+using System.Data.Common;
 using System.Linq.Expressions;
 
 namespace CatalogService.Api.Data.Repositories.EntityFramework.Concrete;
 
 public class EfCategoryRepository : IEfCategoryRepository
 {
-    private readonly ICatalogDbContext _catalogDbContext;
-    private readonly ILogger<EfCategoryRepository> _logger;
+    private readonly CatalogDbContext _catalogDbContext;
 
     public EfCategoryRepository(
-        ICatalogDbContext catalogDbContext, 
-        ILogger<EfCategoryRepository> logger)
+        CatalogDbContext catalogDbContext)
     {
         _catalogDbContext = catalogDbContext;
-        _logger = logger;
     }
 
     public async Task<Result> AddAsync(Category entity)
     {
-        try
+        _catalogDbContext.Connection.Open();
+        using (var transaction = _catalogDbContext.Connection.BeginTransaction())
         {
-            var result = await _catalogDbContext.Categories.AddAsync(entity);
+            try
+            {
+                _catalogDbContext.Database.UseTransaction(transaction as DbTransaction);
 
-            if (result.State == Microsoft.EntityFrameworkCore.EntityState.Added)
+                await _catalogDbContext.Categories.AddAsync(entity);
+
+                var result = _catalogDbContext.SaveChanges();
+
+                if (result < 1)
+                    return new ErrorResult("Category not added");
+
+                transaction.Commit();
                 return new SuccessResult("Category added");
-            return new ErrorResult("Category not added");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("{0} - {1} - Exception : {2}", nameof(this.AddAsync), "Category not added", ex.Message);
-            return new ErrorResult("Category not added");
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _catalogDbContext.Connection.Close();
+            }
         }
     }
 
     public async Task<Result> UpdateAsync(Category entity)
     {
-        try
+        _catalogDbContext.Connection.Open();
+        using (var transaction = _catalogDbContext.Connection.BeginTransaction())
         {
-            var result = await _catalogDbContext.Categories.Where(b => b.Id == entity.Id)
-                                    .ExecuteUpdateAsync(b => b
-                                        .SetProperty(p => p.ParentId, entity.ParentId)
-                                        .SetProperty(p => p.Name, entity.Name)
-                                        .SetProperty(p => p.Link, entity.Link)
-                                        .SetProperty(p => p.Line, entity.Line)
-                                        .SetProperty(p => p.UpdateDate, entity.UpdateDate));
+            try
+            {
+                _catalogDbContext.Database.UseTransaction(transaction as DbTransaction);
 
-            return result > 0 ?
-                new SuccessResult("Category updated") : new ErrorResult("Category not updated");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("{0} - {1} - Exception : {2}", nameof(this.UpdateAsync), "Category not updated", ex.Message);
-            return new ErrorResult("Category not updated");
+                var result = await _catalogDbContext.Categories.Where(b => b.Id == entity.Id)
+                                        .ExecuteUpdateAsync(b => b
+                                            .SetProperty(p => p.ParentId, entity.ParentId)
+                                            .SetProperty(p => p.Name, entity.Name)
+                                            .SetProperty(p => p.Link, entity.Link)
+                                            .SetProperty(p => p.Line, entity.Line)
+                                            .SetProperty(p => p.UpdateDate, entity.UpdateDate));
+
+                _catalogDbContext.SaveChanges();
+
+                if (result < 1)
+                    return new ErrorResult("Category not updated");
+
+                transaction.Commit();
+                return new SuccessResult("Category updated");
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _catalogDbContext.Connection.Close();
+            }
         }
     }
 
     public async Task<Result> DeleteAsync(IntModel model)
     {
-        try
+        _catalogDbContext.Connection.Open();
+        using (var transaction = _catalogDbContext.Connection.BeginTransaction())
         {
-            var result = await _catalogDbContext.Categories.Where(b => b.Id == model.Value)
-                                                            .ExecuteDeleteAsync();
+            try
+            {
+                _catalogDbContext.Database.UseTransaction(transaction as DbTransaction);
 
-            return result > 0 ?
-                new SuccessResult("Category deleted") : new ErrorResult("Category not deleted");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("{0} - {1} - Exception : {2}", nameof(this.DeleteAsync), "Category not deleted", ex.Message);
-            return new ErrorResult("Category not deleted");
+                var result = await _catalogDbContext.Brands.Where(b => b.Id == model.Value)
+                                                           .ExecuteDeleteAsync();
+
+                _catalogDbContext.SaveChanges();
+
+                if (result < 1)
+                    return new ErrorResult("Category not deleted");
+
+                transaction.Commit();
+                return new SuccessResult("Category deleted");
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _catalogDbContext.Connection.Close();
+            }
         }
     }
 

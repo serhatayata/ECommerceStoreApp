@@ -5,7 +5,7 @@ using CatalogService.Api.Utilities.Results;
 
 namespace CatalogService.Api.Data.Repositories.EntityFramework.Abstract;
 
-public interface IEfFeatureRepository : IGenericRepository<Feature, IntModel>
+public interface IEfFeatureRepository : IEfGenericRepository<Feature, IntModel>
 {
     Task<DataResult<IReadOnlyList<Feature>>> GetAllWithProductFeaturesAsync();
 }

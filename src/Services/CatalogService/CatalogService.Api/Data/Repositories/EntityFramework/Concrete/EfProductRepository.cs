@@ -4,97 +4,154 @@ using CatalogService.Api.Entities;
 using CatalogService.Api.Models.Base.Concrete;
 using CatalogService.Api.Utilities.Results;
 using Microsoft.EntityFrameworkCore;
+using System.Data.Common;
 using System.Linq.Expressions;
 
 namespace CatalogService.Api.Data.Repositories.EntityFramework.Concrete;
 
 public class EfProductRepository : IEfProductRepository
 {
-    private readonly ICatalogDbContext _catalogDbContext;
-    private readonly ILogger<EfProductRepository> _logger;
+    private readonly CatalogDbContext _catalogDbContext;
 
     public EfProductRepository(
-        ICatalogDbContext catalogDbContext, 
-        ILogger<EfProductRepository> logger)
+        CatalogDbContext catalogDbContext)
     {
         _catalogDbContext = catalogDbContext;
-        _logger = logger;
     }
 
     public async Task<Result> AddAsync(Product entity)
     {
-        try
+        _catalogDbContext.Connection.Open();
+        using (var transaction = _catalogDbContext.Connection.BeginTransaction())
         {
-            var result = await _catalogDbContext.Products.AddAsync(entity);
+            try
+            {
+                _catalogDbContext.Database.UseTransaction(transaction as DbTransaction);
 
-            if (result.State == Microsoft.EntityFrameworkCore.EntityState.Added)
+                await _catalogDbContext.Products.AddAsync(entity);
+
+                var result = _catalogDbContext.SaveChanges();
+
+                if (result < 1)
+                    return new ErrorResult("Product not added");
+
+                transaction.Commit();
                 return new SuccessResult("Product added");
-            return new ErrorResult("Product not added");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("{0} - {1} - Exception : {2}", nameof(this.AddAsync), "Product not added", ex.Message);
-            return new ErrorResult("Product not added");
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _catalogDbContext.Connection.Close();
+            }
         }
     }
 
     public async Task<Result> UpdateAsync(Product entity)
     {
-        try
+        _catalogDbContext.Connection.Open();
+        using (var transaction = _catalogDbContext.Connection.BeginTransaction())
         {
-            var result = await _catalogDbContext.Products.Where(b => b.Id == entity.Id)
-                                    .ExecuteUpdateAsync(b => b
-                                        .SetProperty(p => p.Name, entity.Name)
-                                        .SetProperty(p => p.Description, entity.Description)
-                                        .SetProperty(p => p.Price, entity.Price)
-                                        .SetProperty(p => p.AvailableStock, entity.AvailableStock)
-                                        .SetProperty(p => p.Link, entity.Link)
-                                        .SetProperty(p => p.ProductCode, entity.ProductCode)
-                                        .SetProperty(p => p.ProductTypeId, entity.ProductTypeId)
-                                        .SetProperty(p => p.BrandId, entity.BrandId)
-                                        .SetProperty(p => p.UpdateDate, entity.UpdateDate));
+            try
+            {
+                _catalogDbContext.Database.UseTransaction(transaction as DbTransaction);
 
-            return result > 0 ?
-                new SuccessResult("Product updated") : new ErrorResult("Product not updated");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("{0} - {1} - Exception : {2}", nameof(this.UpdateAsync), "Product not updated", ex.Message);
-            return new ErrorResult("Product not updated");
+                var result = await _catalogDbContext.Products.Where(b => b.Id == entity.Id)
+                                        .ExecuteUpdateAsync(b => b
+                                            .SetProperty(p => p.Name, entity.Name)
+                                            .SetProperty(p => p.Description, entity.Description)
+                                            .SetProperty(p => p.Price, entity.Price)
+                                            .SetProperty(p => p.AvailableStock, entity.AvailableStock)
+                                            .SetProperty(p => p.Link, entity.Link)
+                                            .SetProperty(p => p.ProductCode, entity.ProductCode)
+                                            .SetProperty(p => p.ProductTypeId, entity.ProductTypeId)
+                                            .SetProperty(p => p.BrandId, entity.BrandId)
+                                            .SetProperty(p => p.UpdateDate, entity.UpdateDate));
+
+                _catalogDbContext.SaveChanges();
+
+                if (result < 1)
+                    return new ErrorResult("Product not updated");
+
+                transaction.Commit();
+                return new SuccessResult("Product updated");
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _catalogDbContext.Connection.Close();
+            }
         }
     }
 
     public async Task<Result> DeleteAsync(IntModel model)
     {
-        try
+        _catalogDbContext.Connection.Open();
+        using (var transaction = _catalogDbContext.Connection.BeginTransaction())
         {
-            var result = await _catalogDbContext.Products.Where(b => b.Id == model.Value)
-                                                            .ExecuteDeleteAsync();
+            try
+            {
+                _catalogDbContext.Database.UseTransaction(transaction as DbTransaction);
 
-            return result > 0 ?
-                new SuccessResult("Product deleted") : new ErrorResult("Product not deleted");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("{0} - {1} - Exception : {2}", nameof(this.DeleteAsync), "Product not deleted", ex.Message);
-            return new ErrorResult("Product not deleted");
+                var result = await _catalogDbContext.Products.Where(b => b.Id == model.Value)
+                                                           .ExecuteDeleteAsync();
+
+                _catalogDbContext.SaveChanges();
+
+                if (result < 1)
+                    return new ErrorResult("Product not deleted");
+
+                transaction.Commit();
+                return new SuccessResult("Product deleted");
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _catalogDbContext.Connection.Close();
+            }
         }
     }
 
     public async Task<Result> DeleteByCodeAsync(StringModel model)
     {
-        try
+        _catalogDbContext.Connection.Open();
+        using (var transaction = _catalogDbContext.Connection.BeginTransaction())
         {
-            var result = await _catalogDbContext.Products.Where(b => b.ProductCode == model.Value)
-                                                            .ExecuteDeleteAsync();
+            try
+            {
+                _catalogDbContext.Database.UseTransaction(transaction as DbTransaction);
 
-            return result > 0 ?
-                new SuccessResult("Product deleted") : new ErrorResult("Product not deleted");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("{0} - {1} - Exception : {2}", nameof(this.DeleteByCodeAsync), "Product not deleted", ex.Message);
-            return new ErrorResult("Product not deleted");
+                var result = await _catalogDbContext.Products.Where(b => b.ProductCode == model.Value)
+                                                                .ExecuteDeleteAsync();
+
+                _catalogDbContext.SaveChanges();
+
+                if (result < 1)
+                    return new ErrorResult("Product not deleted");
+
+                transaction.Commit();
+                return new SuccessResult("Product deleted");
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _catalogDbContext.Connection.Close();
+            }
         }
     }
 

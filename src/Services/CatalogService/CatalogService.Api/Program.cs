@@ -13,6 +13,7 @@ using CatalogService.Api.Services.Grpc;
 using CatalogService.Api.Services.Cache.Abstract;
 using CatalogService.Api.Services.Cache.Concrete;
 using CatalogService.Api.Models.CacheModels;
+using CatalogService.Api.Extensions.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
@@ -77,6 +78,8 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 app.UseHttpsRedirection();
+app.UseRouting();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapGrpcService<GrpcBrandService>();
@@ -84,6 +87,8 @@ app.MapGrpcService<GrpcCategoryService>();
 app.MapGrpcService<GrpcCommentService>();
 app.MapGrpcService<GrpcFeatureService>();
 app.MapGrpcService<GrpcProductService>();
+
+app.UseResponseTimeMiddleware();
 
 app.MapControllers();
 

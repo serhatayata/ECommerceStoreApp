@@ -3,6 +3,7 @@ using CatalogService.Api.Entities;
 using CatalogService.Api.Models.Base.Concrete;
 using CatalogService.Api.Models.BrandModels;
 using CatalogService.Api.Models.CategoryModels;
+using CatalogService.Api.Models.CommentModels;
 using CatalogService.Api.Utilities.Results;
 
 namespace CatalogService.Api.Mapping;
@@ -17,6 +18,10 @@ public class MapProfile : Profile
         CreateMap<StringModel, GrpcStringModel>().ReverseMap();
         CreateMap<BoolModel, GrpcBoolModel>().ReverseMap();
         CreateMap<PagingModel, GrpcPagingModel>().ReverseMap();
+
+        CreateMap(typeof(DataResult<>), typeof(DataResult<>));
+        CreateMap(typeof(SuccessDataResult<>), typeof(DataResult<>));
+        CreateMap(typeof(ErrorDataResult<>), typeof(DataResult<>));
         #endregion
 
         #region BRAND
@@ -80,6 +85,10 @@ public class MapProfile : Profile
         CreateMap<CategoryModel, Category>().ReverseMap();
         CreateMap<CategoryAddModel, Category>().ReverseMap();
         CreateMap<CategoryUpdateModel, Category>().ReverseMap();
+
+        CreateMap<CommentModel, Comment>().ReverseMap();
+        CreateMap<CommentAddModel, Comment>().ReverseMap();
+        CreateMap<CommentUpdateModel, Comment>().ReverseMap();
         #endregion
     }
 }

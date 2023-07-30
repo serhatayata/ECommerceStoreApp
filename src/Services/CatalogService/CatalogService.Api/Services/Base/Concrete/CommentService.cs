@@ -11,7 +11,7 @@ namespace CatalogService.Api.Services.Base.Concrete
 {
     public class CommentService : ICommentService
     {
-        private readonly IEfCommentRepository _efCommentRepository;;
+        private readonly IEfCommentRepository _efCommentRepository;
         private readonly IDapperCommentRepository _dapperCommentRepository;
         private readonly IMapper _mapper;
 

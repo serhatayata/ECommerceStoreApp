@@ -5,7 +5,7 @@ using CatalogService.Api.Utilities.Results;
 
 namespace CatalogService.Api.Data.Repositories.Dapper.Abstract
 {
-    public interface IDapperCommentRepository : IGenericRepository<Comment, IntModel>
+    public interface IDapperCommentRepository : IDapperGenericRepository<Comment, IntModel>
     {
         Task<DataResult<Comment>> GetByCodeAsync(StringModel model);
         Task<DataResult<IReadOnlyList<Comment>>> GetAllByProductId(IntModel model);

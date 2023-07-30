@@ -12,14 +12,11 @@ namespace CatalogService.Api.Data.Repositories.EntityFramework.Concrete;
 public class EfBrandRepository : IEfBrandRepository
 {
     private readonly CatalogDbContext _catalogDbContext;
-    private ILogger<EfBrandRepository> _logger;
 
     public EfBrandRepository(
-        CatalogDbContext catalogDbContext,
-        ILogger<EfBrandRepository> logger)
+        CatalogDbContext catalogDbContext)
     {
         _catalogDbContext = catalogDbContext;
-        _logger = logger;
     }
 
     public async Task<Result> AddAsync(Brand entity)
@@ -43,8 +40,8 @@ public class EfBrandRepository : IEfBrandRepository
             }
             catch (Exception ex)
             {
-                _logger.LogError("{0} - {1} - Exception : {2}", nameof(this.AddAsync), "Brand not added", ex.Message);
-                return new ErrorResult("Brand not added");
+                transaction.Rollback();
+                throw new Exception(ex.Message);
             }
             finally
             {
@@ -77,8 +74,8 @@ public class EfBrandRepository : IEfBrandRepository
             }
             catch (Exception ex)
             {
-                _logger.LogError("{0} - {1} - Exception : {2}", nameof(this.UpdateAsync), "Brand not updated", ex.Message);
-                return new ErrorResult("Brand not updated");
+                transaction.Rollback();
+                throw new Exception(ex.Message);
             }
             finally
             {
@@ -109,8 +106,8 @@ public class EfBrandRepository : IEfBrandRepository
             }
             catch (Exception ex)
             {
-                _logger.LogError("{0} - {1} - Exception : {2}", nameof(this.DeleteAsync), "Brand not deleted", ex.Message);
-                return new ErrorResult("Brand not deleted");
+                transaction.Rollback();
+                throw new Exception(ex.Message);
             }
             finally
             {
