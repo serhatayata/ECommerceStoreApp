@@ -14,7 +14,12 @@ namespace CatalogService.Api.Data.EntityConfigurations
             builder.HasKey(b => b.Id);
             builder.Property(b => b.Id).ValueGeneratedOnAdd();
 
-            builder.Property(b => b.Name).HasColumnType("nvarchar(10)");
+            builder.Property(b => b.Name).HasColumnType("nvarchar(300)");
+
+            builder.Property(b => b.Link).HasColumnType("nvarchar(500)");
+
+            builder.Property(b => b.Code).HasColumnType("nvarchar(20)");
+            builder.HasIndex(b => b.Code).IsUnique();
 
             builder.Property(c => c.CreateDate).HasDefaultValueSql("getdate()");
 

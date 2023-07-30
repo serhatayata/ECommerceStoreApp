@@ -21,6 +21,10 @@ public class Category : IEntity
     /// </summary>
     public string Link { get; set; }
     /// <summary>
+    /// Code of the category
+    /// </summary>
+    public string Code { get; set; }
+    /// <summary>
     /// Line of the category
     /// </summary>
     public int Line { get; set; }

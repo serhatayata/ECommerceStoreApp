@@ -17,15 +17,15 @@ namespace CatalogService.Api.Controllers
             _categoryService = categoryService;
         }
 
-        //[HttpPost]
-        //[Route("add")]
-        //[ProducesResponseType(typeof(Result), (int)HttpStatusCode.OK)]
-        //[ProducesErrorResponseType(typeof(Result))]
-        //public async Task<IActionResult> AddAsync(CategoryAddModel model)
-        //{
-            
+        [HttpPost]
+        [Route("add")]
+        [ProducesResponseType(typeof(Result), (int)HttpStatusCode.OK)]
+        [ProducesErrorResponseType(typeof(Result))]
+        public async Task<IActionResult> AddAsync(CategoryAddModel model)
+        {
+            var result = await _categoryService.AddAsync(model);
 
-
-        //}
+            return Ok();
+        }
     }
 }

@@ -39,6 +39,10 @@ namespace CatalogService.Api.DependencyResolvers.Autofac
             #endregion
             #region SERVICES
             builder.RegisterType<BrandService>().As<IBrandService>().InstancePerDependency();
+            builder.RegisterType<CategoryService>().As<ICategoryService>().InstancePerDependency();
+            builder.RegisterType<CommentService>().As<ICommentService>().InstancePerDependency();
+            builder.RegisterType<FeatureService>().As<IFeatureService>().InstancePerDependency();
+            builder.RegisterType<ProductService>().As<IProductService>().InstancePerDependency();
 
 
             #endregion
