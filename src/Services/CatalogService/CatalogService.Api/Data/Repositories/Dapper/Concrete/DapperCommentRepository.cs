@@ -67,9 +67,6 @@ public class DapperCommentRepository : IDapperCommentRepository
                                                                               Code = entity.Code,
                                                                               UserId = entity.UserId,
                                                                               Content = entity.Content,
-                                                                              Name = entity.Name,
-                                                                              Surname = entity.Surname,
-                                                                              Email = entity.Email,
                                                                               UpdateDate = entity.UpdateDate
                                                                           });
 

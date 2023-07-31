@@ -20,6 +20,5 @@ namespace CatalogService.Api.Services.Base.Abstract
         Task<DataResult<IReadOnlyList<CommentModel>>> GetAllByProductId(IntModel model);
         Task<DataResult<IReadOnlyList<CommentModel>>> GetAllByProductCode(IntModel model);
         Task<DataResult<IReadOnlyList<CommentModel>>> GetAllByUserId(StringModel model);
-
     }
 }

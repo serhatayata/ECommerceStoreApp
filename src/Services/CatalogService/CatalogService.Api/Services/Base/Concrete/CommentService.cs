@@ -28,12 +28,20 @@ namespace CatalogService.Api.Services.Base.Concrete
         public async Task<Result> AddAsync(CommentAddModel entity)
         {
             var mappedModel = _mapper.Map<Comment>(entity);
+
+            mappedModel.Code = Guid.NewGuid().ToString();
+            mappedModel.UpdateDate = DateTime.Now;
+
             var result = await _efCommentRepository.AddAsync(mappedModel);
             return result;
         }
 
         public async Task<Result> UpdateAsync(CommentUpdateModel entity)
         {
+            var commentExists = await _dapperCommentRepository.GetByCodeAsync(new StringModel(entity.Code));
+            if (commentExists.Success && commentExists.Data?.UserId != entity.UserId)
+                return new ErrorResult("Comment user not same");
+
             var mappedModel = _mapper.Map<Comment>(entity);
             var result = await _efCommentRepository.UpdateAsync(mappedModel);
             return result;
@@ -41,6 +49,10 @@ namespace CatalogService.Api.Services.Base.Concrete
 
         public async Task<Result> UpdateByCodeAsync(CommentUpdateModel entity)
         {
+            var commentExists = await _dapperCommentRepository.GetByCodeAsync(new StringModel(entity.Code));
+            if (commentExists.Success && commentExists.Data?.UserId != entity.UserId)
+                return new ErrorResult("Comment user not same");
+
             var mappedModel = _mapper.Map<Comment>(entity);
             var result = await _efCommentRepository.UpdateByCodeAsync(mappedModel);
             return result;

@@ -8,6 +8,7 @@ using CatalogService.Api.Models.BrandModels;
 using CatalogService.Api.Models.CategoryModels;
 using CatalogService.Api.Services.Base.Abstract;
 using CatalogService.Api.Utilities.Results;
+using Google.Rpc;
 
 namespace CatalogService.Api.Services.Base.Concrete
 {
@@ -17,6 +18,7 @@ namespace CatalogService.Api.Services.Base.Concrete
         private readonly IDapperCategoryRepository _dapperCategoryRepository;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
+        private int _codeLength;
 
         public CategoryService(
             IEfCategoryRepository efCategoryRepository, 
@@ -28,14 +30,15 @@ namespace CatalogService.Api.Services.Base.Concrete
             _dapperCategoryRepository = dapperCategoryRepository;
             _mapper = mapper;
             _configuration = configuration;
+
+            _codeLength = _configuration.GetValue<int>("CategoryCodeGenerationLength");
         }
 
         public async Task<Result> AddAsync(CategoryAddModel entity)
         {
             var mappedModel = _mapper.Map<Category>(entity);
             //Code generation
-            var codeLength = _configuration.GetValue<int>("CategoryCodeGenerationLength");
-            var code = DataGenerationExtensions.RandomCode(codeLength);
+            var code = DataGenerationExtensions.RandomCode(_codeLength);
             //Code exists
             var categoryCodeExists = await _efCategoryRepository.GetAsync(c => c.Code == code);
             if (categoryCodeExists.Data != null)
@@ -52,8 +55,18 @@ namespace CatalogService.Api.Services.Base.Concrete
         public async Task<Result> UpdateAsync(CategoryUpdateModel entity)
         {
             var mappedModel = _mapper.Map<Category>(entity);
-            var result = await _efCategoryRepository.UpdateAsync(mappedModel);
+            //Check if name changed
+            var existingCategory = await _dapperCategoryRepository.GetAsync(new IntModel(entity.Id));
+            if (existingCategory?.Data != null && entity.Name != existingCategory.Data.Name)
+            {
+                var code = DataGenerationExtensions.RandomCode(_codeLength);
+                mappedModel.Code = code;
+                mappedModel.Link = this.GetCategoryLink(DataGenerationExtensions.GenerateLinkData(entity.Name), code);
+            }
 
+            mappedModel.UpdateDate = DateTime.Now;
+
+            var result = await _efCategoryRepository.UpdateAsync(mappedModel);
             return result;
         }
 

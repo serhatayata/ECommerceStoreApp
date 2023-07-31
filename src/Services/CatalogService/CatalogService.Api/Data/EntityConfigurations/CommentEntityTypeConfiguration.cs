@@ -21,15 +21,6 @@ namespace CatalogService.Api.Data.EntityConfigurations
 
             builder.Property(b => b.Content).HasColumnType("nvarchar(MAX)");
 
-            builder.Property(b => b.Name).IsRequired(false);
-            builder.Property(b => b.Name).HasColumnType("nvarchar(100)");
-
-            builder.Property(b => b.Surname).IsRequired(false);
-            builder.Property(b => b.Surname).HasColumnType("nvarchar(100)");
-
-            builder.Property(b => b.Email).IsRequired(false);
-            builder.Property(b => b.Email).HasColumnType("nvarchar(300)");
-
             builder.Property(c => c.CreateDate).HasDefaultValueSql("getdate()");
 
             builder.HasOne(c => c.Product)

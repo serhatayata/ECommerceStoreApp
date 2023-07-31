@@ -9,7 +9,7 @@ namespace CatalogService.Api.Entities
         /// </summary>
         public int Id { get; set; }
         /// <summary>
-        /// Id of the comment
+        /// Code of the comment
         /// </summary>
         public string Code { get; set; }
         /// <summary>
@@ -24,18 +24,6 @@ namespace CatalogService.Api.Entities
         /// Content of the comment
         /// </summary>
         public string Content { get; set; }
-        /// <summary>
-        /// Name of the user
-        /// </summary>
-        public string Name { get; set; }
-        /// <summary>
-        /// Surname of the user
-        /// </summary>
-        public string Surname { get; set; }
-        /// <summary>
-        /// Email of the user
-        /// </summary>
-        public string Email { get; set; }
         /// <summary>
         /// Creation date of the comment
         /// </summary>

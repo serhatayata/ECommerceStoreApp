@@ -1,6 +1,28 @@
-﻿namespace CatalogService.Api.Services.Base.Abstract
+﻿using CatalogService.Api.Entities;
+using CatalogService.Api.Models.Base.Concrete;
+using CatalogService.Api.Models.FeatureModels;
+using CatalogService.Api.Utilities.Results;
+
+namespace CatalogService.Api.Services.Base.Abstract
 {
     public interface IFeatureService
     {
+        Task<Result> AddAsync(FeatureAddModel entity);
+        Task<Result> AddProductFeatureAsync(ProductFeatureAddModel entity);
+        Task<Result> AddProductFeaturePropertyAsync(ProductFeaturePropertyAddModel entity);
+        Task<Result> UpdateAsync(FeatureUpdateModel entity);
+        Task<Result> UpdateProductFeaturePropertyAsync(ProductFeaturePropertyUpdateModel entity);
+        Task<Result> DeleteAsync(IntModel model);
+        Task<Result> DeleteProductFeatureAsync(IntModel entity);
+        Task<Result> DeleteProductFeaturePropertyAsync(IntModel entity);
+
+        Task<DataResult<FeatureModel>> GetAsync(IntModel model);
+        Task<DataResult<IReadOnlyList<FeatureModel>>> GetAllAsync();
+        Task<DataResult<IReadOnlyList<FeatureModel>>> GetAllFeaturesByProductId(IntModel model);
+        Task<DataResult<IReadOnlyList<FeatureModel>>> GetAllPagedAsync(PagingModel model);
+        Task<DataResult<IReadOnlyList<FeatureModel>>> GetAllFeaturesByProductCode(StringModel model);
+        Task<DataResult<IReadOnlyList<ProductFeaturePropertyModel>>> GetAllFeaturePropertiesByProductFeatureId(IntModel model);
+        Task<DataResult<IReadOnlyList<ProductFeaturePropertyModel>>> GetAllFeatureProperties(ProductFeatureModel model);
+        Task<DataResult<IReadOnlyList<Product>>> GetFeatureProducts(IntModel model);
     }
 }

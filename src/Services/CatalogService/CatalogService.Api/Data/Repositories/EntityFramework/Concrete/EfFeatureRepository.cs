@@ -51,6 +51,42 @@ public class EfFeatureRepository : IEfFeatureRepository
         }
     }
 
+    public async Task<Result> AddProductFeatureAsync(ProductFeature entity)
+    {
+        _catalogDbContext.Connection.Open();
+        using (var transaction = _catalogDbContext.Connection.BeginTransaction())
+        {
+            try
+            {
+                _catalogDbContext.Database.UseTransaction(transaction as DbTransaction);
+
+                await _catalogDbContext.ProductFeatures.AddAsync(entity);
+
+                var result = _catalogDbContext.SaveChanges();
+
+                if (result < 1)
+                    return new ErrorResult("Product feature not added");
+
+                transaction.Commit();
+                return new SuccessResult("Product feature added");
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _catalogDbContext.Connection.Close();
+            }
+        }
+    }
+
+    public async Task<Result> AddProductFeaturePropertyAsync(ProductFeatureProperty entity)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<Result> UpdateAsync(Feature entity)
     {
         _catalogDbContext.Connection.Open();
@@ -84,6 +120,11 @@ public class EfFeatureRepository : IEfFeatureRepository
         }
     }
 
+    public async Task<Result> UpdateProductFeaturePropertyAsync(ProductFeatureProperty entity)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<Result> DeleteAsync(IntModel model)
     {
         _catalogDbContext.Connection.Open();
@@ -114,6 +155,16 @@ public class EfFeatureRepository : IEfFeatureRepository
                 _catalogDbContext.Connection.Close();
             }
         }
+    }
+
+    public async Task<Result> DeleteProductFeatureAsync(IntModel entity)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<Result> DeleteProductFeaturePropertyAsync(IntModel entity)
+    {
+        throw new NotImplementedException();
     }
 
     public async Task<DataResult<Feature>> GetAsync(IntModel model)
