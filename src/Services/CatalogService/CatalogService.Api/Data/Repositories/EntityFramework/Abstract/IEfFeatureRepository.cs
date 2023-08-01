@@ -11,6 +11,6 @@ public interface IEfFeatureRepository : IEfGenericRepository<Feature, IntModel>
     Task<Result> AddProductFeatureAsync(ProductFeature entity);
     Task<Result> AddProductFeaturePropertyAsync(ProductFeatureProperty entity);
     Task<Result> UpdateProductFeaturePropertyAsync(ProductFeatureProperty entity);
-    Task<Result> DeleteProductFeatureAsync(IntModel entity);
+    Task<Result> DeleteProductFeatureAsync(ProductFeatureModel entity);
     Task<Result> DeleteProductFeaturePropertyAsync(IntModel entity);
 }

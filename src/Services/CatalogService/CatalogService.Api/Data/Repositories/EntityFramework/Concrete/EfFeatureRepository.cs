@@ -2,6 +2,7 @@
 using CatalogService.Api.Data.Repositories.EntityFramework.Abstract;
 using CatalogService.Api.Entities;
 using CatalogService.Api.Models.Base.Concrete;
+using CatalogService.Api.Models.FeatureModels;
 using CatalogService.Api.Utilities.Results;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
@@ -84,7 +85,33 @@ public class EfFeatureRepository : IEfFeatureRepository
 
     public async Task<Result> AddProductFeaturePropertyAsync(ProductFeatureProperty entity)
     {
-        throw new NotImplementedException();
+        _catalogDbContext.Connection.Open();
+        using (var transaction = _catalogDbContext.Connection.BeginTransaction())
+        {
+            try
+            {
+                _catalogDbContext.Database.UseTransaction(transaction as DbTransaction);
+
+                await _catalogDbContext.ProductFeatureProperties.AddAsync(entity);
+
+                var result = _catalogDbContext.SaveChanges();
+
+                if (result < 1)
+                    return new ErrorResult("Product feature property not added");
+
+                transaction.Commit();
+                return new SuccessResult("Product feature property added");
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _catalogDbContext.Connection.Close();
+            }
+        }
     }
 
     public async Task<Result> UpdateAsync(Feature entity)
@@ -122,7 +149,36 @@ public class EfFeatureRepository : IEfFeatureRepository
 
     public async Task<Result> UpdateProductFeaturePropertyAsync(ProductFeatureProperty entity)
     {
-        throw new NotImplementedException();
+        _catalogDbContext.Connection.Open();
+        using (var transaction = _catalogDbContext.Connection.BeginTransaction())
+        {
+            try
+            {
+                _catalogDbContext.Database.UseTransaction(transaction as DbTransaction);
+
+                var result = await _catalogDbContext.ProductFeatureProperties.Where(b => b.Id == entity.Id)
+                                                                             .ExecuteUpdateAsync(b => b
+                                                                             .SetProperty(p => p.Name, entity.Name)
+                                                                             .SetProperty(p => p.Description, entity.Description));
+
+                _catalogDbContext.SaveChanges();
+
+                if (result < 1)
+                    return new ErrorResult("Feature not updated");
+
+                transaction.Commit();
+                return new SuccessResult("Feature updated");
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _catalogDbContext.Connection.Close();
+            }
+        }
     }
 
     public async Task<Result> DeleteAsync(IntModel model)
@@ -140,10 +196,10 @@ public class EfFeatureRepository : IEfFeatureRepository
                 _catalogDbContext.SaveChanges();
 
                 if (result < 1)
-                    return new ErrorResult("Brand not deleted");
+                    return new ErrorResult("Feature not deleted");
 
                 transaction.Commit();
-                return new SuccessResult("Brand deleted");
+                return new SuccessResult("Feature deleted");
             }
             catch (Exception ex)
             {
@@ -157,14 +213,69 @@ public class EfFeatureRepository : IEfFeatureRepository
         }
     }
 
-    public async Task<Result> DeleteProductFeatureAsync(IntModel entity)
+    public async Task<Result> DeleteProductFeatureAsync(ProductFeatureModel entity)
     {
-        throw new NotImplementedException();
+        _catalogDbContext.Connection.Open();
+        using (var transaction = _catalogDbContext.Connection.BeginTransaction())
+        {
+            try
+            {
+                _catalogDbContext.Database.UseTransaction(transaction as DbTransaction);
+
+                var result = await _catalogDbContext.ProductFeatures.Where(b => b.ProductId == entity.ProductId && 
+                                                                                b.FeatureId == entity.FeatureId)
+                                                                                .ExecuteDeleteAsync();
+
+                _catalogDbContext.SaveChanges();
+
+                if (result < 1)
+                    return new ErrorResult("Product feature not deleted");
+
+                transaction.Commit();
+                return new SuccessResult("Product feature deleted");
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _catalogDbContext.Connection.Close();
+            }
+        }
     }
 
     public async Task<Result> DeleteProductFeaturePropertyAsync(IntModel entity)
     {
-        throw new NotImplementedException();
+        _catalogDbContext.Connection.Open();
+        using (var transaction = _catalogDbContext.Connection.BeginTransaction())
+        {
+            try
+            {
+                _catalogDbContext.Database.UseTransaction(transaction as DbTransaction);
+
+                var result = await _catalogDbContext.ProductFeatureProperties.Where(b => b.Id == entity.Value)
+                                                                             .ExecuteDeleteAsync();
+
+                _catalogDbContext.SaveChanges();
+
+                if (result < 1)
+                    return new ErrorResult("Product feature property not deleted");
+
+                transaction.Commit();
+                return new SuccessResult("Product feature property deleted");
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _catalogDbContext.Connection.Close();
+            }
+        }
     }
 
     public async Task<DataResult<Feature>> GetAsync(IntModel model)
