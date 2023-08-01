@@ -8,6 +8,8 @@ E-Commerce Microservices Application (STILL BEING IMPROVED)
 - RabbitMQ
 - MSSQL, Redis
 - EntityFramework, Dapper, NHibernate
+- SAGA Pattern
+- MassTransit
 
 ![Architecture_ECommerceStoreApp](https://user-images.githubusercontent.com/82120298/232288567-eb350065-a8ed-4743-b4d5-0c4de56cc4a4.png)
 
