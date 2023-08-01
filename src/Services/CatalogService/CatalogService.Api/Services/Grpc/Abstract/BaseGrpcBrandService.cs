@@ -1,8 +1,6 @@
 ﻿using CatalogService.Api.Extensions;
-using CatalogService.Api.Models.CacheModels;
 using CatalogService.Api.Utilities.IoC;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 namespace CatalogService.Api.Services.Grpc.Abstract
 {
