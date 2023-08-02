@@ -25,7 +25,7 @@ namespace CatalogService.Api.Controllers
         [Route("add")]
         [ProducesResponseType(typeof(Result), (int)HttpStatusCode.OK)]
         [ProducesErrorResponseType(typeof(Result))]
-        public async Task<IActionResult> AddAsync(BrandAddModel model)
+        public async Task<IActionResult> AddAsync([FromBody] BrandAddModel model)
         {
             var result = await _brandService.AddAsync(model);
             return result.Success ? Ok(result) : BadRequest(result);
@@ -35,7 +35,7 @@ namespace CatalogService.Api.Controllers
         [Route("update")]
         [ProducesResponseType(typeof(Result), (int)HttpStatusCode.OK)]
         [ProducesErrorResponseType(typeof(Result))]
-        public async Task<IActionResult> UpdateAsync(BrandUpdateModel model)
+        public async Task<IActionResult> UpdateAsync([FromBody] BrandUpdateModel model)
         {
             var result = await _brandService.UpdateAsync(model);
             return result.Success ? Ok(result) : BadRequest(result);
@@ -45,7 +45,7 @@ namespace CatalogService.Api.Controllers
         [Route("delete")]
         [ProducesResponseType(typeof(Result), (int)HttpStatusCode.OK)]
         [ProducesErrorResponseType(typeof(Result))]
-        public async Task<IActionResult> DeleteAsync(IntModel model)
+        public async Task<IActionResult> DeleteAsync([FromBody] IntModel model)
         {
             var result = await _brandService.DeleteAsync(model);
             return result.Success ? Ok(result) : BadRequest(result);
@@ -55,7 +55,7 @@ namespace CatalogService.Api.Controllers
         [Route("get")]
         [ProducesResponseType(typeof(DataResult<BrandModel>), (int)HttpStatusCode.OK)]
         [ProducesErrorResponseType(typeof(DataResult<BrandModel>))]
-        public async Task<IActionResult> GetAsync(IntModel model)
+        public async Task<IActionResult> GetAsync([FromBody] IntModel model)
         {
             var result = await _brandService.GetAsync(model);
             return result.Success ? Ok(result) : BadRequest(result);
@@ -75,7 +75,7 @@ namespace CatalogService.Api.Controllers
         [Route("getall-paged")]
         [ProducesResponseType(typeof(DataResult<IReadOnlyList<BrandModel>>), (int)HttpStatusCode.OK)]
         [ProducesErrorResponseType(typeof(DataResult<IReadOnlyList<BrandModel>>))]
-        public async Task<IActionResult> GetAllPagedAsync(PagingModel model)
+        public async Task<IActionResult> GetAllPagedAsync([FromBody] PagingModel model)
         {
             var result = await _brandService.GetAllPagedAsync(model);
             return result.Success ? Ok(result) : BadRequest(result);

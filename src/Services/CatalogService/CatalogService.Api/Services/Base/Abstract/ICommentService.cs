@@ -9,7 +9,6 @@ namespace CatalogService.Api.Services.Base.Abstract
     {
         Task<Result> AddAsync(CommentAddModel entity);
         Task<Result> UpdateAsync(CommentUpdateModel entity);
-        Task<Result> UpdateByCodeAsync(CommentUpdateModel entity);
         Task<Result> DeleteAsync(IntModel model);
         Task<Result> DeleteByCodeAsync(StringModel model);
 

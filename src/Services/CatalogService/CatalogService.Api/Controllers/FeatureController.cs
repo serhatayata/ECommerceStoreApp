@@ -7,5 +7,6 @@ namespace CatalogService.Api.Controllers
     [ApiController]
     public class FeatureController : ControllerBase
     {
+
     }
 }

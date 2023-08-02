@@ -47,17 +47,6 @@ namespace CatalogService.Api.Services.Base.Concrete
             return result;
         }
 
-        public async Task<Result> UpdateByCodeAsync(CommentUpdateModel entity)
-        {
-            var commentExists = await _dapperCommentRepository.GetByCodeAsync(new StringModel(entity.Code));
-            if (commentExists.Success && commentExists.Data?.UserId != entity.UserId)
-                return new ErrorResult("Comment user not same");
-
-            var mappedModel = _mapper.Map<Comment>(entity);
-            var result = await _efCommentRepository.UpdateByCodeAsync(mappedModel);
-            return result;
-        }
-
         public async Task<Result> DeleteAsync(IntModel model)
         {
             var result = await _efCommentRepository.DeleteAsync(model);

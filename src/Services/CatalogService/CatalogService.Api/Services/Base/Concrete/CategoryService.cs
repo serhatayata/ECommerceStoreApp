@@ -64,8 +64,6 @@ namespace CatalogService.Api.Services.Base.Concrete
                 mappedModel.Link = this.GetCategoryLink(DataGenerationExtensions.GenerateLinkData(entity.Name), code);
             }
 
-            mappedModel.UpdateDate = DateTime.Now;
-
             var result = await _efCategoryRepository.UpdateAsync(mappedModel);
             return result;
         }
