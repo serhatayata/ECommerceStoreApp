@@ -26,5 +26,4 @@ E-Commerce Microservices Application (STILL BEING IMPROVED)
     - update-database -context AppPersistedGrantDbContext -migration mig_persisted_v1
     - update-database -context AppConfigurationDbContext -migration mig_config_v1
 
-- OUTBOX PATTERN
 ![OUTBOX](https://github.com/serhatayata/ECommerceStoreApp/assets/82120298/9c9d9c48-568a-452e-ae1d-b2b4a5f52488)
