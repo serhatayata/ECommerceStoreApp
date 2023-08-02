@@ -27,4 +27,4 @@ E-Commerce Microservices Application (STILL BEING IMPROVED)
     - update-database -context AppConfigurationDbContext -migration mig_config_v1
 
 - OUTBOX PATTERN
-  ![OUTBOX](https://github.com/serhatayata/ECommerceStoreApp/assets/82120298/ad17e49e-d79e-4f9f-8200-d13c50cdeba1)
+![OUTBOX](https://github.com/serhatayata/ECommerceStoreApp/assets/82120298/9c9d9c48-568a-452e-ae1d-b2b4a5f52488)
