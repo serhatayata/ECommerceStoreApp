@@ -8,12 +8,12 @@ namespace CatalogService.Api.Services.Base.Abstract
     public interface IFeatureService
     {
         Task<Result> AddAsync(FeatureAddModel entity);
-        Task<Result> AddProductFeatureAsync(ProductFeatureAddModel entity);
+        Task<Result> AddProductFeatureAsync(ProductFeatureModel entity);
         Task<Result> AddProductFeaturePropertyAsync(ProductFeaturePropertyAddModel entity);
         Task<Result> UpdateAsync(FeatureUpdateModel entity);
         Task<Result> UpdateProductFeaturePropertyAsync(ProductFeaturePropertyUpdateModel entity);
         Task<Result> DeleteAsync(IntModel model);
-        Task<Result> DeleteProductFeatureAsync(IntModel entity);
+        Task<Result> DeleteProductFeatureAsync(ProductFeatureModel entity);
         Task<Result> DeleteProductFeaturePropertyAsync(IntModel entity);
 
         Task<DataResult<FeatureModel>> GetAsync(IntModel model);

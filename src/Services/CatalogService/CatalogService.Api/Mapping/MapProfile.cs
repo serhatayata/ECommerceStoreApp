@@ -88,7 +88,7 @@ public class MapProfile : Profile
 
         CreateMap<CommentModel, Comment>().ReverseMap();
         CreateMap<CommentAddModel, Comment>().ReverseMap();
-        CreateMap<CommentUpdateModel, Comment>().ReverseMap();
+        CreateMap<CommentUpdateModel, Comment>().ForMember(c => c.UpdateDate, opt => opt.MapFrom(s => DateTime.Now)).ReverseMap();
         #endregion
     }
 }

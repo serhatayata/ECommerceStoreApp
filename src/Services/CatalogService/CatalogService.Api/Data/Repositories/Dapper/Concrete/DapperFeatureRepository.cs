@@ -3,9 +3,11 @@ using CatalogService.Api.Data.Contexts.Connections.Abstract;
 using CatalogService.Api.Data.Repositories.Dapper.Abstract;
 using CatalogService.Api.Entities;
 using CatalogService.Api.Models.Base.Concrete;
+using CatalogService.Api.Models.FeatureModels;
 using CatalogService.Api.Utilities.Results;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
+using Nest;
 using System.Data.Common;
 
 namespace CatalogService.Api.Data.Repositories.Dapper.Concrete;
@@ -532,5 +534,37 @@ public class DapperFeatureRepository : IDapperFeatureRepository
 
         var filteredResult = resultData.ProductFeatureProperties.DistinctBy(c => c.Id).ToList();
         return new DataResult<IReadOnlyList<ProductFeatureProperty>>(filteredResult);
+    }
+
+    public async Task<DataResult<ProductFeature>> GetProductFeature(ProductFeatureModel model)
+    {
+        var query = $"SELECT * FROM {_productFeatureTable} " +
+                    $"WHERE ProductId = @ProductId " +
+                    $"AND FeatureId = @FeatureId";
+
+        var result = await _readDbConnection.QuerySingleOrDefaultAsync<ProductFeature>(sql: query,
+                                                                                param: new { ProductId = model.ProductId, FeatureId = model.FeatureId });
+        return new DataResult<ProductFeature>(result);
+    }
+
+    public async Task<DataResult<ProductFeatureProperty>> GetProductFeatureProperty(int productFeatureId, string name)
+    {
+        var query = $"SELECT * FROM {_productFeaturePropertyTable} " +
+                    $"WHERE ProductFeatureId = @ProductFeatureId " +
+                    $"AND Name = @Name";
+
+        var result = await _readDbConnection.QuerySingleOrDefaultAsync<ProductFeatureProperty>(sql: query,
+                                                                                param: new { ProductFeatureId = productFeatureId, Name = name });
+        return new DataResult<ProductFeatureProperty>(result);
+    }
+
+    public async Task<DataResult<ProductFeatureProperty>> GetProductFeatureProperty(IntModel productFeaturePropertyId)
+    {
+        var query = $"SELECT * FROM {_productFeaturePropertyTable} " +
+                    $"WHERE Id = @Id";
+
+        var result = await _readDbConnection.QuerySingleOrDefaultAsync<ProductFeatureProperty>(sql: query,
+                                                                                param: new { Id = productFeaturePropertyId.Value });
+        return new DataResult<ProductFeatureProperty>(result);
     }
 }
