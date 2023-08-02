@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="IntegrationEvents\**" />
+    <Content Remove="IntegrationEvents\**" />
+    <EmbeddedResource Remove="IntegrationEvents\**" />
+    <None Remove="IntegrationEvents\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Protos\brand.proto" />
     <None Remove="Protos\category.proto" />
     <None Remove="Protos\comment.proto" />
@@ -53,7 +60,6 @@
 
   <ItemGroup>
     <Folder Include="Data\SeedData\SeedFiles\" />
-    <Folder Include="IntegrationEvents\" />
     <Folder Include="Validations\" />
   </ItemGroup>
 
