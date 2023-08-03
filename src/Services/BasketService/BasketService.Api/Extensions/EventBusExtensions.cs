@@ -42,8 +42,8 @@ public static class EventBusExtensions
             return EventBusFactory.Create(config, sp);
         });
 
-        //services.AddTransient<ProductPriceChangedIntegrationEventHandler>();
-        //services.AddTransient<OrderStartedIntegrationEventHandler>(); 
+        services.AddTransient<ProductPriceChangedIntegrationEventHandler>();
+        services.AddTransient<OrderStartedIntegrationEventHandler>(); 
     }
 
     public static void SubscribeEvents(this IServiceCollection services)

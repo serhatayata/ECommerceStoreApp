@@ -6,6 +6,8 @@ using BasketService.Api.Infrastructure.Filters;
 using BasketService.Api.Infrastructure.Interceptors;
 using BasketService.Api.Models;
 using BasketService.Api.Models.Settings;
+using BasketService.Api.Repositories.Abstract;
+using BasketService.Api.Repositories.Concrete;
 using BasketService.Api.Services.ElasticSearch.Abstract;
 using BasketService.Api.Services.ElasticSearch.Concrete;
 using BasketService.Api.Services.Grpc;
@@ -34,6 +36,8 @@ builder.Services.AddControllerSettings();
 builder.Services.AddSingleton<IElasticSearchService, ElasticSearchService>();
 builder.Services.AddSingleton<IRedisService, RedisService>();
 builder.Services.AddTransient<IClientCredentialsTokenService, ClientCredentialsTokenService>();
+
+builder.Services.AddTransient<IBasketRepository, BasketRepository>();
 #endregion
 #region Host
 builder.Host.AddHostExtensions(environment);

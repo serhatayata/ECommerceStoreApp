@@ -23,14 +23,13 @@ namespace BasketService.Api.DependencyResolvers.Autofac
             builder.RegisterType<LocalizationService>().As<ILocalizationService>().SingleInstance();
             #endregion
             #region Repositories
-            builder.RegisterType<BasketRepository>().As<IBasketRepository>().InstancePerLifetimeScope();
+            builder.RegisterType<BasketRepository>().As<IBasketRepository>().InstancePerDependency();
             #endregion
             #region EventBus
             builder.RegisterType<InMemoryEventBusSubscriptionManager>().As<IEventBusSubscriptionManager>().InstancePerDependency();
             #endregion
             #region EventHandlers
-            builder.RegisterType<OrderStartedIntegrationEventHandler>().InstancePerDependency();
-            builder.RegisterType<ProductPriceChangedIntegrationEventHandler>().InstancePerDependency();
+
             #endregion
         }
     }
