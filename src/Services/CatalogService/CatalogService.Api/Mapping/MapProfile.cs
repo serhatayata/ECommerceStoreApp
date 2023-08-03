@@ -4,6 +4,8 @@ using CatalogService.Api.Models.Base.Concrete;
 using CatalogService.Api.Models.BrandModels;
 using CatalogService.Api.Models.CategoryModels;
 using CatalogService.Api.Models.CommentModels;
+using CatalogService.Api.Models.FeatureModels;
+using CatalogService.Api.Models.ProductModels;
 using CatalogService.Api.Utilities.Results;
 
 namespace CatalogService.Api.Mapping;
@@ -89,6 +91,21 @@ public class MapProfile : Profile
         CreateMap<CommentModel, Comment>().ReverseMap();
         CreateMap<CommentAddModel, Comment>().ReverseMap();
         CreateMap<CommentUpdateModel, Comment>().ForMember(c => c.UpdateDate, opt => opt.MapFrom(s => DateTime.Now)).ReverseMap();
+
+        CreateMap<FeatureModel, Feature>().ReverseMap();
+        CreateMap<FeatureAddModel, Feature>().ReverseMap();
+        CreateMap<FeatureUpdateModel, Feature>().ReverseMap();
+
+        CreateMap<ProductModel, Product>().ReverseMap();
+        CreateMap<ProductAddModel, Product>().ReverseMap();
+        CreateMap<ProductUpdateModel, Product>()
+            .ForMember(c => c.UpdateDate, opt => opt.MapFrom(s => DateTime.Now)).ReverseMap();
+
+        CreateMap<ProductFeatureModel, ProductFeature>().ReverseMap();
+
+        CreateMap<ProductFeaturePropertyAddModel, ProductFeatureProperty>().ReverseMap();
+        CreateMap<ProductFeaturePropertyModel, ProductFeatureProperty>().ReverseMap();
+        CreateMap<ProductFeaturePropertyUpdateModel, ProductFeatureProperty>().ReverseMap();
         #endregion
     }
 }

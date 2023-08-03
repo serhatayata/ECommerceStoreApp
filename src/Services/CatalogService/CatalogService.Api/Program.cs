@@ -55,7 +55,8 @@ builder.Services.AddDbContext<CatalogDbContext>(options =>
                          sqlServerOptionsAction: sqlOptions =>
                          {
                              sqlOptions.MigrationsAssembly(assembly);
-                             sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
+                             // If we enable retry on failure, then we have to use execution strategy to follow the transactions seperately
+                             //sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
                          });
 }, ServiceLifetime.Scoped);
 
@@ -65,7 +66,7 @@ builder.Services.AddDbContext<IntegrationEventLogContext>(options =>
                      sqlServerOptionsAction: sqlOptions =>
                      {
                          sqlOptions.MigrationsAssembly(assembly);
-                         sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
+                         //sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
                      });
 }, ServiceLifetime.Scoped);
 #endregion

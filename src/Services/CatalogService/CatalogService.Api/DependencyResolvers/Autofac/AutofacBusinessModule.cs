@@ -10,6 +10,7 @@ using CatalogService.Api.Data.Repositories.EntityFramework.Concrete;
 using CatalogService.Api.IntegrationEvents;
 using CatalogService.Api.Services.Base.Abstract;
 using CatalogService.Api.Services.Base.Concrete;
+using IntegrationEventLogEF.Services;
 
 namespace CatalogService.Api.DependencyResolvers.Autofac
 {
@@ -49,6 +50,7 @@ namespace CatalogService.Api.DependencyResolvers.Autofac
             #endregion
             #region Events
             builder.RegisterType<CatalogIntegrationEventService>().As<ICatalogIntegrationEventService>().InstancePerDependency();
+            builder.RegisterType<IntegrationEventLogService>().As<IIntegrationEventLogService>().InstancePerDependency();
             #endregion
         }
     }

@@ -98,15 +98,15 @@ namespace EventBus.RabbitMQ
                 properties.DeliveryMode = 2; // persistent
 
                 //If queue doesn't exists, this would create it and then publish. But queue should be created by consumers.
-                //consumerChannel.QueueDeclare(queue: GetSubName(eventName), // Ensure queue exists while publishing
-                //                     durable: true,
-                //                     exclusive: false,
-                //                     autoDelete: false,
-                //                     arguments: null);
+                consumerChannel.QueueDeclare(queue: GetSubName(eventName), // Ensure queue exists while publishing
+                                     durable: true,
+                                     exclusive: false,
+                                     autoDelete: false,
+                                     arguments: null);
 
-                //consumerChannel.QueueBind(queue: GetSubName(eventName),
-                //                  exchange: EventBusConfig.DefaultTopicName,
-                //                  routingKey: eventName);
+                consumerChannel.QueueBind(queue: GetSubName(eventName),
+                                  exchange: EventBusConfig.DefaultTopicName,
+                                  routingKey: eventName);
 
                 consumerChannel.BasicPublish(
                     exchange: EventBusConfig.DefaultTopicName,

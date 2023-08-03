@@ -69,6 +69,11 @@ namespace CatalogService.Api.Services.Base.Concrete
                 mappedModel.ProductCode = code;
                 mappedModel.Link = this.GetProductLink(DataGenerationExtensions.GenerateLinkData(entity.Name), code);
             }
+            else
+            {
+                mappedModel.ProductCode = existingProduct.Data.ProductCode;
+                mappedModel.Link = existingProduct.Data.Link;
+            }
 
             mappedModel.UpdateDate = DateTime.Now;
             var result = await _efProductRepository.UpdateAsync(mappedModel);
