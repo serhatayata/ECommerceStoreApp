@@ -1,6 +1,6 @@
 ﻿namespace IntegrationEventLogEF;
 
-public class IntegrationEventLogContext : DbContext
+public class IntegrationEventLogContext : BaseIntegrationEventLogContext
 {
     public IntegrationEventLogContext(DbContextOptions<IntegrationEventLogContext> options) : base(options)
     {
@@ -15,27 +15,20 @@ public class IntegrationEventLogContext : DbContext
 
     void ConfigureIntegrationEventLogEntry(EntityTypeBuilder<IntegrationEventLogEntry> builder)
     {
-        builder.ToTable("IntegrationEventLog");
+        builder.ToTable("IntegrationEventLog", "logs");
 
         builder.HasKey(e => e.EventId);
 
-        builder.Property(e => e.EventId)
-            .IsRequired();
+        builder.Property(e => e.EventId).IsRequired();
 
-        builder.Property(e => e.Content)
-            .IsRequired();
+        builder.Property(e => e.Content).IsRequired();
 
-        builder.Property(e => e.CreationTime)
-            .IsRequired();
+        builder.Property(e => e.CreationTime).IsRequired();
 
-        builder.Property(e => e.State)
-            .IsRequired();
+        builder.Property(e => e.State).IsRequired();
 
-        builder.Property(e => e.TimesSent)
-            .IsRequired();
+        builder.Property(e => e.TimesSent).IsRequired();
 
-        builder.Property(e => e.EventTypeName)
-            .IsRequired();
-
+        builder.Property(e => e.EventTypeName).IsRequired();
     }
 }

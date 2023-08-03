@@ -7,13 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="IntegrationEvents\**" />
-    <Content Remove="IntegrationEvents\**" />
-    <EmbeddedResource Remove="IntegrationEvents\**" />
-    <None Remove="IntegrationEvents\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="Protos\brand.proto" />
     <None Remove="Protos\category.proto" />
     <None Remove="Protos\comment.proto" />
@@ -42,7 +35,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.8">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -60,7 +53,13 @@
 
   <ItemGroup>
     <Folder Include="Data\SeedData\SeedFiles\" />
+    <Folder Include="IntegrationEvents\EventHandling\" />
     <Folder Include="Validations\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\BuildingBlocks\EventBus\EventBus.Factory\EventBus.Factory.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\EventBus\IntegrationEventLogEF\IntegrationEventLogEF.csproj" />
   </ItemGroup>
 
   <ItemGroup>

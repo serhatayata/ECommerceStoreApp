@@ -1,19 +1,23 @@
-using Autofac.Extensions.DependencyInjection;
 using Autofac;
+using Autofac.Extensions.DependencyInjection;
 using CatalogService.Api.Data.Contexts;
-using CatalogService.Api.Extensions;
-using CatalogService.Api.Utilities.IoC;
-using Microsoft.EntityFrameworkCore;
-using System;
 using CatalogService.Api.DependencyResolvers.Autofac;
-using CatalogService.Api.Mapping;
+using CatalogService.Api.Extensions;
+using CatalogService.Api.Extensions.Middlewares;
 using CatalogService.Api.Infrastructure.Interceptors;
-using System.Reflection;
-using CatalogService.Api.Services.Grpc;
+using CatalogService.Api.Mapping;
+using CatalogService.Api.Models.CacheModels;
 using CatalogService.Api.Services.Cache.Abstract;
 using CatalogService.Api.Services.Cache.Concrete;
-using CatalogService.Api.Models.CacheModels;
-using CatalogService.Api.Extensions.Middlewares;
+using CatalogService.Api.Services.Grpc;
+using CatalogService.Api.Utilities.IoC;
+using EventBus.Base;
+using EventBus.Base.Abstraction;
+using EventBus.Factory;
+using IntegrationEventLogEF;
+using Microsoft.EntityFrameworkCore;
+using RabbitMQ.Client;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
@@ -44,7 +48,26 @@ ServiceTool.Create(builder.Services);
 #endregion
 #region DbContext
 string defaultConnString = configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(defaultConnString, b => b.MigrationsAssembly(assembly)), ServiceLifetime.Scoped);
+
+builder.Services.AddDbContext<CatalogDbContext>(options =>
+{
+    options.UseSqlServer(connectionString: defaultConnString,
+                         sqlServerOptionsAction: sqlOptions =>
+                         {
+                             sqlOptions.MigrationsAssembly(assembly);
+                             sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
+                         });
+}, ServiceLifetime.Scoped);
+
+builder.Services.AddDbContext<IntegrationEventLogContext>(options =>
+{
+    options.UseSqlServer(connectionString: defaultConnString,
+                     sqlServerOptionsAction: sqlOptions =>
+                     {
+                         sqlOptions.MigrationsAssembly(assembly);
+                         sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
+                     });
+}, ServiceLifetime.Scoped);
 #endregion
 #region Autofac
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
@@ -70,6 +93,32 @@ builder.Services.AddGrpcReflection();
 //}).AddJsonTranscoding();
 #endregion
 #endregion
+#region Event Bus
+builder.Services.AddSingleton<IEventBus>(sp =>
+{
+    EventBusConfig config = new()
+    {
+        ConnectionRetryCount = configuration.GetValue<int?>("EventBusConfigSettings:ConnectionRetryCount") ?? 5,
+        EventNameSuffix = configuration.GetSection("EventBusConfigSettings:EventNameSuffix").Value ?? "IntegrationEvent",
+        SubscriberClientAppName = configuration.GetSection("EventBusConfigSettings:SubscriberClientAppName").Value ?? "OrderService",
+        EventBusType = EventBusType.RabbitMQ,
+        Connection = new ConnectionFactory()
+        {
+            HostName = "localhost",
+            Port = 5672,
+            UserName = "guest",
+            Password = "guest"
+        }
+        //Connection = new ConnectionFactory()
+        //{
+        //    HostName = configuration.GetSection("EventBusConfigSettings:HostName").Value ?? "c_rabbitmq"
+        //}
+    };
+
+    return EventBusFactory.Create(config, sp);
+});
+#endregion
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -100,9 +149,19 @@ if (app.Environment.IsDevelopment())
     app.MapGrpcReflectionService();
 }
 
+ConfigureEventBusForSubscription(app);
+
 app.Run();
 
 public partial class Program
 {
     public static string appName = Assembly.GetExecutingAssembly().GetName().Name;
+
+    private static void ConfigureEventBusForSubscription(WebApplication app)
+    {
+        var eventBus = app.Services.GetRequiredService<IEventBus>();
+
+        //eventBus.Subscribe<OrderCreatedIntegrationEvent, OrderCreatedIntegrationEventHandler>();
+    }
 }
+

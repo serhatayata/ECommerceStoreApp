@@ -7,8 +7,8 @@ using CatalogService.Api.Models.FeatureModels;
 using CatalogService.Api.Utilities.Results;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
-using Nest;
 using System.Data.Common;
+using Result = CatalogService.Api.Utilities.Results.Result;
 
 namespace CatalogService.Api.Data.Repositories.Dapper.Concrete;
 

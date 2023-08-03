@@ -23,6 +23,7 @@ namespace CatalogService.Api.Controllers
         public string ProjectName { get; private set; }
         public string ClassName { get; private set; }
 
+        [NonAction]
         public string GetAcceptLanguage(IHttpContextAccessor httpContextAccessor)
         {
             var acceptLanguage = httpContextAccessor?.HttpContext?.Request?.GetTypedHeaders()?.AcceptLanguage?.FirstOrDefault()?.Value ?? string.Empty;
@@ -32,6 +33,7 @@ namespace CatalogService.Api.Controllers
             return culture;
         }
 
+        [NonAction]
         public string CurrentCacheKey(string methodName, string prefix = null, params string[] parameters)
             => CacheExtensions.GetCacheKey(methodName, this.ProjectName, this.ClassName, prefix, parameters);
     }

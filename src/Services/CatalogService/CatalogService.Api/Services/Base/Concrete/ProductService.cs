@@ -1,14 +1,14 @@
 ﻿using AutoMapper;
 using CatalogService.Api.Data.Repositories.Dapper.Abstract;
 using CatalogService.Api.Data.Repositories.EntityFramework.Abstract;
+using CatalogService.Api.Entities;
+using CatalogService.Api.Extensions;
+using CatalogService.Api.IntegrationEvents;
+using CatalogService.Api.IntegrationEvents.Events;
 using CatalogService.Api.Models.Base.Concrete;
 using CatalogService.Api.Models.ProductModels;
 using CatalogService.Api.Services.Base.Abstract;
 using CatalogService.Api.Utilities.Results;
-using CatalogService.Api.Entities;
-using CatalogService.Api.Extensions;
-using CatalogService.Api.Data.Repositories.EntityFramework.Concrete;
-using CatalogService.Api.Data.Repositories.Dapper.Concrete;
 
 namespace CatalogService.Api.Services.Base.Concrete
 {
@@ -18,18 +18,22 @@ namespace CatalogService.Api.Services.Base.Concrete
         private readonly IDapperProductRepository _dapperProductRepository;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
+        private readonly ICatalogIntegrationEventService _catalogIntegrationEventService;
+
         private int _codeLength;
 
         public ProductService(
             IEfProductRepository efProductRepository, 
             IDapperProductRepository dapperProductRepository, 
             IMapper mapper, 
-            IConfiguration configuration)
+            IConfiguration configuration,
+            ICatalogIntegrationEventService catalogIntegrationEventService)
         {
             _efProductRepository = efProductRepository;
             _dapperProductRepository = dapperProductRepository;
             _mapper = mapper;
             _configuration = configuration;
+            _catalogIntegrationEventService = catalogIntegrationEventService;
 
             _codeLength = _configuration.GetValue<int>("ProductCodeGenerationLength");
         }
@@ -56,7 +60,10 @@ namespace CatalogService.Api.Services.Base.Concrete
             var mappedModel = _mapper.Map<Product>(entity);
             //Check if name changed
             var existingProduct = await _dapperProductRepository.GetAsync(new IntModel(entity.Id));
-            if (existingProduct?.Data != null && entity.Name != existingProduct.Data.Name)
+            if (existingProduct?.Data == null)
+                return new ErrorResult("Product not found");
+
+            if (entity.Name != existingProduct.Data.Name)
             {
                 var code = DataGenerationExtensions.RandomCode(_codeLength);
                 mappedModel.ProductCode = code;
@@ -64,7 +71,22 @@ namespace CatalogService.Api.Services.Base.Concrete
             }
 
             mappedModel.UpdateDate = DateTime.Now;
-            return await _efProductRepository.UpdateAsync(mappedModel);
+            var result = await _efProductRepository.UpdateAsync(mappedModel);
+
+            if (result.Success && entity.Price != existingProduct.Data.Price)
+            {
+                //Creating integration event to be published
+                var priceChangedEvent = new ProductPriceChangedIntegrationEvent(existingProduct.Data.Id,
+                                                                                entity.Price,
+                                                                                existingProduct.Data.Price);
+
+                await _catalogIntegrationEventService.SaveEventAndCatalogContextChangesAsync(priceChangedEvent);
+
+                // Publish and mark the saved event as published
+                await _catalogIntegrationEventService.PublishThroughEventBusAsync(priceChangedEvent);
+            }
+
+            return result;
         }
 
         public async Task<Result> DeleteAsync(IntModel model)

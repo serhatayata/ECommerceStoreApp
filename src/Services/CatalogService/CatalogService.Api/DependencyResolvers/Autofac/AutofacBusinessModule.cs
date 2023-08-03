@@ -7,6 +7,7 @@ using CatalogService.Api.Data.Repositories.Dapper.Abstract;
 using CatalogService.Api.Data.Repositories.Dapper.Concrete;
 using CatalogService.Api.Data.Repositories.EntityFramework.Abstract;
 using CatalogService.Api.Data.Repositories.EntityFramework.Concrete;
+using CatalogService.Api.IntegrationEvents;
 using CatalogService.Api.Services.Base.Abstract;
 using CatalogService.Api.Services.Base.Concrete;
 
@@ -45,6 +46,9 @@ namespace CatalogService.Api.DependencyResolvers.Autofac
             builder.RegisterType<ProductService>().As<IProductService>().InstancePerDependency();
 
 
+            #endregion
+            #region Events
+            builder.RegisterType<CatalogIntegrationEventService>().As<ICatalogIntegrationEventService>().InstancePerDependency();
             #endregion
         }
     }
