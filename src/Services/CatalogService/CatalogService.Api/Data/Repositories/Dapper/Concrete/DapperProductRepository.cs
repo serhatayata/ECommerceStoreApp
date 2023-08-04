@@ -161,7 +161,10 @@ public class DapperProductRepository : IDapperProductRepository
 
         var result = await _readDbConnection.QuerySingleOrDefaultAsync<Product>(sql: query,
                                                                                 param: new { Id = model.Value });
-        return new DataResult<Product>(result);
+
+        return result == null ?
+            new ErrorDataResult<Product>(result) :
+            new SuccessDataResult<Product>(result);
     }
 
     public async Task<DataResult<Product>> GetByProductCodeAsync(StringModel model)
@@ -170,7 +173,10 @@ public class DapperProductRepository : IDapperProductRepository
 
         var result = await _readDbConnection.QuerySingleOrDefaultAsync<Product>(sql: query,
                                                                                 param: new { ProductCode = model.Value });
-        return new DataResult<Product>(result);
+
+        return result == null ?
+            new ErrorDataResult<Product>(result) :
+            new SuccessDataResult<Product>(result);
     }
 
     public async Task<DataResult<IReadOnlyList<Product>>> GetAllAsync()
@@ -178,7 +184,10 @@ public class DapperProductRepository : IDapperProductRepository
         var query = $"SELECT * FROM {_productTable}";
 
         var result = await _readDbConnection.QueryAsync<Product>(query);
-        return new DataResult<IReadOnlyList<Product>>(result);
+
+        return result == null ?
+            new ErrorDataResult<IReadOnlyList<Product>>(result) :
+            new SuccessDataResult<IReadOnlyList<Product>>(result);
     }
 
     public async Task<DataResult<IReadOnlyList<Product>>> GetAllPagedAsync(PagingModel model)
@@ -188,7 +197,10 @@ public class DapperProductRepository : IDapperProductRepository
 
         var result = await _readDbConnection.QueryAsync<Product>(sql: query,
                                                                  param: new { Page = model.Page, PageSize = model.PageSize });
-        return new DataResult<IReadOnlyList<Product>>(result);
+
+        return result == null ?
+            new ErrorDataResult<IReadOnlyList<Product>>(result) :
+            new SuccessDataResult<IReadOnlyList<Product>>(result);
     }
 
     public async Task<DataResult<IReadOnlyList<Product>>> GetAllBetweenPricesAsync(PriceBetweenModel model)
@@ -200,7 +212,10 @@ public class DapperProductRepository : IDapperProductRepository
                                                                                 MinimumPrice = model.MinimumPrice,
                                                                                 MaximumPrice = model.MaximumPrice,
                                                                              });
-        return new DataResult<IReadOnlyList<Product>>(result);
+
+        return result == null ?
+            new ErrorDataResult<IReadOnlyList<Product>>(result) :
+            new SuccessDataResult<IReadOnlyList<Product>>(result);
     }
 
     public async Task<DataResult<IReadOnlyList<Product>>> GetAllByBrandIdAsync(IntModel model)
@@ -212,7 +227,10 @@ public class DapperProductRepository : IDapperProductRepository
                                                                  {
                                                                      BrandId = model.Value
                                                                  });
-        return new DataResult<IReadOnlyList<Product>>(result);
+
+        return result == null ?
+            new ErrorDataResult<IReadOnlyList<Product>>(result) :
+            new SuccessDataResult<IReadOnlyList<Product>>(result);
     }
 
     public async Task<DataResult<IReadOnlyList<Product>>> GetAllByProductTypeIdAsync(IntModel model)
@@ -224,6 +242,9 @@ public class DapperProductRepository : IDapperProductRepository
                                                                  {
                                                                      ProductTypeId = model.Value
                                                                  });
-        return new DataResult<IReadOnlyList<Product>>(result);
+
+        return result == null ?
+            new ErrorDataResult<IReadOnlyList<Product>>(result) :
+            new SuccessDataResult<IReadOnlyList<Product>>(result);
     }
 }

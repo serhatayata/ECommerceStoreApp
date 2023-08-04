@@ -1,9 +1,7 @@
-﻿using AutoMapper;
-using CatalogService.Api.Data.Repositories.Base;
-using CatalogService.Api.Entities;
-using CatalogService.Api.Models.Base.Concrete;
+﻿using CatalogService.Api.Models.Base.Concrete;
 using CatalogService.Api.Models.BrandModels;
 using CatalogService.Api.Services.Base.Abstract;
+using CatalogService.Api.Services.Cache.Abstract;
 using CatalogService.Api.Utilities.Results;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -15,10 +13,14 @@ namespace CatalogService.Api.Controllers
     public class BrandController : BaseController
     {
         private readonly IBrandService _brandService;
+        private readonly IRedisService _redisService;
 
-        public BrandController(IBrandService brandService)
+        public BrandController(
+            IBrandService brandService,
+            IRedisService redisService)
         {
             _brandService = brandService;
+            _redisService = redisService;
         }
 
         [HttpPost]
@@ -67,8 +69,17 @@ namespace CatalogService.Api.Controllers
         [ProducesErrorResponseType(typeof(DataResult<IReadOnlyList<BrandModel>>))]
         public async Task<IActionResult> GetAllAsync()
         {
-            var result = await _brandService.GetAllAsync();
-            return result.Success ? Ok(result) : BadRequest(result);
+            var cacheKey = this.CurrentCacheKey(methodName: System.Reflection.MethodBase.GetCurrentMethod()?.Name ?? nameof(GetAllAsync));
+            var cacheResult = await _redisService.GetAsync<DataResult<IReadOnlyList<BrandModel>>>(
+                cacheKey,
+                this.DefaultDatabaseId,
+                this.DefaultCacheDuration, async () =>
+                {
+                    var result = await _brandService.GetAllAsync();
+                    return result;
+                });
+
+            return cacheResult.Success ? Ok(cacheResult) : BadRequest(cacheResult);
         }
 
         [HttpGet]

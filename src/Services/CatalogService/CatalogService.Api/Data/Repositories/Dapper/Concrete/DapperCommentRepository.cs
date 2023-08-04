@@ -218,7 +218,10 @@ public class DapperCommentRepository : IDapperCommentRepository
         var query = $"SELECT * FROM {_commentTable}";
 
         var result = await _readDbConnection.QueryAsync<Comment>(query);
-        return new DataResult<IReadOnlyList<Comment>>(result);
+
+        return result == null ?
+            new ErrorDataResult<IReadOnlyList<Comment>>(result) :
+            new SuccessDataResult<IReadOnlyList<Comment>>(result);
     }
 
     public async Task<DataResult<IReadOnlyList<Comment>>> GetAllPagedAsync(PagingModel model)
@@ -228,7 +231,10 @@ public class DapperCommentRepository : IDapperCommentRepository
 
         var result = await _readDbConnection.QueryAsync<Comment>(sql: query,
                                                                  param: new { Page = model.Page, PageSize = model.PageSize });
-        return new DataResult<IReadOnlyList<Comment>>(result);
+
+        return result == null ?
+            new ErrorDataResult<IReadOnlyList<Comment>>(result) :
+            new SuccessDataResult<IReadOnlyList<Comment>>(result);
     }
 
     public async Task<DataResult<IReadOnlyList<Comment>>> GetAllByProductId(IntModel model)
@@ -238,7 +244,9 @@ public class DapperCommentRepository : IDapperCommentRepository
         var result = await _readDbConnection.QueryAsync<Comment>(sql: query,
                                                                  param: new { ProductId = model.Value });
 
-        return new DataResult<IReadOnlyList<Comment>>(result);
+        return result == null ?
+            new ErrorDataResult<IReadOnlyList<Comment>>(result) :
+            new SuccessDataResult<IReadOnlyList<Comment>>(result);
     }
 
     public async Task<DataResult<IReadOnlyList<Comment>>> GetAllByProductCode(IntModel model)
@@ -248,7 +256,9 @@ public class DapperCommentRepository : IDapperCommentRepository
         var result = await _readDbConnection.QueryAsync<Comment>(sql: query,
                                                                  param: new { ProductCode = model.Value });
 
-        return new DataResult<IReadOnlyList<Comment>>(result);
+        return result == null ?
+            new ErrorDataResult<IReadOnlyList<Comment>>(result) :
+            new SuccessDataResult<IReadOnlyList<Comment>>(result);
     }
 
     public async Task<DataResult<IReadOnlyList<Comment>>> GetAllByUserId(StringModel model)
@@ -274,7 +284,9 @@ public class DapperCommentRepository : IDapperCommentRepository
             return commentEntry;
         }, splitOn: "ProductId", param: new { UserId = model.Value });
 
-        return new DataResult<IReadOnlyList<Comment>>(result.ToList());
+        return result == null ?
+            new ErrorDataResult<IReadOnlyList<Comment>>(result) :
+            new SuccessDataResult<IReadOnlyList<Comment>>(result);
     }
 
     public async Task<DataResult<Comment>> GetAsync(IntModel model)
@@ -283,7 +295,9 @@ public class DapperCommentRepository : IDapperCommentRepository
         var result = await _readDbConnection.QuerySingleOrDefaultAsync<Comment>(sql: query, 
                                                                                 param: new { Id = model.Value });
 
-        return new DataResult<Comment>(result);
+        return result == null ?
+            new ErrorDataResult<Comment>(result) :
+            new SuccessDataResult<Comment>(result);
     }
 
     public async Task<DataResult<Comment>> GetByCodeAsync(StringModel model)
@@ -292,6 +306,8 @@ public class DapperCommentRepository : IDapperCommentRepository
         var result = await _readDbConnection.QuerySingleOrDefaultAsync<Comment>(sql: query,
                                                                                 param: new { Code = model.Value });
 
-        return new DataResult<Comment>(result);
+        return result == null ?
+            new ErrorDataResult<Comment>(result) :
+            new SuccessDataResult<Comment>(result);
     }
 }

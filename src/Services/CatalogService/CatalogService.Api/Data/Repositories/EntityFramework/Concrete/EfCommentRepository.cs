@@ -184,27 +184,35 @@ public class EfCommentRepository : IEfCommentRepository
     {
         var result = await _catalogDbContext.Comments.FirstOrDefaultAsync(predicate);
 
-        return new DataResult<Comment>(result);
+        return result == null ?
+            new ErrorDataResult<Comment>(result) :
+            new SuccessDataResult<Comment>(result);
     }
 
     public async Task<DataResult<IReadOnlyList<Comment>>> GetAllAsync(Expression<Func<Comment, bool>> predicate)
     {
         var result = await _catalogDbContext.Comments.Where(predicate).ToListAsync();
 
-        return new DataResult<IReadOnlyList<Comment>>(result);
+        return result == null ?
+            new ErrorDataResult<IReadOnlyList<Comment>>(result) :
+            new SuccessDataResult<IReadOnlyList<Comment>>(result);
     }
 
     public async Task<DataResult<IReadOnlyList<Comment>>> GetAllAsync()
     {
         var result = await _catalogDbContext.Comments.ToListAsync();
 
-        return new DataResult<IReadOnlyList<Comment>>(result);
+        return result == null ?
+            new ErrorDataResult<IReadOnlyList<Comment>>(result) :
+            new SuccessDataResult<IReadOnlyList<Comment>>(result);
     }
 
     public async Task<DataResult<Comment>> GetAsync(IntModel model)
     {
         var result = await _catalogDbContext.Comments.FirstOrDefaultAsync(p => p.Id == model.Value);
 
-        return new DataResult<Comment>(result);
+        return result == null ?
+            new ErrorDataResult<Comment>(result) :
+            new SuccessDataResult<Comment>(result);
     }
 }

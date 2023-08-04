@@ -120,28 +120,36 @@ public class EfBrandRepository : IEfBrandRepository
     {
         var result = await _catalogDbContext.Brands.FirstOrDefaultAsync(predicate);
 
-        return new DataResult<Brand>(result);
+        return result == null ?
+            new ErrorDataResult<Brand>(result) :
+            new SuccessDataResult<Brand>(result);
     }
 
     public async Task<DataResult<IReadOnlyList<Brand>>> GetAllAsync(Expression<Func<Brand, bool>> predicate)
     {
         var result = await _catalogDbContext.Brands.Where(predicate).ToListAsync();
 
-        return new DataResult<IReadOnlyList<Brand>>(result);
+        return result == null ?
+            new ErrorDataResult<IReadOnlyList<Brand>>(result) :
+            new SuccessDataResult<IReadOnlyList<Brand>>(result);
     }
 
     public async Task<DataResult<IReadOnlyList<Brand>>> GetAllAsync()
     {
         var result = await _catalogDbContext.Brands.ToListAsync();
 
-        return new DataResult<IReadOnlyList<Brand>>(result);
+        return result == null ?
+            new ErrorDataResult<IReadOnlyList<Brand>>(result) :
+            new SuccessDataResult<IReadOnlyList<Brand>>(result);
     }
 
     public async Task<DataResult<Brand>> GetAsync(IntModel model)
     {
         var result = await _catalogDbContext.Brands.FirstOrDefaultAsync(b => b.Id == model.Value);
 
-        return new DataResult<Brand>(result);
+        return result == null ?
+            new ErrorDataResult<Brand>(result) :
+            new SuccessDataResult<Brand>(result);
     }
 
 }

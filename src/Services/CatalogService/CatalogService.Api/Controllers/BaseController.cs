@@ -1,7 +1,9 @@
 ﻿using CatalogService.Api.Extensions;
+using CatalogService.Api.Models.CacheModels;
 using CatalogService.Api.Services.Grpc.Abstract;
 using CatalogService.Api.Utilities.IoC;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using System.Reflection;
 
 namespace CatalogService.Api.Controllers
@@ -17,11 +19,19 @@ namespace CatalogService.Api.Controllers
             this.Language = this.GetAcceptLanguage(httpContextAccessor);
             this.ProjectName = System.Reflection.Assembly.GetEntryAssembly()?.GetName()?.Name ?? nameof(BaseGrpcBrandService);
             this.ClassName = MethodBase.GetCurrentMethod()?.DeclaringType?.Name ?? this.GetType().Name;
+
+            var configuration = ServiceTool.ServiceProvider.GetRequiredService<IConfiguration>();
+            var redisOptions = ServiceTool.ServiceProvider.GetRequiredService<IOptions<RedisOptions>>().Value;
+
+            this.DefaultCacheDuration = redisOptions.Duration;
+            this.DefaultDatabaseId = redisOptions.DatabaseId;
         }
 
         public string Language { get; set; }
         public string ProjectName { get; private set; }
         public string ClassName { get; private set; }
+        public int DefaultCacheDuration { get; set; }
+        public int DefaultDatabaseId { get; set; }
 
         [NonAction]
         public string GetAcceptLanguage(IHttpContextAccessor httpContextAccessor)

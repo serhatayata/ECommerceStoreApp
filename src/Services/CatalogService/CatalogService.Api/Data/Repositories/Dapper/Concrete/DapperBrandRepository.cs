@@ -136,14 +136,20 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
                         $"WHERE Id = @Id";
 
             var result = await _readDbConnection.QuerySingleOrDefaultAsync<Brand>(sql: query, param: new { Id = model.Value });
-            return new DataResult<Brand>(result);
+
+            return result == null ? 
+                new ErrorDataResult<Brand>(result) : 
+                new SuccessDataResult<Brand>(result);
         }
 
         public  async Task<DataResult<IReadOnlyList<Brand>>> GetAllAsync()
         {
             var query = $"SELECT * FROM {_brandTable}";
             var result = await _readDbConnection.QueryAsync<Brand>(sql: query);
-            return new DataResult<IReadOnlyList<Brand>>(result);
+
+            return result == null ? 
+                new ErrorDataResult<IReadOnlyList<Brand>> (result) : 
+                new SuccessDataResult<IReadOnlyList<Brand>> (result);
         }
 
         public async Task<DataResult<IReadOnlyList<Brand>>> GetAllPagedAsync(PagingModel model)
@@ -152,7 +158,9 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
                         $"ORDER BY Id DESC OFFSET (@Page-1) * @PageSize ROWS FETCH NEXT @PageSize ROWS ONLY";
             var result = await _readDbConnection.QueryAsync<Brand>(sql: query,
                                                                    param: new { Page = model.Page, PageSize = model.PageSize});
-            return new DataResult<IReadOnlyList<Brand>>(result);
+            return result == null ?
+                new ErrorDataResult<IReadOnlyList<Brand>>(result) :
+                new SuccessDataResult<IReadOnlyList<Brand>>(result);
         }
 
         public async Task<DataResult<IReadOnlyList<Brand>>> GetAllWithProductsAsync()
@@ -179,7 +187,10 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
             }, splitOn: "ProductId");
 
             var filteredResult = result.DistinctBy(b => b.Id).ToList();
-            return new DataResult<IReadOnlyList<Brand>>(filteredResult);
+
+            return result == null ?
+                new ErrorDataResult<IReadOnlyList<Brand>>(result) :
+                new SuccessDataResult<IReadOnlyList<Brand>>(result);
         }
     }
 }

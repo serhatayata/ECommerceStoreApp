@@ -159,35 +159,45 @@ public class EfProductRepository : IEfProductRepository
     {
         var result = await _catalogDbContext.Products.FirstOrDefaultAsync(p => p.Id == model.Value);
 
-        return new DataResult<Product>(result);
+        return result == null ?
+            new ErrorDataResult<Product>(result) :
+            new SuccessDataResult<Product>(result);
     }
 
     public async Task<DataResult<Product>> GetByProductCodeAsync(StringModel model)
     {
         var result = await _catalogDbContext.Products.FirstOrDefaultAsync(p => p.ProductCode == model.Value);
 
-        return new DataResult<Product>(result);
+        return result == null ?
+            new ErrorDataResult<Product>(result) :
+            new SuccessDataResult<Product>(result);
     }
 
     public async Task<DataResult<Product>> GetAsync(Expression<Func<Product, bool>> predicate)
     {
         var result = await _catalogDbContext.Products.FirstOrDefaultAsync(predicate);
 
-        return new DataResult<Product>(result);
+        return result == null ?
+            new ErrorDataResult<Product>(result) :
+            new SuccessDataResult<Product>(result);
     }
 
     public async Task<DataResult<IReadOnlyList<Product>>> GetAllAsync(Expression<Func<Product, bool>> predicate)
     {
         var result = await _catalogDbContext.Products.Where(predicate).ToListAsync();
 
-        return new DataResult<IReadOnlyList<Product>>(result);
+        return result == null ?
+            new ErrorDataResult<IReadOnlyList<Product>>(result) :
+            new SuccessDataResult<IReadOnlyList<Product>>(result);
     }
 
     public async Task<DataResult<IReadOnlyList<Product>>> GetAllAsync()
     {
         var result = await _catalogDbContext.Products.ToListAsync();
 
-        return new DataResult<IReadOnlyList<Product>>(result);
+        return result == null ?
+            new ErrorDataResult<IReadOnlyList<Product>>(result) :
+            new SuccessDataResult<IReadOnlyList<Product>>(result);
     }
 
     public async Task<DataResult<IReadOnlyList<Product>>> GetAllByBrandIdAsync(IntModel model)
@@ -196,7 +206,9 @@ public class EfProductRepository : IEfProductRepository
                                             .Where(p => p.BrandId == model.Value)
                                             .ToListAsync();
 
-        return new DataResult<IReadOnlyList<Product>>(result);
+        return result == null ?
+            new ErrorDataResult<IReadOnlyList<Product>>(result) :
+            new SuccessDataResult<IReadOnlyList<Product>>(result);
     }
 
     public async Task<DataResult<IReadOnlyList<Product>>> GetAllByProductTypeIdAsync(IntModel model)
@@ -205,6 +217,8 @@ public class EfProductRepository : IEfProductRepository
                                             .Where(p => p.ProductTypeId == model.Value)
                                             .ToListAsync();
 
-        return new DataResult<IReadOnlyList<Product>>(result);
+        return result == null ?
+            new ErrorDataResult<IReadOnlyList<Product>>(result) :
+            new SuccessDataResult<IReadOnlyList<Product>>(result);
     }
 }

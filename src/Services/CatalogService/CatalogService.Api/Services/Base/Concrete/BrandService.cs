@@ -58,14 +58,14 @@ namespace CatalogService.Api.Services.Base.Concrete
 
         public async Task<DataResult<BrandModel>> GetAsync(IntModel model)
         {
-            var result = await _efBrandRepository.GetAsync(model);
+            var result = await _dapperBrandRepository.GetAsync(model);
             var resultData = _mapper.Map<DataResult<BrandModel>>(result);
             return resultData;
         }
 
         public async Task<DataResult<IReadOnlyList<BrandModel>>> GetAllAsync()
         {
-            var result = await _efBrandRepository.GetAllAsync();
+            var result = await _dapperBrandRepository.GetAllAsync();
             var resultData = _mapper.Map<DataResult<IReadOnlyList<BrandModel>>>(result);
             return resultData;
         }

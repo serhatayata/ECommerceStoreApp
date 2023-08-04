@@ -289,21 +289,27 @@ public class EfFeatureRepository : IEfFeatureRepository
     {
         var result = await _catalogDbContext.Features.FirstOrDefaultAsync(predicate);
 
-        return new DataResult<Feature>(result);
+        return result == null ?
+            new ErrorDataResult<Feature>(result) :
+            new SuccessDataResult<Feature>(result);
     }
 
     public async Task<DataResult<IReadOnlyList<Feature>>> GetAllAsync(Expression<Func<Feature, bool>> predicate)
     {
         var result = await _catalogDbContext.Features.Where(predicate).ToListAsync();
 
-        return new DataResult<IReadOnlyList<Feature>>(result);
+        return result == null ?
+            new ErrorDataResult<IReadOnlyList<Feature>>(result) :
+            new SuccessDataResult<IReadOnlyList<Feature>>(result);
     }
 
     public async Task<DataResult<IReadOnlyList<Feature>>> GetAllAsync()
     {
         var result = await _catalogDbContext.Features.ToListAsync();
 
-        return new DataResult<IReadOnlyList<Feature>>(result);
+        return result == null ?
+            new ErrorDataResult<IReadOnlyList<Feature>>(result) :
+            new SuccessDataResult<IReadOnlyList<Feature>>(result);
     }
 
     public async Task<DataResult<IReadOnlyList<Feature>>> GetAllWithProductFeaturesAsync()
@@ -314,6 +320,8 @@ public class EfFeatureRepository : IEfFeatureRepository
                                     .AsNoTracking()
                                     .ToListAsync();
 
-        return new DataResult<IReadOnlyList<Feature>>(result);
+        return result == null ?
+            new ErrorDataResult<IReadOnlyList<Feature>>(result) :
+            new SuccessDataResult<IReadOnlyList<Feature>>(result);
     }
 }

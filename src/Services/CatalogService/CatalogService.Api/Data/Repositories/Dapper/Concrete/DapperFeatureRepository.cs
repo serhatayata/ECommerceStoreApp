@@ -329,7 +329,10 @@ public class DapperFeatureRepository : IDapperFeatureRepository
 
         var result = await _readDbConnection.QuerySingleOrDefaultAsync<Feature>(sql: query,
                                                                                 param: new { Id = model.Value });
-        return new DataResult<Feature>(result);
+
+        return result == null ?
+            new ErrorDataResult<Feature>(result) :
+            new SuccessDataResult<Feature>(result);
     }
 
     public async Task<DataResult<IReadOnlyList<Feature>>> GetAllAsync()
@@ -337,7 +340,10 @@ public class DapperFeatureRepository : IDapperFeatureRepository
         var query = $"SELECT * FROM {_featureTable}";
 
         var result = await _readDbConnection.QueryAsync<Feature>(query);
-        return new DataResult<IReadOnlyList<Feature>>(result);
+
+        return result == null ?
+            new ErrorDataResult<IReadOnlyList<Feature>>(result) :
+            new SuccessDataResult<IReadOnlyList<Feature>>(result);
     }
 
     public async Task<DataResult<IReadOnlyList<Feature>>> GetAllPagedAsync(PagingModel model)
@@ -347,7 +353,10 @@ public class DapperFeatureRepository : IDapperFeatureRepository
 
         var result = await _readDbConnection.QueryAsync<Feature>(sql: query,
                                                                  param: new { Page = model.Page, PageSize = model.PageSize });
-        return new DataResult<IReadOnlyList<Feature>>(result);
+
+        return result == null ?
+            new ErrorDataResult<IReadOnlyList<Feature>>(result) :
+            new SuccessDataResult<IReadOnlyList<Feature>>(result);
     }
 
     public async Task<DataResult<IReadOnlyList<Feature>>> GetAllFeaturesByProductId(IntModel model)
@@ -393,7 +402,10 @@ public class DapperFeatureRepository : IDapperFeatureRepository
         }, splitOn: "ProductFeatureId,PrdId", param: new { Id = model.Value });
 
         var filteredResult = result.DistinctBy(c => c.Id).ToList();
-        return new DataResult<IReadOnlyList<Feature>>(filteredResult);
+
+        return result == null ?
+            new ErrorDataResult<IReadOnlyList<Feature>>(result) :
+            new SuccessDataResult<IReadOnlyList<Feature>>(result);
     }
 
     public async Task<DataResult<IReadOnlyList<Feature>>> GetAllFeaturesByProductCode(StringModel model)
@@ -440,7 +452,10 @@ public class DapperFeatureRepository : IDapperFeatureRepository
         }, splitOn: "ProductFeatureId,PrdId", param: new { ProductCode = model.Value });
 
         var filteredResult = result.DistinctBy(c => c.Id).ToList();
-        return new DataResult<IReadOnlyList<Feature>>(filteredResult);
+
+        return result == null ?
+            new ErrorDataResult<IReadOnlyList<Feature>>(result) :
+            new SuccessDataResult<IReadOnlyList<Feature>>(result);
     }
 
     public async Task<DataResult<IReadOnlyList<Product>>> GetFeatureProducts(IntModel model)
@@ -469,7 +484,10 @@ public class DapperFeatureRepository : IDapperFeatureRepository
         }, splitOn: "ProductFeatureId", param: new { FeatureId = model.Value });
 
         var filteredResult = result.DistinctBy(f => f.Id).ToList();
-        return new DataResult<IReadOnlyList<Product>>(filteredResult);
+
+        return result == null ?
+            new ErrorDataResult<IReadOnlyList<Product>>(result) :
+            new SuccessDataResult<IReadOnlyList<Product>>(result);
     }
 
     public async Task<DataResult<IReadOnlyList<ProductFeatureProperty>>> GetAllFeatureProperties(int featureId, int productId)
@@ -501,7 +519,10 @@ public class DapperFeatureRepository : IDapperFeatureRepository
             return new DataResult<IReadOnlyList<ProductFeatureProperty>>(new List<ProductFeatureProperty>());
 
         var filteredResult = resultData.ProductFeatureProperties.DistinctBy(c => c.Id).ToList();
-        return new DataResult<IReadOnlyList<ProductFeatureProperty>>(filteredResult);
+
+        return result == null ?
+            new ErrorDataResult<IReadOnlyList<ProductFeatureProperty>>(result) :
+            new SuccessDataResult<IReadOnlyList<ProductFeatureProperty>>(result);
     }
 
     public async Task<DataResult<IReadOnlyList<ProductFeatureProperty>>> GetAllFeaturePropertiesByProductFeatureId(IntModel model)
@@ -533,7 +554,10 @@ public class DapperFeatureRepository : IDapperFeatureRepository
             return new DataResult<IReadOnlyList<ProductFeatureProperty>>(new List<ProductFeatureProperty>());
 
         var filteredResult = resultData.ProductFeatureProperties.DistinctBy(c => c.Id).ToList();
-        return new DataResult<IReadOnlyList<ProductFeatureProperty>>(filteredResult);
+
+        return result == null ?
+            new ErrorDataResult<IReadOnlyList<ProductFeatureProperty>>(result) :
+            new SuccessDataResult<IReadOnlyList<ProductFeatureProperty>>(result);
     }
 
     public async Task<DataResult<ProductFeature>> GetProductFeature(ProductFeatureModel model)
@@ -544,7 +568,10 @@ public class DapperFeatureRepository : IDapperFeatureRepository
 
         var result = await _readDbConnection.QuerySingleOrDefaultAsync<ProductFeature>(sql: query,
                                                                                 param: new { ProductId = model.ProductId, FeatureId = model.FeatureId });
-        return new DataResult<ProductFeature>(result);
+
+        return result == null ?
+            new ErrorDataResult<ProductFeature>(result) :
+            new SuccessDataResult<ProductFeature>(result);
     }
 
     public async Task<DataResult<ProductFeatureProperty>> GetProductFeatureProperty(int productFeatureId, string name)
@@ -555,7 +582,10 @@ public class DapperFeatureRepository : IDapperFeatureRepository
 
         var result = await _readDbConnection.QuerySingleOrDefaultAsync<ProductFeatureProperty>(sql: query,
                                                                                 param: new { ProductFeatureId = productFeatureId, Name = name });
-        return new DataResult<ProductFeatureProperty>(result);
+
+        return result == null ?
+            new ErrorDataResult<ProductFeatureProperty>(result) :
+            new SuccessDataResult<ProductFeatureProperty>(result);
     }
 
     public async Task<DataResult<ProductFeatureProperty>> GetProductFeatureProperty(IntModel productFeaturePropertyId)
@@ -565,6 +595,9 @@ public class DapperFeatureRepository : IDapperFeatureRepository
 
         var result = await _readDbConnection.QuerySingleOrDefaultAsync<ProductFeatureProperty>(sql: query,
                                                                                 param: new { Id = productFeaturePropertyId.Value });
-        return new DataResult<ProductFeatureProperty>(result);
+
+        return result == null ?
+            new ErrorDataResult<ProductFeatureProperty>(result) :
+            new SuccessDataResult<ProductFeatureProperty>(result);
     }
 }

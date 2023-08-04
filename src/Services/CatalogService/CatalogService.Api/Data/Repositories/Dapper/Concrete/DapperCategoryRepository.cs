@@ -146,7 +146,10 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
             var query = $"SELECT * FROM {_categoryTable}";
 
             var result = await _readDbConnection.QueryAsync<Category>(query);
-            return new DataResult<IReadOnlyList<Category>>(result);
+
+            return result == null ?
+                new ErrorDataResult<IReadOnlyList<Category>>(result) :
+                new SuccessDataResult<IReadOnlyList<Category>>(result);
         }
 
         public async Task<DataResult<IReadOnlyList<Category>>> GetAllPagedAsync(PagingModel model)
@@ -156,7 +159,10 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
 
             var result = await _readDbConnection.QueryAsync<Category>(sql: query,
                                                                       param: new { Page = model.Page, PageSize = model.PageSize });
-            return new DataResult<IReadOnlyList<Category>>(result);
+
+            return result == null ?
+                new ErrorDataResult<IReadOnlyList<Category>>(result) :
+                new SuccessDataResult<IReadOnlyList<Category>>(result);
         }
 
         public async Task<DataResult<IReadOnlyList<Category>>> GetAllByParentId(IntModel model)
@@ -167,7 +173,9 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
             var result = await _readDbConnection.QueryAsync<Category>(sql: query,
                                                                       param: new { ParentId = model.Value });
 
-            return new DataResult<IReadOnlyList<Category>>(result);
+            return result == null ?
+                new ErrorDataResult<IReadOnlyList<Category>>(result) :
+                new SuccessDataResult<IReadOnlyList<Category>>(result);
         }
 
         public async Task<DataResult<IReadOnlyList<Category>>> GetAllWithProductsByParentId(IntModel model)
@@ -198,7 +206,10 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
             }, splitOn: "ProductId", param: new { ParentId = model.Value });
 
             var filteredResult = result.DistinctBy(c => c.Id).ToList();
-            return new DataResult<IReadOnlyList<Category>>(filteredResult);
+
+            return result == null ?
+                new ErrorDataResult<IReadOnlyList<Category>>(result) :
+                new SuccessDataResult<IReadOnlyList<Category>>(result);
         }
 
         public async Task<DataResult<Category>> GetAsync(IntModel model)
@@ -207,7 +218,10 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
                         $"WHERE Id = @Id";
 
             var result = await _readDbConnection.QuerySingleOrDefaultAsync<Category>(sql: query, param: new { Id = model.Value });
-            return new DataResult<Category>(result);
+
+            return result == null ?
+                new ErrorDataResult<Category>(result) :
+                new SuccessDataResult<Category>(result);
         }
 
         public async Task<DataResult<Category>> GetWithProducts(IntModel model)
@@ -236,7 +250,10 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
             }, splitOn: "ProductId", param: new { Id = model.Value });
 
             var filteredResult = result.DistinctBy(c => c.Id).FirstOrDefault();
-            return new DataResult<Category>(filteredResult);
+
+            return result == null ?
+                new ErrorDataResult<Category>(result) :
+                new SuccessDataResult<Category>(result);
         }
 
         public async Task<DataResult<Category>> GetByName(StringModel model)
@@ -245,7 +262,10 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
                         $"WHERE Name = @Name";
 
             var result = await _readDbConnection.QuerySingleOrDefaultAsync<Category>(sql: query, param: new { Name = model.Value });
-            return new DataResult<Category>(result);
+
+            return result == null ?
+                new ErrorDataResult<Category>(result) :
+                new SuccessDataResult<Category>(result);
         }
 
         public async Task<DataResult<Category>> GetByNameWithProducts(StringModel model)
@@ -274,7 +294,10 @@ namespace CatalogService.Api.Data.Repositories.Dapper.Concrete
             }, splitOn: "ProductId", param: new { Name = model.Value });
 
             var filteredResult = result.DistinctBy(c => c.Id).FirstOrDefault();
-            return new DataResult<Category>(filteredResult);
+
+            return result == null ?
+                new ErrorDataResult<Category>(result) :
+                new SuccessDataResult<Category>(result);
         }
     }
 }
