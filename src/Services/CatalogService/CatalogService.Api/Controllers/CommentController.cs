@@ -1,6 +1,8 @@
 ﻿using CatalogService.Api.Models.Base.Concrete;
+using CatalogService.Api.Models.CategoryModels;
 using CatalogService.Api.Models.CommentModels;
 using CatalogService.Api.Services.Base.Abstract;
+using CatalogService.Api.Services.Cache.Abstract;
 using CatalogService.Api.Utilities.Results;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,11 +15,14 @@ namespace CatalogService.Api.Controllers
     public class CommentController : BaseController
     {
         private readonly ICommentService _commentService;
+        private readonly IRedisService _redisService;
 
         public CommentController(
-            ICommentService commentService)
+            ICommentService commentService,
+            IRedisService redisService)
         {
             _commentService = commentService;
+            _redisService = redisService;
         }
 
         [HttpPost]
@@ -70,15 +75,16 @@ namespace CatalogService.Api.Controllers
             return Ok(result);
         }
 
-        [HttpGet]
-        [Route("getall")]
-        [ProducesResponseType(typeof(DataResult<IReadOnlyList<CommentModel>>), (int)HttpStatusCode.OK)]
-        [ProducesErrorResponseType(typeof(DataResult<IReadOnlyList<CommentModel>>))]
-        public async Task<IActionResult> GetAllAsync()
-        {
-            var result = await _commentService.GetAllAsync();
-            return Ok(result);
-        }
+        //There can be more data than expected comment when we get all. So disabled for now
+        //[HttpGet]
+        //[Route("getall")]
+        //[ProducesResponseType(typeof(DataResult<IReadOnlyList<CommentModel>>), (int)HttpStatusCode.OK)]
+        //[ProducesErrorResponseType(typeof(DataResult<IReadOnlyList<CommentModel>>))]
+        //public async Task<IActionResult> GetAllAsync()
+        //{
+        //    var result = await _commentService.GetAllAsync();
+        //    return Ok(result);
+        //}
 
         [HttpGet]
         [Route("getall-paged")]
@@ -86,8 +92,19 @@ namespace CatalogService.Api.Controllers
         [ProducesErrorResponseType(typeof(DataResult<IReadOnlyList<CommentModel>>))]
         public async Task<IActionResult> GetAllPagedAsync([FromBody] PagingModel model)
         {
-            var result = await _commentService.GetAllPagedAsync(model);
-            return Ok(result);
+            var cacheKey = this.CurrentCacheKey(methodName: this.GetActualAsyncMethodName(),
+                                                prefix: null,
+                                                model.Page.ToString(), model.PageSize.ToString());
+            var cacheResult = await _redisService.GetAsync<DataResult<IReadOnlyList<CommentModel>>>(
+                cacheKey,
+                this.DefaultDatabaseId,
+                this.DefaultCacheDuration, async () =>
+                {
+                    var result = await _commentService.GetAllPagedAsync(model);
+                    return result;
+                });
+
+            return cacheResult.Success ? Ok(cacheResult) : BadRequest(cacheResult);
         }
 
         [HttpGet]
@@ -96,8 +113,18 @@ namespace CatalogService.Api.Controllers
         [ProducesErrorResponseType(typeof(DataResult<IReadOnlyList<CommentModel>>))]
         public async Task<IActionResult> GetAllByProductIdAsync([FromBody] IntModel model)
         {
-            var result = await _commentService.GetAllByProductId(model);
-            return Ok(result);
+            var cacheKey = this.CurrentCacheKey(methodName: this.GetActualAsyncMethodName(),
+                                                model.Value.ToString());
+            var cacheResult = await _redisService.GetAsync<DataResult<IReadOnlyList<CommentModel>>>(
+                cacheKey,
+                this.DefaultDatabaseId,
+                this.DefaultCacheDuration, async () =>
+                {
+                    var result = await _commentService.GetAllByProductId(model);
+                    return result;
+                });
+
+            return cacheResult.Success ? Ok(cacheResult) : BadRequest(cacheResult);
         }
 
         [HttpGet]
@@ -106,8 +133,18 @@ namespace CatalogService.Api.Controllers
         [ProducesErrorResponseType(typeof(DataResult<IReadOnlyList<CommentModel>>))]
         public async Task<IActionResult> GetAllByProductCodeAsync([FromBody] IntModel model)
         {
-            var result = await _commentService.GetAllByProductCode(model);
-            return Ok(result);
+            var cacheKey = this.CurrentCacheKey(methodName: this.GetActualAsyncMethodName(),
+                                                model.Value.ToString());
+            var cacheResult = await _redisService.GetAsync<DataResult<IReadOnlyList<CommentModel>>>(
+                cacheKey,
+                this.DefaultDatabaseId,
+                this.DefaultCacheDuration, async () =>
+                {
+                    var result = await _commentService.GetAllByProductCode(model);
+                    return result;
+                });
+
+            return cacheResult.Success ? Ok(cacheResult) : BadRequest(cacheResult);
         }
 
         [HttpGet]

@@ -1,6 +1,8 @@
 ﻿using CatalogService.Api.Models.Base.Concrete;
+using CatalogService.Api.Models.FeatureModels;
 using CatalogService.Api.Models.ProductModels;
 using CatalogService.Api.Services.Base.Abstract;
+using CatalogService.Api.Services.Cache.Abstract;
 using CatalogService.Api.Utilities.Results;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,14 +12,17 @@ namespace CatalogService.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProductController : ControllerBase
+    public class ProductController : BaseController
     {
         private readonly IProductService _productService;
+        private readonly IRedisService _redisService;
 
         public ProductController(
-            IProductService productService)
+            IProductService productService,
+            IRedisService redisService)
         {
             _productService = productService;
+            _redisService = redisService;
         }
 
         [HttpPost]
@@ -59,22 +64,34 @@ namespace CatalogService.Api.Controllers
             return Ok(result);
         }
 
-        [HttpGet]
-        [Route("getall")]
-        [ProducesResponseType(typeof(DataResult<IReadOnlyList<ProductModel>>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetAllAsync()
-        {
-            var result = await _productService.GetAllAsync();
-            return Ok(result);
-        }
+        // There might be a lot of products, so this is disabled
+        //[HttpGet]
+        //[Route("getall")]
+        //[ProducesResponseType(typeof(DataResult<IReadOnlyList<ProductModel>>), (int)HttpStatusCode.OK)]
+        //public async Task<IActionResult> GetAllAsync()
+        //{
+        //    var result = await _productService.GetAllAsync();
+        //    return Ok(result);
+        //}
 
         [HttpGet]
         [Route("getall-paged")]
         [ProducesResponseType(typeof(DataResult<IReadOnlyList<ProductModel>>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAllPagedAsync([FromBody] PagingModel model)
         {
-            var result = await _productService.GetAllPagedAsync(model);
-            return Ok(result);
+            var cacheKey = this.CurrentCacheKey(methodName: this.GetActualAsyncMethodName(),
+                                                prefix: null,
+                                                model.Page.ToString(), model.PageSize.ToString());
+            var cacheResult = await _redisService.GetAsync<DataResult<IReadOnlyList<ProductModel>>>(
+                cacheKey,
+                this.DefaultDatabaseId,
+                this.DefaultCacheDuration, async () =>
+                {
+                    var result = await _productService.GetAllPagedAsync(model);
+                    return result;
+                });
+
+            return cacheResult.Success ? Ok(cacheResult) : BadRequest(cacheResult);
         }
 
         [HttpGet]
@@ -91,8 +108,19 @@ namespace CatalogService.Api.Controllers
         [ProducesResponseType(typeof(DataResult<IReadOnlyList<ProductModel>>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAllBetweenPricesAsync([FromBody] PriceBetweenModel model)
         {
-            var result = await _productService.GetAllBetweenPricesAsync(model);
-            return Ok(result);
+            var cacheKey = this.CurrentCacheKey(methodName: this.GetActualAsyncMethodName(),
+                                                prefix: null,
+                                                model.MinimumPrice.ToString(), model.MaximumPrice.ToString());
+            var cacheResult = await _redisService.GetAsync<DataResult<IReadOnlyList<ProductModel>>>(
+                cacheKey,
+                this.DefaultDatabaseId,
+                this.DefaultCacheDuration, async () =>
+                {
+                    var result = await _productService.GetAllBetweenPricesAsync(model);
+                    return result;
+                });
+
+            return cacheResult.Success ? Ok(cacheResult) : BadRequest(cacheResult);
         }
 
         [HttpGet]
@@ -100,8 +128,19 @@ namespace CatalogService.Api.Controllers
         [ProducesResponseType(typeof(DataResult<IReadOnlyList<ProductModel>>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAllByBrandIdAsync([FromBody] IntModel model)
         {
-            var result = await _productService.GetAllByBrandIdAsync(model);
-            return Ok(result);
+            var cacheKey = this.CurrentCacheKey(methodName: this.GetActualAsyncMethodName(),
+                                                prefix: null,
+                                                model.Value.ToString());
+            var cacheResult = await _redisService.GetAsync<DataResult<IReadOnlyList<ProductModel>>>(
+                cacheKey,
+                this.DefaultDatabaseId,
+                this.DefaultCacheDuration, async () =>
+                {
+                    var result = await _productService.GetAllByBrandIdAsync(model);
+                    return result;
+                });
+
+            return cacheResult.Success ? Ok(cacheResult) : BadRequest(cacheResult);
         }
 
         [HttpGet]
@@ -109,8 +148,19 @@ namespace CatalogService.Api.Controllers
         [ProducesResponseType(typeof(DataResult<IReadOnlyList<ProductModel>>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAllByProductTypeIdAsync([FromBody] IntModel model)
         {
-            var result = await _productService.GetAllByProductTypeIdAsync(model);
-            return Ok(result);
+            var cacheKey = this.CurrentCacheKey(methodName: this.GetActualAsyncMethodName(),
+                                                prefix: null,
+                                                model.Value.ToString());
+            var cacheResult = await _redisService.GetAsync<DataResult<IReadOnlyList<ProductModel>>>(
+                cacheKey,
+                this.DefaultDatabaseId,
+                this.DefaultCacheDuration, async () =>
+                {
+                    var result = await _productService.GetAllByProductTypeIdAsync(model);
+                    return result;
+                });
+
+            return cacheResult.Success ? Ok(cacheResult) : BadRequest(cacheResult);
         }
     }
 }

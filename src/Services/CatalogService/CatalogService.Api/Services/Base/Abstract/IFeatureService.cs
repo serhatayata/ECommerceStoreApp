@@ -1,6 +1,7 @@
 ﻿using CatalogService.Api.Entities;
 using CatalogService.Api.Models.Base.Concrete;
 using CatalogService.Api.Models.FeatureModels;
+using CatalogService.Api.Models.ProductModels;
 using CatalogService.Api.Utilities.Results;
 
 namespace CatalogService.Api.Services.Base.Abstract
@@ -23,6 +24,6 @@ namespace CatalogService.Api.Services.Base.Abstract
         Task<DataResult<IReadOnlyList<FeatureModel>>> GetAllFeaturesByProductCode(StringModel model);
         Task<DataResult<IReadOnlyList<ProductFeaturePropertyModel>>> GetAllFeaturePropertiesByProductFeatureId(IntModel model);
         Task<DataResult<IReadOnlyList<ProductFeaturePropertyModel>>> GetAllFeatureProperties(ProductFeatureModel model);
-        Task<DataResult<IReadOnlyList<Product>>> GetFeatureProducts(IntModel model);
+        Task<DataResult<IReadOnlyList<ProductModel>>> GetFeatureProducts(IntModel model);
     }
 }

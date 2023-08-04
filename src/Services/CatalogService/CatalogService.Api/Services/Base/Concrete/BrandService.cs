@@ -73,14 +73,14 @@ namespace CatalogService.Api.Services.Base.Concrete
         public async Task<DataResult<IReadOnlyList<BrandModel>>> GetAllPagedAsync(PagingModel model)
         {
             var result = await _dapperBrandRepository.GetAllPagedAsync(model);
-            var resultData = _mapper.Map<DataResult<IReadOnlyList<BrandModel>>>(result.Data);
+            var resultData = _mapper.Map<DataResult<IReadOnlyList<BrandModel>>>(result);
             return resultData;
         }
 
         public async Task<DataResult<IReadOnlyList<BrandModel>>> GetAllWithProductsAsync()
         {
             var result = await _dapperBrandRepository.GetAllWithProductsAsync();
-            var resultData = _mapper.Map<DataResult<IReadOnlyList<BrandModel>>>(result.Data);
+            var resultData = _mapper.Map<DataResult<IReadOnlyList<BrandModel>>>(result);
             return resultData;
         }
     }

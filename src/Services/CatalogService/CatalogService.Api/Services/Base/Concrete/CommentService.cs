@@ -62,49 +62,49 @@ namespace CatalogService.Api.Services.Base.Concrete
         public async Task<DataResult<IReadOnlyList<CommentModel>>> GetAllAsync()
         {
             var result = await _dapperCommentRepository.GetAllAsync();
-            var resultData = _mapper.Map<DataResult<IReadOnlyList<CommentModel>>>(result.Data);
+            var resultData = _mapper.Map<DataResult<IReadOnlyList<CommentModel>>>(result);
             return resultData;
         }
 
         public async Task<DataResult<IReadOnlyList<CommentModel>>> GetAllByProductCode(IntModel model)
         {
             var result = await _dapperCommentRepository.GetAllByProductCode(model);
-            var resultData = _mapper.Map<DataResult<IReadOnlyList<CommentModel>>>(result.Data);
+            var resultData = _mapper.Map<DataResult<IReadOnlyList<CommentModel>>>(result);
             return resultData;
         }
 
         public async Task<DataResult<IReadOnlyList<CommentModel>>> GetAllByProductId(IntModel model)
         {
             var result = await _dapperCommentRepository.GetAllByProductId(model);
-            var resultData = _mapper.Map<DataResult<IReadOnlyList<CommentModel>>>(result.Data);
+            var resultData = _mapper.Map<DataResult<IReadOnlyList<CommentModel>>>(result);
             return resultData;
         }
 
         public async Task<DataResult<IReadOnlyList<CommentModel>>> GetAllByUserId(StringModel model)
         {
             var result = await _dapperCommentRepository.GetAllByUserId(model);
-            var resultData = _mapper.Map<DataResult<IReadOnlyList<CommentModel>>>(result.Data);
+            var resultData = _mapper.Map<DataResult<IReadOnlyList<CommentModel>>>(result);
             return resultData;
         }
 
         public async Task<DataResult<IReadOnlyList<CommentModel>>> GetAllPagedAsync(PagingModel model)
         {
             var result = await _dapperCommentRepository.GetAllPagedAsync(model);
-            var resultData = _mapper.Map<DataResult<IReadOnlyList<CommentModel>>>(result.Data);
+            var resultData = _mapper.Map<DataResult<IReadOnlyList<CommentModel>>>(result);
             return resultData;
         }
 
         public async Task<DataResult<CommentModel>> GetAsync(IntModel model)
         {
             var result = await _dapperCommentRepository.GetAsync(model);
-            var resultData = _mapper.Map<DataResult<CommentModel>>(result.Data);
+            var resultData = _mapper.Map<DataResult<CommentModel>>(result);
             return resultData;
         }
 
         public async Task<DataResult<CommentModel>> GetByCodeAsync(StringModel model)
         {
             var result = await _dapperCommentRepository.GetByCodeAsync(model);
-            var resultData = _mapper.Map<DataResult<CommentModel>>(result.Data);
+            var resultData = _mapper.Map<DataResult<CommentModel>>(result);
             return resultData;
         }
     }

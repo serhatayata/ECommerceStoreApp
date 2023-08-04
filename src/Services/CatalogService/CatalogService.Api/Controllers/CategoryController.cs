@@ -1,6 +1,8 @@
 ﻿using CatalogService.Api.Models.Base.Concrete;
+using CatalogService.Api.Models.BrandModels;
 using CatalogService.Api.Models.CategoryModels;
 using CatalogService.Api.Services.Base.Abstract;
+using CatalogService.Api.Services.Cache.Abstract;
 using CatalogService.Api.Utilities.Results;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -12,10 +14,14 @@ namespace CatalogService.Api.Controllers
     public class CategoryController : BaseController
     {
         private readonly ICategoryService _categoryService;
+        private readonly IRedisService _redisService;
 
-        public CategoryController(ICategoryService categoryService)
+        public CategoryController(
+            ICategoryService categoryService,
+            IRedisService redisService)
         {
             _categoryService = categoryService;
+            _redisService = redisService;
         }
 
         [HttpPost]
@@ -54,7 +60,7 @@ namespace CatalogService.Api.Controllers
         public async Task<IActionResult> GetAsync([FromBody] IntModel model)
         {
             var result = await _categoryService.GetAsync(model);
-            return Ok(result);
+            return result.Success ? Ok(result) : BadRequest(result);
         }
 
         [HttpGet]
@@ -62,8 +68,17 @@ namespace CatalogService.Api.Controllers
         [ProducesResponseType(typeof(DataResult<IReadOnlyList<CategoryModel>>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAllAsync()
         {
-            var result = await _categoryService.GetAllAsync();
-            return Ok(result);
+            var cacheKey = this.CurrentCacheKey(methodName: this.GetActualAsyncMethodName());
+            var cacheResult = await _redisService.GetAsync<DataResult<IReadOnlyList<CategoryModel>>>(
+                cacheKey,
+                this.DefaultDatabaseId,
+                this.DefaultCacheDuration, async () =>
+                {
+                    var result = await _categoryService.GetAllAsync();
+                    return result;
+                });
+
+            return cacheResult.Success ? Ok(cacheResult) : BadRequest(cacheResult);
         }
 
         [HttpGet]
@@ -71,8 +86,18 @@ namespace CatalogService.Api.Controllers
         [ProducesResponseType(typeof(DataResult<IReadOnlyList<CategoryModel>>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAllByParentId([FromBody] IntModel model)
         {
-            var result = await _categoryService.GetAllByParentId(model);
-            return Ok(result);
+            var cacheKey = this.CurrentCacheKey(methodName: this.GetActualAsyncMethodName(),
+                                                parameters: model.Value.ToString());
+            var cacheResult = await _redisService.GetAsync<DataResult<IReadOnlyList<CategoryModel>>>(
+                cacheKey,
+                this.DefaultDatabaseId,
+                this.DefaultCacheDuration, async () =>
+                {
+                    var result = await _categoryService.GetAllByParentId(model);
+                    return result;
+                });
+
+            return cacheResult.Success ? Ok(cacheResult) : BadRequest(cacheResult);
         }
 
         [HttpGet]
@@ -80,8 +105,19 @@ namespace CatalogService.Api.Controllers
         [ProducesResponseType(typeof(DataResult<IReadOnlyList<CategoryModel>>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAllPagedAsync([FromBody] PagingModel model)
         {
-            var result = await _categoryService.GetAllPagedAsync(model);
-            return Ok(result);
+            var cacheKey = this.CurrentCacheKey(methodName: this.GetActualAsyncMethodName(),
+                                                prefix: null,
+                                                model.Page.ToString(), model.PageSize.ToString());
+            var cacheResult = await _redisService.GetAsync<DataResult<IReadOnlyList<CategoryModel>>>(
+                cacheKey,
+                this.DefaultDatabaseId,
+                this.DefaultCacheDuration, async () =>
+                {
+                    var result = await _categoryService.GetAllPagedAsync(model);
+                    return result;
+                });
+
+            return cacheResult.Success ? Ok(cacheResult) : BadRequest(cacheResult);
         }
 
         [HttpGet]
@@ -89,8 +125,18 @@ namespace CatalogService.Api.Controllers
         [ProducesResponseType(typeof(DataResult<IReadOnlyList<CategoryModel>>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAllWithProductsByParentId([FromBody] IntModel model)
         {
-            var result = await _categoryService.GetAllWithProductsByParentId(model);
-            return Ok(result);
+            var cacheKey = this.CurrentCacheKey(methodName: this.GetActualAsyncMethodName(),
+                                                model.Value.ToString());
+            var cacheResult = await _redisService.GetAsync<DataResult<IReadOnlyList<CategoryModel>>>(
+                cacheKey,
+                this.DefaultDatabaseId,
+                this.DefaultCacheDuration, async () =>
+                {
+                    var result = await _categoryService.GetAllWithProductsByParentId(model);
+                    return result;
+                });
+
+            return cacheResult.Success ? Ok(cacheResult) : BadRequest(cacheResult);
         }
 
         [HttpGet]

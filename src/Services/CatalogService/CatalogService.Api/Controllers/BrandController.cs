@@ -69,7 +69,7 @@ namespace CatalogService.Api.Controllers
         [ProducesErrorResponseType(typeof(DataResult<IReadOnlyList<BrandModel>>))]
         public async Task<IActionResult> GetAllAsync()
         {
-            var cacheKey = this.CurrentCacheKey(methodName: System.Reflection.MethodBase.GetCurrentMethod()?.Name ?? nameof(GetAllAsync));
+            var cacheKey = this.CurrentCacheKey(methodName: this.GetActualAsyncMethodName());
             var cacheResult = await _redisService.GetAsync<DataResult<IReadOnlyList<BrandModel>>>(
                 cacheKey,
                 this.DefaultDatabaseId,
@@ -88,8 +88,19 @@ namespace CatalogService.Api.Controllers
         [ProducesErrorResponseType(typeof(DataResult<IReadOnlyList<BrandModel>>))]
         public async Task<IActionResult> GetAllPagedAsync([FromBody] PagingModel model)
         {
-            var result = await _brandService.GetAllPagedAsync(model);
-            return result.Success ? Ok(result) : BadRequest(result);
+            var cacheKey = this.CurrentCacheKey(methodName: this.GetActualAsyncMethodName(), 
+                                                prefix: null,
+                                                model.Page.ToString(), model.PageSize.ToString());
+            var cacheResult = await _redisService.GetAsync<DataResult<IReadOnlyList<BrandModel>>>(
+                cacheKey,
+                this.DefaultDatabaseId,
+                this.DefaultCacheDuration, async () =>
+                {
+                    var result = await _brandService.GetAllPagedAsync(model);
+                    return result;
+                });
+
+            return cacheResult.Success ? Ok(cacheResult) : BadRequest(cacheResult);
         }
 
         [HttpGet]
@@ -98,8 +109,17 @@ namespace CatalogService.Api.Controllers
         [ProducesErrorResponseType(typeof(DataResult<IReadOnlyList<BrandModel>>))]
         public async Task<IActionResult> GetAllWithProductsAsync()
         {
-            var result = await _brandService.GetAllWithProductsAsync();
-            return result.Success ? Ok(result) : BadRequest(result);
+            var cacheKey = this.CurrentCacheKey(methodName: this.GetActualAsyncMethodName());
+            var cacheResult = await _redisService.GetAsync<DataResult<IReadOnlyList<BrandModel>>>(
+                cacheKey,
+                this.DefaultDatabaseId,
+                this.DefaultCacheDuration, async () =>
+                {
+                    var result = await _brandService.GetAllWithProductsAsync();
+                    return result;
+                });
+
+            return cacheResult.Success ? Ok(cacheResult) : BadRequest(cacheResult);
         }
     }
 }

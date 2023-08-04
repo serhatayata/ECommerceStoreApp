@@ -5,46 +5,49 @@ using CatalogService.Api.Utilities.IoC;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
-namespace CatalogService.Api.Controllers
+namespace CatalogService.Api.Controllers;
+
+public abstract class BaseController : ControllerBase
 {
-    public abstract class BaseController : ControllerBase
+    private IHttpContextAccessor _httpContextAccessor;
+
+    protected BaseController()
     {
-        private IHttpContextAccessor _httpContextAccessor;
+        var httpContextAccessor = ServiceTool.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
 
-        protected BaseController()
-        {
-            var httpContextAccessor = ServiceTool.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
+        this.Language = this.GetAcceptLanguage(httpContextAccessor);
+        this.ProjectName = System.Reflection.Assembly.GetEntryAssembly()?.GetName()?.Name ?? nameof(BaseGrpcBrandService);
+        this.ClassName = MethodBase.GetCurrentMethod()?.DeclaringType?.Name ?? this.GetType().Name;
 
-            this.Language = this.GetAcceptLanguage(httpContextAccessor);
-            this.ProjectName = System.Reflection.Assembly.GetEntryAssembly()?.GetName()?.Name ?? nameof(BaseGrpcBrandService);
-            this.ClassName = MethodBase.GetCurrentMethod()?.DeclaringType?.Name ?? this.GetType().Name;
+        var configuration = ServiceTool.ServiceProvider.GetRequiredService<IConfiguration>();
+        var redisOptions = ServiceTool.ServiceProvider.GetRequiredService<IOptions<RedisOptions>>().Value;
 
-            var configuration = ServiceTool.ServiceProvider.GetRequiredService<IConfiguration>();
-            var redisOptions = ServiceTool.ServiceProvider.GetRequiredService<IOptions<RedisOptions>>().Value;
-
-            this.DefaultCacheDuration = redisOptions.Duration;
-            this.DefaultDatabaseId = redisOptions.DatabaseId;
-        }
-
-        public string Language { get; set; }
-        public string ProjectName { get; private set; }
-        public string ClassName { get; private set; }
-        public int DefaultCacheDuration { get; set; }
-        public int DefaultDatabaseId { get; set; }
-
-        [NonAction]
-        public string GetAcceptLanguage(IHttpContextAccessor httpContextAccessor)
-        {
-            var acceptLanguage = httpContextAccessor?.HttpContext?.Request?.GetTypedHeaders()?.AcceptLanguage?.FirstOrDefault()?.Value ?? string.Empty;
-            var currentCulture = acceptLanguage.HasValue ? acceptLanguage.Value : "tr-TR";
-            string culture = currentCulture;
-
-            return culture;
-        }
-
-        [NonAction]
-        public string CurrentCacheKey(string methodName, string prefix = null, params string[] parameters)
-            => CacheExtensions.GetCacheKey(methodName, this.ProjectName, this.ClassName, prefix, parameters);
+        this.DefaultCacheDuration = redisOptions.Duration;
+        this.DefaultDatabaseId = redisOptions.DatabaseId;
     }
+
+    public string Language { get; set; }
+    public string ProjectName { get; private set; }
+    public string ClassName { get; private set; }
+    public int DefaultCacheDuration { get; set; }
+    public int DefaultDatabaseId { get; set; }
+
+    [NonAction]
+    public string GetAcceptLanguage(IHttpContextAccessor httpContextAccessor)
+    {
+        var acceptLanguage = httpContextAccessor?.HttpContext?.Request?.GetTypedHeaders()?.AcceptLanguage?.FirstOrDefault()?.Value ?? string.Empty;
+        var currentCulture = acceptLanguage.HasValue ? acceptLanguage.Value : "tr-TR";
+        string culture = currentCulture;
+
+        return culture;
+    }
+
+    [NonAction]
+    public string CurrentCacheKey(string methodName, string prefix = null, params string[] parameters)
+        => CacheExtensions.GetCacheKey(methodName, this.ProjectName, this.ClassName, prefix, parameters);
+
+    [NonAction]
+    public string GetActualAsyncMethodName([CallerMemberName] string name = null) => name;
 }

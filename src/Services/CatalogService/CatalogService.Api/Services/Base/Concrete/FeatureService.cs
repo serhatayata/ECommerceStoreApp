@@ -4,6 +4,7 @@ using CatalogService.Api.Data.Repositories.EntityFramework.Abstract;
 using CatalogService.Api.Entities;
 using CatalogService.Api.Models.Base.Concrete;
 using CatalogService.Api.Models.FeatureModels;
+using CatalogService.Api.Models.ProductModels;
 using CatalogService.Api.Services.Base.Abstract;
 using CatalogService.Api.Utilities.Results;
 
@@ -144,10 +145,10 @@ namespace CatalogService.Api.Services.Base.Concrete
             return resultData;
         }
 
-        public async Task<DataResult<IReadOnlyList<Product>>> GetFeatureProducts(IntModel model)
+        public async Task<DataResult<IReadOnlyList<ProductModel>>> GetFeatureProducts(IntModel model)
         {
             var result = await _dapperFeatureRepository.GetFeatureProducts(model);
-            var resultData = _mapper.Map<DataResult<IReadOnlyList<Product>>>(result);
+            var resultData = _mapper.Map<DataResult<IReadOnlyList<ProductModel>>>(result);
             return resultData;
         }
     }
