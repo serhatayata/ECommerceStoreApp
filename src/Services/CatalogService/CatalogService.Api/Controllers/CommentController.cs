@@ -1,18 +1,18 @@
 ﻿using CatalogService.Api.Models.Base.Concrete;
-using CatalogService.Api.Models.CategoryModels;
+using CatalogService.Api.Models.CacheModels;
 using CatalogService.Api.Models.CommentModels;
 using CatalogService.Api.Services.Base.Abstract;
 using CatalogService.Api.Services.Cache.Abstract;
 using CatalogService.Api.Utilities.Results;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using System.Reflection;
 
 namespace CatalogService.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CommentController : BaseController
+    public class CommentController : BaseController<CategoryController>
     {
         private readonly ICommentService _commentService;
         private readonly IRedisService _redisService;
@@ -32,6 +32,9 @@ namespace CatalogService.Api.Controllers
         public async Task<IActionResult> AddAsync([FromBody] CommentAddModel model)
         {
             var result = await _commentService.AddAsync(model);
+            if (result.Success)
+                await this.RemoveCacheByPattern(CacheType.Redis);
+
             return Ok(result);
         }
 
@@ -42,6 +45,9 @@ namespace CatalogService.Api.Controllers
         public async Task<IActionResult> UpdateAsync([FromBody] CommentUpdateModel model)
         {
             var result = await _commentService.UpdateAsync(model);
+            if (result.Success)
+                await this.RemoveCacheByPattern(CacheType.Redis);
+
             return Ok(result);
         }
 
@@ -52,6 +58,9 @@ namespace CatalogService.Api.Controllers
         public async Task<IActionResult> DeleteAsync([FromBody] IntModel model)
         {
             var result = await _commentService.DeleteAsync(model);
+            if (result.Success)
+                await this.RemoveCacheByPattern(CacheType.Redis);
+
             return Ok(result);
         }
 
@@ -155,6 +164,21 @@ namespace CatalogService.Api.Controllers
         {
             var result = await _commentService.GetAllByUserId(model);
             return Ok(result);
+        }
+
+        // PRIVATE METHODS
+
+        [NonAction]
+        private async Task RemoveCacheByPattern(CacheType type, params string[] parameters)
+        {
+            if (type == CacheType.Redis)
+            {
+                string pattern = string.Join("-", this.ProjectName, this.ClassName, parameters);
+                if (parameters.Count() > 0)
+                    pattern = string.Join("-", parameters);
+
+                await _redisService.RemoveByPattern(pattern, this.DefaultDatabaseId);
+            }
         }
     }
 }

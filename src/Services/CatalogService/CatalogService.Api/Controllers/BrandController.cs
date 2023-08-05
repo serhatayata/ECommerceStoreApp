@@ -1,16 +1,18 @@
 ﻿using CatalogService.Api.Models.Base.Concrete;
 using CatalogService.Api.Models.BrandModels;
+using CatalogService.Api.Models.CacheModels;
 using CatalogService.Api.Services.Base.Abstract;
 using CatalogService.Api.Services.Cache.Abstract;
 using CatalogService.Api.Utilities.Results;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using System.Reflection;
 
 namespace CatalogService.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BrandController : BaseController
+    public class BrandController : BaseController<BrandController>
     {
         private readonly IBrandService _brandService;
         private readonly IRedisService _redisService;
@@ -30,6 +32,9 @@ namespace CatalogService.Api.Controllers
         public async Task<IActionResult> AddAsync([FromBody] BrandAddModel model)
         {
             var result = await _brandService.AddAsync(model);
+            if (result.Success)
+                await this.RemoveCacheByPattern(CacheType.Redis);
+
             return result.Success ? Ok(result) : BadRequest(result);
         }
 
@@ -40,6 +45,9 @@ namespace CatalogService.Api.Controllers
         public async Task<IActionResult> UpdateAsync([FromBody] BrandUpdateModel model)
         {
             var result = await _brandService.UpdateAsync(model);
+            if (result.Success)
+                await this.RemoveCacheByPattern(CacheType.Redis);
+
             return result.Success ? Ok(result) : BadRequest(result);
         }
 
@@ -50,6 +58,9 @@ namespace CatalogService.Api.Controllers
         public async Task<IActionResult> DeleteAsync([FromBody] IntModel model)
         {
             var result = await _brandService.DeleteAsync(model);
+            if (result.Success)
+                await this.RemoveCacheByPattern(CacheType.Redis);
+
             return result.Success ? Ok(result) : BadRequest(result);
         }
 
@@ -120,6 +131,21 @@ namespace CatalogService.Api.Controllers
                 });
 
             return cacheResult.Success ? Ok(cacheResult) : BadRequest(cacheResult);
+        }
+
+        // PRIVATE METHODS
+
+        [NonAction]
+        private async Task RemoveCacheByPattern(CacheType type, params string[] parameters)
+        {
+            if (type == CacheType.Redis)
+            {
+                string pattern = string.Join("-", this.ProjectName, this.ClassName, parameters);
+                if (parameters.Count() > 0)
+                    pattern = string.Join("-", parameters);
+
+                await _redisService.RemoveByPattern(pattern, this.DefaultDatabaseId);
+            }
         }
     }
 }

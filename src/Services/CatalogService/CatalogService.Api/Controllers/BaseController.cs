@@ -1,6 +1,6 @@
 ﻿using CatalogService.Api.Extensions;
 using CatalogService.Api.Models.CacheModels;
-using CatalogService.Api.Services.Grpc.Abstract;
+using CatalogService.Api.Services.Cache.Abstract;
 using CatalogService.Api.Utilities.IoC;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -9,7 +9,7 @@ using System.Runtime.CompilerServices;
 
 namespace CatalogService.Api.Controllers;
 
-public abstract class BaseController : ControllerBase
+public abstract class BaseController<T> : ControllerBase
 {
     private IHttpContextAccessor _httpContextAccessor;
 
@@ -18,8 +18,8 @@ public abstract class BaseController : ControllerBase
         var httpContextAccessor = ServiceTool.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
 
         this.Language = this.GetAcceptLanguage(httpContextAccessor);
-        this.ProjectName = System.Reflection.Assembly.GetEntryAssembly()?.GetName()?.Name ?? nameof(BaseGrpcBrandService);
-        this.ClassName = MethodBase.GetCurrentMethod()?.DeclaringType?.Name ?? this.GetType().Name;
+        this.ProjectName = System.Reflection.Assembly.GetEntryAssembly()?.GetName()?.Name ?? "CatalogService.Api";
+        this.ClassName = typeof(T).Name;
 
         var configuration = ServiceTool.ServiceProvider.GetRequiredService<IConfiguration>();
         var redisOptions = ServiceTool.ServiceProvider.GetRequiredService<IOptions<RedisOptions>>().Value;
@@ -28,11 +28,11 @@ public abstract class BaseController : ControllerBase
         this.DefaultDatabaseId = redisOptions.DatabaseId;
     }
 
-    public string Language { get; set; }
-    public string ProjectName { get; private set; }
-    public string ClassName { get; private set; }
-    public int DefaultCacheDuration { get; set; }
-    public int DefaultDatabaseId { get; set; }
+    public virtual string Language { get; set; }
+    public virtual string ProjectName { get; set; }
+    public virtual string ClassName { get; set; }
+    public virtual int DefaultCacheDuration { get; set; }
+    public virtual int DefaultDatabaseId { get; set; }
 
     [NonAction]
     public string GetAcceptLanguage(IHttpContextAccessor httpContextAccessor)

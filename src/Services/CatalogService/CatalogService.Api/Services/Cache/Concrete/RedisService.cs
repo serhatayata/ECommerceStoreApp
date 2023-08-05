@@ -254,7 +254,7 @@ namespace CatalogService.Api.Services.Cache.Concrete
             _client.Close();
         }
 
-        public async void RemoveByPattern(string pattern, int db)
+        public async Task RemoveByPattern(string pattern, int db)
         {
             _configurationOptions.DefaultDatabase = db;
             var _client = ConnectionMultiplexer.Connect(_configurationOptions);

@@ -131,6 +131,6 @@ namespace CatalogService.Api.Services.Cache.Abstract
         bool KeyExists(string key);
         Task<bool> KeyExistsAsync(string key, int databaseId);
         Task<bool> KeyExistsAsync(string key);
-        void RemoveByPattern(string pattern, int db = 1);
+        Task RemoveByPattern(string pattern, int db = 1);
     }
 }

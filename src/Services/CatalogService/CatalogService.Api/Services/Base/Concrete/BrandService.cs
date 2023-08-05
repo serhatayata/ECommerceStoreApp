@@ -30,8 +30,8 @@ namespace CatalogService.Api.Services.Base.Concrete
             var mappedModel = _mapper.Map<Brand>(model);
 
             //Same name check
-            var nameExists = _efBrandRepository.GetAsync(b => b.Name == model.Name);
-            if (nameExists != null)
+            var nameExists = await _efBrandRepository.GetAsync(b => b.Name == model.Name);
+            if (nameExists.Success)
                 return new ErrorResult("Brand name already exists");
 
             var result = await _efBrandRepository.AddAsync(mappedModel);
@@ -42,8 +42,8 @@ namespace CatalogService.Api.Services.Base.Concrete
         {
             var mappedModel = _mapper.Map<Brand>(model);
             //Same name check
-            var nameExists = _efBrandRepository.GetAsync(b => b.Name == model.Name && b.Id != model.Id);
-            if (nameExists != null)
+            var nameExists = await _efBrandRepository.GetAsync(b => b.Name == model.Name && b.Id != model.Id);
+            if (nameExists.Success)
                 return new ErrorResult("Brand name already exists");
 
             var result = await _efBrandRepository.UpdateAsync(mappedModel);

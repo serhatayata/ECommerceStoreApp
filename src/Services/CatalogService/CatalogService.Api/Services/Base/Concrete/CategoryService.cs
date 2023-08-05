@@ -41,7 +41,7 @@ namespace CatalogService.Api.Services.Base.Concrete
             var code = DataGenerationExtensions.RandomCode(_codeLength);
             //Code exists
             var categoryCodeExists = await _efCategoryRepository.GetAsync(c => c.Code == code);
-            if (categoryCodeExists.Data != null)
+            if (categoryCodeExists.Success)
                 return new ErrorResult("Category code already exists");
 
             mappedModel.Code = code;

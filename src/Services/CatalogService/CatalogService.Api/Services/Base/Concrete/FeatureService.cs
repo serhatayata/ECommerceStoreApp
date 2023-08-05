@@ -28,8 +28,8 @@ namespace CatalogService.Api.Services.Base.Concrete
 
         public async Task<Result> AddAsync(FeatureAddModel entity)
         {
-            var featureExists = _efFeatureRepository.GetAsync(f => f.Name == entity.Name);
-            if (featureExists != null)
+            var featureExists = await _efFeatureRepository.GetAsync(f => f.Name == entity.Name);
+            if (featureExists.Success)
                 return new ErrorResult("Feature name already exists");
 
             var mappedModel = _mapper.Map<Feature>(entity);
@@ -40,7 +40,7 @@ namespace CatalogService.Api.Services.Base.Concrete
         public async Task<Result> UpdateAsync(FeatureUpdateModel entity)
         {
             var featureExists = await _efFeatureRepository.GetAsync(f => f.Id != entity.Id && f.Name == entity.Name);
-            if (featureExists != null)
+            if (featureExists.Success)
                 return new ErrorResult("Feature name already exists");
 
             var mappedModel = _mapper.Map<Feature>(entity);
