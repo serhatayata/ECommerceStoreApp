@@ -3,6 +3,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
 using CatalogService.Api.Attributes;
+using CatalogService.Api.Infrastructure.Filters;
 
 namespace CatalogService.Api.Extensions
 {
@@ -13,6 +14,7 @@ namespace CatalogService.Api.Extensions
             services.AddControllers(options =>
             {
                 options.Filters.Add(typeof(FluentValidationCustomValidationAttribute));
+                options.Filters.Add(typeof(HttpGlobalExceptionFilter));
                 options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
             }).AddJsonOptions(o =>
             {
