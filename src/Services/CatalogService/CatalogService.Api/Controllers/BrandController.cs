@@ -80,10 +80,8 @@ namespace CatalogService.Api.Controllers
         [ProducesErrorResponseType(typeof(DataResult<IReadOnlyList<BrandModel>>))]
         public async Task<IActionResult> GetAllAsync()
         {
-            throw new ArgumentNullException();
-
             var cacheKey = this.CurrentCacheKey(methodName: this.GetActualAsyncMethodName());
-            var cacheResult = await _redisService.GetAsync<DataResult<IReadOnlyList<BrandModel>>>(
+            var cacheResult = await _redisService.GetCompressedAsync<DataResult<IReadOnlyList<BrandModel>>>(
                 cacheKey,
                 this.DefaultDatabaseId,
                 this.DefaultCacheDuration, async () =>

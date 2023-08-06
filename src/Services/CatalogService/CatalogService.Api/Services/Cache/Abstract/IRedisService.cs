@@ -118,6 +118,15 @@ namespace CatalogService.Api.Services.Cache.Abstract
         /// <param name="databaseId"></param>
         /// <returns><see cref="{T}"/></returns>
         Task<T> GetAsync<T>(string key, int databaseId, int duration, Func<Task<T>> filter) where T : class;
+        /// <summary>
+        /// Gets (as Base64) the key if it exists with databaseId ASYNC using filter
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="duration"></param>
+        /// <param name="databaseId"></param>
+        /// <returns><see cref="{T}"/></returns>
+        Task<T> GetCompressedAsync<T>(string key, int databaseId, int duration, Func<Task<T>> filter) where T : class;
 
         /// <summary>
         /// Removes the key from cache

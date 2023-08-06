@@ -155,6 +155,12 @@ namespace CatalogService.Api.Services.Cache.Concrete
             return await _client.GetDatabase(databaseId).CacheOrGetAsync<T>(key, duration, filter);
         }
         #endregion
+        #region GetCompressedAsync<T> with Func
+        public async Task<T> GetCompressedAsync<T>(string key, int databaseId, int duration, Func<Task<T>> filter) where T : class
+        {
+            return await _client.GetDatabase(databaseId).CacheOrGetCompressedAsync<T>(key, duration, filter);
+        }
+        #endregion
         #region Set
         public void Set(string key, string value)
         {
