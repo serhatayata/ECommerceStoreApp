@@ -54,7 +54,6 @@
   <ItemGroup>
     <Folder Include="Data\SeedData\SeedFiles\" />
     <Folder Include="IntegrationEvents\EventHandling\" />
-    <Folder Include="Validations\" />
   </ItemGroup>
 
   <ItemGroup>

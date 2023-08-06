@@ -7,7 +7,7 @@ public class ErrorResult : Result
 
     }
 
-    public ErrorResult() : base(false, null, 400)
+    public ErrorResult() : base(false, string.Empty, 400)
     {
     }
 }

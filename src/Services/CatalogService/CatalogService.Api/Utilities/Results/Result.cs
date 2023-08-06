@@ -5,14 +5,26 @@ public class Result
     {
         Message = message;
         StatusCode = statusCode;
-        //Success = success; => Bunun yerine yokarıdaki ":this(success)" kullanıldı.
+    }
+
+    public Result(bool success, string message, int statusCode) : this(success)
+    {
+        Message = string.IsNullOrWhiteSpace(message) ? 
+                  new string[] {} : new string[] { message };
+        StatusCode = statusCode;
+    }
+
+    public Result(bool success, string[] message, int statusCode) : this(success)
+    {
+        Message = message;
+        StatusCode = statusCode;
     }
 
     public Result(bool success, string messageCode = "")
     {
         Success = success;
         StatusCode = success ? 200 : 400;
-        Message = success ? "Successful" : "Operation Failed";
+        Message = success ? new string[] { "Successful" } : new string[] { "Operation Failed" };
         MessageCode = messageCode;
     }
     public bool Success { get; }

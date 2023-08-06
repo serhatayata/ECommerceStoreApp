@@ -5,7 +5,7 @@ public class SuccessResult : Result
     {
     }
 
-    public SuccessResult() : base(true, null, 200)
+    public SuccessResult() : base(true, string.Empty, 200)
     {
     }
 }
