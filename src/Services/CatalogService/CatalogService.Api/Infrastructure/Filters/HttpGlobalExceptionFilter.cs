@@ -1,5 +1,5 @@
 ﻿using CatalogService.Api.Infrastructure.Converters;
-using CatalogService.Api.Utilities.Responses;
+using CatalogService.Api.Utilities.Results;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json;
 using System.Net;
@@ -25,10 +25,7 @@ namespace CatalogService.Api.Infrastructure.Filters
                 context.Exception,
                 context.Exception.Message);
 
-            var json = new JsonErrorResponse
-            {
-                Messages = new[] { "An error occurred. Try it again." }
-            };
+            var json = new JsonErrorResult(new[] { "An error occurred. Try it again." });
 
             if (env.IsDevelopment())
             {

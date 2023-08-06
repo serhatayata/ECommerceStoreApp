@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace CatalogService.Api.Utilities.Responses
+namespace CatalogService.Api.Utilities.Results
 {
     public class InternalServerErrorObjectResult : ObjectResult
     {

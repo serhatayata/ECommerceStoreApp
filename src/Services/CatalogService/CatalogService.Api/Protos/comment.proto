@@ -45,7 +45,7 @@ service CommentProtoService {
 
 	rpc GetAllByUserId(GrpcStringModel) returns (ListGrpcCommentModel) {
 		option (google.api.http) = {
-		  get: "/comment/getall-byproductid"
+		  get: "/comment/getall-byuserid"
 		  body: '*'
 		};
 	}
