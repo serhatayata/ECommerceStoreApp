@@ -4,6 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
 using CatalogService.Api.Attributes;
 using CatalogService.Api.Infrastructure.Filters;
+using CatalogService.Api.Utilities.Validations.FluentValidation.Base;
+using CatalogService.Api.Utilities.Validations.FluentValidation.BrandValidators;
+using CatalogService.Api.Utilities.Validations.FluentValidation.CategoryValidators;
+using CatalogService.Api.Utilities.Validations.FluentValidation.CommentValidators;
+using CatalogService.Api.Utilities.Validations.FluentValidation.FeatureValidators;
+using CatalogService.Api.Utilities.Validations.FluentValidation.ProductValidators;
 
 namespace CatalogService.Api.Extensions
 {
@@ -26,23 +32,36 @@ namespace CatalogService.Api.Extensions
                 options.SuppressModelStateInvalidFilter = true;
             });
 
-            //#region Base
-            //services.AddValidatorsFromAssemblyContaining<StringModelValidator>();
-            //services.AddValidatorsFromAssemblyContaining<IntModelValidator>();
-            //services.AddValidatorsFromAssemblyContaining<BoolModelValidator>();
-            //#endregion
-            //#region Language
-            //services.AddValidatorsFromAssemblyContaining<LanguageAddModelValidator>();
-            //services.AddValidatorsFromAssemblyContaining<LanguageUpdateModelValidator>();
-            //#endregion
-            //#region Member
-            //services.AddValidatorsFromAssemblyContaining<MemberAddModelValidator>();
-            //services.AddValidatorsFromAssemblyContaining<MemberUpdateModelValidator>();
-            //#endregion
-            //#region Resource
-            //services.AddValidatorsFromAssemblyContaining<ResourceAddModelValidator>();
-            //services.AddValidatorsFromAssemblyContaining<ResourceUpdateModelValidator>();
-            //#endregion
+            //VALIDATORS
+            #region Base
+            services.AddValidatorsFromAssemblyContaining<StringModelValidator>();
+            services.AddValidatorsFromAssemblyContaining<IntModelValidator>();
+            services.AddValidatorsFromAssemblyContaining<BoolModelValidator>();
+            #endregion
+            #region Brand
+            services.AddValidatorsFromAssemblyContaining<BrandAddModelValidator>();
+            services.AddValidatorsFromAssemblyContaining<BrandUpdateModelValidator>();
+            #endregion
+            #region Category
+            services.AddValidatorsFromAssemblyContaining<CategoryAddModelValidator>();
+            services.AddValidatorsFromAssemblyContaining<CategoryUpdateModelValidator>();
+            #endregion
+            #region Comment
+            services.AddValidatorsFromAssemblyContaining<CommentAddModelValidator>();
+            services.AddValidatorsFromAssemblyContaining<CommentUpdateModelValidator>();
+            #endregion
+            #region Feature
+            services.AddValidatorsFromAssemblyContaining<FeatureAddModelValidator>();
+            services.AddValidatorsFromAssemblyContaining<FeatureUpdateModelValidator>();
+            services.AddValidatorsFromAssemblyContaining<ProductFeatureModelValidator>();
+            services.AddValidatorsFromAssemblyContaining<ProductFeaturePropertyAddModelValidator>();
+            services.AddValidatorsFromAssemblyContaining<ProductFeaturePropertyUpdateModelValidator>();
+            #endregion
+            #region Product
+            services.AddValidatorsFromAssemblyContaining<PriceBetweenModelValidator>();
+            services.AddValidatorsFromAssemblyContaining<ProductAddModelValidator>();
+            services.AddValidatorsFromAssemblyContaining<ProductUpdateModelValidator>();
+            #endregion
 
             services.AddFluentValidationAutoValidation();
             //services.AddFluentValidationClientsideAdapters(); // for client side

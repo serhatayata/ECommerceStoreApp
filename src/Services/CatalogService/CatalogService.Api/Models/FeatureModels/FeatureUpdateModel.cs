@@ -6,6 +6,5 @@ namespace CatalogService.Api.Models.FeatureModels
     {
         public int Id { get; set; }
         public string Name { get; set; }
-
     }
 }
