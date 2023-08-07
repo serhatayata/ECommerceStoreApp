@@ -6,11 +6,11 @@ using CatalogService.Api.Services.Cache.Abstract;
 using CatalogService.Api.Utilities.Results;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using System.Reflection;
 
-namespace CatalogService.Api.Controllers
+namespace CatalogService.Api.Controllers.v2
 {
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
+    [ApiVersion("2.0")]
     [ApiController]
     public class BrandController : BaseController<BrandController>
     {
@@ -25,6 +25,7 @@ namespace CatalogService.Api.Controllers
             _redisService = redisService;
         }
 
+        [MapToApiVersion("2.0")]
         [HttpPost]
         [Route("add")]
         [ProducesResponseType(typeof(Result), (int)HttpStatusCode.OK)]
@@ -33,11 +34,12 @@ namespace CatalogService.Api.Controllers
         {
             var result = await _brandService.AddAsync(model);
             if (result.Success)
-                await this.RemoveCacheByPattern(CacheType.Redis);
+                await RemoveCacheByPattern(CacheType.Redis);
 
             return result.Success ? Ok(result) : BadRequest(result);
         }
 
+        [MapToApiVersion("2.0")]
         [HttpPut]
         [Route("update")]
         [ProducesResponseType(typeof(Result), (int)HttpStatusCode.OK)]
@@ -46,11 +48,12 @@ namespace CatalogService.Api.Controllers
         {
             var result = await _brandService.UpdateAsync(model);
             if (result.Success)
-                await this.RemoveCacheByPattern(CacheType.Redis);
+                await RemoveCacheByPattern(CacheType.Redis);
 
             return result.Success ? Ok(result) : BadRequest(result);
         }
 
+        [MapToApiVersion("2.0")]
         [HttpDelete]
         [Route("delete")]
         [ProducesResponseType(typeof(Result), (int)HttpStatusCode.OK)]
@@ -59,11 +62,12 @@ namespace CatalogService.Api.Controllers
         {
             var result = await _brandService.DeleteAsync(model);
             if (result.Success)
-                await this.RemoveCacheByPattern(CacheType.Redis);
+                await RemoveCacheByPattern(CacheType.Redis);
 
             return result.Success ? Ok(result) : BadRequest(result);
         }
 
+        [MapToApiVersion("2.0")]
         [HttpGet]
         [Route("get")]
         [ProducesResponseType(typeof(DataResult<BrandModel>), (int)HttpStatusCode.OK)]
@@ -74,17 +78,18 @@ namespace CatalogService.Api.Controllers
             return result.Success ? Ok(result) : BadRequest(result);
         }
 
+        [MapToApiVersion("2.0")]
         [HttpGet]
         [Route("getall")]
         [ProducesResponseType(typeof(DataResult<IReadOnlyList<BrandModel>>), (int)HttpStatusCode.OK)]
         [ProducesErrorResponseType(typeof(DataResult<IReadOnlyList<BrandModel>>))]
         public async Task<IActionResult> GetAllAsync()
         {
-            var cacheKey = this.CurrentCacheKey(methodName: this.GetActualAsyncMethodName());
-            var cacheResult = await _redisService.GetCompressedAsync<DataResult<IReadOnlyList<BrandModel>>>(
+            var cacheKey = CurrentCacheKey(methodName: GetActualAsyncMethodName());
+            var cacheResult = await _redisService.GetCompressedAsync(
                 cacheKey,
-                this.DefaultDatabaseId,
-                this.DefaultCacheDuration, async () =>
+                DefaultDatabaseId,
+                DefaultCacheDuration, async () =>
                 {
                     var result = await _brandService.GetAllAsync();
                     return result;
@@ -93,19 +98,20 @@ namespace CatalogService.Api.Controllers
             return cacheResult.Success ? Ok(cacheResult) : BadRequest(cacheResult);
         }
 
+        [MapToApiVersion("2.0")]
         [HttpGet]
         [Route("getall-paged")]
         [ProducesResponseType(typeof(DataResult<IReadOnlyList<BrandModel>>), (int)HttpStatusCode.OK)]
         [ProducesErrorResponseType(typeof(DataResult<IReadOnlyList<BrandModel>>))]
         public async Task<IActionResult> GetAllPagedAsync([FromBody] PagingModel model)
         {
-            var cacheKey = this.CurrentCacheKey(methodName: this.GetActualAsyncMethodName(), 
+            var cacheKey = CurrentCacheKey(methodName: GetActualAsyncMethodName(),
                                                 prefix: null,
                                                 model.Page.ToString(), model.PageSize.ToString());
-            var cacheResult = await _redisService.GetAsync<DataResult<IReadOnlyList<BrandModel>>>(
+            var cacheResult = await _redisService.GetAsync(
                 cacheKey,
-                this.DefaultDatabaseId,
-                this.DefaultCacheDuration, async () =>
+                DefaultDatabaseId,
+                DefaultCacheDuration, async () =>
                 {
                     var result = await _brandService.GetAllPagedAsync(model);
                     return result;
@@ -114,17 +120,18 @@ namespace CatalogService.Api.Controllers
             return cacheResult.Success ? Ok(cacheResult) : BadRequest(cacheResult);
         }
 
+        [MapToApiVersion("2.0")]
         [HttpGet]
         [Route("getall-withproducts")]
         [ProducesResponseType(typeof(DataResult<IReadOnlyList<BrandModel>>), (int)HttpStatusCode.OK)]
         [ProducesErrorResponseType(typeof(DataResult<IReadOnlyList<BrandModel>>))]
         public async Task<IActionResult> GetAllWithProductsAsync()
         {
-            var cacheKey = this.CurrentCacheKey(methodName: this.GetActualAsyncMethodName());
-            var cacheResult = await _redisService.GetAsync<DataResult<IReadOnlyList<BrandModel>>>(
+            var cacheKey = CurrentCacheKey(methodName: GetActualAsyncMethodName());
+            var cacheResult = await _redisService.GetAsync(
                 cacheKey,
-                this.DefaultDatabaseId,
-                this.DefaultCacheDuration, async () =>
+                DefaultDatabaseId,
+                DefaultCacheDuration, async () =>
                 {
                     var result = await _brandService.GetAllWithProductsAsync();
                     return result;
@@ -140,11 +147,11 @@ namespace CatalogService.Api.Controllers
         {
             if (type == CacheType.Redis)
             {
-                string pattern = string.Join("-", this.ProjectName, this.ClassName, parameters);
+                string pattern = string.Join("-", ProjectName, ClassName, parameters);
                 if (parameters.Count() > 0)
                     pattern = string.Join("-", parameters);
 
-                await _redisService.RemoveByPattern(pattern, this.DefaultDatabaseId);
+                await _redisService.RemoveByPattern(pattern, DefaultDatabaseId);
             }
         }
     }

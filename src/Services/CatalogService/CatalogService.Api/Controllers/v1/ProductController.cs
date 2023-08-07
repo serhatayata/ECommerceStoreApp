@@ -6,11 +6,11 @@ using CatalogService.Api.Services.Cache.Abstract;
 using CatalogService.Api.Utilities.Results;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using System.Reflection;
 
-namespace CatalogService.Api.Controllers
+namespace CatalogService.Api.Controllers.v1
 {
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
+    [ApiVersion("1.0")]
     [ApiController]
     public class ProductController : BaseController<ProductController>
     {
@@ -25,6 +25,7 @@ namespace CatalogService.Api.Controllers
             _redisService = redisService;
         }
 
+        [MapToApiVersion("1.0")]
         [HttpPost]
         [Route("add")]
         [ProducesResponseType(typeof(Result), (int)HttpStatusCode.OK)]
@@ -35,6 +36,7 @@ namespace CatalogService.Api.Controllers
             return Ok(result);
         }
 
+        [MapToApiVersion("1.0")]
         [HttpPut]
         [Route("update")]
         [ProducesResponseType(typeof(Result), (int)HttpStatusCode.OK)]
@@ -45,6 +47,7 @@ namespace CatalogService.Api.Controllers
             return Ok(result);
         }
 
+        [MapToApiVersion("1.0")]
         [HttpDelete]
         [Route("delete")]
         [ProducesResponseType(typeof(Result), (int)HttpStatusCode.OK)]
@@ -55,6 +58,7 @@ namespace CatalogService.Api.Controllers
             return Ok(result);
         }
 
+        [MapToApiVersion("1.0")]
         [HttpGet]
         [Route("get")]
         [ProducesResponseType(typeof(DataResult<ProductModel>), (int)HttpStatusCode.OK)]
@@ -74,18 +78,19 @@ namespace CatalogService.Api.Controllers
         //    return Ok(result);
         //}
 
+        [MapToApiVersion("1.0")]
         [HttpGet]
         [Route("getall-paged")]
         [ProducesResponseType(typeof(DataResult<IReadOnlyList<ProductModel>>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAllPagedAsync([FromBody] PagingModel model)
         {
-            var cacheKey = this.CurrentCacheKey(methodName: this.GetActualAsyncMethodName(),
+            var cacheKey = CurrentCacheKey(methodName: GetActualAsyncMethodName(),
                                                 prefix: null,
                                                 model.Page.ToString(), model.PageSize.ToString());
-            var cacheResult = await _redisService.GetAsync<DataResult<IReadOnlyList<ProductModel>>>(
+            var cacheResult = await _redisService.GetAsync(
                 cacheKey,
-                this.DefaultDatabaseId,
-                this.DefaultCacheDuration, async () =>
+                DefaultDatabaseId,
+                DefaultCacheDuration, async () =>
                 {
                     var result = await _productService.GetAllPagedAsync(model);
                     return result;
@@ -94,6 +99,7 @@ namespace CatalogService.Api.Controllers
             return cacheResult.Success ? Ok(cacheResult) : BadRequest(cacheResult);
         }
 
+        [MapToApiVersion("1.0")]
         [HttpGet]
         [Route("get-byproductcode")]
         [ProducesResponseType(typeof(DataResult<ProductModel>), (int)HttpStatusCode.OK)]
@@ -103,18 +109,19 @@ namespace CatalogService.Api.Controllers
             return Ok(result);
         }
 
+        [MapToApiVersion("1.0")]
         [HttpGet]
         [Route("getall-betweenprices")]
         [ProducesResponseType(typeof(DataResult<IReadOnlyList<ProductModel>>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAllBetweenPricesAsync([FromBody] PriceBetweenModel model)
         {
-            var cacheKey = this.CurrentCacheKey(methodName: this.GetActualAsyncMethodName(),
+            var cacheKey = CurrentCacheKey(methodName: GetActualAsyncMethodName(),
                                                 prefix: null,
                                                 model.MinimumPrice.ToString(), model.MaximumPrice.ToString());
-            var cacheResult = await _redisService.GetAsync<DataResult<IReadOnlyList<ProductModel>>>(
+            var cacheResult = await _redisService.GetAsync(
                 cacheKey,
-                this.DefaultDatabaseId,
-                this.DefaultCacheDuration, async () =>
+                DefaultDatabaseId,
+                DefaultCacheDuration, async () =>
                 {
                     var result = await _productService.GetAllBetweenPricesAsync(model);
                     return result;
@@ -123,18 +130,19 @@ namespace CatalogService.Api.Controllers
             return cacheResult.Success ? Ok(cacheResult) : BadRequest(cacheResult);
         }
 
+        [MapToApiVersion("1.0")]
         [HttpGet]
         [Route("getall-bybrandid")]
         [ProducesResponseType(typeof(DataResult<IReadOnlyList<ProductModel>>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAllByBrandIdAsync([FromBody] IntModel model)
         {
-            var cacheKey = this.CurrentCacheKey(methodName: this.GetActualAsyncMethodName(),
+            var cacheKey = CurrentCacheKey(methodName: GetActualAsyncMethodName(),
                                                 prefix: null,
                                                 model.Value.ToString());
-            var cacheResult = await _redisService.GetAsync<DataResult<IReadOnlyList<ProductModel>>>(
+            var cacheResult = await _redisService.GetAsync(
                 cacheKey,
-                this.DefaultDatabaseId,
-                this.DefaultCacheDuration, async () =>
+                DefaultDatabaseId,
+                DefaultCacheDuration, async () =>
                 {
                     var result = await _productService.GetAllByBrandIdAsync(model);
                     return result;
@@ -143,18 +151,19 @@ namespace CatalogService.Api.Controllers
             return cacheResult.Success ? Ok(cacheResult) : BadRequest(cacheResult);
         }
 
+        [MapToApiVersion("1.0")]
         [HttpGet]
         [Route("getall-byproducttypeid")]
         [ProducesResponseType(typeof(DataResult<IReadOnlyList<ProductModel>>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAllByProductTypeIdAsync([FromBody] IntModel model)
         {
-            var cacheKey = this.CurrentCacheKey(methodName: this.GetActualAsyncMethodName(),
+            var cacheKey = CurrentCacheKey(methodName: GetActualAsyncMethodName(),
                                                 prefix: null,
                                                 model.Value.ToString());
-            var cacheResult = await _redisService.GetAsync<DataResult<IReadOnlyList<ProductModel>>>(
+            var cacheResult = await _redisService.GetAsync(
                 cacheKey,
-                this.DefaultDatabaseId,
-                this.DefaultCacheDuration, async () =>
+                DefaultDatabaseId,
+                DefaultCacheDuration, async () =>
                 {
                     var result = await _productService.GetAllByProductTypeIdAsync(model);
                     return result;
@@ -170,11 +179,11 @@ namespace CatalogService.Api.Controllers
         {
             if (type == CacheType.Redis)
             {
-                string pattern = string.Join("-", this.ProjectName, this.ClassName, parameters);
+                string pattern = string.Join("-", ProjectName, ClassName, parameters);
                 if (parameters.Count() > 0)
                     pattern = string.Join("-", parameters);
 
-                await _redisService.RemoveByPattern(pattern, this.DefaultDatabaseId);
+                await _redisService.RemoveByPattern(pattern, DefaultDatabaseId);
             }
         }
     }

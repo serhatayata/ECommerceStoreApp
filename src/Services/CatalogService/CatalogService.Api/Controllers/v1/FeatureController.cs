@@ -1,20 +1,17 @@
 ﻿using CatalogService.Api.Entities;
 using CatalogService.Api.Models.Base.Concrete;
 using CatalogService.Api.Models.CacheModels;
-using CatalogService.Api.Models.CommentModels;
 using CatalogService.Api.Models.FeatureModels;
-using CatalogService.Api.Models.ProductModels;
 using CatalogService.Api.Services.Base.Abstract;
 using CatalogService.Api.Services.Cache.Abstract;
 using CatalogService.Api.Utilities.Results;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using System.Reflection;
 
-namespace CatalogService.Api.Controllers
+namespace CatalogService.Api.Controllers.v1
 {
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
+    [ApiVersion("1.0")]
     [ApiController]
     public class FeatureController : BaseController<FeatureController>
     {
@@ -29,6 +26,7 @@ namespace CatalogService.Api.Controllers
             _redisService = redisService;
         }
 
+        [MapToApiVersion("1.0")]
         [HttpPost]
         [Route("add")]
         [ProducesResponseType(typeof(Result), (int)HttpStatusCode.OK)]
@@ -37,11 +35,12 @@ namespace CatalogService.Api.Controllers
         {
             var result = await _featureService.AddAsync(model);
             if (result.Success)
-                await this.RemoveCacheByPattern(CacheType.Redis);
+                await RemoveCacheByPattern(CacheType.Redis);
 
             return Ok(result);
         }
 
+        [MapToApiVersion("1.0")]
         [HttpPut]
         [Route("update")]
         [ProducesResponseType(typeof(Result), (int)HttpStatusCode.OK)]
@@ -52,6 +51,7 @@ namespace CatalogService.Api.Controllers
             return Ok(result);
         }
 
+        [MapToApiVersion("1.0")]
         [HttpDelete]
         [Route("delete")]
         [ProducesResponseType(typeof(Result), (int)HttpStatusCode.OK)]
@@ -62,6 +62,7 @@ namespace CatalogService.Api.Controllers
             return Ok(result);
         }
 
+        [MapToApiVersion("1.0")]
         [HttpPost]
         [Route("add-productfeature")]
         [ProducesResponseType(typeof(Result), (int)HttpStatusCode.OK)]
@@ -72,7 +73,7 @@ namespace CatalogService.Api.Controllers
             return Ok(result);
         }
 
-
+        [MapToApiVersion("1.0")]
         [HttpDelete]
         [Route("delete-productfeature")]
         [ProducesResponseType(typeof(Result), (int)HttpStatusCode.OK)]
@@ -83,6 +84,7 @@ namespace CatalogService.Api.Controllers
             return Ok(result);
         }
 
+        [MapToApiVersion("1.0")]
         [HttpPost]
         [Route("add-productfeature-property")]
         [ProducesResponseType(typeof(Result), (int)HttpStatusCode.OK)]
@@ -93,6 +95,7 @@ namespace CatalogService.Api.Controllers
             return Ok(result);
         }
 
+        [MapToApiVersion("1.0")]
         [HttpPut]
         [Route("update-productfeature-property")]
         [ProducesResponseType(typeof(Result), (int)HttpStatusCode.OK)]
@@ -103,6 +106,7 @@ namespace CatalogService.Api.Controllers
             return Ok(result);
         }
 
+        [MapToApiVersion("1.0")]
         [HttpDelete]
         [Route("delete-productfeature-property")]
         [ProducesResponseType(typeof(Result), (int)HttpStatusCode.OK)]
@@ -113,6 +117,7 @@ namespace CatalogService.Api.Controllers
             return Ok(result);
         }
 
+        [MapToApiVersion("1.0")]
         [HttpGet]
         [Route("get")]
         [ProducesResponseType(typeof(DataResult<FeatureModel>), (int)HttpStatusCode.OK)]
@@ -122,16 +127,17 @@ namespace CatalogService.Api.Controllers
             return Ok(result);
         }
 
+        [MapToApiVersion("1.0")]
         [HttpGet]
         [Route("getall")]
         [ProducesResponseType(typeof(DataResult<IReadOnlyList<FeatureModel>>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAllAsync()
         {
-            var cacheKey = this.CurrentCacheKey(methodName: this.GetActualAsyncMethodName());
-            var cacheResult = await _redisService.GetAsync<DataResult<IReadOnlyList<FeatureModel>>>(
+            var cacheKey = CurrentCacheKey(methodName: GetActualAsyncMethodName());
+            var cacheResult = await _redisService.GetAsync(
                 cacheKey,
-                this.DefaultDatabaseId,
-                this.DefaultCacheDuration, async () =>
+                DefaultDatabaseId,
+                DefaultCacheDuration, async () =>
                 {
                     var result = await _featureService.GetAllAsync();
                     return result;
@@ -140,18 +146,19 @@ namespace CatalogService.Api.Controllers
             return cacheResult.Success ? Ok(cacheResult) : BadRequest(cacheResult);
         }
 
+        [MapToApiVersion("1.0")]
         [HttpGet]
         [Route("getall-paged")]
         [ProducesResponseType(typeof(DataResult<IReadOnlyList<FeatureModel>>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAllPagedAsync([FromBody] PagingModel model)
         {
-            var cacheKey = this.CurrentCacheKey(methodName: this.GetActualAsyncMethodName(),
+            var cacheKey = CurrentCacheKey(methodName: GetActualAsyncMethodName(),
                                                 prefix: null,
                                                 model.Page.ToString(), model.PageSize.ToString());
-            var cacheResult = await _redisService.GetAsync<DataResult<IReadOnlyList<FeatureModel>>>(
+            var cacheResult = await _redisService.GetAsync(
                 cacheKey,
-                this.DefaultDatabaseId,
-                this.DefaultCacheDuration, async () =>
+                DefaultDatabaseId,
+                DefaultCacheDuration, async () =>
                 {
                     var result = await _featureService.GetAllPagedAsync(model);
                     return result;
@@ -160,17 +167,18 @@ namespace CatalogService.Api.Controllers
             return cacheResult.Success ? Ok(cacheResult) : BadRequest(cacheResult);
         }
 
+        [MapToApiVersion("1.0")]
         [HttpGet]
         [Route("getall-features-byproductid")]
         [ProducesResponseType(typeof(DataResult<IReadOnlyList<FeatureModel>>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAllFeaturesByProductId([FromBody] IntModel model)
         {
-            var cacheKey = this.CurrentCacheKey(methodName: this.GetActualAsyncMethodName(),
-                                                parameters:model.Value.ToString());
-            var cacheResult = await _redisService.GetAsync<DataResult<IReadOnlyList<FeatureModel>>>(
+            var cacheKey = CurrentCacheKey(methodName: GetActualAsyncMethodName(),
+                                                parameters: model.Value.ToString());
+            var cacheResult = await _redisService.GetAsync(
                 cacheKey,
-                this.DefaultDatabaseId,
-                this.DefaultCacheDuration, async () =>
+                DefaultDatabaseId,
+                DefaultCacheDuration, async () =>
                 {
                     var result = await _featureService.GetAllFeaturesByProductId(model);
                     return result;
@@ -179,18 +187,19 @@ namespace CatalogService.Api.Controllers
             return cacheResult.Success ? Ok(cacheResult) : BadRequest(cacheResult);
         }
 
+        [MapToApiVersion("1.0")]
         [HttpGet]
         [Route("getall-featureproperties")]
         [ProducesResponseType(typeof(DataResult<IReadOnlyList<ProductFeaturePropertyModel>>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAllFeatureProperties([FromBody] ProductFeatureModel model)
         {
-            var cacheKey = this.CurrentCacheKey(methodName: this.GetActualAsyncMethodName(),
+            var cacheKey = CurrentCacheKey(methodName: GetActualAsyncMethodName(),
                                                 prefix: null,
                                                 model.ProductId.ToString(), model.FeatureId.ToString());
-            var cacheResult = await _redisService.GetAsync<DataResult<IReadOnlyList<ProductFeaturePropertyModel>>>(
+            var cacheResult = await _redisService.GetAsync(
                 cacheKey,
-                this.DefaultDatabaseId,
-                this.DefaultCacheDuration, async () =>
+                DefaultDatabaseId,
+                DefaultCacheDuration, async () =>
                 {
                     var result = await _featureService.GetAllFeatureProperties(model);
                     return result;
@@ -199,18 +208,19 @@ namespace CatalogService.Api.Controllers
             return cacheResult.Success ? Ok(cacheResult) : BadRequest(cacheResult);
         }
 
+        [MapToApiVersion("1.0")]
         [HttpGet]
         [Route("getall-featureproperties-byproductfeatureid")]
         [ProducesResponseType(typeof(DataResult<IReadOnlyList<ProductFeaturePropertyModel>>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAllFeaturePropertiesByProductFeatureId([FromBody] IntModel model)
         {
-            var cacheKey = this.CurrentCacheKey(methodName: this.GetActualAsyncMethodName(),
+            var cacheKey = CurrentCacheKey(methodName: GetActualAsyncMethodName(),
                                                 prefix: null,
                                                 model.Value.ToString());
-            var cacheResult = await _redisService.GetAsync<DataResult<IReadOnlyList<ProductFeaturePropertyModel>>>(
+            var cacheResult = await _redisService.GetAsync(
                 cacheKey,
-                this.DefaultDatabaseId,
-                this.DefaultCacheDuration, async () =>
+                DefaultDatabaseId,
+                DefaultCacheDuration, async () =>
                 {
                     var result = await _featureService.GetAllFeaturePropertiesByProductFeatureId(model);
                     return result;
@@ -219,18 +229,19 @@ namespace CatalogService.Api.Controllers
             return cacheResult.Success ? Ok(cacheResult) : BadRequest(cacheResult);
         }
 
+        [MapToApiVersion("1.0")]
         [HttpGet]
         [Route("getall-features-byproductcode")]
         [ProducesResponseType(typeof(DataResult<IReadOnlyList<FeatureModel>>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAllFeaturesByProductCode([FromBody] StringModel model)
         {
-            var cacheKey = this.CurrentCacheKey(methodName: this.GetActualAsyncMethodName(),
+            var cacheKey = CurrentCacheKey(methodName: GetActualAsyncMethodName(),
                                                 prefix: null,
                                                 model.Value);
-            var cacheResult = await _redisService.GetAsync<DataResult<IReadOnlyList<FeatureModel>>>(
+            var cacheResult = await _redisService.GetAsync(
                 cacheKey,
-                this.DefaultDatabaseId,
-                this.DefaultCacheDuration, async () =>
+                DefaultDatabaseId,
+                DefaultCacheDuration, async () =>
                 {
                     var result = await _featureService.GetAllFeaturesByProductCode(model);
                     return result;
@@ -239,18 +250,19 @@ namespace CatalogService.Api.Controllers
             return cacheResult.Success ? Ok(cacheResult) : BadRequest(cacheResult);
         }
 
+        [MapToApiVersion("1.0")]
         [HttpGet]
         [Route("get-featureproducts")]
         [ProducesResponseType(typeof(DataResult<IReadOnlyList<Product>>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetFeatureProducts([FromBody] IntModel model)
         {
-            var cacheKey = this.CurrentCacheKey(methodName: this.GetActualAsyncMethodName(),
+            var cacheKey = CurrentCacheKey(methodName: GetActualAsyncMethodName(),
                                                 prefix: null,
                                                 model.Value.ToString());
-            var cacheResult = await _redisService.GetAsync<DataResult<IReadOnlyList<ProductModel>>>(
+            var cacheResult = await _redisService.GetAsync(
                 cacheKey,
-                this.DefaultDatabaseId,
-                this.DefaultCacheDuration, async () =>
+                DefaultDatabaseId,
+                DefaultCacheDuration, async () =>
                 {
                     var result = await _featureService.GetFeatureProducts(model);
                     return result;
@@ -266,11 +278,11 @@ namespace CatalogService.Api.Controllers
         {
             if (type == CacheType.Redis)
             {
-                string pattern = string.Join("-", this.ProjectName, this.ClassName, parameters);
+                string pattern = string.Join("-", ProjectName, ClassName, parameters);
                 if (parameters.Count() > 0)
                     pattern = string.Join("-", parameters);
 
-                await _redisService.RemoveByPattern(pattern, this.DefaultDatabaseId);
+                await _redisService.RemoveByPattern(pattern, DefaultDatabaseId);
             }
         }
     }

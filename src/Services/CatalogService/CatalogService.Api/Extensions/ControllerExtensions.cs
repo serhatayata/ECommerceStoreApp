@@ -10,6 +10,8 @@ using CatalogService.Api.Utilities.Validations.FluentValidation.CategoryValidato
 using CatalogService.Api.Utilities.Validations.FluentValidation.CommentValidators;
 using CatalogService.Api.Utilities.Validations.FluentValidation.FeatureValidators;
 using CatalogService.Api.Utilities.Validations.FluentValidation.ProductValidators;
+using Microsoft.AspNetCore.Mvc.Versioning;
+using CatalogService.Api.Utilities.Providers;
 
 namespace CatalogService.Api.Extensions
 {
@@ -30,6 +32,27 @@ namespace CatalogService.Api.Extensions
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressModelStateInvalidFilter = true;
+            });
+
+            //API VERSIONING
+            services.AddApiVersioning(opt =>
+            {
+                opt.DefaultApiVersion = new ApiVersion(1, 0);
+                opt.AssumeDefaultVersionWhenUnspecified = true;
+                opt.ReportApiVersions = true;
+
+                opt.ApiVersionReader = ApiVersionReader.Combine(
+                    new HeaderApiVersionReader("x-version"),
+                    new QueryStringApiVersionReader("api-version"),
+                    new MediaTypeApiVersionReader("ver"));
+
+                opt.ErrorResponses = new ApiVersioningErrorResponseProvider(); 
+            });
+
+            services.AddVersionedApiExplorer(opt =>
+            {
+                opt.GroupNameFormat = "'v'VVV'";
+                opt.SubstituteApiVersionInUrl = true;
             });
 
             //VALIDATORS
