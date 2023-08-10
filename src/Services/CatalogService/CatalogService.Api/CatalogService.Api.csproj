@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Utilities\Providers\Errors\**" />
+    <Content Remove="Utilities\Providers\Errors\**" />
+    <EmbeddedResource Remove="Utilities\Providers\Errors\**" />
+    <None Remove="Utilities\Providers\Errors\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Protos\brand.proto" />
     <None Remove="Protos\category.proto" />
     <None Remove="Protos\comment.proto" />
@@ -56,7 +63,6 @@
   <ItemGroup>
     <Folder Include="Data\SeedData\SeedFiles\" />
     <Folder Include="IntegrationEvents\EventHandling\" />
-    <Folder Include="Utilities\Providers\Errors\" />
   </ItemGroup>
 
   <ItemGroup>

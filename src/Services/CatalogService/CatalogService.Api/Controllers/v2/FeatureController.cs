@@ -121,6 +121,7 @@ namespace CatalogService.Api.Controllers.v2
             return Ok(result);
         }
 
+        [MapToApiVersion("2.0")]
         [HttpGet]
         [Route("get")]
         [ProducesResponseType(typeof(DataResult<FeatureModel>), (int)HttpStatusCode.OK)]

@@ -21,7 +21,7 @@ var config = ConfigurationExtension.appConfig;
 var serilogConfig = ConfigurationExtension.serilogConfig;
 
 builder.Services.AddControllerSettings();
-builder.Services.AddElasticSearchConfiguration();
+builder.Services.AddLogConfiguration();
 
 #region Startup DI
 builder.Services.AddSingleton<IElasticSearchService, ElasticSearchService>();

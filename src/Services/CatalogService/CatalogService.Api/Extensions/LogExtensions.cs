@@ -1,8 +1,8 @@
-﻿using Serilog;
-using Serilog.Sinks.Elasticsearch;
+﻿using Serilog.Sinks.Elasticsearch;
+using Serilog;
 using System.Reflection;
 
-namespace LocalizationService.Api.Extensions
+namespace CatalogService.Api.Extensions
 {
     public static class LogExtensions
     {

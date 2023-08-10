@@ -6,14 +6,13 @@ using CatalogService.Api.Services.Cache.Abstract;
 using CatalogService.Api.Utilities.Results;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using System.Reflection;
 
 namespace CatalogService.Api.Controllers.v1
 {
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiVersion("1.0")]
     [ApiController]
-    public class CommentController : BaseController<CategoryController>
+    public class CommentController : BaseController<CommentController>
     {
         private readonly ICommentService _commentService;
         private readonly IRedisService _redisService;

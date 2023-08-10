@@ -28,6 +28,7 @@ var config = ConfigurationExtension.appConfig;
 var serilogConfig = ConfigurationExtension.serilogConfig;
 
 builder.Services.AddControllerSettings();
+builder.Services.AddLogConfiguration();
 
 #region SERVICES
 

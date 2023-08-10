@@ -13,7 +13,7 @@ namespace CatalogService.Api.Controllers.v2
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiVersion("2.0")]
     [ApiController]
-    public class CommentController : BaseController<CategoryController>
+    public class CommentController : BaseController<CommentController>
     {
         private readonly ICommentService _commentService;
         private readonly IRedisService _redisService;
