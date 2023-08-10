@@ -11,10 +11,12 @@ using CatalogService.Api.Services.Cache.Abstract;
 using CatalogService.Api.Services.Cache.Concrete;
 using CatalogService.Api.Services.Grpc;
 using CatalogService.Api.Utilities.IoC;
+using CatalogService.Api.Utilities.Options;
 using EventBus.Base;
 using EventBus.Base.Abstraction;
 using EventBus.Factory;
 using IntegrationEventLogEF;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.EntityFrameworkCore;
 using RabbitMQ.Client;
 using System.Reflection;
@@ -27,11 +29,14 @@ IWebHostEnvironment environment = builder.Environment;
 var config = ConfigurationExtension.appConfig;
 var serilogConfig = ConfigurationExtension.serilogConfig;
 
-builder.Services.AddControllerSettings();
-builder.Services.AddLogConfiguration();
-
 #region SERVICES
 
+#region Controller
+builder.Services.AddControllerSettings();
+#endregion
+#region Log
+builder.Services.AddLogConfiguration();
+#endregion
 #region Startup DI
 builder.Services.AddSingleton<IRedisService, RedisService>();
 #endregion
@@ -123,6 +128,7 @@ builder.Services.AddSingleton<IEventBus>(sp =>
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
 
 #endregion
 
@@ -146,7 +152,15 @@ app.MapControllers();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+
+        foreach (var description in provider.ApiVersionDescriptions)
+        {
+            options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
+        }
+    });
 
     app.MapGrpcReflectionService();
 }

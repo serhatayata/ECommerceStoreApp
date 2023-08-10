@@ -43,15 +43,15 @@ namespace CatalogService.Api.Extensions
 
                 opt.ApiVersionReader = ApiVersionReader.Combine(
                     new HeaderApiVersionReader("x-version"),
-                    new QueryStringApiVersionReader("api-version"),
-                    new MediaTypeApiVersionReader("ver"));
+                    new QueryStringApiVersionReader("api-version")
+                );
 
-                opt.ErrorResponses = new ApiVersioningErrorResponseProvider(); 
+                opt.ErrorResponses = new ApiVersioningErrorResponseProvider();
             });
 
             services.AddVersionedApiExplorer(opt =>
             {
-                opt.GroupNameFormat = "'v'VVV'";
+                opt.GroupNameFormat = "'v'VVV";
                 opt.SubstituteApiVersionInUrl = true;
             });
 
