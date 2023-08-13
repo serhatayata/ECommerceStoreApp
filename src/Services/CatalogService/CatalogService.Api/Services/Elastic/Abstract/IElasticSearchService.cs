@@ -5,6 +5,11 @@ namespace CatalogService.Api.Services.Elastic.Abstract
     public interface IElasticSearchService
     {
         /// <summary>
+        /// Get elastic client
+        /// </summary>
+        /// <returns><typeparamref name="ElasticClient"/></returns>
+        ElasticClient GetClient();
+        /// <summary>
         /// Check if index exists
         /// </summary>
         /// <param name="index">index name</param>

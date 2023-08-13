@@ -20,7 +20,7 @@ namespace CatalogService.Api.Services.Elastic.Concrete
             _client = GetClient();
         }
 
-        private ElasticClient GetClient()
+        public ElasticClient GetClient()
         {
             var settings = new ConnectionSettings(new Uri(_options.ConnectionString));
             return new ElasticClient(settings);
