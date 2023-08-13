@@ -10,6 +10,8 @@ using CatalogService.Api.Data.Repositories.EntityFramework.Concrete;
 using CatalogService.Api.IntegrationEvents;
 using CatalogService.Api.Services.Base.Abstract;
 using CatalogService.Api.Services.Base.Concrete;
+using CatalogService.Api.Services.Elastic.Abstract;
+using CatalogService.Api.Services.Elastic.Concrete;
 using IntegrationEventLogEF.Services;
 
 namespace CatalogService.Api.DependencyResolvers.Autofac
@@ -46,6 +48,7 @@ namespace CatalogService.Api.DependencyResolvers.Autofac
             builder.RegisterType<FeatureService>().As<IFeatureService>().InstancePerDependency();
             builder.RegisterType<ProductService>().As<IProductService>().InstancePerDependency();
 
+            builder.RegisterType<ElasticSearchService>().As<IElasticSearchService>().InstancePerDependency();
 
             #endregion
             #region Events
