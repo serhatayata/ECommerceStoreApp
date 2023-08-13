@@ -22,7 +22,8 @@ namespace CatalogService.Api.Services.Elastic.Concrete
 
         public ElasticClient GetClient()
         {
-            var settings = new ConnectionSettings(new Uri(_options.ConnectionString));
+            var settings = new ConnectionSettings(new Uri(_options.ConnectionString))
+                            .BasicAuthentication(_options.AuthUserName, _options.AuthPassword);
             return new ElasticClient(settings);
         }
 

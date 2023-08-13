@@ -17,5 +17,7 @@ namespace CatalogService.Api.Services.Base.Abstract
         Task<DataResult<IReadOnlyList<ProductModel>>> GetAllBetweenPricesAsync(PriceBetweenModel model);
         Task<DataResult<IReadOnlyList<ProductModel>>> GetAllByBrandIdAsync(IntModel model);
         Task<DataResult<IReadOnlyList<ProductModel>>> GetAllByProductTypeIdAsync(IntModel model);
+
+        Task<Result> CreateElasticIndex(string index);
     }
 }
