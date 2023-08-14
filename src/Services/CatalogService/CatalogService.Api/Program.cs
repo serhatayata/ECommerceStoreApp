@@ -7,6 +7,7 @@ using CatalogService.Api.Extensions.Middlewares;
 using CatalogService.Api.Infrastructure.Interceptors;
 using CatalogService.Api.Mapping;
 using CatalogService.Api.Models.CacheModels;
+using CatalogService.Api.Models.Settings;
 using CatalogService.Api.Services.Cache.Abstract;
 using CatalogService.Api.Services.Cache.Concrete;
 using CatalogService.Api.Services.Grpc;
@@ -45,6 +46,7 @@ builder.Host.AddHostExtensions(environment);
 #endregion
 #region Configuration
 builder.Services.Configure<RedisOptions>(configuration.GetSection("RedisOptions"));
+builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDB"));
 #endregion
 #region Http
 builder.Services.AddHttpContextAccessor();

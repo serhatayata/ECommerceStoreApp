@@ -12,6 +12,8 @@ using CatalogService.Api.Services.Base.Abstract;
 using CatalogService.Api.Services.Base.Concrete;
 using CatalogService.Api.Services.Elastic.Abstract;
 using CatalogService.Api.Services.Elastic.Concrete;
+using CatalogService.Api.Services.MongoDB.Abstract;
+using CatalogService.Api.Services.MongoDB.Concrete;
 using IntegrationEventLogEF.Services;
 
 namespace CatalogService.Api.DependencyResolvers.Autofac
@@ -47,6 +49,8 @@ namespace CatalogService.Api.DependencyResolvers.Autofac
             builder.RegisterType<CommentService>().As<ICommentService>().InstancePerDependency();
             builder.RegisterType<FeatureService>().As<IFeatureService>().InstancePerDependency();
             builder.RegisterType<ProductService>().As<IProductService>().InstancePerDependency();
+
+            builder.RegisterGeneric(typeof(KeyParameterService)).As(typeof(IKeyParameterService)).SingleInstance();
 
             builder.RegisterType<ElasticSearchService>().As<IElasticSearchService>().InstancePerDependency();
 

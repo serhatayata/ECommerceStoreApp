@@ -5,6 +5,7 @@ using CatalogService.Api.Entities;
 using CatalogService.Api.Models.Base.Concrete;
 using CatalogService.Api.Models.CommentModels;
 using CatalogService.Api.Services.Base.Abstract;
+using CatalogService.Api.Services.MongoDB.Abstract;
 using CatalogService.Api.Utilities.Results;
 
 namespace CatalogService.Api.Services.Base.Concrete
@@ -13,15 +14,18 @@ namespace CatalogService.Api.Services.Base.Concrete
     {
         private readonly IEfCommentRepository _efCommentRepository;
         private readonly IDapperCommentRepository _dapperCommentRepository;
+        private readonly IKeyParameterService _keyParameterService;
         private readonly IMapper _mapper;
 
         public CommentService(
             IEfCommentRepository efCommentRepository, 
             IDapperCommentRepository dapperCommentRepository, 
+            IKeyParameterService keyParameterService,
             IMapper mapper)
         {
             _efCommentRepository = efCommentRepository;
             _dapperCommentRepository = dapperCommentRepository;
+            _keyParameterService = keyParameterService;
             _mapper = mapper;
         }
 
