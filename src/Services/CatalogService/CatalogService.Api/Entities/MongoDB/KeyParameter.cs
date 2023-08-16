@@ -16,6 +16,6 @@ namespace CatalogService.Api.Entities.MongoDB
 
         [BsonElement("value")]
         [JsonPropertyName("value")]
-        public object Value { get; set; } = null!;
+        public string Value { get; set; } = null!;
     }
 }

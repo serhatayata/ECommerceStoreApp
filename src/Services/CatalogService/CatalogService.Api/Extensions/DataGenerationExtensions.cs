@@ -155,9 +155,5 @@ namespace CatalogService.Api.Extensions
             }
         }
         #endregion
-
-
-
-
     }
 }

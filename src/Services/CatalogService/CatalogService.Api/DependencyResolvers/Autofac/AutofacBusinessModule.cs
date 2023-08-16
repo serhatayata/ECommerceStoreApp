@@ -50,7 +50,7 @@ namespace CatalogService.Api.DependencyResolvers.Autofac
             builder.RegisterType<FeatureService>().As<IFeatureService>().InstancePerDependency();
             builder.RegisterType<ProductService>().As<IProductService>().InstancePerDependency();
 
-            builder.RegisterGeneric(typeof(KeyParameterService)).As(typeof(IKeyParameterService)).SingleInstance();
+            builder.RegisterType<KeyParameterService>().As<IKeyParameterService>().SingleInstance();
 
             builder.RegisterType<ElasticSearchService>().As<IElasticSearchService>().InstancePerDependency();
 

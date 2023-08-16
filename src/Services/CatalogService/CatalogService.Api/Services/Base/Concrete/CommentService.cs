@@ -2,11 +2,14 @@
 using CatalogService.Api.Data.Repositories.Dapper.Abstract;
 using CatalogService.Api.Data.Repositories.EntityFramework.Abstract;
 using CatalogService.Api.Entities;
+using CatalogService.Api.Extensions;
 using CatalogService.Api.Models.Base.Concrete;
 using CatalogService.Api.Models.CommentModels;
+using CatalogService.Api.Models.KeyParameterModels;
 using CatalogService.Api.Services.Base.Abstract;
 using CatalogService.Api.Services.MongoDB.Abstract;
 using CatalogService.Api.Utilities.Results;
+using Newtonsoft.Json;
 
 namespace CatalogService.Api.Services.Base.Concrete
 {
@@ -31,6 +34,10 @@ namespace CatalogService.Api.Services.Base.Concrete
 
         public async Task<Result> AddAsync(CommentAddModel entity)
         {
+            var anyForbiddenWords = await this.CheckAnyForbiddenWordsExist(entity.Content);
+            if (anyForbiddenWords)
+                return new ErrorResult("Forbidden words exist, check your content again");
+
             var mappedModel = _mapper.Map<Comment>(entity);
 
             mappedModel.Code = Guid.NewGuid().ToString();
@@ -42,6 +49,10 @@ namespace CatalogService.Api.Services.Base.Concrete
 
         public async Task<Result> UpdateAsync(CommentUpdateModel entity)
         {
+            var anyForbiddenWords = await this.CheckAnyForbiddenWordsExist(entity.Content);
+            if (anyForbiddenWords)
+                return new ErrorResult("Forbidden words exist, check your content again");
+
             var commentExists = await _dapperCommentRepository.GetByCodeAsync(new StringModel(entity.Code));
             if (commentExists.Success && commentExists.Data?.UserId != entity.UserId)
                 return new ErrorResult("Comment user not same");
@@ -110,6 +121,20 @@ namespace CatalogService.Api.Services.Base.Concrete
             var result = await _dapperCommentRepository.GetByCodeAsync(model);
             var resultData = _mapper.Map<DataResult<CommentModel>>(result);
             return resultData;
+        }
+
+        private async Task<bool> CheckAnyForbiddenWordsExist(string content)
+        {
+            string parameter = EnumKeyParameter.ForbiddenCommentWords.GetKeyParameterValue();
+            var forbiddenWordValues = await _keyParameterService.GetByKeyAsync(new StringModel(parameter));
+            if (forbiddenWordValues != null)
+            {
+                var forbiddenWords = forbiddenWordValues.Value.Split(",", StringSplitOptions.TrimEntries);
+                if (forbiddenWords != null && forbiddenWords.Count() > 0)
+                    return content.AnyExistsInList(forbiddenWords);
+            }
+
+            return false;
         }
     }
 }

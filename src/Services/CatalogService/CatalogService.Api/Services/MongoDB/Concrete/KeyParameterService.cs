@@ -6,12 +6,10 @@ using CatalogService.Api.Utilities.Results;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace CatalogService.Api.Services.MongoDB.Concrete;
 
-public class KeyParameterService 
-    : IKeyParameterService<KeyParameter, StringModel>
+public class KeyParameterService : IKeyParameterService
 {
     private readonly IMongoCollection<KeyParameter> _keyParameterCollection;
     private readonly MongoDbSettings _mongoDbSettings;
