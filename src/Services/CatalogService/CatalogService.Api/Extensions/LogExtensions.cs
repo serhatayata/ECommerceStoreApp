@@ -1,6 +1,8 @@
 ﻿using Serilog.Sinks.Elasticsearch;
 using Serilog;
 using System.Reflection;
+using Serilog.Formatting.Compact;
+using Serilog.Formatting.Elasticsearch;
 
 namespace CatalogService.Api.Extensions
 {
@@ -20,9 +22,9 @@ namespace CatalogService.Api.Extensions
             Log.Logger = new LoggerConfiguration()
                             .Enrich.FromLogContext()
                             .Enrich.WithMachineName()
-                            .WriteTo.Debug()
-                            .WriteTo.Console()
-                            .WriteTo.Elasticsearch(ConfigureElasticSink(configuration, env))
+                            .WriteTo.Async(writeTo => writeTo.Console(new Serilog.Formatting.Json.JsonFormatter()))
+                            .WriteTo.Async(writeTo => writeTo.Debug(new RenderedCompactJsonFormatter()))
+                            .WriteTo.Async(writeTo => writeTo.Elasticsearch(ConfigureElasticSink(configuration, env)))
                             .Enrich.WithProperty("Environment", env)
                             .ReadFrom.Configuration(configuration)
                             .CreateLogger();
@@ -35,7 +37,20 @@ namespace CatalogService.Api.Extensions
             return new ElasticsearchSinkOptions(new Uri(connString))
             {
                 AutoRegisterTemplate = true,
-                IndexFormat = $"{Assembly.GetExecutingAssembly()?.GetName()?.Name?.ToLowerInvariant().Replace(".", "-")}-{environment?.ToLowerInvariant().Replace(".", "-")}"
+                IndexFormat = $"{Assembly.GetExecutingAssembly()?.GetName()?.Name?.ToLowerInvariant().Replace(".", "-")}-{environment?.ToLowerInvariant().Replace(".", "-")}",
+                TypeName = null,
+                BatchAction = ElasticOpType.Create,
+                CustomFormatter = new ElasticsearchJsonFormatter(),
+                OverwriteTemplate = true,
+                DetectElasticsearchVersion = true,
+                AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv7,
+                NumberOfReplicas = 1,
+                NumberOfShards = 2,
+                FailureCallback = e => Console.WriteLine("Unable to submit event " + e.MessageTemplate),
+                EmitEventFailure = EmitEventFailureHandling.WriteToSelfLog |
+                                                           EmitEventFailureHandling.WriteToFailureSink |
+                                                           EmitEventFailureHandling.RaiseCallback |
+                                                           EmitEventFailureHandling.ThrowException
             };
         }
     }
