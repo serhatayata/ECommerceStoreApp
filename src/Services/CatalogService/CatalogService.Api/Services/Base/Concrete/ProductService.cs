@@ -147,6 +147,43 @@ namespace CatalogService.Api.Services.Base.Concrete
 
         private string GetProductLink(string linkData, string code) => string.Join("-", linkData, code);
 
+        public async Task<DataResult<IEnumerable<ProductSuggest>?>> SearchSuggest(string index, string name)
+        {
+            var searchResponse = await _elasticSearchService
+                .GetClient()
+                .SearchAsync<ProductElasticModel>(s => s
+                .Index(index)
+                .Suggest(s => s
+                   .Completion("suggestions", c => c
+                      .Field(f => f.NameSuggest)
+                      .Prefix(name)
+                      .Size(5)
+                      .SkipDuplicates()
+                      .Fuzzy(f => f
+                         .Fuzziness(Nest.Fuzziness.EditDistance(2))
+                         .MinLength(4)
+                      )
+                   )
+                )
+            );
+
+            var suggests = new List<ProductSuggest>();
+
+            if (searchResponse?.Suggest.ContainsKey("suggestions") ?? false)
+                suggests = searchResponse.Suggest["suggestions"]
+                                         .SelectMany(s => s.Options)
+                                         .Select(option => new ProductSuggest()
+                                         {
+                                             Id = option.Source.Id,
+                                             Name = option.Source.Name,
+                                             SuggestedName = option.Text,
+                                             Score = option.Score
+                                         })
+                                         .OrderByDescending(o => o.Score)
+                                         .ToList();
+
+            return new DataResult<IEnumerable<ProductSuggest>?>(suggests ?? new List<ProductSuggest>());
+        }
 
         public async Task<Result> CreateElasticIndex(string index)
         {
@@ -187,10 +224,12 @@ namespace CatalogService.Api.Services.Base.Concrete
                      )
                      .Setting(Nest.UpdatableIndexSettings.MaxNGramDiff, 11)
                    )
-                .Map<Product>(m => m
+                .Map<ProductElasticModel>(m => m
+                    .AutoMap()
                     .Properties(p => p
                         .Number(n => n
                             .Name(na => na.Id)
+                            .Type(Nest.NumberType.Integer)
                         )
                         .Text(t => t
                             .Name(n => n.Name)
@@ -200,11 +239,13 @@ namespace CatalogService.Api.Services.Base.Concrete
                             .Name(na => na.Description)
                             .Analyzer("custom_standard")
                         )
-                        .DoubleRange(d => d
+                        .Number(d => d
                             .Name(na => na.Price)
+                            .Type(Nest.NumberType.Double)
                         )
                         .Number(n => n
                             .Name(n => n.AvailableStock)
+                            .Type(Nest.NumberType.Integer)
                         )
                         .Text(l => l
                             .Name(n => n.Link)
@@ -214,11 +255,27 @@ namespace CatalogService.Api.Services.Base.Concrete
                             .Name(n => n.ProductCode)
                             .Analyzer("custom_standard")
                         )
+                        .Number(n => n
+                            .Name(n => n.ProductTypeId)
+                            .Type(Nest.NumberType.Integer)
+                        )
+                        .Number(n => n
+                            .Name(n => n.BrandId)
+                            .Type(Nest.NumberType.Integer)
+                        )
                         .Date(d => d
                             .Name(n => n.CreateDate)
                         )
                         .Date(d => d
                             .Name(n => n.UpdateDate)
+                        )
+                        .Completion(c => c
+                            .Name(comp => comp.NameSuggest)
+                            .Analyzer("simple")
+                            .SearchAnalyzer("simple")
+                            .MaxInputLength(20)
+                            .PreservePositionIncrements()
+                            .PreserveSeparators()
                         )
                     )
                 )

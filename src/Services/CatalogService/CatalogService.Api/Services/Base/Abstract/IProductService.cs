@@ -18,6 +18,7 @@ namespace CatalogService.Api.Services.Base.Abstract
         Task<DataResult<IReadOnlyList<ProductModel>>> GetAllByBrandIdAsync(IntModel model);
         Task<DataResult<IReadOnlyList<ProductModel>>> GetAllByProductTypeIdAsync(IntModel model);
 
+        Task<DataResult<IEnumerable<ProductSuggest>>> SearchSuggest(string index, string name);
         Task<Result> CreateElasticIndex(string index);
     }
 }
