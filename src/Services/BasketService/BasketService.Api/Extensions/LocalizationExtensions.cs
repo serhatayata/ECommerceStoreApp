@@ -84,24 +84,10 @@ namespace BasketService.Api.Extensions
                 if (!redisService.AnyKeyExistsByPrefix(localizationMemberKey, databaseId))
                 {
                     var gatewayClient = httpClientFactory.CreateClient("gateway");
-                    var result = await gatewayClient.PostGetResponseAsync<DataResult<List<ResourceDto>>, StringModel>("localization/members/get-with-resources-by-memberkey-and-save-default", new StringModel() { Value = localizationMemberKey });
+                    var result = await gatewayClient.PostGetResponseAsync<Result, StringModel>("localization/members/get-with-resources-by-memberkey-and-save-default", new StringModel() { Value = localizationMemberKey });
 
                     if (!result?.Success ?? true)
                         throw new Exception("Localization data request not successful");
-
-                    var resultData = result.Data;
-                    if (resultData == null)
-                        throw new Exception("Localization data is null from http request");
-
-                    //MemoryCacheExtensions.SaveLocalizationData(memoryCache, _configuration, resultData);
-
-                    if (redisService.AnyKeyExistsByPrefix(localizationMemberKey, databaseId))
-                        return;
-
-                    foreach (var resource in resultData)
-                    {
-                        await redisService.SetAsync($"{localizationMemberKey}-{resource.LanguageCode}-{resource.Tag}", resource, redisCacheDuration, databaseId);
-                    }
                 }
             });
         }

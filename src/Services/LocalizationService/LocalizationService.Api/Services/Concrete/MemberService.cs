@@ -55,7 +55,7 @@ namespace LocalizationService.Api.Services.Concrete
             return result;
         }
 
-        public async Task<DataResult<List<ResourceCacheModel>>> SaveToDbAsync(StringModel model)
+        public async Task<Result> SaveToDbAsync(StringModel model)
         {
             var duration = _configuration.GetSection("LocalizationCacheSettings:Duration").Get<int>();
             var databaseId = _configuration.GetSection("LocalizationCacheSettings:DatabaseId").Get<int>();
@@ -64,8 +64,8 @@ namespace LocalizationService.Api.Services.Concrete
 
             if (anyExists)
             {
-                var cacheData = _redisService.GetAllByPrefix<ResourceCacheModel>(model.Value, databaseId);
-                return new SuccessDataResult<List<ResourceCacheModel>>(cacheData);
+                //var cacheData = _redisService.GetAllByPrefix<ResourceCacheModel>(model.Value, databaseId);
+                return new SuccessResult("Redis data already exists");
             }
 
             var memberResult = await _unitOfWork.MemberRepository.GetAsync(model);
@@ -98,12 +98,11 @@ namespace LocalizationService.Api.Services.Concrete
                         throw new Exception($"Error redis cache saving : {model.Value}");
                 });
 
-                var result = _mapper.Map<List<ResourceCacheModel>>(data.Resources);
-                return new SuccessDataResult<List<ResourceCacheModel>>(result);
+                return new SuccessResult("Saved to Redis cache successfully");
             }
             else
             {
-                return new ErrorDataResult<List<ResourceCacheModel>>();
+                return new ErrorResult("Not saved to Redis cache");
             }
         }
 
