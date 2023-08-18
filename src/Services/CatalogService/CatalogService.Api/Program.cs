@@ -127,6 +127,10 @@ builder.Services.AddSingleton<IEventBus>(sp =>
     return EventBusFactory.Create(config, sp);
 });
 #endregion
+#region Localization
+await builder.Services.AddLocalizationSettingsAsync(configuration);
+await builder.Services.AddLocalizationDataAsync(configuration);
+#endregion
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
