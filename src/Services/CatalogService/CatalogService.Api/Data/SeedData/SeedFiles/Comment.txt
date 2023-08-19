@@ -1,0 +1,5 @@
+﻿UserId,Content
+123,Çok iyi
+124,Gerçekten kaliteli
+125,Çok ilgili ve kaliteli
+126,Bazı durumlarda hatalı

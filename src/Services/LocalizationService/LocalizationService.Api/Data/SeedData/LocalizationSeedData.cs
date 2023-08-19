@@ -31,12 +31,12 @@ namespace LocalizationService.Api.Data.SeedData
 
             await policy.ExecuteAsync(async () =>
             {
-                logger.LogInformation("Start executing seed data : {ClassName}", nameof(Language));
-
                 await context.Database.MigrateAsync();
 
                 if (!await context.Languages.AnyAsync())
                 {
+                    logger.LogInformation("Start executing seed data : {ClassName}", nameof(Language));
+
                     string languagePath = Path.Combine(seedFilePath, $"{nameof(Language)}.txt");
 
                     var languageList = File.ReadAllLines(languagePath)

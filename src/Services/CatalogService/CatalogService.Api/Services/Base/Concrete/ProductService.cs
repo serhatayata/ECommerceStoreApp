@@ -147,7 +147,79 @@ namespace CatalogService.Api.Services.Base.Concrete
 
         private string GetProductLink(string linkData, string code) => string.Join("-", linkData, code);
 
-        public async Task<DataResult<IEnumerable<ProductSuggest>?>> SearchSuggest(string index, string name)
+        public async Task<DataResult<ProductSearchModel>> SearchAsync(string index, string name, bool includeSuggest = false, bool aggs = false)
+        {
+            var searchResponse = await _elasticSearchService
+                .GetClient()
+                .SearchAsync<ProductElasticModel>(s => s
+                .Index(index)
+                .Query(query => query.
+                    Bool(bo => bo.
+                        Must(mu => mu.
+                            Match(mat => mat.
+                                Field(f => f.Name)))))
+                .Aggregations(ags =>
+                {
+                    if (aggs)
+                    {
+                        return ags
+                         .Min("min_price", m => m.Field(f => f.Price))
+                         .Max("max_price", m => m.Field(f => f.Price))
+                         .Sum("total_available_stock", s => s.Field(f => f.AvailableStock))
+                         .Min("min_available_stock", s => s.Field(f => f.AvailableStock))
+                         .Max("max_available_stock", s => s.Field(f => f.AvailableStock));
+                    }
+
+                    return null;
+                })
+            );
+
+            var suggests = new List<ProductSuggest>();
+
+            if (includeSuggest)
+            {
+                var suggestResponse = await _elasticSearchService
+                    .GetClient()
+                    .SearchAsync<ProductElasticModel>(s => s
+                    .Index(index)
+                    .Suggest(s => s.Completion("suggestions", c => c
+                                      .Field(f => f.NameSuggest)
+                                      .Prefix(name)
+                                      .Size(5)
+                                      .SkipDuplicates()
+                                      .Fuzzy(f => f
+                                        .Fuzziness(Nest.Fuzziness.EditDistance(1))
+                                        .MinLength(4)
+                                      ))));
+
+
+
+                if (suggestResponse?.Suggest.ContainsKey("suggestions") ?? false)
+                    suggests = suggestResponse.Suggest["suggestions"]
+                                             .SelectMany(s => s.Options)
+                                             .Select(option => new ProductSuggest()
+                                             {
+                                                 Id = option.Source.Id,
+                                                 Name = option.Source.Name,
+                                                 SuggestedName = option.Text,
+                                                 Score = option.Score
+                                             })
+                                             .OrderByDescending(o => o.Score)
+                                             .ToList();
+            }
+
+            ProductSearchModel result = new();
+
+            var elasticProducts = searchResponse?.Documents;
+            var products = _mapper.Map<List<ProductModel>>(elasticProducts);
+
+            result.Products = products;
+            result.Suggests = suggests;
+
+            return new DataResult<ProductSearchModel>(result);
+        }
+
+        public async Task<DataResult<IEnumerable<ProductSuggest>?>> SearchSuggestAsync(string index, string name)
         {
             var searchResponse = await _elasticSearchService
                 .GetClient()

@@ -1,0 +1,4 @@
+﻿Name,Description
+test-brand-1,test brand 1 description
+test-brand-2,test brand 2 description
+test-brand-3,test brand 3 description

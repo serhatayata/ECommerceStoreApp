@@ -32,9 +32,7 @@ namespace CatalogService.Api.Controllers.v1
         [ProducesErrorResponseType(typeof(Result))]
         public async Task<IActionResult> AddAsync([FromBody] ProductAddModel model)
         {
-            var addResult = await _productService.CreateElasticIndex("test-elastic");
-
-            var searchResult = await _productService.SearchSuggest("test-elastic", "serhat");
+            var addResult = await _productService.SearchAsync("ecommerce-store-app-product-service-search", "pvoduc", true);
 
             var result = await _productService.AddAsync(model);
             return Ok(result);

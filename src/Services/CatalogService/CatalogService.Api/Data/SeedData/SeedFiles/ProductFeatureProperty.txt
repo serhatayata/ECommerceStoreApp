@@ -1,0 +1,5 @@
+﻿Name,Description
+Product-feature-property-1,product feature property description 1
+Product-feature-property-2,product feature property description 2
+Product-feature-property-3,product feature property description 3
+Product-feature-property-4,product feature property description 4

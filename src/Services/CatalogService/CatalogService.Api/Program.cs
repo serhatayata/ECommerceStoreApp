@@ -1,6 +1,7 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using CatalogService.Api.Data.Contexts;
+using CatalogService.Api.Data.SeedData;
 using CatalogService.Api.DependencyResolvers.Autofac;
 using CatalogService.Api.Extensions;
 using CatalogService.Api.Extensions.Middlewares;
@@ -8,8 +9,12 @@ using CatalogService.Api.Infrastructure.Interceptors;
 using CatalogService.Api.Mapping;
 using CatalogService.Api.Models.CacheModels;
 using CatalogService.Api.Models.Settings;
+using CatalogService.Api.Services.Base.Abstract;
+using CatalogService.Api.Services.Base.Concrete;
 using CatalogService.Api.Services.Cache.Abstract;
 using CatalogService.Api.Services.Cache.Concrete;
+using CatalogService.Api.Services.Elastic.Abstract;
+using CatalogService.Api.Services.Elastic.Concrete;
 using CatalogService.Api.Services.Grpc;
 using CatalogService.Api.Utilities.IoC;
 using CatalogService.Api.Utilities.Options;
@@ -40,6 +45,8 @@ builder.Services.AddLogConfiguration();
 #endregion
 #region Startup DI
 builder.Services.AddSingleton<IRedisService, RedisService>();
+builder.Services.AddSingleton<IElasticSearchService, ElasticSearchService>();
+builder.Services.AddSingleton<IProductService, ProductService>();
 #endregion
 #region Host
 builder.Host.AddHostExtensions(environment);
@@ -50,6 +57,7 @@ builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("Mo
 #endregion
 #region Http
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 #endregion
 #region ServiceTool
 ServiceTool.Create(builder.Services);
@@ -128,8 +136,8 @@ builder.Services.AddSingleton<IEventBus>(sp =>
 });
 #endregion
 #region Localization
-await builder.Services.AddLocalizationSettingsAsync(configuration);
-await builder.Services.AddLocalizationDataAsync(configuration);
+//await builder.Services.AddLocalizationSettingsAsync(configuration);
+//await builder.Services.AddLocalizationDataAsync(configuration);
 #endregion
 
 builder.Services.AddEndpointsApiExplorer();
@@ -170,6 +178,13 @@ if (app.Environment.IsDevelopment())
 
     app.MapGrpcReflectionService();
 }
+
+#region Seed Data
+var seedScope = app.Services.CreateScope();
+var catalogDbContext = seedScope.ServiceProvider.GetService<CatalogDbContext>();
+
+await CatalogSeedData.LoadSeedDataAsync(catalogDbContext, seedScope, environment, configuration);
+#endregion
 
 ConfigureEventBusForSubscription(app);
 

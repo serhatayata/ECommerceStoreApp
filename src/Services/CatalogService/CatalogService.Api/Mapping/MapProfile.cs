@@ -79,7 +79,7 @@ public class MapProfile : Profile
         #endregion
         #endregion
 
-        #region SERVICES
+        #region GENERAL
         CreateMap<BrandModel, Brand>().ReverseMap();
         CreateMap<BrandAddModel, Brand>().ReverseMap();
         CreateMap<BrandUpdateModel, Brand>().ReverseMap();
@@ -106,6 +106,13 @@ public class MapProfile : Profile
         CreateMap<ProductFeaturePropertyAddModel, ProductFeatureProperty>().ReverseMap();
         CreateMap<ProductFeaturePropertyModel, ProductFeatureProperty>().ReverseMap();
         CreateMap<ProductFeaturePropertyUpdateModel, ProductFeatureProperty>().ReverseMap();
+
+        CreateMap<ProductModel, ProductElasticModel>().ReverseMap();
+        CreateMap<Product, ProductElasticModel>()
+            .ForMember(p => p.NameSuggest, opt => opt.MapFrom(s => new Nest.CompletionField()
+            {
+                Input = new List<string>() { s.Name }             
+            }));
         #endregion
     }
 }
