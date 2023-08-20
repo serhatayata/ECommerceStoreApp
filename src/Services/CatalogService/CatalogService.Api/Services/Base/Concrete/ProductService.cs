@@ -107,7 +107,7 @@ namespace CatalogService.Api.Services.Base.Concrete
             }
 
             if (result.Success)
-                this.SendProductUpdateEvent(entity);
+                this.SendProductUpdateEvent(existingProduct.Data);
 
             return result;
         }
@@ -374,7 +374,7 @@ namespace CatalogService.Api.Services.Base.Concrete
 
         private string GetProductLink(string linkData, string code) => string.Join("-", linkData, code);
         
-        private void SendProductUpdateEvent(ProductUpdateModel model)
+        private void SendProductUpdateEvent(Product model)
         {
             var currentEvent = _mapper.Map<ProductUpdatedIntegrationEvent>(model);
             _eventBus.Publish(currentEvent);

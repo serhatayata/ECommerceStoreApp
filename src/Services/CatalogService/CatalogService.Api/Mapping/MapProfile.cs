@@ -115,10 +115,21 @@ public class MapProfile : Profile
             .ForMember(p => p.NameSuggest, opt => opt.MapFrom(s => new Nest.CompletionField()
             {
                 Input = new List<string>() { s.Name }             
-            }));
+            })).ReverseMap();
         #endregion
         #region IntegrationEvent
-        CreateMap<ProductUpdatedIntegrationEvent, ProductElasticModel>().ReverseMap();
+        CreateMap<ProductUpdatedIntegrationEvent, ProductElasticModel>()
+            .ForMember(p => p.NameSuggest, opt => opt.MapFrom(s => new Nest.CompletionField()
+            {
+                Input = new List<string>() { s.Name }
+            }))
+            .ReverseMap();
+
+        CreateMap<Product, ProductUpdatedIntegrationEvent>()
+            .ForMember(p => p.NameSuggest, opt => opt.MapFrom(s => new Nest.CompletionField()
+            {
+                Input = new List<string>() { s.Name }
+            })).ReverseMap();
         #endregion
     }
 }
