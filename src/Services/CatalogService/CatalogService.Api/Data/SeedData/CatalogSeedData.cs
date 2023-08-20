@@ -156,7 +156,6 @@ namespace CatalogService.Api.Data.SeedData
 
                     string productPath = Path.Combine(seedFilePath, $"{nameof(Product)}.txt");
 
-                    var currentCategories = await context.Categories.ToListAsync();
                     var currentBrands = await context.Brands.ToListAsync();
                     var currentProductTypes = await context.ProductTypes.ToListAsync();
 

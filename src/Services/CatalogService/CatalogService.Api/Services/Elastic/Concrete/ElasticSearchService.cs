@@ -111,7 +111,8 @@ namespace CatalogService.Api.Services.Elastic.Concrete
         public async Task<bool> CreateOrUpdateAsync<T>(string index, T document) where T : class
         {
             var indexResponse = await _client.IndexAsync(document, idx => idx.Index(index).OpType(OpType.Index));
-            return indexResponse.IsValid;
+            return indexResponse.Result != Nest.Result.Updated &&
+                   indexResponse.Result != Nest.Result.Created ? false : true;
         }
 
         public async Task<bool> DeleteAsync<T>(string index, string key) where T : class

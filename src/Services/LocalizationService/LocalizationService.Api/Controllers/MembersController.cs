@@ -131,11 +131,11 @@ namespace LocalizationService.Api.Controllers
             var result = await _memberService.SaveToDbAsync(model);
             if (result.Success)
             {
-                var data = new SuccessDataResult<List<ResourceCacheModel>>(result.Data);
+                var data = new SuccessDataResult<List<ResourceCacheModel>>(result);
                 return Ok(data);
             }
 
-            return BadRequest(new ErrorDataResult<List<ResourceCacheModel>>(new List<ResourceCacheModel>()));
+            return BadRequest(new ErrorResult());
         }
 
         [HttpPost]

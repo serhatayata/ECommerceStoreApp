@@ -117,5 +117,8 @@ public class MapProfile : Profile
                 Input = new List<string>() { s.Name }             
             }));
         #endregion
+        #region IntegrationEvent
+        CreateMap<ProductUpdatedIntegrationEvent, ProductElasticModel>().ReverseMap();
+        #endregion
     }
 }

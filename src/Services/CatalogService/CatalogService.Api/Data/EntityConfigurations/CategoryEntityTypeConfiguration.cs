@@ -23,6 +23,8 @@ namespace CatalogService.Api.Data.EntityConfigurations
 
             builder.Property(c => c.CreateDate).HasDefaultValueSql("getdate()");
 
+            builder.Ignore(c => c.Products);
+
             builder.HasOne(b => b.ParentCategory)
                    .WithMany(b => b.SubCategories)
                    .HasForeignKey(b => b.ParentId)

@@ -60,10 +60,18 @@ namespace CatalogService.Api.Entities
         /// <summary>
         /// One to many product features
         /// </summary>
-        public ICollection<ProductFeature> ProductFeatures { get; set; }
+        public virtual ICollection<ProductFeature> ProductFeatures { get; set; }
         /// <summary>
         /// One to many comments
         /// </summary>
-        public ICollection<Comment> Comments { get; set; }
+        public virtual ICollection<Comment> Comments { get; set; }
+        /// <summary>
+        /// One to many categories
+        /// </summary>
+        public virtual ICollection<Category> Categories { get; set; }
+        /// <summary>
+        /// Many to many comments
+        /// </summary>
+        public virtual ICollection<ProductCategory> ProductCategories { get; set; }
     }
 }

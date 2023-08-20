@@ -41,6 +41,7 @@ public class Category : IEntity
     /// </summary>
     public virtual Category ParentCategory { get; set; }
 
-    public virtual ICollection<Product> Products { get; set; }
     public virtual ICollection<Category> SubCategories { get; set; }
+    public virtual ICollection<ProductCategory> ProductCategories { get; set; }
+    public virtual ICollection<Product> Products { get; set; }
 }
