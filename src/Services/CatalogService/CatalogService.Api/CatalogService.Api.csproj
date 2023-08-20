@@ -67,10 +67,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="IntegrationEvents\EventHandling\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\EventBus\EventBus.Factory\EventBus.Factory.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\EventBus\IntegrationEventLogEF\IntegrationEventLogEF.csproj" />
   </ItemGroup>

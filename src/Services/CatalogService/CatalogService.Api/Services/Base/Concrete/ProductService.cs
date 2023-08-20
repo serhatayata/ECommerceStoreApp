@@ -10,6 +10,9 @@ using CatalogService.Api.Models.ProductModels;
 using CatalogService.Api.Services.Base.Abstract;
 using CatalogService.Api.Services.Elastic.Abstract;
 using CatalogService.Api.Utilities.Results;
+using EventBus.Base.Abstraction;
+using Polly;
+using System.Reflection;
 
 namespace CatalogService.Api.Services.Base.Concrete
 {
@@ -21,16 +24,21 @@ namespace CatalogService.Api.Services.Base.Concrete
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
         private readonly ICatalogIntegrationEventService _catalogIntegrationEventService;
+        private readonly IEventBus _eventBus;
+        private readonly ILogger<ProductService> _logger;
 
-        private int _codeLength;
+        private readonly string productSearchIndex;
+        private readonly int codeLength;
 
         public ProductService(
             IEfProductRepository efProductRepository, 
             IDapperProductRepository dapperProductRepository, 
             IElasticSearchService elasticSearchService,
-            IMapper mapper, 
+            IMapper mapper,
             IConfiguration configuration,
-            ICatalogIntegrationEventService catalogIntegrationEventService)
+            ICatalogIntegrationEventService catalogIntegrationEventService,
+            ILogger<ProductService> logger,
+            IEventBus eventBus)
         {
             _efProductRepository = efProductRepository;
             _dapperProductRepository = dapperProductRepository;
@@ -38,15 +46,18 @@ namespace CatalogService.Api.Services.Base.Concrete
             _mapper = mapper;
             _configuration = configuration;
             _catalogIntegrationEventService = catalogIntegrationEventService;
+            _logger = logger;
+            _eventBus = eventBus;
 
-            _codeLength = _configuration.GetValue<int>("ProductCodeGenerationLength");
+            codeLength = _configuration.GetValue<int>("ProductCodeGenerationLength");
+            productSearchIndex = _configuration.GetSection("ElasticSearchIndex:Product:Search").Value ?? string.Empty;
         }
 
         public async Task<Result> AddAsync(ProductAddModel entity)
         {
             var mappedModel = _mapper.Map<Product>(entity);
             // Code generation
-            var code = DataGenerationExtensions.RandomCode(_codeLength);
+            var code = DataGenerationExtensions.RandomCode(codeLength);
             //Code exists
             var productCodeExists = await _efProductRepository.GetAsync(c => c.ProductCode == code);
             if (productCodeExists.Data != null)
@@ -69,7 +80,7 @@ namespace CatalogService.Api.Services.Base.Concrete
 
             if (entity.Name != existingProduct.Data.Name)
             {
-                var code = DataGenerationExtensions.RandomCode(_codeLength);
+                var code = DataGenerationExtensions.RandomCode(codeLength);
                 mappedModel.ProductCode = code;
                 mappedModel.Link = this.GetProductLink(DataGenerationExtensions.GenerateLinkData(entity.Name), code);
             }
@@ -94,6 +105,9 @@ namespace CatalogService.Api.Services.Base.Concrete
                 // Publish and mark the saved event as published
                 await _catalogIntegrationEventService.PublishThroughEventBusAsync(priceChangedEvent);
             }
+
+            if (result.Success)
+                this.SendProductUpdateEvent(entity);
 
             return result;
         }
@@ -145,10 +159,12 @@ namespace CatalogService.Api.Services.Base.Concrete
             return _mapper.Map<DataResult<ProductModel>>(result);
         }
 
-        private string GetProductLink(string linkData, string code) => string.Join("-", linkData, code);
+        
 
-        public async Task<DataResult<ProductSearchModel>> SearchAsync(string index, string name, bool includeSuggest = false, bool aggs = false)
+        public async Task<DataResult<ProductSearchModel>> SearchAsync(string name, bool includeSuggest = false, bool aggs = false)
         {
+            var index = this.productSearchIndex;
+
             var searchResponse = await _elasticSearchService
                 .GetClient()
                 .SearchAsync<ProductElasticModel>(s => s
@@ -354,6 +370,14 @@ namespace CatalogService.Api.Services.Base.Concrete
             );
 
             return new SuccessResult();
+        }
+
+        private string GetProductLink(string linkData, string code) => string.Join("-", linkData, code);
+        
+        private void SendProductUpdateEvent(ProductUpdateModel model)
+        {
+            var currentEvent = _mapper.Map<ProductUpdatedIntegrationEvent>(model);
+            _eventBus.Publish(currentEvent);
         }
     }
 }

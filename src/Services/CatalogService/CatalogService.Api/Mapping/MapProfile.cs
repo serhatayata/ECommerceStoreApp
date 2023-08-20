@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CatalogService.Api.Entities;
+using CatalogService.Api.IntegrationEvents.Events;
 using CatalogService.Api.Models.Base.Concrete;
 using CatalogService.Api.Models.BrandModels;
 using CatalogService.Api.Models.CategoryModels;
@@ -107,7 +108,9 @@ public class MapProfile : Profile
         CreateMap<ProductFeaturePropertyModel, ProductFeatureProperty>().ReverseMap();
         CreateMap<ProductFeaturePropertyUpdateModel, ProductFeatureProperty>().ReverseMap();
 
+        CreateMap<ProductUpdatedIntegrationEvent, ProductUpdateModel>().ReverseMap();
         CreateMap<ProductModel, ProductElasticModel>().ReverseMap();
+        CreateMap<ProductUpdateModel, ProductElasticModel>().ReverseMap();
         CreateMap<Product, ProductElasticModel>()
             .ForMember(p => p.NameSuggest, opt => opt.MapFrom(s => new Nest.CompletionField()
             {

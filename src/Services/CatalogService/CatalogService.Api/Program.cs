@@ -6,6 +6,8 @@ using CatalogService.Api.DependencyResolvers.Autofac;
 using CatalogService.Api.Extensions;
 using CatalogService.Api.Extensions.Middlewares;
 using CatalogService.Api.Infrastructure.Interceptors;
+using CatalogService.Api.IntegrationEvents.EventHandling;
+using CatalogService.Api.IntegrationEvents.Events;
 using CatalogService.Api.Mapping;
 using CatalogService.Api.Models.CacheModels;
 using CatalogService.Api.Models.Settings;
@@ -26,6 +28,7 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.EntityFrameworkCore;
 using RabbitMQ.Client;
 using System.Reflection;
+using static IdentityModel.OidcConstants;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
@@ -160,7 +163,6 @@ app.MapGrpcService<GrpcFeatureService>();
 app.MapGrpcService<GrpcProductService>();
 
 app.UseResponseTimeMiddleware();
-
 app.MapControllers();
 
 if (app.Environment.IsDevelopment())
@@ -184,6 +186,10 @@ var seedScope = app.Services.CreateScope();
 var catalogDbContext = seedScope.ServiceProvider.GetService<CatalogDbContext>();
 
 await CatalogSeedData.LoadSeedDataAsync(catalogDbContext, seedScope, environment, configuration);
+#endregion
+#region Event
+var eventBus = app.Services.GetRequiredService<IEventBus>();
+eventBus.Subscribe<ProductUpdatedIntegrationEvent, ProductUpdatedIntegrationEventHandler>();
 #endregion
 
 ConfigureEventBusForSubscription(app);
