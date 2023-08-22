@@ -81,4 +81,8 @@
     <Protobuf Include="google\api\money.proto" GrpcServices="Server" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="IntegrationEvents\Events\DeadLetter\" />
+  </ItemGroup>
+
 </Project>

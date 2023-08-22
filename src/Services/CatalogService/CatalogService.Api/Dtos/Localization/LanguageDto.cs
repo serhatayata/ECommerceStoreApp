@@ -1,4 +1,6 @@
-﻿namespace CatalogService.Api.Dtos.Localization;
+﻿using Newtonsoft.Json;
+
+namespace CatalogService.Api.Dtos.Localization;
 
 public class LanguageDto
 {

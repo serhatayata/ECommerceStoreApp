@@ -18,6 +18,8 @@ using CatalogService.Api.Services.Cache.Concrete;
 using CatalogService.Api.Services.Elastic.Abstract;
 using CatalogService.Api.Services.Elastic.Concrete;
 using CatalogService.Api.Services.Grpc;
+using CatalogService.Api.Services.Token.Abstract;
+using CatalogService.Api.Services.Token.Concrete;
 using CatalogService.Api.Utilities.IoC;
 using CatalogService.Api.Utilities.Options;
 using EventBus.Base;
@@ -50,6 +52,7 @@ builder.Services.AddLogConfiguration();
 builder.Services.AddSingleton<IRedisService, RedisService>();
 builder.Services.AddSingleton<IElasticSearchService, ElasticSearchService>();
 builder.Services.AddSingleton<IProductService, ProductService>();
+builder.Services.AddTransient<IClientCredentialsTokenService, ClientCredentialsTokenService>();
 #endregion
 #region Host
 builder.Host.AddHostExtensions(environment);
@@ -61,6 +64,7 @@ builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("Mo
 #region Http
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddHttpClients(configuration);
 #endregion
 #region ServiceTool
 ServiceTool.Create(builder.Services);
@@ -139,8 +143,8 @@ builder.Services.AddSingleton<IEventBus>(sp =>
 });
 #endregion
 #region Localization
-//await builder.Services.AddLocalizationSettingsAsync(configuration);
-//await builder.Services.AddLocalizationDataAsync(configuration);
+await builder.Services.AddLocalizationSettingsAsync(configuration);
+await builder.Services.AddLocalizationDataAsync(configuration);
 #endregion
 
 builder.Services.AddEndpointsApiExplorer();

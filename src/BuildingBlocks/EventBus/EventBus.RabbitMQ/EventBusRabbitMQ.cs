@@ -1,6 +1,8 @@
 ﻿using EventBus.Base;
+using EventBus.Base.Attributes;
 using EventBus.Base.Events;
 using Microsoft.Extensions.Logging;
+using Nest;
 using Newtonsoft.Json;
 using Polly;
 using RabbitMQ.Client;
@@ -85,7 +87,15 @@ namespace EventBus.RabbitMQ
             var eventName = @event.GetType().Name;
             eventName = ProcessEventName(eventName);
 
-            consumerChannel.ExchangeDeclare(exchange: EventBusConfig.DefaultTopicName, type: "direct"); // Ensure exchange exists while publishing
+            consumerChannel.ExchangeDeclare(exchange: EventBusConfig.DefaultTopicName, type: ExchangeType.Direct); // Ensure exchange exists while publishing
+
+            var deadLetterAttributeExists = Attribute.GetCustomAttribute(@event.GetType(), typeof(DeadLetterAttribute));
+            if (deadLetterAttributeExists != null)
+            {
+                var dlExchange = EventBusConfig.DeadLetterExchange;
+
+                consumerChannel.ExchangeDeclare(exchange: dlExchange, type: ExchangeType.Fanout);
+            }
 
             var message = JsonConvert.SerializeObject(@event);
             var body = Encoding.UTF8.GetBytes(message);
@@ -127,19 +137,49 @@ namespace EventBus.RabbitMQ
             if (!SubsManager.HasSubscriptionsForEvent(eventName))
             {
                 if (!persistentConnection.IsConnected)
-                {
                     persistentConnection.TryConnect();
-                }
+
+                string subName = GetSubName(eventName);
+
+                var dlExchange = EventBusConfig.DeadLetterExchange;
+                var dlQueue = subName + EventBusConfig.DeadLetterQueueSuffix;
+                var dlRoutingKey = eventName + EventBusConfig.DeadLetterRoutingSuffix;
+
+                var deadLetterAttributeExists = Attribute.GetCustomAttribute(typeof(T), typeof(DeadLetterAttribute));
 
                 consumerChannel.QueueDeclare(queue: GetSubName(eventName), // Ensure queue exists while consuming
                                      durable: true,
                                      exclusive: false,
                                      autoDelete: false,
-                                     arguments: null);
+                                     arguments: deadLetterAttributeExists != null ? new Dictionary<string, object>
+                                     {
+                                         {"x-dead-letter-exchange", dlExchange},
+                                         {"x-dead-letter-routing-key", dlQueue}
+                                     } : null);
 
-                consumerChannel.QueueBind(queue: GetSubName(eventName),
+                consumerChannel.QueueBind(queue: subName,
                                   exchange: EventBusConfig.DefaultTopicName,
                                   routingKey: eventName);
+
+                if (deadLetterAttributeExists != null)
+                {
+                    consumerChannel.QueueDeclare(
+                        queue: dlQueue,
+                        durable: true,
+                        exclusive: false,
+                        autoDelete: false,
+                        new Dictionary<string, object>
+                        {
+                            { "x-dead-letter-exchange", subName },
+                            { "x-message-ttl", 30000 },
+                        }
+                    );
+
+                    consumerChannel.QueueBind(
+                        queue: dlQueue,
+                        exchange: dlExchange,
+                        routingKey: dlRoutingKey);
+                }
             }
 
             SubsManager.AddSubscription<T, TH>();
@@ -167,8 +207,10 @@ namespace EventBus.RabbitMQ
 
             var channel = persistentConnection.CreateModel();
 
-            channel.ExchangeDeclare(exchange: EventBusConfig.DefaultTopicName,
-                                    type: "direct");
+            channel.ExchangeDeclare(exchange: EventBusConfig.DefaultTopicName, 
+                                    type: ExchangeType.Direct);
+            channel.ExchangeDeclare(exchange: EventBusConfig.DeadLetterExchange, 
+                                    type: ExchangeType.Fanout);
 
             return channel;
         }
@@ -203,9 +245,15 @@ namespace EventBus.RabbitMQ
                 logger.LogError(ex, "ERROR handling message: {ExceptionMessage} - Method : {ClassName}.{MethodName}",
                                 ex.Message, nameof(EventBusRabbitMQ),
                                 MethodBase.GetCurrentMethod()?.Name);
+
+                consumerChannel.BasicNack(deliveryTag: eventArgs.DeliveryTag, 
+                                          multiple: false, 
+                                          requeue: false);
+
+                return;
             }
 
-            consumerChannel.BasicAck(eventArgs.DeliveryTag, multiple: false);
+            consumerChannel.BasicAck(deliveryTag: eventArgs.DeliveryTag, multiple: false);
         }
         #endregion
     }

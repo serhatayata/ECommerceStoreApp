@@ -4,6 +4,9 @@
     {
         public int ConnectionRetryCount { get; set; } = 5;
         public string DefaultTopicName { get; set; } = "ECommerceStore";
+        public string DeadLetterQueueSuffix { get; set; } = "DeadLetter";
+        public string DeadLetterExchange { get; set; } = "ECommerceStore-DeadLetter";
+        public string DeadLetterRoutingSuffix { get; set; } = "-Retry.Routing";
         public string EventBusConnectionString { get; set; } = String.Empty;
         public string SubscriberClientAppName { get; set; } = String.Empty;
         public string EventNamePrefix { get; set; } = String.Empty;
