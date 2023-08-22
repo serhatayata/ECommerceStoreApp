@@ -12,6 +12,7 @@ using CatalogService.Api.Utilities.Validations.FluentValidation.FeatureValidator
 using CatalogService.Api.Utilities.Validations.FluentValidation.ProductValidators;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using CatalogService.Api.Utilities.Providers;
+using CatalogService.Api.Services.Localization.Concrete;
 
 namespace CatalogService.Api.Extensions
 {
@@ -23,6 +24,7 @@ namespace CatalogService.Api.Extensions
             {
                 options.Filters.Add(typeof(FluentValidationCustomValidationAttribute));
                 options.Filters.Add(typeof(HttpGlobalExceptionFilter));
+
                 options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
             }).AddJsonOptions(o =>
             {
@@ -86,7 +88,10 @@ namespace CatalogService.Api.Extensions
             services.AddValidatorsFromAssemblyContaining<ProductUpdateModelValidator>();
             #endregion
 
-            services.AddFluentValidationAutoValidation();
+            services.AddFluentValidationAutoValidation(f =>
+            {
+                f.DisableDataAnnotationsValidation = true;
+            });
             //services.AddFluentValidationClientsideAdapters(); // for client side
         }
     }

@@ -1,14 +1,17 @@
-﻿using CatalogService.Api.Models.Base.Concrete;
+﻿using CatalogService.Api.Extensions;
+using CatalogService.Api.Models.Base.Concrete;
+using CatalogService.Api.Services.Localization.Abstract;
 using FluentValidation;
 
-namespace CatalogService.Api.Utilities.Validations.FluentValidation.Base
+namespace CatalogService.Api.Utilities.Validations.FluentValidation.Base;
+
+public class StringModelValidator : AbstractValidator<StringModel>
 {
-    public class StringModelValidator : AbstractValidator<StringModel>
+    public StringModelValidator(ILocalizationService localizer,
+                                IHttpContextAccessor httpContextAccessor)
     {
-        public StringModelValidator()
-        {
-            RuleFor(b => b.Value).NotEmpty().WithMessage("Value cannot be empty");
-            RuleFor(b => b.Value).NotNull().WithMessage("Value cannot be null");
-        }
+        string culture = HttpExtensions.GetAcceptLanguage(httpContextAccessor);
+
+        RuleFor(b => b.Value).NotEmpty().NotNull().WithMessage(localizer[culture, "stringmodel.value.notempty"]);
     }
 }

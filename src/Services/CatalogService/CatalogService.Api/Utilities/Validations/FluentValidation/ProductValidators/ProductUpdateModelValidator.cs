@@ -1,25 +1,30 @@
-﻿using CatalogService.Api.Models.ProductModels;
+﻿using CatalogService.Api.Extensions;
+using CatalogService.Api.Models.ProductModels;
+using CatalogService.Api.Services.Localization.Abstract;
 using FluentValidation;
 
 namespace CatalogService.Api.Utilities.Validations.FluentValidation.ProductValidators
 {
     public class ProductUpdateModelValidator : AbstractValidator<ProductUpdateModel>
     {
-        public ProductUpdateModelValidator()
+        public ProductUpdateModelValidator(ILocalizationService localizer,
+                                           IHttpContextAccessor httpContextAccessor)
         {
-            RuleFor(b => b.Id).NotEmpty().NotNull().WithMessage("Id cannot be empty");
-            RuleFor(b => b.Id).GreaterThan(0).WithMessage("Id must be greater than 0");
+            string culture = HttpExtensions.GetAcceptLanguage(httpContextAccessor);
 
-            RuleFor(b => b.Name).NotEmpty().NotNull().WithMessage("Name cannot be empty");
-            RuleFor(b => b.Name).Length(2, 100).WithMessage("Name must be greater than 0");
+            RuleFor(b => b.Id).NotEmpty().NotNull().WithMessage(localizer[culture, "productupdatemodel.id.notempty"]);
+            RuleFor(b => b.Id).GreaterThan(0).WithMessage(localizer[culture, "productupdatemodel.name.greaterthan", 0]);
 
-            RuleFor(b => b.Description).NotEmpty().NotNull().WithMessage("Description cannot be empty");
-            RuleFor(b => b.Description).Length(2, 1000).WithMessage("Description must be greater than 0");
+            RuleFor(b => b.Name).NotEmpty().NotNull().WithMessage(localizer[culture, "productupdatemodel.name.notempty"]);
+            RuleFor(b => b.Name).Length(2, 100).WithMessage(localizer[culture, "productupdatemodel.name.length", 2, 100]);
 
-            RuleFor(b => b.Price).NotEmpty().NotNull().WithMessage("Price cannot be empty");
-            RuleFor(b => b.Price).PrecisionScale(8, 2, true).WithMessage("Price cannot have more than 8 numbers");
+            RuleFor(b => b.Description).NotEmpty().NotNull().WithMessage(localizer[culture, "productupdatemodel.description.notempty"]);
+            RuleFor(b => b.Description).Length(2, 1000).WithMessage(localizer[culture, "productupdatemodel.description.length", 2, 1000]);
 
-            RuleFor(b => b.AvailableStock).NotEmpty().NotNull().WithMessage("Available stock cannot be empty");
+            RuleFor(b => b.Price).NotEmpty().NotNull().WithMessage(localizer[culture, "productupdatemodel.price.notempty"]);
+            RuleFor(b => b.Price).PrecisionScale(8, 2, true).WithMessage(localizer[culture, "productupdatemodel.price.precision", 8, 2]);
+
+            RuleFor(b => b.AvailableStock).NotEmpty().NotNull().WithMessage(localizer[culture, "productupdatemodel.availablestock.notempty"]);
         }
     }
 }

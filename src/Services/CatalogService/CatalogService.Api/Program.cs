@@ -143,8 +143,12 @@ builder.Services.AddSingleton<IEventBus>(sp =>
 });
 #endregion
 #region Localization
-await builder.Services.AddLocalizationSettingsAsync(configuration);
-await builder.Services.AddLocalizationDataAsync(configuration);
+// DAHA SONRA DUZENLENECEK UZUN SURUYOR DIYE EKLENDI
+if (environment.IsProduction())
+{
+    await builder.Services.AddLocalizationSettingsAsync(configuration);
+    await builder.Services.AddLocalizationDataAsync(configuration);
+}
 #endregion
 
 builder.Services.AddEndpointsApiExplorer();

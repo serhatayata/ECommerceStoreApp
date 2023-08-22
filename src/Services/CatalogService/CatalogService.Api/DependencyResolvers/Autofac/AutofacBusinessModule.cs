@@ -13,8 +13,11 @@ using CatalogService.Api.Services.Base.Abstract;
 using CatalogService.Api.Services.Base.Concrete;
 using CatalogService.Api.Services.Elastic.Abstract;
 using CatalogService.Api.Services.Elastic.Concrete;
+using CatalogService.Api.Services.Localization.Abstract;
+using CatalogService.Api.Services.Localization.Concrete;
 using CatalogService.Api.Services.MongoDB.Abstract;
 using CatalogService.Api.Services.MongoDB.Concrete;
+using FluentValidation.Resources;
 using IntegrationEventLogEF.Services;
 
 namespace CatalogService.Api.DependencyResolvers.Autofac
@@ -50,6 +53,8 @@ namespace CatalogService.Api.DependencyResolvers.Autofac
             builder.RegisterType<CommentService>().As<ICommentService>().InstancePerDependency();
             builder.RegisterType<FeatureService>().As<IFeatureService>().InstancePerDependency();
             builder.RegisterType<ProductService>().As<IProductService>().InstancePerDependency();
+
+            builder.RegisterType<LocalizationService>().As<ILocalizationService>().InstancePerLifetimeScope();
 
             builder.RegisterType<KeyParameterService>().As<IKeyParameterService>().SingleInstance();
 

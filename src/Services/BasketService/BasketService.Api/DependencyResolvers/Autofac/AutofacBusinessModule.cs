@@ -20,7 +20,7 @@ namespace BasketService.Api.DependencyResolvers.Autofac
             #region Services
             builder.RegisterType<RedisService>().As<IRedisService>().SingleInstance();
             builder.RegisterType<IdentityService>().As<IIdentityService>().SingleInstance();
-            builder.RegisterType<LocalizationService>().As<ILocalizationService>().SingleInstance();
+            builder.RegisterType<LocalizationService>().As<ILocalizationService>().InstancePerLifetimeScope();
             #endregion
             #region Repositories
             builder.RegisterType<BasketRepository>().As<IBasketRepository>().InstancePerDependency();
