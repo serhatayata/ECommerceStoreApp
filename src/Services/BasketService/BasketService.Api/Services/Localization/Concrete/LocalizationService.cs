@@ -106,13 +106,10 @@ namespace BasketService.Api.Services.Localization.Concrete
                 await policy.ExecuteAsync(async () =>
                 {
                     var gatewayClient = _httpClientFactory.CreateClient("gateway-specific");
-                    var result = await gatewayClient.PostGetResponseAsync<DataResult<List<ResourceDto>>, StringModel>("localization/members/get-with-resources-by-memberkey-and-save", new StringModel() { Value = _localizationMemberKey });
+                    var result = await gatewayClient.PostGetResponseAsync<Result, StringModel>("localization/members/get-with-resources-by-memberkey-and-save-default", new StringModel() { Value = _localizationMemberKey });
 
                     if (result == null || (!result?.Success ?? false))
                         throw new Exception("Localization data request not successful");
-
-                    foreach (var resource in result?.Data ?? new List<ResourceDto>())
-                        await _redisService.SetAsync($"{_localizationMemberKey}-{resource.LanguageCode}-{resource.Tag}", resource, _redisCacheDuration, _databaseId);
 
                     //MemoryCacheExtensions.SaveLocalizationData(memoryCache: _memoryCache,
                     //                                           configuration: _configuration,

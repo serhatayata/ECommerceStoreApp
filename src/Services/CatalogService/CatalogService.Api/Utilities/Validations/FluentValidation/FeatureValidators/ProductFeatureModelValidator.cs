@@ -1,17 +1,22 @@
-﻿using CatalogService.Api.Models.FeatureModels;
+﻿using CatalogService.Api.Extensions;
+using CatalogService.Api.Models.FeatureModels;
+using CatalogService.Api.Services.Localization.Abstract;
 using FluentValidation;
 
 namespace CatalogService.Api.Utilities.Validations.FluentValidation.FeatureValidators
 {
     public class ProductFeatureModelValidator : AbstractValidator<ProductFeatureModel>
     {
-        public ProductFeatureModelValidator()
+        public ProductFeatureModelValidator(ILocalizationService localizer,
+                                            IHttpContextAccessor httpContextAccessor)
         {
-            RuleFor(b => b.FeatureId).NotEmpty().NotNull().WithMessage("Feature Id cannot be empty");
-            RuleFor(b => b.FeatureId).GreaterThan(0).WithMessage("Feature Id must be greater than 0");
+            string culture = HttpExtensions.GetAcceptLanguage(httpContextAccessor);
 
-            RuleFor(b => b.ProductId).NotEmpty().NotNull().WithMessage("Product Id cannot be empty");
-            RuleFor(b => b.ProductId).GreaterThan(0).WithMessage("Product Id must be greater than 0");
+            RuleFor(b => b.FeatureId).NotEmpty().NotNull().WithMessage(localizer[culture, "productfeaturemodel.featureid.notempty"]);
+            RuleFor(b => b.FeatureId).GreaterThan(0).WithMessage(localizer[culture, "productfeaturemodel.featureid.greater", 0]);
+
+            RuleFor(b => b.ProductId).NotEmpty().NotNull().WithMessage(localizer[culture, "productfeaturemodel.productid.notempty"]);
+            RuleFor(b => b.ProductId).GreaterThan(0).WithMessage(localizer[culture, "productfeaturemodel.productid.notempty", 0]);
         }
     }
 }

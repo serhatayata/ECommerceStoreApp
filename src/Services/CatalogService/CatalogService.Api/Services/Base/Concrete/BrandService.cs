@@ -5,11 +5,12 @@ using CatalogService.Api.Entities;
 using CatalogService.Api.Models.Base.Concrete;
 using CatalogService.Api.Models.BrandModels;
 using CatalogService.Api.Services.Base.Abstract;
+using CatalogService.Api.Services.Localization.Abstract;
 using CatalogService.Api.Utilities.Results;
 
 namespace CatalogService.Api.Services.Base.Concrete
 {
-    public class BrandService : IBrandService
+    public class BrandService : BaseService, IBrandService
     {
         private readonly IEfBrandRepository _efBrandRepository;
         private readonly IDapperBrandRepository _dapperBrandRepository;
@@ -18,7 +19,10 @@ namespace CatalogService.Api.Services.Base.Concrete
         public BrandService(
             IEfBrandRepository efBrandRepository, 
             IDapperBrandRepository dapperBrandRepository, 
-            IMapper mapper)
+            IMapper mapper,
+            ILocalizationService localizationService,
+            IHttpContextAccessor httpContextAccessor) 
+            : base (localizationService, httpContextAccessor)
         {
             _efBrandRepository = efBrandRepository;
             _dapperBrandRepository = dapperBrandRepository;
@@ -28,7 +32,7 @@ namespace CatalogService.Api.Services.Base.Concrete
         public async Task<Result> AddAsync(BrandAddModel model)
         {
             var mappedModel = _mapper.Map<Brand>(model);
-
+            var x = this.GetLocalizedValue("test");
             //Same name check
             var nameExists = await _efBrandRepository.GetAsync(b => b.Name == model.Name);
             if (nameExists.Success)

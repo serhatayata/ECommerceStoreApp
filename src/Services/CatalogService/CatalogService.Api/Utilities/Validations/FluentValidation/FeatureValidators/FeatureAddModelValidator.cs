@@ -1,14 +1,19 @@
-﻿using CatalogService.Api.Models.FeatureModels;
+﻿using CatalogService.Api.Extensions;
+using CatalogService.Api.Models.FeatureModels;
+using CatalogService.Api.Services.Localization.Abstract;
 using FluentValidation;
 
 namespace CatalogService.Api.Utilities.Validations.FluentValidation.FeatureValidators
 {
     public class FeatureAddModelValidator : AbstractValidator<FeatureAddModel>
     {
-        public FeatureAddModelValidator()
+        public FeatureAddModelValidator(ILocalizationService localizer,
+                                        IHttpContextAccessor httpContextAccessor)
         {
-            RuleFor(b => b.Name).NotEmpty().NotNull().WithMessage("Name cannot be empty");
-            RuleFor(b => b.Name).Length(2, 100).WithMessage("Name must be greater than 0");
+            string culture = HttpExtensions.GetAcceptLanguage(httpContextAccessor);
+
+            RuleFor(b => b.Name).NotEmpty().NotNull().WithMessage(localizer[culture, "featureaddmodel.name.notempty"]);
+            RuleFor(b => b.Name).Length(2, 100).WithMessage(localizer[culture, "featureaddmodel.name.length", 2, 100]);
         }
     }
 }

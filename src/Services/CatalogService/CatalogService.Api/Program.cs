@@ -150,6 +150,9 @@ if (environment.IsProduction())
     await builder.Services.AddLocalizationDataAsync(configuration);
 }
 #endregion
+#region ServiceTool
+ServiceTool.Create(builder.Services);
+#endregion
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
