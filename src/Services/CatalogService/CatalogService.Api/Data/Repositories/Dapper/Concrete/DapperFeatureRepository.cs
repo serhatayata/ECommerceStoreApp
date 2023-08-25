@@ -1,18 +1,20 @@
 ﻿using CatalogService.Api.Data.Contexts;
 using CatalogService.Api.Data.Contexts.Connections.Abstract;
+using CatalogService.Api.Data.Repositories.Base;
 using CatalogService.Api.Data.Repositories.Dapper.Abstract;
 using CatalogService.Api.Entities;
 using CatalogService.Api.Models.Base.Concrete;
 using CatalogService.Api.Models.FeatureModels;
 using CatalogService.Api.Utilities.Results;
 using Dapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
 using Result = CatalogService.Api.Utilities.Results.Result;
 
 namespace CatalogService.Api.Data.Repositories.Dapper.Concrete;
 
-public class DapperFeatureRepository : IDapperFeatureRepository
+public class DapperFeatureRepository : BaseRepository, IDapperFeatureRepository
 {
     private readonly ICatalogDbContext _dbContext;
     private readonly ICatalogReadDbConnection _readDbConnection;
@@ -25,7 +27,9 @@ public class DapperFeatureRepository : IDapperFeatureRepository
 
     public DapperFeatureRepository(ICatalogDbContext dbContext,
                                    ICatalogReadDbConnection readDbConnection,
-                                   ICatalogWriteDbConnection writeDbConnection)
+                                   ICatalogWriteDbConnection writeDbConnection,
+                                   IHttpContextAccessor httpContextAccessor)
+        : base(httpContextAccessor)
     {
         _dbContext = dbContext;
         _readDbConnection = readDbConnection;
@@ -54,10 +58,10 @@ public class DapperFeatureRepository : IDapperFeatureRepository
                                                                               Name = entity.Name
                                                                           });
             if (featureId == 0)
-                return new ErrorResult("Feature not added");
+                return new ErrorResult(this.GetLocalizedValue("dapper.featurepository.add.notadded"));
 
             transaction.Commit();
-            return new SuccessResult();
+            return new SuccessResult(this.GetLocalizedValue("dapper.featurepository.add.added"));
         }
         catch (Exception ex)
         {
@@ -87,7 +91,9 @@ public class DapperFeatureRepository : IDapperFeatureRepository
 
             transaction.Commit();
 
-            return result > 0 ? new SuccessResult() : new ErrorResult("Feature not deleted");
+            return result > 0 ? 
+                new SuccessResult(this.GetLocalizedValue("dapper.featurepository.delete.deleted")) : 
+                new ErrorResult(this.GetLocalizedValue("dapper.featurepository.delete.notdeleted"));
         }
         catch (Exception ex)
         {
@@ -124,7 +130,9 @@ public class DapperFeatureRepository : IDapperFeatureRepository
 
             transaction.Commit();
 
-            return result > 0 ? new SuccessResult() : new ErrorResult("Member not added");
+            return result > 0 ? 
+                new SuccessResult(this.GetLocalizedValue("dapper.featurepository.update.updated")) : 
+                new ErrorResult(this.GetLocalizedValue("dapper.featurepository.update.notupdated"));
         }
         catch (Exception ex)
         {
@@ -168,10 +176,10 @@ public class DapperFeatureRepository : IDapperFeatureRepository
                                                                                         FeatureId = entity.FeatureId
                                                                                     });
             if (productFeatureId == 0)
-                return new ErrorResult("Product feature not added");
+                return new ErrorResult(this.GetLocalizedValue("dapper.featurepository.add.productfeature.notadded"));
 
             transaction.Commit();
-            return new SuccessResult();
+            return new SuccessResult(this.GetLocalizedValue("dapper.featurepository.add.productfeature.added"));
         }
         catch (Exception ex)
         {
@@ -219,10 +227,10 @@ public class DapperFeatureRepository : IDapperFeatureRepository
                                                                                         Description = entity.Description
                                                                                     });
             if (productFeaturePropertyId == 0)
-                return new ErrorResult("Product feature property not added");
+                return new ErrorResult(this.GetLocalizedValue("dapper.featurepository.add.productfeatureproperty.notadded"));
 
             transaction.Commit();
-            return new SuccessResult();
+            return new SuccessResult(this.GetLocalizedValue("dapper.featurepository.add.productfeatureproperty.added"));
         }
         catch (Exception ex)
         {
@@ -266,7 +274,9 @@ public class DapperFeatureRepository : IDapperFeatureRepository
 
             transaction.Commit();
 
-            return result > 0 ? new SuccessResult() : new ErrorResult("Product feature not deleted");
+            return result > 0 ? 
+                new SuccessResult(this.GetLocalizedValue("dapper.featurepository.delete.productfeature.deleted")) : 
+                new ErrorResult(this.GetLocalizedValue("dapper.featurepository.delete.productfeature.notdeleted"));
         }
         catch (Exception ex)
         {
@@ -310,7 +320,9 @@ public class DapperFeatureRepository : IDapperFeatureRepository
 
             transaction.Commit();
 
-            return result > 0 ? new SuccessResult() : new ErrorResult("Product feature property not deleted");
+            return result > 0 ? 
+                new SuccessResult(this.GetLocalizedValue("dapper.featurepository.delete.productfeatureproperty.deleted")) : 
+                new ErrorResult(this.GetLocalizedValue("dapper.featurepository.delete.productfeatureproperty.notdeleted"));
         }
         catch (Exception ex)
         {

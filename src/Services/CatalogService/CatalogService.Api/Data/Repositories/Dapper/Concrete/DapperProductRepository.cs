@@ -1,12 +1,14 @@
 ﻿using AutoMapper.Features;
 using CatalogService.Api.Data.Contexts;
 using CatalogService.Api.Data.Contexts.Connections.Abstract;
+using CatalogService.Api.Data.Repositories.Base;
 using CatalogService.Api.Data.Repositories.Dapper.Abstract;
 using CatalogService.Api.Entities;
 using CatalogService.Api.Models.Base.Concrete;
 using CatalogService.Api.Models.ProductModels;
 using CatalogService.Api.Utilities.Results;
 using Dapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Nest;
 using System.Data.Common;
@@ -14,7 +16,7 @@ using Result = CatalogService.Api.Utilities.Results.Result;
 
 namespace CatalogService.Api.Data.Repositories.Dapper.Concrete;
 
-public class DapperProductRepository : IDapperProductRepository
+public class DapperProductRepository : BaseRepository, IDapperProductRepository
 {
     private readonly ICatalogDbContext _dbContext;
     private readonly ICatalogReadDbConnection _readDbConnection;
@@ -27,7 +29,9 @@ public class DapperProductRepository : IDapperProductRepository
 
     public DapperProductRepository(ICatalogDbContext dbContext, 
                                    ICatalogReadDbConnection readDbConnection, 
-                                   ICatalogWriteDbConnection writeDbConnection)
+                                   ICatalogWriteDbConnection writeDbConnection,
+                                   IHttpContextAccessor httpContextAccessor)
+        : base(httpContextAccessor)
     {
         _dbContext = dbContext;
         _readDbConnection = readDbConnection;
@@ -65,10 +69,10 @@ public class DapperProductRepository : IDapperProductRepository
                                                                               UpdateDate = entity.UpdateDate
                                                                           });
             if (productId == 0)
-                return new ErrorResult("Product not added");
+                return new ErrorResult(this.GetLocalizedValue("dapper.productpository.add.notadded"));
 
             transaction.Commit();
-            return new SuccessResult();
+            return new SuccessResult(this.GetLocalizedValue("dapper.productpository.add.added"));
         }
         catch (Exception ex)
         {
@@ -98,7 +102,9 @@ public class DapperProductRepository : IDapperProductRepository
 
             transaction.Commit();
 
-            return result > 0 ? new SuccessResult() : new ErrorResult("Product not deleted");
+            return result > 0 ? 
+                new SuccessResult(this.GetLocalizedValue("dapper.productpository.delete.deleted")) : 
+                new ErrorResult(this.GetLocalizedValue("dapper.productpository.delete.notdeleted"));
         }
         catch (Exception ex)
         {
@@ -142,7 +148,9 @@ public class DapperProductRepository : IDapperProductRepository
 
             transaction.Commit();
 
-            return result > 0 ? new SuccessResult() : new ErrorResult("Product not updated");
+            return result > 0 ? 
+                new SuccessResult(this.GetLocalizedValue("dapper.productpository.update.updated")) : 
+                new ErrorResult(this.GetLocalizedValue("dapper.productpository.update.notupdated"));
         }
         catch (Exception ex)
         {

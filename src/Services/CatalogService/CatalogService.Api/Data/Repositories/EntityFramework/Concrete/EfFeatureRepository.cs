@@ -1,22 +1,24 @@
 ﻿using CatalogService.Api.Data.Contexts;
+using CatalogService.Api.Data.Repositories.Base;
 using CatalogService.Api.Data.Repositories.EntityFramework.Abstract;
 using CatalogService.Api.Entities;
 using CatalogService.Api.Models.Base.Concrete;
 using CatalogService.Api.Models.FeatureModels;
 using CatalogService.Api.Utilities.Results;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using System.Data.Common;
 using System.Linq.Expressions;
 
 namespace CatalogService.Api.Data.Repositories.EntityFramework.Concrete;
 
-public class EfFeatureRepository : IEfFeatureRepository
+public class EfFeatureRepository : BaseRepository, IEfFeatureRepository
 {
     private readonly CatalogDbContext _catalogDbContext;
 
     public EfFeatureRepository(
-        CatalogDbContext catalogDbContext)
+        CatalogDbContext catalogDbContext, 
+        IHttpContextAccessor httpContextAccessor)
+        : base(httpContextAccessor)
     {
         _catalogDbContext = catalogDbContext;
     }
@@ -35,10 +37,10 @@ public class EfFeatureRepository : IEfFeatureRepository
                 var result = _catalogDbContext.SaveChanges();
 
                 if (result < 1)
-                    return new ErrorResult("Feature not added");
+                    return new ErrorResult(this.GetLocalizedValue("ef.featurepository.add.notadded"));
 
                 transaction.Commit();
-                return new SuccessResult("Feature added");
+                return new SuccessResult(this.GetLocalizedValue("ef.featurepository.add.added"));
             }
             catch (Exception ex)
             {
@@ -66,10 +68,10 @@ public class EfFeatureRepository : IEfFeatureRepository
                 var result = _catalogDbContext.SaveChanges();
 
                 if (result < 1)
-                    return new ErrorResult("Product feature not added");
+                    return new ErrorResult(this.GetLocalizedValue("ef.featurepository.add.productfeature.added"));
 
                 transaction.Commit();
-                return new SuccessResult("Product feature added");
+                return new SuccessResult(this.GetLocalizedValue("ef.featurepository.add.productfeature.notadded"));
             }
             catch (Exception ex)
             {
@@ -97,10 +99,10 @@ public class EfFeatureRepository : IEfFeatureRepository
                 var result = _catalogDbContext.SaveChanges();
 
                 if (result < 1)
-                    return new ErrorResult("Product feature property not added");
+                    return new ErrorResult(this.GetLocalizedValue("ef.featurepository.add.productfeatureproperty.notadded"));
 
                 transaction.Commit();
-                return new SuccessResult("Product feature property added");
+                return new SuccessResult(this.GetLocalizedValue("ef.featurepository.add.productfeatureproperty.added"));
             }
             catch (Exception ex)
             {
@@ -130,10 +132,10 @@ public class EfFeatureRepository : IEfFeatureRepository
                 _catalogDbContext.SaveChanges();
 
                 if (result < 1)
-                    return new ErrorResult("Feature not updated");
+                    return new ErrorResult(this.GetLocalizedValue("ef.featurepository.update.notupdated"));
 
                 transaction.Commit();
-                return new SuccessResult("Feature updated");
+                return new SuccessResult(this.GetLocalizedValue("ef.featurepository.update.updated"));
             }
             catch (Exception ex)
             {
@@ -164,10 +166,10 @@ public class EfFeatureRepository : IEfFeatureRepository
                 _catalogDbContext.SaveChanges();
 
                 if (result < 1)
-                    return new ErrorResult("Feature not updated");
+                    return new ErrorResult(this.GetLocalizedValue("ef.featurepository.update.productfeatureproperty.notupdated"));
 
                 transaction.Commit();
-                return new SuccessResult("Feature updated");
+                return new SuccessResult(this.GetLocalizedValue("ef.featurepository.update.productfeatureproperty.updated"));
             }
             catch (Exception ex)
             {
@@ -196,10 +198,10 @@ public class EfFeatureRepository : IEfFeatureRepository
                 _catalogDbContext.SaveChanges();
 
                 if (result < 1)
-                    return new ErrorResult("Feature not deleted");
+                    return new ErrorResult(this.GetLocalizedValue("ef.featurepository.delete.notdeleted"));
 
                 transaction.Commit();
-                return new SuccessResult("Feature deleted");
+                return new SuccessResult(this.GetLocalizedValue("ef.featurepository.delete.deleted"));
             }
             catch (Exception ex)
             {
@@ -229,10 +231,10 @@ public class EfFeatureRepository : IEfFeatureRepository
                 _catalogDbContext.SaveChanges();
 
                 if (result < 1)
-                    return new ErrorResult("Product feature not deleted");
+                    return new ErrorResult(this.GetLocalizedValue("ef.featurepository.delete.productfeature.notdeleted"));
 
                 transaction.Commit();
-                return new SuccessResult("Product feature deleted");
+                return new SuccessResult(this.GetLocalizedValue("ef.featurepository.delete.productfeature.deleted"));
             }
             catch (Exception ex)
             {
@@ -261,10 +263,10 @@ public class EfFeatureRepository : IEfFeatureRepository
                 _catalogDbContext.SaveChanges();
 
                 if (result < 1)
-                    return new ErrorResult("Product feature property not deleted");
+                    return new ErrorResult(this.GetLocalizedValue("ef.featurepository.delete.productfeatureproperty.notdeleted"));
 
                 transaction.Commit();
-                return new SuccessResult("Product feature property deleted");
+                return new SuccessResult(this.GetLocalizedValue("ef.featurepository.delete.productfeatureproperty.deleted"));
             }
             catch (Exception ex)
             {

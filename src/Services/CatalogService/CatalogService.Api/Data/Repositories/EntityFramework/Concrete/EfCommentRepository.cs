@@ -1,20 +1,24 @@
 ﻿using CatalogService.Api.Data.Contexts;
+using CatalogService.Api.Data.Repositories.Base;
 using CatalogService.Api.Data.Repositories.EntityFramework.Abstract;
 using CatalogService.Api.Entities;
 using CatalogService.Api.Models.Base.Concrete;
 using CatalogService.Api.Utilities.Results;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
 using System.Linq.Expressions;
 
 namespace CatalogService.Api.Data.Repositories.EntityFramework.Concrete;
 
-public class EfCommentRepository : IEfCommentRepository
+public class EfCommentRepository : BaseRepository, IEfCommentRepository
 {
     private readonly CatalogDbContext _catalogDbContext;
 
     public EfCommentRepository(
-        CatalogDbContext catalogDbContext)
+        CatalogDbContext catalogDbContext, 
+        IHttpContextAccessor httpContextAccessor)
+        : base(httpContextAccessor)
     {
         _catalogDbContext = catalogDbContext;
     }
@@ -33,10 +37,10 @@ public class EfCommentRepository : IEfCommentRepository
                 var result = _catalogDbContext.SaveChanges();
 
                 if (result < 1)
-                    return new ErrorResult("Comment not added");
+                    return new ErrorResult(this.GetLocalizedValue("ef.commentrepository.add.notadded"));
 
                 transaction.Commit();
-                return new SuccessResult("Comment added");
+                return new SuccessResult(this.GetLocalizedValue("ef.commentrepository.add.added"));
             }
             catch (Exception ex)
             {
@@ -66,10 +70,10 @@ public class EfCommentRepository : IEfCommentRepository
                 _catalogDbContext.SaveChanges();
 
                 if (result < 1)
-                    return new ErrorResult("Comment not updated");
+                    return new ErrorResult(this.GetLocalizedValue("ef.commentrepository.update.notupdated"));
 
                 transaction.Commit();
-                return new SuccessResult("Comment updated");
+                return new SuccessResult(this.GetLocalizedValue("ef.commentrepository.update.updated"));
             }
             catch (Exception ex)
             {
@@ -99,10 +103,10 @@ public class EfCommentRepository : IEfCommentRepository
                 _catalogDbContext.SaveChanges();
 
                 if (result < 1)
-                    return new ErrorResult("Comment not updated");
+                    return new ErrorResult(this.GetLocalizedValue("ef.commentrepository.updatebycode.notupdated"));
 
                 transaction.Commit();
-                return new SuccessResult("Comment updated");
+                return new SuccessResult(this.GetLocalizedValue("ef.commentrepository.updatebycode.updated"));
             }
             catch (Exception ex)
             {
@@ -131,10 +135,10 @@ public class EfCommentRepository : IEfCommentRepository
                 _catalogDbContext.SaveChanges();
 
                 if (result < 1)
-                    return new ErrorResult("Comment not deleted");
+                    return new ErrorResult(this.GetLocalizedValue("ef.commentrepository.delete.notdeleted"));
 
                 transaction.Commit();
-                return new SuccessResult("Comment deleted");
+                return new SuccessResult(this.GetLocalizedValue("ef.commentrepository.delete.deleted"));
             }
             catch (Exception ex)
             {
@@ -163,10 +167,10 @@ public class EfCommentRepository : IEfCommentRepository
                 _catalogDbContext.SaveChanges();
 
                 if (result < 1)
-                    return new ErrorResult("Comment not deleted");
+                    return new ErrorResult(this.GetLocalizedValue("ef.commentrepository.deletebycode.notdeleted"));
 
                 transaction.Commit();
-                return new SuccessResult("Comment deleted");
+                return new SuccessResult(this.GetLocalizedValue("ef.commentrepository.deletebycode.deleted"));
             }
             catch (Exception ex)
             {

@@ -1,4 +1,5 @@
 ﻿using CatalogService.Api.Data.Contexts;
+using CatalogService.Api.Data.Repositories.Base;
 using CatalogService.Api.Data.Repositories.EntityFramework.Abstract;
 using CatalogService.Api.Entities;
 using CatalogService.Api.Models.Base.Concrete;
@@ -9,12 +10,14 @@ using System.Linq.Expressions;
 
 namespace CatalogService.Api.Data.Repositories.EntityFramework.Concrete;
 
-public class EfProductRepository : IEfProductRepository
+public class EfProductRepository : BaseRepository, IEfProductRepository
 {
     private readonly CatalogDbContext _catalogDbContext;
 
     public EfProductRepository(
-        CatalogDbContext catalogDbContext)
+        CatalogDbContext catalogDbContext,
+        IHttpContextAccessor httpContextAccessor)
+        : base(httpContextAccessor)
     {
         _catalogDbContext = catalogDbContext;
     }
@@ -33,10 +36,10 @@ public class EfProductRepository : IEfProductRepository
                 var result = _catalogDbContext.SaveChanges();
 
                 if (result < 1)
-                    return new ErrorResult("Product not added");
+                    return new ErrorResult(this.GetLocalizedValue("ef.productpository.add.notadded"));
 
                 transaction.Commit();
-                return new SuccessResult("Product added");
+                return new SuccessResult(this.GetLocalizedValue("ef.productpository.add.added"));
             }
             catch (Exception ex)
             {
@@ -74,10 +77,10 @@ public class EfProductRepository : IEfProductRepository
                 _catalogDbContext.SaveChanges();
 
                 if (result < 1)
-                    return new ErrorResult("Product not updated");
+                    return new ErrorResult(this.GetLocalizedValue("ef.productpository.update.notupdated"));
 
                 transaction.Commit();
-                return new SuccessResult("Product updated");
+                return new SuccessResult(this.GetLocalizedValue("ef.productpository.update.updated"));
             }
             catch (Exception ex)
             {
@@ -106,10 +109,10 @@ public class EfProductRepository : IEfProductRepository
                 _catalogDbContext.SaveChanges();
 
                 if (result < 1)
-                    return new ErrorResult("Product not deleted");
+                    return new ErrorResult(this.GetLocalizedValue("ef.productpository.delete.notdeleted"));
 
                 transaction.Commit();
-                return new SuccessResult("Product deleted");
+                return new SuccessResult(this.GetLocalizedValue("ef.productpository.delete.deleted"));
             }
             catch (Exception ex)
             {
@@ -138,10 +141,10 @@ public class EfProductRepository : IEfProductRepository
                 _catalogDbContext.SaveChanges();
 
                 if (result < 1)
-                    return new ErrorResult("Product not deleted");
+                    return new ErrorResult(this.GetLocalizedValue("ef.productpository.deletebycode.notdeleted"));
 
                 transaction.Commit();
-                return new SuccessResult("Product deleted");
+                return new SuccessResult(this.GetLocalizedValue("ef.productpository.deletebycode.deleted"));
             }
             catch (Exception ex)
             {

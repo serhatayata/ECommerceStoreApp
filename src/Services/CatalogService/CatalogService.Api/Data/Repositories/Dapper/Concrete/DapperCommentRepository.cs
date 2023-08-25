@@ -1,9 +1,9 @@
 ﻿using CatalogService.Api.Data.Contexts;
 using CatalogService.Api.Data.Contexts.Connections.Abstract;
+using CatalogService.Api.Data.Repositories.Base;
 using CatalogService.Api.Data.Repositories.Dapper.Abstract;
 using CatalogService.Api.Entities;
 using CatalogService.Api.Models.Base.Concrete;
-using CatalogService.Api.Utilities.Encryption;
 using CatalogService.Api.Utilities.Results;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +12,7 @@ using Result = CatalogService.Api.Utilities.Results.Result;
 
 namespace CatalogService.Api.Data.Repositories.Dapper.Concrete;
 
-public class DapperCommentRepository : IDapperCommentRepository
+public class DapperCommentRepository : BaseRepository, IDapperCommentRepository
 {
     private readonly ICatalogDbContext _dbContext;
     private readonly ICatalogReadDbConnection _readDbConnection;
@@ -26,7 +26,9 @@ public class DapperCommentRepository : IDapperCommentRepository
             ICatalogDbContext dbContext, 
             ICatalogReadDbConnection readDbConnection, 
             ICatalogWriteDbConnection writeDbConnection,
-            ILogger<DapperCommentRepository> logger)
+            ILogger<DapperCommentRepository> logger,
+            IHttpContextAccessor httpContextAccessor)
+        : base(httpContextAccessor)
     {
         _dbContext = dbContext;
         _readDbConnection = readDbConnection;
@@ -71,10 +73,10 @@ public class DapperCommentRepository : IDapperCommentRepository
                                                                           });
 
             if (commentId == 0)
-                return new ErrorResult("Comment not added");
+                return new ErrorResult(this.GetLocalizedValue("dapper.commentrepository.add.notadded"));
 
             transaction.Commit();
-            return new SuccessResult();
+            return new SuccessResult(this.GetLocalizedValue("dapper.commentrepository.add.added"));
         }
         catch (Exception ex)
         {
@@ -104,7 +106,9 @@ public class DapperCommentRepository : IDapperCommentRepository
 
             transaction.Commit();
 
-            return result > 0 ? new SuccessResult() : new ErrorResult("Comment not deleted");
+            return result > 0 ? 
+                new SuccessResult(this.GetLocalizedValue("dapper.commentrepository.delete.deleted")) : 
+                new ErrorResult(this.GetLocalizedValue("dapper.commentrepository.delete.notdeleted"));
         }
         catch (Exception ex)
         {
@@ -134,7 +138,9 @@ public class DapperCommentRepository : IDapperCommentRepository
 
             transaction.Commit();
 
-            return result > 0 ? new SuccessResult() : new ErrorResult("Comment not deleted");
+            return result > 0 ? 
+                new SuccessResult(this.GetLocalizedValue("dapper.commentrepository.deletebycode.deleted")) : 
+                new ErrorResult(this.GetLocalizedValue("dapper.commentrepository.deletebycode.notdeleted"));
         }
         catch (Exception ex)
         {
@@ -167,7 +173,9 @@ public class DapperCommentRepository : IDapperCommentRepository
 
             transaction.Commit();
 
-            return result > 0 ? new SuccessResult() : new ErrorResult("Content not updated");
+            return result > 0 ? 
+                new SuccessResult(this.GetLocalizedValue("dapper.commentrepository.update.updated")) : 
+                new ErrorResult(this.GetLocalizedValue("dapper.commentrepository.update.notupdated"));
         }
         catch (Exception ex)
         {
@@ -200,7 +208,9 @@ public class DapperCommentRepository : IDapperCommentRepository
 
             transaction.Commit();
 
-            return result > 0 ? new SuccessResult() : new ErrorResult("Content not updated");
+            return result > 0 ? 
+                new SuccessResult(this.GetLocalizedValue("dapper.commentrepository.updatebycode.updated")) : 
+                new ErrorResult(this.GetLocalizedValue("dapper.commentrepository.updatebycode.notupdated"));
         }
         catch (Exception ex)
         {

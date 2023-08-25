@@ -1,20 +1,24 @@
 ﻿using CatalogService.Api.Data.Contexts;
+using CatalogService.Api.Data.Repositories.Base;
 using CatalogService.Api.Data.Repositories.EntityFramework.Abstract;
 using CatalogService.Api.Entities;
 using CatalogService.Api.Models.Base.Concrete;
 using CatalogService.Api.Utilities.Results;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
 using System.Linq.Expressions;
 
 namespace CatalogService.Api.Data.Repositories.EntityFramework.Concrete;
 
-public class EfCategoryRepository : IEfCategoryRepository
+public class EfCategoryRepository : BaseRepository, IEfCategoryRepository
 {
     private readonly CatalogDbContext _catalogDbContext;
 
     public EfCategoryRepository(
-        CatalogDbContext catalogDbContext)
+        CatalogDbContext catalogDbContext,
+        IHttpContextAccessor httpContextAccessor)
+        : base(httpContextAccessor)
     {
         _catalogDbContext = catalogDbContext;
     }
@@ -33,10 +37,10 @@ public class EfCategoryRepository : IEfCategoryRepository
                 var result = _catalogDbContext.SaveChanges();
 
                 if (result < 1)
-                    return new ErrorResult("Category not added");
+                    return new ErrorResult(this.GetLocalizedValue("ef.categoryrepository.add.notadded"));
 
                 transaction.Commit();
-                return new SuccessResult("Category added");
+                return new SuccessResult(this.GetLocalizedValue("ef.categoryrepository.add.added"));
             }
             catch (Exception ex)
             {
@@ -70,10 +74,10 @@ public class EfCategoryRepository : IEfCategoryRepository
                 _catalogDbContext.SaveChanges();
 
                 if (result < 1)
-                    return new ErrorResult("Category not updated");
+                    return new ErrorResult(this.GetLocalizedValue("ef.categoryrepository.update.notupdated"));
 
                 transaction.Commit();
-                return new SuccessResult("Category updated");
+                return new SuccessResult(this.GetLocalizedValue("ef.categoryrepository.update.updated"));
             }
             catch (Exception ex)
             {
@@ -102,10 +106,10 @@ public class EfCategoryRepository : IEfCategoryRepository
                 _catalogDbContext.SaveChanges();
 
                 if (result < 1)
-                    return new ErrorResult("Category not deleted");
+                    return new ErrorResult(this.GetLocalizedValue("ef.categoryrepository.delete.notdeleted"));
 
                 transaction.Commit();
-                return new SuccessResult("Category deleted");
+                return new SuccessResult(this.GetLocalizedValue("ef.categoryrepository.delete.deleted"));
             }
             catch (Exception ex)
             {
