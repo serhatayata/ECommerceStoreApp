@@ -13,7 +13,7 @@ using Newtonsoft.Json;
 
 namespace CatalogService.Api.Services.Base.Concrete
 {
-    public class CommentService : ICommentService
+    public class CommentService : BaseService, ICommentService
     {
         private readonly IEfCommentRepository _efCommentRepository;
         private readonly IDapperCommentRepository _dapperCommentRepository;
@@ -24,7 +24,9 @@ namespace CatalogService.Api.Services.Base.Concrete
             IEfCommentRepository efCommentRepository, 
             IDapperCommentRepository dapperCommentRepository, 
             IKeyParameterService keyParameterService,
-            IMapper mapper)
+            IMapper mapper,
+            IHttpContextAccessor httpContextAccessor)
+            : base(httpContextAccessor)
         {
             _efCommentRepository = efCommentRepository;
             _dapperCommentRepository = dapperCommentRepository;
@@ -36,7 +38,7 @@ namespace CatalogService.Api.Services.Base.Concrete
         {
             var anyForbiddenWords = await this.CheckAnyForbiddenWordsExist(entity.Content);
             if (anyForbiddenWords)
-                return new ErrorResult("Forbidden words exist, check your content again");
+                return new ErrorResult(this.GetLocalizedValue("commentservice.add.forbbidenwords"));
 
             var mappedModel = _mapper.Map<Comment>(entity);
 
@@ -51,11 +53,11 @@ namespace CatalogService.Api.Services.Base.Concrete
         {
             var anyForbiddenWords = await this.CheckAnyForbiddenWordsExist(entity.Content);
             if (anyForbiddenWords)
-                return new ErrorResult("Forbidden words exist, check your content again");
+                return new ErrorResult(this.GetLocalizedValue("commentservice.add.forbbidenwords"));
 
             var commentExists = await _dapperCommentRepository.GetByCodeAsync(new StringModel(entity.Code));
             if (commentExists.Success && commentExists.Data?.UserId != entity.UserId)
-                return new ErrorResult("Comment user not same");
+                return new ErrorResult(this.GetLocalizedValue("commentservice.update.notsameuser"));
 
             var mappedModel = _mapper.Map<Comment>(entity);
             var result = await _efCommentRepository.UpdateAsync(mappedModel);

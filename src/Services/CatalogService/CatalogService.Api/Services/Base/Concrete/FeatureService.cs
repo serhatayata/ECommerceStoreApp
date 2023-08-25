@@ -10,7 +10,7 @@ using CatalogService.Api.Utilities.Results;
 
 namespace CatalogService.Api.Services.Base.Concrete
 {
-    public class FeatureService : IFeatureService
+    public class FeatureService : BaseService, IFeatureService
     {
         private readonly IEfFeatureRepository _efFeatureRepository;
         private readonly IDapperFeatureRepository _dapperFeatureRepository;
@@ -19,7 +19,9 @@ namespace CatalogService.Api.Services.Base.Concrete
         public FeatureService(
             IEfFeatureRepository efFeatureRepository, 
             IDapperFeatureRepository dapperFeatureRepository, 
-            IMapper mapper)
+            IMapper mapper,
+            IHttpContextAccessor httpContextAccessor)
+            : base(httpContextAccessor)
         {
             _efFeatureRepository = efFeatureRepository;
             _dapperFeatureRepository = dapperFeatureRepository;
@@ -30,7 +32,7 @@ namespace CatalogService.Api.Services.Base.Concrete
         {
             var featureExists = await _efFeatureRepository.GetAsync(f => f.Name == entity.Name);
             if (featureExists.Success)
-                return new ErrorResult("Feature name already exists");
+                return new ErrorResult(this.GetLocalizedValue("featureservice.add.name.alreadyexists"));
 
             var mappedModel = _mapper.Map<Feature>(entity);
             var result = await _efFeatureRepository.AddAsync(mappedModel);
@@ -41,7 +43,7 @@ namespace CatalogService.Api.Services.Base.Concrete
         {
             var featureExists = await _efFeatureRepository.GetAsync(f => f.Id != entity.Id && f.Name == entity.Name);
             if (featureExists.Success)
-                return new ErrorResult("Feature name already exists");
+                return new ErrorResult(this.GetLocalizedValue("featureservice.update.name.alreadyexists"));
 
             var mappedModel = _mapper.Map<Feature>(entity);
             var result = await _efFeatureRepository.UpdateAsync(mappedModel);
@@ -57,7 +59,7 @@ namespace CatalogService.Api.Services.Base.Concrete
         {
             var productFeatureExists = await _dapperFeatureRepository.GetProductFeature(entity);
             if (productFeatureExists.Data != null)
-                return new ErrorResult("Product feature already exists");
+                return new ErrorResult(this.GetLocalizedValue("featureservice.add.productfeature.alreadyexists"));
 
             var mappedModel = _mapper.Map<ProductFeature>(entity);
             var result = await _efFeatureRepository.AddProductFeatureAsync(mappedModel);
@@ -73,7 +75,7 @@ namespace CatalogService.Api.Services.Base.Concrete
         {
             var propertyExists = await _dapperFeatureRepository.GetProductFeatureProperty(entity.ProductFeatureId, entity.Name);
             if (propertyExists.Data != null)
-                return new ErrorResult("Property already exists for this product feature");
+                return new ErrorResult(this.GetLocalizedValue("featureservice.add.productfeatureproperty.alreadyexists"));
 
             var mappedModel = _mapper.Map<ProductFeatureProperty>(entity);
             var result = await _efFeatureRepository.AddProductFeaturePropertyAsync(mappedModel);
@@ -84,7 +86,7 @@ namespace CatalogService.Api.Services.Base.Concrete
         {
             var propertyExists = await _dapperFeatureRepository.GetProductFeatureProperty(new IntModel(entity.Id));
             if (propertyExists.Data == null)
-                return new ErrorResult("Property does not exist");
+                return new ErrorResult(this.GetLocalizedValue("featureservice.update.productfeatureproperty.notexists"));
 
             var mappedModel = _mapper.Map<ProductFeatureProperty>(entity);
             var result = await _efFeatureRepository.UpdateProductFeaturePropertyAsync(mappedModel);
