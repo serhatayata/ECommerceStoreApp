@@ -1,4 +1,6 @@
 ﻿using CatalogService.Api.Models.Settings;
+using HealthChecks.Consul;
+using System.Reflection;
 using System.Web;
 
 namespace CatalogService.Api.Extensions;
@@ -13,7 +15,7 @@ public static class HealthCheckExtensions
                     healthQuery: "SELECT 1",
                     name: "MSSQL Server check",
                     failureStatus: Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Healthy | Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Degraded,
-                    tags: new string[] { "db", "mssql", "sqlserver"}
+                    tags: new string[] { "db", "mssql", "sqlserver" }
                 )
                 .AddRedis(
                     redisConnectionString: configuration["RedisOptions:ConnectionString"],
@@ -39,6 +41,13 @@ public static class HealthCheckExtensions
                     name: "RabbitMQ",
                     failureStatus: Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Unhealthy | Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Degraded,
                     tags: new string[] { "rabbitMQ_MessageBrokerQueue" }
+                );
+
+        services.AddGrpcHealthChecks()
+                .AddCheck(
+                    name: $"{Assembly.GetCallingAssembly().GetName().Name}-HealthCheck",
+                    check: () => Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy(),
+                    tags: new string[] { "Grpc" }
                 );
     }
 

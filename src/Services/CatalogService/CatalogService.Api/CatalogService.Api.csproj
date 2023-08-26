@@ -41,6 +41,7 @@
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.5.2" />
     <PackageReference Include="Google.Api.Gax.Grpc" Version="4.4.0" />
     <PackageReference Include="Grpc.AspNetCore" Version="2.55.0" />
+    <PackageReference Include="Grpc.AspNetCore.HealthChecks" Version="2.56.0" />
     <PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.55.0" />
     <PackageReference Include="IdentityModel" Version="6.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.8" />

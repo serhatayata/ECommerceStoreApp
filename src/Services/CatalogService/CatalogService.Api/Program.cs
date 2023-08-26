@@ -29,6 +29,7 @@ using HealthChecks.UI.Client;
 using IntegrationEventLogEF;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Logging;
 using RabbitMQ.Client;
 using System.Reflection;
 using static IdentityModel.OidcConstants;
@@ -57,6 +58,12 @@ builder.Services.AddTransient<IClientCredentialsTokenService, ClientCredentialsT
 #endregion
 #region Host
 builder.Host.AddHostExtensions(environment);
+#endregion
+#region Authorization-Authentication
+builder.Services.AddAuthenticationConfigurations(configuration);
+builder.Services.AddAuthorizationConfigurations(configuration);
+
+IdentityModelEventSource.ShowPII = true;
 #endregion
 #region Configuration
 builder.Services.Configure<RedisOptions>(configuration.GetSection("RedisOptions"));
@@ -157,6 +164,9 @@ if (environment.IsProduction())
 #region ServiceTool
 ServiceTool.Create(builder.Services);
 #endregion
+#region Consul
+builder.Services.ConfigureConsul(configuration);
+#endregion
 #region HealthChecks
 builder.Services.AddHealthCheckServices(configuration);
 #endregion
@@ -178,6 +188,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 #endregion
 #region MapGRPC
+app.MapGrpcHealthChecksService();
+
 app.MapGrpcService<GrpcBrandService>();
 app.MapGrpcService<GrpcCategoryService>();
 app.MapGrpcService<GrpcCommentService>();
@@ -223,7 +235,11 @@ eventBus.Subscribe<ProductUpdatedIntegrationEvent, ProductUpdatedIntegrationEven
 
 ConfigureEventBusForSubscription(app);
 
-app.Run();
+app.Start();
+
+app.RegisterWithConsul(app.Lifetime, configuration);
+
+app.WaitForShutdown();
 
 public partial class Program
 {

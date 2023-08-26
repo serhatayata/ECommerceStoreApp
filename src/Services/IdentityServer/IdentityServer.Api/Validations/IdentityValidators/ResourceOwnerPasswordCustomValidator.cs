@@ -63,7 +63,7 @@ namespace IdentityServer.Api.Validations.IdentityValidators
 
             var tokenVerify = _jwtHelper.ValidateCurrentToken(token, AuthenticationSchemeConstants.VerifyCode);
             var tokenClaims = tokenVerify.Data;
-            var role = tokenClaims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
+            var role = tokenClaims?.FirstOrDefault(c => c.Type == ClaimTypes.Role);
             if (!tokenVerify.Success || role == null || role?.Value != verifyRole)
             {
                 await _events.RaiseAsync(new UserLoginFailureEvent(context.UserName, "Invalid credentials", false, clientId));

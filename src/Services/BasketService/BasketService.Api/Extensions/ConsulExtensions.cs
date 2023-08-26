@@ -1,8 +1,6 @@
 ﻿using Consul;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
-using System.Net;
-using System.Net.Sockets;
 
 namespace BasketService.Api.Extensions
 {
@@ -30,18 +28,18 @@ namespace BasketService.Api.Extensions
                 //var name = Dns.GetHostName(); // container id
                 //var ip = Dns.GetHostEntry(name).AddressList.FirstOrDefault(x => x.AddressFamily == AddressFamily.InterNetwork); // container ip
 
-                //var addressFeature = server.Features.Get<IServerAddressesFeature>();
-                //var addresses = addressFeature.Addresses;
-                //var addressess = addressFeature.PreferHostingUrls;
-                //var address = addresses.First();
-                //Uri currentUri = new Uri(address, UriKind.Absolute);
-
-                var address = configuration.GetSection("ConsulConfig:HostAddress").Value;
+                var addressFeature = server.Features.Get<IServerAddressesFeature>();
+                var addresses = addressFeature.Addresses;
+                var addressess = addressFeature.PreferHostingUrls;
+                var address = addresses.First();
                 Uri currentUri = new Uri(address, UriKind.Absolute);
+
+                //var address = configuration.GetSection("ConsulConfig:HostAddress").Value;
+                //Uri currentUri = new Uri(address, UriKind.Absolute);
 
                 var logger = loggingFactory.CreateLogger<IApplicationBuilder>();
 
-                var uri = configuration.GetValue<Uri>("ConsulConfig:ServiceAddress");
+                //var uri = configuration.GetValue<Uri>("ConsulConfig:ServiceAddress");
                 var serviceName = configuration.GetValue<string>("ConsulConfig:ServiceName");
                 var serviceId = configuration.GetValue<string>("ConsulConfig:ServiceId");
 
