@@ -153,6 +153,9 @@ if (environment.IsProduction())
 #region ServiceTool
 ServiceTool.Create(builder.Services);
 #endregion
+#region HealthChecks
+builder.Services.AddHealthChecks();
+#endregion
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -162,16 +165,27 @@ builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
 
 var app = builder.Build();
 
+#region HealthChecks
+
+#endregion
+#region Routing-Redirection
 app.UseHttpsRedirection();
 app.UseRouting();
+#endregion
+#region Auth
 app.UseAuthentication();
 app.UseAuthorization();
-
+#endregion
+#region MapGRPC
 app.MapGrpcService<GrpcBrandService>();
 app.MapGrpcService<GrpcCategoryService>();
 app.MapGrpcService<GrpcCommentService>();
 app.MapGrpcService<GrpcFeatureService>();
 app.MapGrpcService<GrpcProductService>();
+#endregion
+#region HealthChecks
+app.UseHealthChecks("/health");
+#endregion
 
 app.UseResponseTimeMiddleware();
 app.MapControllers();
