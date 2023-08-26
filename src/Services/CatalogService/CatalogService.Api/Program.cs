@@ -169,9 +169,6 @@ builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
 
 var app = builder.Build();
 
-#region HealthChecks
-
-#endregion
 #region Routing-Redirection
 app.UseHttpsRedirection();
 app.UseRouting();
