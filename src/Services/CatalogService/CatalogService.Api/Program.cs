@@ -25,6 +25,7 @@ using CatalogService.Api.Utilities.Options;
 using EventBus.Base;
 using EventBus.Base.Abstraction;
 using EventBus.Factory;
+using HealthChecks.UI.Client;
 using IntegrationEventLogEF;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.EntityFrameworkCore;
@@ -120,6 +121,8 @@ builder.Services.AddGrpcReflection();
 #region Event Bus
 builder.Services.AddSingleton<IEventBus>(sp =>
 {
+    var queueSettings = configuration.GetSection("MessageBroker:QueueSettings").Get<MessageBrokerQueueSettings>();
+
     EventBusConfig config = new()
     {
         ConnectionRetryCount = configuration.GetValue<int?>("EventBusConfigSettings:ConnectionRetryCount") ?? 5,
@@ -128,10 +131,11 @@ builder.Services.AddSingleton<IEventBus>(sp =>
         EventBusType = EventBusType.RabbitMQ,
         Connection = new ConnectionFactory()
         {
-            HostName = "localhost",
-            Port = 5672,
-            UserName = "guest",
-            Password = "guest"
+            HostName = queueSettings?.HostName,
+            Port = queueSettings?.Port ?? default,
+            UserName = queueSettings?.UserName,
+            Password = queueSettings?.Password,
+            VirtualHost = queueSettings?.VirtualHost
         }
         //Connection = new ConnectionFactory()
         //{
@@ -154,7 +158,7 @@ if (environment.IsProduction())
 ServiceTool.Create(builder.Services);
 #endregion
 #region HealthChecks
-builder.Services.AddHealthChecks();
+builder.Services.AddHealthCheckServices(configuration);
 #endregion
 
 builder.Services.AddEndpointsApiExplorer();
@@ -184,7 +188,10 @@ app.MapGrpcService<GrpcFeatureService>();
 app.MapGrpcService<GrpcProductService>();
 #endregion
 #region HealthChecks
-app.UseHealthChecks("/health");
+app.UseHealthChecks("/health", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions()
+{
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
 #endregion
 
 app.UseResponseTimeMiddleware();
