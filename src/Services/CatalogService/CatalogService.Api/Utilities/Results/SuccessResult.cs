@@ -1,6 +1,14 @@
 ﻿namespace CatalogService.Api.Utilities.Results;
 public class SuccessResult : Result
 {
+    public SuccessResult(string message) : base(true, message, 400)
+    {
+    }
+
+    public SuccessResult(string message, int statusCode = 200) : base(true, message, statusCode)
+    {
+    }
+
     public SuccessResult(object message, int statusCode = 200) : base(true, message, statusCode)
     {
     }

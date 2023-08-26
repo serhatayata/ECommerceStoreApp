@@ -23,7 +23,7 @@ public abstract class BaseService
         _logger = httpContextAccessor?.HttpContext?.RequestServices?.GetRequiredService<ILogger<BaseService>>();
     }
 
-    public async Task<string?> GetLocalizedValue(string key)
+    public string GetLocalizedValue(string key)
     {
         try
         {

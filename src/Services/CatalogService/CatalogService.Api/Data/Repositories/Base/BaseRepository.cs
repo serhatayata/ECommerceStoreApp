@@ -24,7 +24,7 @@ public abstract class BaseRepository
         _logger = httpContextAccessor?.HttpContext?.RequestServices?.GetRequiredService<ILogger<BaseService>>();
     }
 
-    public async Task<string?> GetLocalizedValue(string key)
+    public string GetLocalizedValue(string key)
     {
         try
         {
