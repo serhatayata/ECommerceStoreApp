@@ -28,7 +28,7 @@ public class BrandController : BaseController<BrandController>
         _redisService = redisService;
     }
 
-    [AuthorizeMultiplePolicy("CatalogWrite;CatalogReadUser", false)]
+    [AuthorizeMultiplePolicy("CatalogWrite", false)]
     [MapToApiVersion("1.0")]
     [HttpPost]
     [Route("add")]

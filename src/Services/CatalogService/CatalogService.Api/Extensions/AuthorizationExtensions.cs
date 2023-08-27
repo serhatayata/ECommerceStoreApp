@@ -38,9 +38,7 @@ public static class AuthorizationExtensions
                 policy.RequireAuthenticatedUser();
                 policy.RequireAssertion(context => context.User.HasClaim(c =>
                     (
-                      (c.Type == "role" && (c.Value == "catalog_writepermission" || c.Value == "catalog_readpermission")) ||
-                      (c.Type == ClaimTypes.Role && (c.Value == "catalog_writepermission" || c.Value == "catalog_readpermission")) ||
-                      (c.Type == "Roles" && (c.Value == "catalog_writepermission" || c.Value == "catalog_readpermission"))
+                      ((c.Type == "role" || c.Type == ClaimTypes.Role || c.Type == "Roles") && (c.Value == "User.Admin" || c.Value == "User.Normal"))
                     )
                 ));
             });

@@ -47,7 +47,7 @@ namespace IdentityServer.Api.Data.SeedData
                         UpdateTime = DateTime.Now,
                         PhoneNumber = "7777777777",
                         UserName = "907777777777",
-                        Status = (byte)UserStatus.NotValidated,
+                        Status = (byte)UserStatus.Validated,
                         Email = "srht1@email.com",
                         EmailConfirmed = true,
                     };
@@ -83,7 +83,7 @@ namespace IdentityServer.Api.Data.SeedData
                         UpdateTime = DateTime.Now,
                         PhoneNumber = "5555555555",
                         UserName = "905555555555",
-                        Status = (byte)UserStatus.NotValidated,
+                        Status = (byte)UserStatus.Validated,
                         Email = "mkaya@email.com",
                         EmailConfirmed = true,
                     };

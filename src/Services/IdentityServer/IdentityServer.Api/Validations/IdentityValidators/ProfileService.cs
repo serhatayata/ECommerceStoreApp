@@ -1,4 +1,5 @@
-﻿using IdentityModel;
+﻿using AutoMapper;
+using IdentityModel;
 using IdentityServer.Api.Data.Contexts;
 using IdentityServer.Api.Entities.Identity;
 using IdentityServer.Api.Extensions;
@@ -13,11 +14,16 @@ namespace IdentityServer.Api.Validations.IdentityValidators
     {
         //services
         private readonly UserManager<User> _userManager;
+        private readonly IMapper _mapper;
         private readonly ILogger<ProfileService> _logger;
 
-        public ProfileService(UserManager<User> userManager, ILogger<ProfileService> logger)
+        public ProfileService(
+            UserManager<User> userManager,
+            IMapper mapper,
+            ILogger<ProfileService> logger)
         {
             _userManager = userManager;
+            _mapper = mapper;
             _logger = logger;
         }
 
@@ -56,7 +62,8 @@ namespace IdentityServer.Api.Validations.IdentityValidators
                             var roles = await _userManager.GetRolesAsync(user);
                             var claims = ClaimExtensions.GetUserClaims(user, roles.ToList());
 
-                            context.IssuedClaims = claims.Where(x => context.RequestedClaimTypes.Contains(x.Type)).ToList();
+                            //context.IssuedClaims = claims.Where(x => context.RequestedClaimTypes.Contains(x.Type)).ToList();
+                            context.IssuedClaims = claims.ToList();
                         }
                     }
                 }
@@ -75,7 +82,7 @@ namespace IdentityServer.Api.Validations.IdentityValidators
                 //get subject from context (set in ResourceOwnerPasswordValidator.ValidateAsync),
                 var userId = context.Subject.Claims.FirstOrDefault(x => x.Type == JwtClaimTypes.Id);
 
-                if (!string.IsNullOrEmpty(userId?.Value) && long.Parse(userId.Value) > 0)
+                if (!string.IsNullOrEmpty(userId?.Value))
                 {
                     var user = await _userManager.FindByIdAsync(userId.Value);
 

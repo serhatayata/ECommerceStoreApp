@@ -53,11 +53,7 @@ namespace IdentityServer.Api.Extensions
                 new Claim(JwtClaimTypes.Email, user.Email  ?? string.Empty),
             };
 
-            foreach (var role in roles)
-            {
-                claims.Add(new Claim(JwtClaimTypes.Role, role));
-                claims.Add(new Claim("Roles", role));
-            }
+            claims.AddRoles(roles.ToArray());
 
             return claims.ToArray();
         }

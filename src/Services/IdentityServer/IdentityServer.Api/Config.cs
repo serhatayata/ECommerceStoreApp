@@ -1,5 +1,6 @@
 ﻿using IdentityServer4.Models;
 using IdentityServer4;
+using IdentityModel;
 
 namespace IdentityServer.Api
 {
@@ -85,7 +86,9 @@ namespace IdentityServer.Api
                     AllowedScopes = new List<string>
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
-                        IdentityServerConstants.StandardScopes.Profile
+                        IdentityServerConstants.StandardScopes.Profile,
+                        "Roles",
+                        JwtClaimTypes.Role
                     }
                 },
 	            #endregion
@@ -108,7 +111,8 @@ namespace IdentityServer.Api
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "Roles"
+                        "Roles",
+                        JwtClaimTypes.Role
                     }
                 },
 	            #endregion
