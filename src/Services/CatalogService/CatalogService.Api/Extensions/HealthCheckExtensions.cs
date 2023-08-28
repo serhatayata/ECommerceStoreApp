@@ -1,6 +1,9 @@
 ﻿using CatalogService.Api.Models.Settings;
 using HealthChecks.Consul;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using System.Net.Mime;
 using System.Reflection;
+using System.Text.Json;
 using System.Web;
 
 namespace CatalogService.Api.Extensions;
@@ -61,5 +64,43 @@ public static class HealthCheckExtensions
                                     $"{queueOptions?.HostName}:" +
                                     $"{queueOptions?.Port ?? default}/{queueOptions?.VirtualHost}";
         return rabbitmqconnection;
+    }
+
+    public static Task WriteResponse(
+        HttpContext context,
+        HealthReport report)
+    {
+        var jsonSerializerOptions = new JsonSerializerOptions
+        {
+            WriteIndented = false,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+        };
+
+        string json = JsonSerializer.Serialize(
+            new
+            {
+                Status = report.Status.ToString(),
+                Duration = report.TotalDuration,
+                Info = report.Entries
+                    .Select(e =>
+                        new
+                        {
+                            Key = e.Key,
+                            Description = e.Value.Description,
+                            Duration = e.Value.Duration,
+                            Status = Enum.GetName(
+                                typeof(HealthStatus),
+                                e.Value.Status),
+                            Error = e.Value.Exception?.Message,
+                            Data = e.Value.Data,
+                            Tags = e.Value.Tags
+                        })
+                    .ToList()
+            },
+            jsonSerializerOptions);
+
+        context.Response.ContentType = MediaTypeNames.Application.Json;
+        return context.Response.WriteAsync(json);
     }
 }

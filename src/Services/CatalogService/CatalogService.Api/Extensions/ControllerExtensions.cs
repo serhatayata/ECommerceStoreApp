@@ -14,85 +14,84 @@ using Microsoft.AspNetCore.Mvc.Versioning;
 using CatalogService.Api.Utilities.Providers;
 using CatalogService.Api.Services.Localization.Concrete;
 
-namespace CatalogService.Api.Extensions
+namespace CatalogService.Api.Extensions;
+
+public static class ControllerExtensions
 {
-    public static class ControllerExtensions
+    public static void AddControllerSettings(this IServiceCollection services)
     {
-        public static void AddControllerSettings(this IServiceCollection services)
+        services.AddControllers(options =>
         {
-            services.AddControllers(options =>
-            {
-                options.Filters.Add(typeof(FluentValidationCustomValidationAttribute));
-                options.Filters.Add(typeof(HttpGlobalExceptionFilter));
+            options.Filters.Add(typeof(FluentValidationCustomValidationAttribute));
+            options.Filters.Add(typeof(HttpGlobalExceptionFilter));
 
-                options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
-            }).AddJsonOptions(o =>
-            {
-                o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-            });
+            options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
+        }).AddJsonOptions(o =>
+        {
+            o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        });
 
-            services.Configure<ApiBehaviorOptions>(options =>
-            {
-                options.SuppressModelStateInvalidFilter = true;
-            });
+        services.Configure<ApiBehaviorOptions>(options =>
+        {
+            options.SuppressModelStateInvalidFilter = true;
+        });
 
-            //API VERSIONING
-            services.AddApiVersioning(opt =>
-            {
-                opt.DefaultApiVersion = new ApiVersion(1, 0);
-                opt.AssumeDefaultVersionWhenUnspecified = true;
-                opt.ReportApiVersions = true;
+        //API VERSIONING
+        services.AddApiVersioning(opt =>
+        {
+            opt.DefaultApiVersion = new ApiVersion(1, 0);
+            opt.AssumeDefaultVersionWhenUnspecified = true;
+            opt.ReportApiVersions = true;
 
-                opt.ApiVersionReader = ApiVersionReader.Combine(
-                    new HeaderApiVersionReader("x-version"),
-                    new QueryStringApiVersionReader("api-version")
-                );
+            opt.ApiVersionReader = ApiVersionReader.Combine(
+                new HeaderApiVersionReader("x-version"),
+                new QueryStringApiVersionReader("api-version")
+            );
 
-                opt.ErrorResponses = new ApiVersioningErrorResponseProvider();
-            });
+            opt.ErrorResponses = new ApiVersioningErrorResponseProvider();
+        });
 
-            services.AddVersionedApiExplorer(opt =>
-            {
-                opt.GroupNameFormat = "'v'VVV";
-                opt.SubstituteApiVersionInUrl = true;
-            });
+        services.AddVersionedApiExplorer(opt =>
+        {
+            opt.GroupNameFormat = "'v'VVV";
+            opt.SubstituteApiVersionInUrl = true;
+        });
 
-            //VALIDATORS
-            #region Base
-            services.AddValidatorsFromAssemblyContaining<StringModelValidator>();
-            services.AddValidatorsFromAssemblyContaining<IntModelValidator>();
-            services.AddValidatorsFromAssemblyContaining<BoolModelValidator>();
-            #endregion
-            #region Brand
-            services.AddValidatorsFromAssemblyContaining<BrandAddModelValidator>();
-            services.AddValidatorsFromAssemblyContaining<BrandUpdateModelValidator>();
-            #endregion
-            #region Category
-            services.AddValidatorsFromAssemblyContaining<CategoryAddModelValidator>();
-            services.AddValidatorsFromAssemblyContaining<CategoryUpdateModelValidator>();
-            #endregion
-            #region Comment
-            services.AddValidatorsFromAssemblyContaining<CommentAddModelValidator>();
-            services.AddValidatorsFromAssemblyContaining<CommentUpdateModelValidator>();
-            #endregion
-            #region Feature
-            services.AddValidatorsFromAssemblyContaining<FeatureAddModelValidator>();
-            services.AddValidatorsFromAssemblyContaining<FeatureUpdateModelValidator>();
-            services.AddValidatorsFromAssemblyContaining<ProductFeatureModelValidator>();
-            services.AddValidatorsFromAssemblyContaining<ProductFeaturePropertyAddModelValidator>();
-            services.AddValidatorsFromAssemblyContaining<ProductFeaturePropertyUpdateModelValidator>();
-            #endregion
-            #region Product
-            services.AddValidatorsFromAssemblyContaining<PriceBetweenModelValidator>();
-            services.AddValidatorsFromAssemblyContaining<ProductAddModelValidator>();
-            services.AddValidatorsFromAssemblyContaining<ProductUpdateModelValidator>();
-            #endregion
+        //VALIDATORS
+        #region Base
+        services.AddValidatorsFromAssemblyContaining<StringModelValidator>();
+        services.AddValidatorsFromAssemblyContaining<IntModelValidator>();
+        services.AddValidatorsFromAssemblyContaining<BoolModelValidator>();
+        #endregion
+        #region Brand
+        services.AddValidatorsFromAssemblyContaining<BrandAddModelValidator>();
+        services.AddValidatorsFromAssemblyContaining<BrandUpdateModelValidator>();
+        #endregion
+        #region Category
+        services.AddValidatorsFromAssemblyContaining<CategoryAddModelValidator>();
+        services.AddValidatorsFromAssemblyContaining<CategoryUpdateModelValidator>();
+        #endregion
+        #region Comment
+        services.AddValidatorsFromAssemblyContaining<CommentAddModelValidator>();
+        services.AddValidatorsFromAssemblyContaining<CommentUpdateModelValidator>();
+        #endregion
+        #region Feature
+        services.AddValidatorsFromAssemblyContaining<FeatureAddModelValidator>();
+        services.AddValidatorsFromAssemblyContaining<FeatureUpdateModelValidator>();
+        services.AddValidatorsFromAssemblyContaining<ProductFeatureModelValidator>();
+        services.AddValidatorsFromAssemblyContaining<ProductFeaturePropertyAddModelValidator>();
+        services.AddValidatorsFromAssemblyContaining<ProductFeaturePropertyUpdateModelValidator>();
+        #endregion
+        #region Product
+        services.AddValidatorsFromAssemblyContaining<PriceBetweenModelValidator>();
+        services.AddValidatorsFromAssemblyContaining<ProductAddModelValidator>();
+        services.AddValidatorsFromAssemblyContaining<ProductUpdateModelValidator>();
+        #endregion
 
-            services.AddFluentValidationAutoValidation(f =>
-            {
-                f.DisableDataAnnotationsValidation = true;
-            });
-            //services.AddFluentValidationClientsideAdapters(); // for client side
-        }
+        services.AddFluentValidationAutoValidation(f =>
+        {
+            f.DisableDataAnnotationsValidation = true;
+        });
+        //services.AddFluentValidationClientsideAdapters(); // for client side
     }
 }

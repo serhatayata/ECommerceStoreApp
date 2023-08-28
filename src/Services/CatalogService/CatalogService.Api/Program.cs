@@ -199,7 +199,7 @@ app.MapGrpcService<GrpcProductService>();
 #region HealthChecks
 app.UseHealthChecks("/health", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions()
 {
-    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+    ResponseWriter = HealthCheckExtensions.WriteResponse
 });
 #endregion
 

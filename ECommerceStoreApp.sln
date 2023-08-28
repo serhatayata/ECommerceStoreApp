@@ -121,7 +121,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationEventLogEF", "sr
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Admin", "Admin", "{39D7324E-F845-4C0E-AC37-0C5BD0BE3E80}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Admin.WebApp", "src\Admin\Admin.WebApp\Admin.WebApp.csproj", "{4F07A2CB-A29F-4CBE-8AE3-F59DF91783D0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Admin.WebApp", "src\Admin\Admin.WebApp\Admin.WebApp.csproj", "{4F07A2CB-A29F-4CBE-8AE3-F59DF91783D0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MonitoringService", "MonitoringService", "{FADC1841-AE33-477A-8F5F-8E8BFA2E74D5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonitoringService.Api", "src\Services\MonitoringService\MonitoringService.Api\MonitoringService.Api.csproj", "{C48AE6F8-2FED-4E0B-8A79-AF3F13EACB8A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -209,6 +213,10 @@ Global
 		{4F07A2CB-A29F-4CBE-8AE3-F59DF91783D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F07A2CB-A29F-4CBE-8AE3-F59DF91783D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F07A2CB-A29F-4CBE-8AE3-F59DF91783D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C48AE6F8-2FED-4E0B-8A79-AF3F13EACB8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C48AE6F8-2FED-4E0B-8A79-AF3F13EACB8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C48AE6F8-2FED-4E0B-8A79-AF3F13EACB8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C48AE6F8-2FED-4E0B-8A79-AF3F13EACB8A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -259,6 +267,8 @@ Global
 		{3CAA7302-6705-40C2-9F73-D7CFEF1D3C87} = {CED33AC9-33AB-4E82-BACA-4EB937BE0E57}
 		{39D7324E-F845-4C0E-AC37-0C5BD0BE3E80} = {1055DE2C-675F-4234-A46F-D9BB463BEB18}
 		{4F07A2CB-A29F-4CBE-8AE3-F59DF91783D0} = {39D7324E-F845-4C0E-AC37-0C5BD0BE3E80}
+		{FADC1841-AE33-477A-8F5F-8E8BFA2E74D5} = {DCD06557-C33A-4198-BED7-640F6119B3E7}
+		{C48AE6F8-2FED-4E0B-8A79-AF3F13EACB8A} = {FADC1841-AE33-477A-8F5F-8E8BFA2E74D5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0EA7DAA1-E97E-4D4E-8989-8E0E33F3EDA4}
