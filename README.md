@@ -6,8 +6,9 @@ E-Commerce Microservices Application (STILL BEING IMPROVED)
 - Consul (Service Discovery)
 - ElasticSearch, Kibana
 - RabbitMQ
-- MSSQL, Redis
+- MSSQL, Redis, PostgreSQL
 - EntityFramework, Dapper, NHibernate
+- gRPC
 - SAGA Pattern
 - MassTransit
 
