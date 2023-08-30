@@ -68,4 +68,47 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
 
         return responseModel;
     }
+
+    public async Task<HealthCheckModel> GetHealthCheck(string serviceName)
+    {
+        var serviceInformation = _configuration.GetSection($"ServiceInformation:{this.Env}").Get<ServiceInformationSettings[]>();
+        if (serviceInformation == null)
+            return null;
+
+        var currentService = serviceInformation.FirstOrDefault(s => s.Name == serviceName);
+        if (currentService == null)
+            return null;
+
+        try
+        {
+            var client = _httpClientFactory.CreateClient(currentService.Name);
+
+            var requestUrl = string.Join(string.Empty,
+                                         currentService.Url,
+                                         currentService.UrlSuffix);
+
+            var httpResponse = await client.PostGetResponseAsync<HealthCheckResponseModel, string>(requestUrl, null);
+
+            if (httpResponse == null)
+                return null;
+
+            return new HealthCheckModel()
+            {
+                ServiceName = currentService.Name,
+                Status = httpResponse.Status,
+                TotalDuration = httpResponse.Duration,
+                Info = httpResponse.Info,
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "ERROR health check: {ExceptionMessage} - Method : {ClassName}.{MethodName} - Service name : {ServiceName}",
+                             ex.Message,
+                             nameof(GetAllHealthChecks),
+                             MethodBase.GetCurrentMethod()?.Name,
+                             currentService.Name);
+
+            return null
+        }
+    }
 }
