@@ -29,6 +29,7 @@ using HealthChecks.UI.Client;
 using IntegrationEventLogEF;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Logging;
 using RabbitMQ.Client;
 using System.Reflection;
@@ -114,6 +115,9 @@ builder.Services.AddGrpc(g =>
     g.EnableDetailedErrors = true;
     g.Interceptors.Add<ExceptionInterceptor>();
 });
+
+builder.Services.AddGrpcHealthChecks()
+                .AddCheck("SampleHealthCheck", () => HealthCheckResult.Healthy());
 
 builder.Services.AddGrpcReflection();
 
