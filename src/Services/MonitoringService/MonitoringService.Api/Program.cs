@@ -2,6 +2,9 @@ using Autofac.Extensions.DependencyInjection;
 using Autofac;
 using MonitoringService.Api.Extensions;
 using MonitoringService.Api.DependencyResolvers.Autofac;
+using Autofac.Core;
+using Microsoft.EntityFrameworkCore;
+using MonitoringService.Api.Infrastructure.Contexts;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
@@ -19,6 +22,10 @@ builder.Services.AddHttpClients(configuration);
 #endregion
 #region Host
 builder.Host.AddHostExtensions(environment);
+#endregion
+#region DbContext
+var connString = configuration.GetConnectionString("MonitoringDB");
+builder.Services.AddEntityFrameworkNpgsql().AddDbContext<MonitoringDbContext>(options => options.UseNpgsql(connString));
 #endregion
 #region Consul
 builder.Services.ConfigureConsul(configuration);

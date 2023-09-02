@@ -108,7 +108,7 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
                              MethodBase.GetCurrentMethod()?.Name,
                              currentService.Name);
 
-            return null
+            return null;
         }
     }
 }
