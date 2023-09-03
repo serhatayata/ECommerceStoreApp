@@ -51,6 +51,17 @@
       //    "Port": 5001
       //  }
       //]
+    },
+    // HEALTH CHECK SERVICE
+    {
+      "UseServiceDiscovery": true,
+      "ServiceName": "MonitoringService",
+      "DownstreamPathTemplate": "/{everything}",
+      "DownstreamScheme": "http",
+
+      "UpstreamPathTemplate": "/monitoring/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "DELETE", "PUT" ],
+      "UpstreamScheme": "http"
     }
   ],
   "GlobalConfiguration": {

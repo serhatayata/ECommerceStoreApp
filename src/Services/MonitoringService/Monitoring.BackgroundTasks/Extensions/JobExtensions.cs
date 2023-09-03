@@ -22,7 +22,8 @@ public static class JobExtensions
                 cfg.ForJob(healthCheckJobKey)
                    .WithIdentity($"{nameof(HealthCheckSaveJob)}-Trigger")
                    .WithSimpleSchedule(s => 
-                        s.WithIntervalInHours(healthCheckSaveSettings?.Interval ?? 12)
+                        //s.WithIntervalInHours(healthCheckSaveSettings?.Interval ?? 12)
+                        s.WithIntervalInMinutes(1)
                          .RepeatForever()));
             #endregion
         });

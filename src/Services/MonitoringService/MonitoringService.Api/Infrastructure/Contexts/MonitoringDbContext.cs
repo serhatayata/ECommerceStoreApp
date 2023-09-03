@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MonitoringService.Api.Entities;
+using MonitoringService.Api.Extensions;
 using MonitoringService.Api.Infrastructure.EntityConfigurations;
 using MonitoringService.Api.Models.Enums;
 
@@ -29,6 +30,8 @@ public class MonitoringDbContext : DbContext
         builder.ApplyConfiguration(new HealthCheckExecutionEntryEntityTypeConfiguration());
         builder.ApplyConfiguration(new HealthCheckFailureEntityTypeConfiguration());
         builder.ApplyConfiguration(new HealthCheckExecutionEntityTypeConfiguration());
+
+        builder.NamesToSnakeCase();
     }
 
     public DbSet<HealthCheckConfiguration> HealthCheckConfigurations { get; set; }

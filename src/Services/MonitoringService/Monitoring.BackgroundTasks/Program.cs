@@ -11,6 +11,9 @@ IWebHostEnvironment environment = builder.Environment;
 builder.Configuration.SetBasePath(Directory.GetCurrentDirectory());
 builder.Host.AddHostExtensions(environment);
 
+#region Http
+builder.Services.AddHttpClients(configuration);
+#endregion
 #region Configurations
 builder.Services.Configure<HealthCheckSaveSettings>(configuration.GetSection("Settings:HealthCheckSave"));
 #endregion
