@@ -17,7 +17,7 @@ public class HealthCheckFailureEntityTypeConfiguration : IEntityTypeConfiguratio
 
         builder.Property(e => e.ServiceName).HasColumnType("character varying(100)");
 
-        builder.Property(e => e.CreateDate).HasColumnType("date");
+        builder.Property(e => e.CreateDate).HasColumnType("timestamp with time zone");
 
         builder.Property(e => e.CreateDate).HasDefaultValueSql("CURRENT_TIMESTAMP");
     }

@@ -15,9 +15,9 @@ public class HealthCheckExecutionEntityTypeConfiguration : IEntityTypeConfigurat
 
         builder.HasKey(e => e.Id);
 
-        builder.Property(e => e.Status).HasConversion<byte>().HasColumnType("smallint");
+        builder.Property(e => e.Status).HasColumnType("character varying(50)");
 
-        builder.Property(e => e.ExecutionDate).HasColumnType("date");
+        builder.Property(e => e.ExecutionDate).HasColumnType("timestamp with time zone");
         builder.Property(e => e.ExecutionDate).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
         builder.Property(e => e.Uri).HasColumnType("character varying(200)");

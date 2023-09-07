@@ -12,7 +12,7 @@ public class HealthCheckExecution
     /// <summary>
     /// Status of the execution
     /// </summary>
-    public HealthCheckStatus Status { get; set; }
+    public string Status { get; set; }
 
     /// <summary>
     /// Execution date
@@ -28,4 +28,9 @@ public class HealthCheckExecution
     /// Name of the service
     /// </summary>
     public string ServiceName { get; set; }
+
+    /// <summary>
+    /// Navigation property of health check execution entries
+    /// </summary>
+    public virtual ICollection<HealthCheckExecutionEntry> HealthCheckExecutionEntries { get; set; }
 }

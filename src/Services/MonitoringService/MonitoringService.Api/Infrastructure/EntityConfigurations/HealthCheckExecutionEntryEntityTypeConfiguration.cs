@@ -22,5 +22,10 @@ public class HealthCheckExecutionEntryEntityTypeConfiguration : IEntityTypeConfi
         builder.Property(e => e.Duration).HasColumnType("character varying(50)");
 
         builder.Property(e => e.Tags).HasColumnType("character varying(200)");
+
+        builder.HasOne(b => b.HealthCheckExecution)
+               .WithMany(b => b.HealthCheckExecutionEntries)
+               .HasForeignKey(b => b.HealthCheckExecutionId)
+               .OnDelete(DeleteBehavior.Cascade);
     }
 }

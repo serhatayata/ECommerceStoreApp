@@ -1,4 +1,6 @@
-﻿namespace Monitoring.BackgroundTasks.Extensions;
+﻿using Serilog;
+
+namespace Monitoring.BackgroundTasks.Extensions;
 
 public static class HostExtensions
 {
@@ -16,8 +18,8 @@ public static class HostExtensions
                   .AddJsonFile($"Configurations/appsettings.{environment.EnvironmentName}.json", optional: true)
                   .Build();
         })
-        .ConfigureLogging(s => s.ClearProviders()); // Remove all added providers before
+        .ConfigureLogging(s => s.ClearProviders()) // Remove all added providers before
                                                     // https://github.com/serilog/serilog-aspnetcore
-        //.UseSerilog();
+        .UseSerilog();
     }
 }

@@ -2,7 +2,6 @@
 using Monitoring.BackgroundTasks.Models.HealthCheckModels;
 using Npgsql;
 using Quartz;
-using System.Drawing;
 
 namespace Monitoring.BackgroundTasks.Services;
 
@@ -42,57 +41,99 @@ public class HealthCheckSaveJob : IJob
                 var conn = new NpgsqlConnection(connectionString: monitoringConnString);
                 conn.Open();
 
-                using var cmd = new NpgsqlCommand();
-                cmd.Connection = conn;
-
                 foreach (var healthCheckItem in requestResult)
                 {
-                    if (healthCheckItem.Status == HealthCheckStatus.Healthy)
+                    await using var transaction = await conn.BeginTransactionAsync();
+
+                    if (healthCheckItem.Status == HealthCheckStatusValues.Healthy)
                     {
-                        cmd.CommandText = $"INSERT INTO healthcheck.executions " +
-                                          $"(status, execution_date, uri, service_name) " +
-                                          $"VALUES (@status, @executionDate, @uri, @serviceName)";
-
-                        cmd.Parameters.AddWithValue("status", healthCheckItem.Status);
-                        cmd.Parameters.AddWithValue("executionDate", DateTime.Now);
-                        cmd.Parameters.AddWithValue("uri", healthCheckItem.ServiceUri);
-                        cmd.Parameters.AddWithValue("serviceName", healthCheckItem.ServiceName);
-
-                        var executionResult = await cmd.ExecuteNonQueryAsync();
-
-                        if (executionResult < 1)
-                            _logger.LogError($"Health check saving error - Saving execution for {healthCheckItem.ServiceName}");
-
-                        foreach (var info in healthCheckItem.Info)
+                        try
                         {
-                            cmd.CommandText = $"INSERT INTO healthcheck.execution_entries " +
-                                              $"(name, status, duration, tags) " +
-                                              $"VALUES (@name, @status, @duration, @tags)";
+                            string executionCommandText = $"INSERT INTO healthcheck.executions " +
+                                                          $"(status, execution_date, uri, service_name) " +
+                                                          $"VALUES (@status, @executionDate, @uri, @serviceName) " +
+                                                          $"RETURNING id";
 
-                            cmd.Parameters.AddWithValue("name", info.Key);
-                            cmd.Parameters.AddWithValue("status", info.Status);
-                            cmd.Parameters.AddWithValue("duration", info.Duration);
-                            cmd.Parameters.AddWithValue("tags", string.Join(',', info.Tags));
+                            using var cmd = new NpgsqlCommand(cmdText: executionCommandText, 
+                                                              connection: conn, 
+                                                              transaction: transaction);
 
-                            var executionEntryResult = await cmd.ExecuteNonQueryAsync();
+                            cmd.Parameters.AddWithValue("status", healthCheckItem.Status);
+                            cmd.Parameters.AddWithValue("executionDate", DateTime.UtcNow);
+                            cmd.Parameters.AddWithValue("uri", healthCheckItem.ServiceUri);
+                            cmd.Parameters.AddWithValue("serviceName", healthCheckItem.ServiceName);
 
-                            if (executionEntryResult < 1)
-                                _logger.LogError($"Health check saving error - Saving execution entry for {healthCheckItem.ServiceName} - {info.Key}");
+                            var executionResult = await cmd.ExecuteScalarAsync();
+
+                            if (executionResult == null)
+                            {
+                                _logger.LogError($"Health check execution saving error - " +
+                                                 $"Saving execution for {healthCheckItem.ServiceName}");
+                                continue;
+                            }
+
+                            foreach (var info in healthCheckItem.Info)
+                            {
+                                string infoCommandText = $"INSERT INTO healthcheck.execution_entries " +
+                                                         $"(name, status, duration, tags, health_check_execution_id) " +
+                                                         $"VALUES (@name, @status, @duration, @tags, @healthCheckExecutionId)";
+
+                                using var infoCmd = new NpgsqlCommand(cmdText: infoCommandText,
+                                                                      connection: conn,
+                                                                      transaction: transaction);
+
+                                infoCmd.Parameters.AddWithValue("name", info.Key);
+                                infoCmd.Parameters.AddWithValue("status", info.Status);
+                                infoCmd.Parameters.AddWithValue("duration", info.Duration);
+                                infoCmd.Parameters.AddWithValue("tags", string.Join(',', info.Tags));
+                                infoCmd.Parameters.AddWithValue("healthCheckExecutionId", executionResult);
+
+                                var executionEntryResult = await infoCmd.ExecuteNonQueryAsync();
+                            }
+
+                            await transaction.CommitAsync();
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError($"Health check execution saving error - Saving execution for {healthCheckItem.ServiceName} - " +
+                                             $"Status : {healthCheckItem.Status} - " +
+                                             $"Message : {ex.Message}");
+
+                            transaction.Rollback();
                         }
                     }
                     else
                     {
-                        cmd.CommandText = $"INSERT INTO healthcheck.failure " +
-                                          $"(service_name, create_date) " +
-                                          $"VALUES (@serviceName, @createDate)";
+                        try
+                        {
+                            var failureCommandText = $"INSERT INTO healthcheck.failure " +
+                                                     $"(service_name, create_date) " +
+                                                     $"VALUES (@serviceName, @createDate)";
 
-                        cmd.Parameters.AddWithValue("serviceName", healthCheckItem.ServiceName);
-                        cmd.Parameters.AddWithValue("createDate", DateTime.Now);
+                            using var cmd = new NpgsqlCommand(cmdText: failureCommandText,
+                                                              connection: conn,
+                                                              transaction: transaction);
+                            cmd.Connection = conn;
 
-                        var failureResult = await cmd.ExecuteNonQueryAsync();
+                            cmd.Parameters.AddWithValue("serviceName", healthCheckItem.ServiceName);
+                            cmd.Parameters.AddWithValue("createDate", DateTime.UtcNow);
 
-                        if (failureResult < 1)
-                            _logger.LogError($"Health check saving error - Saving failure for {healthCheckItem.ServiceName}");
+                            var failureResult = await cmd.ExecuteNonQueryAsync();
+
+                            await transaction.CommitAsync();
+
+                            if (failureResult < 1)
+                                _logger.LogError($"Health check failure saving error - " +
+                                                 $"Saving failure for {healthCheckItem.ServiceName}");
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError($"Health check saving error - Saving failure for {healthCheckItem.ServiceName} - " +
+                                             $"Status : {healthCheckItem.Status} - " +
+                                             $"Message : {ex.Message}");
+
+                            transaction.Rollback();
+                        }
                     }
                 }
             }
@@ -101,7 +142,8 @@ public class HealthCheckSaveJob : IJob
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Health check saving exception error - Message : {ex.Message}");
+            _logger.LogError($"Health check saving exception error - " +
+                             $"Message : {ex.Message}");
         }
     }
 }

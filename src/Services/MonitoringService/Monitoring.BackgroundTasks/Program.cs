@@ -1,6 +1,5 @@
 using Monitoring.BackgroundTasks.Extensions;
 using Monitoring.BackgroundTasks.Models.Settings;
-using Monitoring.BackgroundTasks.Services;
 using Quartz;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,14 +10,14 @@ IWebHostEnvironment environment = builder.Environment;
 builder.Configuration.SetBasePath(Directory.GetCurrentDirectory());
 builder.Host.AddHostExtensions(environment);
 
+#region LOG
+builder.Services.AddLogConfiguration();
+#endregion
 #region Http
 builder.Services.AddHttpClients(configuration);
 #endregion
 #region Configurations
 builder.Services.Configure<HealthCheckSaveSettings>(configuration.GetSection("Settings:HealthCheckSave"));
-#endregion
-#region LOG
-builder.Services.AddLogConfiguration();
 #endregion
 #region Scheduling
 builder.Services.AddJobConfigurations(configuration);

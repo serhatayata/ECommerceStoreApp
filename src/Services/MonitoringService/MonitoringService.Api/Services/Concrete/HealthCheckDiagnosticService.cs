@@ -47,6 +47,7 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
                 {
                     ServiceName = info.Name,
                     Status = httpResponse.Status,
+                    ServiceUri = info.Url,
                     TotalDuration = httpResponse.Duration,
                     Info = httpResponse.Info,
                 });
@@ -96,6 +97,7 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
             {
                 ServiceName = currentService.Name,
                 Status = httpResponse.Status,
+                ServiceUri = currentService.Url,
                 TotalDuration = httpResponse.Duration,
                 Info = httpResponse.Info,
             };

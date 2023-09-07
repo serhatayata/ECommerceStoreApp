@@ -26,4 +26,14 @@ public class HealthCheckExecutionEntry
     /// Tags of the execution
     /// </summary>
     public string Tags { get; set; }
+
+    /// <summary>
+    /// Navigation property health check execution
+    /// </summary>
+    public virtual HealthCheckExecution HealthCheckExecution { get; set; }
+
+    /// <summary>
+    /// Navigation property id of health check execution
+    /// </summary>
+    public int HealthCheckExecutionId { get; set; }
 }
