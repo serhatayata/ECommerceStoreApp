@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using MonitoringService.Api.Extensions;
+﻿using MonitoringService.Api.Extensions;
 using MonitoringService.Api.Models.HealthCheckModels;
 using MonitoringService.Api.Models.Settings;
 using MonitoringService.Api.Services.Abstract;

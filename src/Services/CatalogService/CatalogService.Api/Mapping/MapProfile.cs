@@ -16,16 +16,6 @@ public class MapProfile : Profile
     public MapProfile()
     {
         #region GRPC
-        #region GENERAL
-        CreateMap<IntModel, GrpcIntModel>().ReverseMap();
-        CreateMap<StringModel, GrpcStringModel>().ReverseMap();
-        CreateMap<BoolModel, GrpcBoolModel>().ReverseMap();
-        CreateMap<PagingModel, GrpcPagingModel>().ReverseMap();
-
-        CreateMap(typeof(DataResult<>), typeof(DataResult<>));
-        CreateMap(typeof(SuccessDataResult<>), typeof(DataResult<>));
-        CreateMap(typeof(ErrorDataResult<>), typeof(DataResult<>));
-        #endregion
 
         #region BRAND
         CreateMap<Brand, GrpcBrand>().ReverseMap();
@@ -81,6 +71,15 @@ public class MapProfile : Profile
         #endregion
 
         #region GENERAL
+        CreateMap<IntModel, GrpcIntModel>().ReverseMap();
+        CreateMap<StringModel, GrpcStringModel>().ReverseMap();
+        CreateMap<BoolModel, GrpcBoolModel>().ReverseMap();
+        CreateMap<PagingModel, GrpcPagingModel>().ReverseMap();
+
+        CreateMap(typeof(DataResult<>), typeof(DataResult<>));
+        CreateMap(typeof(SuccessDataResult<>), typeof(DataResult<>));
+        CreateMap(typeof(ErrorDataResult<>), typeof(DataResult<>));
+
         CreateMap<BrandModel, Brand>().ReverseMap();
         CreateMap<BrandAddModel, Brand>().ReverseMap();
         CreateMap<BrandUpdateModel, Brand>().ReverseMap();

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using MonitoringService.Api.DependencyResolvers.Autofac;
 using MonitoringService.Api.Extensions;
 using MonitoringService.Api.Infrastructure.Contexts;
+using MonitoringService.Api.Mapping;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
@@ -35,6 +36,9 @@ builder.Services.ConfigureConsul(configuration);
 #region Autofac
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 builder.Host.ConfigureContainer<ContainerBuilder>(builder => builder.RegisterModule(new AutofacBusinessModule()));
+#endregion
+#region AutoMapper
+builder.Services.AddAutoMapper(typeof(MapProfile).Assembly);
 #endregion
 
 builder.Services.AddEndpointsApiExplorer();
