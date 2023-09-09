@@ -1,10 +1,10 @@
-﻿using Serilog.Sinks.Elasticsearch;
+﻿using Serilog.Formatting.Elasticsearch;
+using Serilog.Sinks.Elasticsearch;
 using Serilog;
 using System.Reflection;
 using Serilog.Formatting.Compact;
-using Serilog.Formatting.Elasticsearch;
 
-namespace Monitoring.BackgroundTasks.Extensions;
+namespace MonitoringService.Api.Extensions;
 
 public static class LogExtensions
 {
@@ -54,4 +54,3 @@ public static class LogExtensions
         };
     }
 }
-

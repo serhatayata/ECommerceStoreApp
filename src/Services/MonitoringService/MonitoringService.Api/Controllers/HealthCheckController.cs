@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MonitoringService.Api.Models.Base.Concrete;
-using MonitoringService.Api.Models.HealthCheckModels;
 using MonitoringService.Api.Services.Abstract;
 
 namespace MonitoringService.Api.Controllers;

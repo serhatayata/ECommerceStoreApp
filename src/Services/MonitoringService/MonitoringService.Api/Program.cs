@@ -13,15 +13,17 @@ IWebHostEnvironment environment = builder.Environment;
 
 var appConfig = ConfigurationExtension.appConfig;
 
-builder.Services.AddControllers();
-#region Configuration
-builder.Configuration.AddConfiguration(appConfig);
+#region Controller
+builder.Services.AddControllerSettings();
 #endregion
-#region Http
-builder.Services.AddHttpClients(configuration);
+#region Log
+builder.Services.AddLogConfiguration();
 #endregion
 #region Host
 builder.Host.AddHostExtensions(environment);
+#endregion
+#region Http
+builder.Services.AddHttpClients(configuration);
 #endregion
 #region DbContext
 var connString = configuration.GetConnectionString("MonitoringDB");

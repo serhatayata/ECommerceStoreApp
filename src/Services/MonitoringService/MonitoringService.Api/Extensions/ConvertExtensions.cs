@@ -1,10 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace MonitoringService.Api.Extensions;
 
-public static class ConventionExtensions
+public static class ConvertExtensions
 {
     public static void NamesToSnakeCase(this ModelBuilder modelBuilder)
     {
