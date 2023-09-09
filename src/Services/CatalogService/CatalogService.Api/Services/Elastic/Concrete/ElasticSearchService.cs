@@ -20,9 +20,10 @@ namespace CatalogService.Api.Services.Elastic.Concrete
             _client = GetClient();
         }
 
-        public ElasticClient GetClient()
+        public ElasticClient GetClient(bool disableDirectStreaming = false)
         {
             var settings = new ConnectionSettings(new Uri(_options.ConnectionString))
+                            .DisableDirectStreaming(disableDirectStreaming)
                             .BasicAuthentication(_options.AuthUserName, _options.AuthPassword);
             return new ElasticClient(settings);
         }

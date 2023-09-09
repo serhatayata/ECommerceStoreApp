@@ -8,7 +8,7 @@ namespace CatalogService.Api.Services.Elastic.Abstract
         /// Get elastic client
         /// </summary>
         /// <returns><typeparamref name="ElasticClient"/></returns>
-        ElasticClient GetClient();
+        ElasticClient GetClient(bool disableDirectStreaming = false);
         /// <summary>
         /// Check if index exists
         /// </summary>
