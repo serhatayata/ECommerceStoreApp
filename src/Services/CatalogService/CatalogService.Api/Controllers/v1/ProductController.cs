@@ -62,15 +62,13 @@ public class ProductController : BaseController<ProductController>
         return Ok(result);
     }
 
-    //[AuthorizeMultiplePolicy("CatalogRead", false)]
+    [AuthorizeMultiplePolicy("CatalogRead", false)]
     [MapToApiVersion("1.0")]
     [HttpGet]
     [Route("get")]
     [ProducesResponseType(typeof(DataResult<ProductModel>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetAsync([FromBody] IntModel model)
     {
-        var y = await _productService.SearchAsync("produ");
-
         var result = await _productService.GetAsync(model);
         return Ok(result);
     }

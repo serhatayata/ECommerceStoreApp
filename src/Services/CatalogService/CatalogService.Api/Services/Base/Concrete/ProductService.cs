@@ -167,7 +167,7 @@ public class ProductService : BaseService, IProductService
     public async Task<DataResult<ProductSearchModel>> SearchAsync(string name, bool includeSuggest = false, bool aggs = false)
     {
         var index = this.productSearchIndex;
-            
+
         var searchDescriptor = new SearchDescriptor<ProductElasticModel>();
         var query = searchDescriptor
                       .Index(index)
@@ -175,17 +175,17 @@ public class ProductService : BaseService, IProductService
                         Bool(bo => bo
                          .Must(mu => mu
                             .Match(mat => mat.
-                                Field(f => f.Name)
-                                  .Query(name))
-                         )
-                         .Should(sh => sh
-                            .Wildcard(wd => wd
-                                .Value($"{name}*")
-                                .Boost(2)
-                            )
-                         )
-                        ) 
-                      );
+                                Field(f => f.Name.Suffix("edgengram"))
+                                  .Query(name)))
+                         .Should(
+                                 sh => sh.Prefix(p => p
+                                         .Field(f => f.Name.Suffix("keyword"))
+                                         .Value(name)
+                                         .Boost(5)),
+                                 sh => sh.Match(mt => mt
+                                         .Field(f => f.Name.Suffix("keyword"))
+                                         .Query(name)
+                                         .Boost(10)))));
 
         if (includeSuggest)
             query = query.Suggest(s => s
@@ -291,7 +291,7 @@ public class ProductService : BaseService, IProductService
                     .Tokenizers(t => t
                         .NGram("nGram_tokenizer", n => n
                             .MinGram(1)
-                            .MaxGram(10)
+                            .MaxGram(20)
                             .TokenChars(
                                 TokenChar.Letter,
                                 TokenChar.Digit
@@ -307,7 +307,7 @@ public class ProductService : BaseService, IProductService
                        )
                        .EdgeNGram("EdgeNGram_filter", ng =>
                           ng.MinGram(1)
-                            .MaxGram(10)
+                            .MaxGram(20)
                        )
                     )
                     .Analyzers(anly => anly
