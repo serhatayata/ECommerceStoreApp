@@ -1,4 +1,5 @@
 ﻿using CatalogService.Api.Models.CacheModels;
+using Nest;
 using Newtonsoft.Json;
 using System.Text;
 

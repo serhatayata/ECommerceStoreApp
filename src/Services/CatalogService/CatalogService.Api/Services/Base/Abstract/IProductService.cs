@@ -1,4 +1,5 @@
 ﻿using CatalogService.Api.Models.Base.Concrete;
+using CatalogService.Api.Models.CacheModels;
 using CatalogService.Api.Models.ProductModels;
 using CatalogService.Api.Utilities.Results;
 
@@ -19,7 +20,7 @@ namespace CatalogService.Api.Services.Base.Abstract
         Task<DataResult<IReadOnlyList<ProductModel>>> GetAllByProductTypeIdAsync(IntModel model);
 
         Task<DataResult<ProductSearchModel>> SearchAsync(string name, bool includeSuggest = false, bool aggs = false);
-        Task<DataResult<IEnumerable<ProductSuggest>>> SearchSuggestAsync(string index, string name);
+        Task<DataResult<IEnumerable<SuggestionModel>>> SearchSuggestAsync(string name);
         Task<Result> CreateElasticIndex(string index);
     }
 }

@@ -6,11 +6,14 @@ using CatalogService.Api.Extensions;
 using CatalogService.Api.IntegrationEvents;
 using CatalogService.Api.IntegrationEvents.Events;
 using CatalogService.Api.Models.Base.Concrete;
+using CatalogService.Api.Models.CacheModels;
 using CatalogService.Api.Models.ProductModels;
 using CatalogService.Api.Services.Base.Abstract;
 using CatalogService.Api.Services.Elastic.Abstract;
 using CatalogService.Api.Utilities.Results;
 using EventBus.Base.Abstraction;
+using Nest;
+using Result = CatalogService.Api.Utilities.Results.Result;
 
 namespace CatalogService.Api.Services.Base.Concrete;
 
@@ -165,64 +168,56 @@ public class ProductService : BaseService, IProductService
     {
         var index = this.productSearchIndex;
 
-        var searchResponse = await _elasticSearchService
-            .GetClient()
-            .SearchAsync<ProductElasticModel>(s => s
-            .Index(index)
-            .Query(query => query.
-                Bool(bo => bo.
-                    Must(mu => mu.
-                        Match(mat => mat.
-                            Field(f => f.Name)))))
-            .Aggregations(ags =>
-            {
-                if (aggs)
-                {
-                    return ags
-                     .Min("min_price", m => m.Field(f => f.Price))
-                     .Max("max_price", m => m.Field(f => f.Price))
-                     .Sum("total_available_stock", s => s.Field(f => f.AvailableStock))
-                     .Min("min_available_stock", s => s.Field(f => f.AvailableStock))
-                     .Max("max_available_stock", s => s.Field(f => f.AvailableStock));
-                }
-
-                return null;
-            })
-        );
-
-        var suggests = new List<ProductSuggest>();
+        var searchDescriptor = new SearchDescriptor<ProductElasticModel>();
+        var query = searchDescriptor
+                      .Index(index)
+                      .Query(query => query.
+                          Bool(bo => bo.
+                              Must(mu => mu.
+                                  Match(mat => mat.
+                                      Field(f => f.Name)
+                                        .Query(name)))));
 
         if (includeSuggest)
-        {
-            var suggestResponse = await _elasticSearchService
-                .GetClient()
-                .SearchAsync<ProductElasticModel>(s => s
-                .Index(index)
-                .Suggest(s => s.Completion("suggestions", c => c
+            query = query.Suggest(s => s
+                               .Completion("suggestions", c => c
                                   .Field(f => f.NameSuggest)
                                   .Prefix(name)
                                   .Size(5)
                                   .SkipDuplicates()
                                   .Fuzzy(f => f
-                                    .Fuzziness(Nest.Fuzziness.EditDistance(1))
-                                    .MinLength(4)
-                                  ))));
+                                     .Fuzziness(Nest.Fuzziness.EditDistance(0))
+                                     .MinLength(2)))
+                               .Completion("suggestions-fuzziness", c => c
+                                  .Field(f => f.NameSuggest)
+                                  .Prefix(name)
+                                  .Size(5)
+                                  .SkipDuplicates()
+                                  .Fuzzy(f => f
+                                     .Fuzziness(Nest.Fuzziness.EditDistance(1))
+                                     .MinLength(2))));
 
+        if (aggs)
+            query = query.Aggregations(ags =>
+                         {
+                             if (aggs)
+                             {
+                                 return ags
+                                  .Min("min_price", m => m.Field(f => f.Price))
+                                  .Max("max_price", m => m.Field(f => f.Price))
+                                  .Sum("total_available_stock", s => s.Field(f => f.AvailableStock))
+                                  .Min("min_available_stock", s => s.Field(f => f.AvailableStock))
+                                  .Max("max_available_stock", s => s.Field(f => f.AvailableStock));
+                             }
 
+                             return null;
+                         });
 
-            if (suggestResponse?.Suggest.ContainsKey("suggestions") ?? false)
-                suggests = suggestResponse.Suggest["suggestions"]
-                                         .SelectMany(s => s.Options)
-                                         .Select(option => new ProductSuggest()
-                                         {
-                                             Id = option.Source.Id,
-                                             Name = option.Source.Name,
-                                             SuggestedName = option.Text,
-                                             Score = option.Score
-                                         })
-                                         .OrderByDescending(o => o.Score)
-                                         .ToList();
-        }
+        var searchResponse = await _elasticSearchService
+                                  .GetClient()
+                                  .SearchAsync<ProductElasticModel>(query);
+
+        var suggests = this.GetSearchProductSuggestions(searchResponse);
 
         ProductSearchModel result = new();
 
@@ -235,8 +230,10 @@ public class ProductService : BaseService, IProductService
         return new DataResult<ProductSearchModel>(result);
     }
 
-    public async Task<DataResult<IEnumerable<ProductSuggest>?>> SearchSuggestAsync(string index, string name)
+    public async Task<DataResult<IEnumerable<SuggestionModel>?>> SearchSuggestAsync(string name)
     {
+        var index = this.productSearchIndex;
+
         var searchResponse = await _elasticSearchService
             .GetClient()
             .SearchAsync<ProductElasticModel>(s => s
@@ -248,29 +245,26 @@ public class ProductService : BaseService, IProductService
                   .Size(5)
                   .SkipDuplicates()
                   .Fuzzy(f => f
-                     .Fuzziness(Nest.Fuzziness.EditDistance(2))
-                     .MinLength(4)
+                     .Fuzziness(Nest.Fuzziness.EditDistance(0))
+                     .MinLength(2)
+                  )
+               )
+               .Completion("suggestions-fuzziness", c => c
+                  .Field(f => f.NameSuggest)
+                  .Prefix(name)
+                  .Size(5)
+                  .SkipDuplicates()
+                  .Fuzzy(f => f
+                     .Fuzziness(Nest.Fuzziness.EditDistance(1))
+                     .MinLength(2)
                   )
                )
             )
         );
 
-        var suggests = new List<ProductSuggest>();
+        var suggests = this.GetSearchProductSuggestions(searchResponse);
 
-        if (searchResponse?.Suggest.ContainsKey("suggestions") ?? false)
-            suggests = searchResponse.Suggest["suggestions"]
-                                     .SelectMany(s => s.Options)
-                                     .Select(option => new ProductSuggest()
-                                     {
-                                         Id = option.Source.Id,
-                                         Name = option.Source.Name,
-                                         SuggestedName = option.Text,
-                                         Score = option.Score
-                                     })
-                                     .OrderByDescending(o => o.Score)
-                                     .ToList();
-
-        return new DataResult<IEnumerable<ProductSuggest>?>(suggests ?? new List<ProductSuggest>());
+        return new DataResult<IEnumerable<SuggestionModel>?>(suggests ?? new List<SuggestionModel>());
     }
 
     public async Task<Result> CreateElasticIndex(string index)
@@ -379,4 +373,36 @@ public class ProductService : BaseService, IProductService
         var currentEvent = _mapper.Map<ProductUpdatedIntegrationEvent>(model);
         _eventBus.Publish(currentEvent);
     }
+
+    private List<SuggestionModel> GetSearchProductSuggestions(ISearchResponse<ProductElasticModel> searchResponse)
+    {
+        var result = new List<SuggestionModel>();
+
+        if (searchResponse == null)
+            return result;
+
+        foreach (var key in searchResponse.Suggest?.Keys ?? new List<string>())
+        {
+            var suggests = searchResponse.Suggest[key]
+                              .SelectMany(s => s.Options)
+                              .Select(option => new SuggestionModel()
+                              {
+                                  Id = option.Source.Id,
+                                  Name = option.Source.Name,
+                                  SuggestedName = option.Text,
+                                  Score = option.Score
+                              })
+                              .OrderByDescending(o => o.Score)
+                              .ToList();
+
+            foreach (var suggest in suggests)
+            {
+                if (!result.Any(s => s.Name == suggest.Name))
+                    result.Add(suggest);
+            }
+        }
+
+        return result;
+    }
+
 }
