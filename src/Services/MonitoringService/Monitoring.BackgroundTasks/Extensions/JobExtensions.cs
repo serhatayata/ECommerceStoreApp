@@ -1,5 +1,5 @@
 ﻿using Monitoring.BackgroundTasks.Models.Settings;
-using Monitoring.BackgroundTasks.Services;
+using Monitoring.BackgroundTasks.Services.Concrete;
 using Quartz;
 
 namespace Monitoring.BackgroundTasks.Extensions;

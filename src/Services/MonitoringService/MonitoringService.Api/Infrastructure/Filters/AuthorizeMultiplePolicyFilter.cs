@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc;
-using CatalogService.Api.Utilities.Results;
 
-namespace CatalogService.Api.Infrastructure.Filters;
+namespace MonitoringService.Api.Infrastructure.Filters;
 
 public class AuthorizeMultiplePolicyFilter : IAsyncAuthorizationFilter
 {

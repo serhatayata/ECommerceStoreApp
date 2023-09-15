@@ -1,6 +1,7 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Logging;
 using MonitoringService.Api.DependencyResolvers.Autofac;
 using MonitoringService.Api.Extensions;
 using MonitoringService.Api.Infrastructure.Contexts;
@@ -21,6 +22,12 @@ builder.Services.AddLogConfiguration();
 #endregion
 #region Host
 builder.Host.AddHostExtensions(environment);
+#endregion
+#region Authorization-Authentication
+builder.Services.AddAuthenticationConfigurations(configuration);
+builder.Services.AddAuthorizationConfigurations(configuration);
+
+IdentityModelEventSource.ShowPII = true;
 #endregion
 #region Http
 builder.Services.AddHttpClients(configuration);
@@ -48,15 +55,20 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+#region Routing-Redirection
+app.UseHttpsRedirection();
+app.UseRouting();
+#endregion
+#region Auth
+app.UseAuthentication();
+app.UseAuthorization();
+#endregion
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseHttpsRedirection();
-app.UseAuthorization();
 
 app.MapControllers();
 

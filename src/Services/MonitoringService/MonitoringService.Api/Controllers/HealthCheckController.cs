@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using MonitoringService.Api.Attributes;
 using MonitoringService.Api.Models.Base.Concrete;
 using MonitoringService.Api.Services.Abstract;
 
@@ -16,6 +18,7 @@ public class HealthCheckController : ControllerBase
         _diagnosticService = diagnosticService;
     }
 
+    [AuthorizeMultiplePolicy("MonitoringWrite", false)]
     [HttpPost]
     [Route("healthchecks-all")]
     public async Task<IActionResult> GetHealthChecksAsync()
@@ -24,6 +27,7 @@ public class HealthCheckController : ControllerBase
         return Ok(result);
     }
 
+    [AuthorizeMultiplePolicy("MonitoringWrite", false)]
     [HttpPost]
     [Route("healthcheck")]
     public async Task<IActionResult> GetHealthChecksAsync([FromBody] StringModel model)

@@ -3,14 +3,14 @@ using Monitoring.BackgroundTasks.Models.HealthCheckModels;
 using Npgsql;
 using Quartz;
 
-namespace Monitoring.BackgroundTasks.Services;
+namespace Monitoring.BackgroundTasks.Services.Concrete;
 
 public class HealthCheckSaveJob : IJob
 {
     private readonly ILogger<HealthCheckSaveJob> _logger;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IConfiguration _configuration;
-    
+
     private readonly string monitoringConnString;
 
     public HealthCheckSaveJob(
@@ -35,7 +35,7 @@ public class HealthCheckSaveJob : IJob
             var requestResult = await gatewayClient.PostGetResponseAsync<List<HealthCheckModel>, string>("monitoring/api/healthcheck/healthchecks-all", null);
 
             //Connection
-            if (requestResult != null && 
+            if (requestResult != null &&
                 requestResult.Count > 0)
             {
                 var conn = new NpgsqlConnection(connectionString: monitoringConnString);
@@ -54,8 +54,8 @@ public class HealthCheckSaveJob : IJob
                                                           $"VALUES (@status, @executionDate, @uri, @serviceName) " +
                                                           $"RETURNING id";
 
-                            using var cmd = new NpgsqlCommand(cmdText: executionCommandText, 
-                                                              connection: conn, 
+                            using var cmd = new NpgsqlCommand(cmdText: executionCommandText,
+                                                              connection: conn,
                                                               transaction: transaction);
 
                             cmd.Parameters.AddWithValue("status", healthCheckItem.Status);

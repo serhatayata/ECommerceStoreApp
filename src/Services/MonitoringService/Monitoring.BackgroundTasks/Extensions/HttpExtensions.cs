@@ -9,7 +9,7 @@ public static class HttpExtensions
         //services.AddScoped<MonitoringRequestTokenHandler>();
 
         #region HttpClients
-        string gatewayClient = configuration.GetSection($"SourceOriginSettings:{env}:Gateway").Value;
+        string gatewayClient = configuration.GetSection($"ServiceInformation:{env}:ApiGateway:Url").Value;
 
         services.AddHttpClient("gateway", config =>
         {
