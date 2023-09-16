@@ -31,7 +31,7 @@ public class MonitoringAuthorizationDelegatingHandler : DelegatingHandler
             ProjectType = EnumProjectType.MonitoringService,
             ClientId = serviceInformation.ClientId,
             ClientSecret = serviceInformation.ClientSecret,
-            Scope = new List<string>() { "monitoring.writepermission" }
+            Scope = serviceInformation.Scope
         };
 
         var token = await _clientCredentialTokenService.GetToken(monitoringTokenModel);

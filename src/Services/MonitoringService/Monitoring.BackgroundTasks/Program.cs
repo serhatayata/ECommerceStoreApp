@@ -1,5 +1,7 @@
 using Monitoring.BackgroundTasks.Extensions;
 using Monitoring.BackgroundTasks.Models.Settings;
+using Monitoring.BackgroundTasks.Services.Abstract;
+using Monitoring.BackgroundTasks.Services.Concrete;
 using Quartz;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +12,9 @@ IWebHostEnvironment environment = builder.Environment;
 builder.Configuration.SetBasePath(Directory.GetCurrentDirectory());
 builder.Host.AddHostExtensions(environment);
 
+#region DI
+builder.Services.AddScoped<IClientCredentialsTokenService, ClientCredentialsTokenService>();
+#endregion
 #region LOG
 builder.Services.AddLogConfiguration();
 #endregion

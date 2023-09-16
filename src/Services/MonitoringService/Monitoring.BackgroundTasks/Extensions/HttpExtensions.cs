@@ -1,4 +1,6 @@
-﻿namespace Monitoring.BackgroundTasks.Extensions;
+﻿using Monitoring.BackgroundTasks.Infrastructure.DelegatingHandlers;
+
+namespace Monitoring.BackgroundTasks.Extensions;
 
 public static class HttpExtensions
 {
@@ -6,7 +8,7 @@ public static class HttpExtensions
     {
         string env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
-        //services.AddScoped<MonitoringRequestTokenHandler>();
+        services.AddScoped<MonitoringAuthorizationDelegatingHandler>();
 
         #region HttpClients
         string gatewayClient = configuration.GetSection($"ServiceInformation:{env}:ApiGateway:Url").Value;
@@ -15,8 +17,7 @@ public static class HttpExtensions
         {
             var baseAddress = $"{gatewayClient}";
             config.BaseAddress = new Uri(baseAddress);
-        });
-        //.AddHttpMessageHandler<MonitoringRequestTokenHandler>();
+        }).AddHttpMessageHandler<MonitoringAuthorizationDelegatingHandler>();
 
         #endregion
     }

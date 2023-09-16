@@ -23,11 +23,11 @@ public class ClientCredentialsTokenService : IClientCredentialsTokenService
 
     public async Task<DataResult<string>> GetToken(ClientCredentialsTokenModel model)
     {
-        var identityBaseUri = _configuration.GetSection($"IdentityServerConfigurations:Url").Value;
+        var identityServerInfo = _configuration.GetSection($"ServiceInformation:{this.env}:{EnumProjectType.IdentityServer}").Get<ServiceInformationSettings>();
 
         var disco = await _httpClient.GetDiscoveryDocumentAsync(new DiscoveryDocumentRequest
         {
-            Address = identityBaseUri,
+            Address = identityServerInfo.Url,
             Policy = new DiscoveryPolicy { RequireHttps = false }
         });
 
