@@ -37,7 +37,11 @@ public class ClientCredentialsTokenService : IClientCredentialsTokenService
         var disco = await _httpClient.GetDiscoveryDocumentAsync(new DiscoveryDocumentRequest
         {
             Address = identityBaseUri,
-            Policy = new DiscoveryPolicy { RequireHttps = false }
+            Policy = new DiscoveryPolicy { 
+                RequireHttps = false, 
+                ValidateIssuerName = false,
+                ValidateEndpoints = false
+            }
         });
 
         if (disco.IsError)
