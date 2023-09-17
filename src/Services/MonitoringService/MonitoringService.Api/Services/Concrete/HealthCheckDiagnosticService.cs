@@ -1,4 +1,6 @@
-﻿using MonitoringService.Api.Extensions;
+﻿using Grpc.Health.V1;
+using Grpc.Net.Client;
+using MonitoringService.Api.Extensions;
 using MonitoringService.Api.Models.HealthCheckModels;
 using MonitoringService.Api.Models.Settings;
 using MonitoringService.Api.Services.Abstract;
@@ -55,7 +57,7 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
             {
                 _logger.LogError(ex, "ERROR health check: {ExceptionMessage} - Method : {ClassName}.{MethodName} - Service name : {ServiceName}",
                                  ex.Message,
-                                 nameof(GetAllHealthChecks),
+                                 nameof(HealthCheckDiagnosticService),
                                  MethodBase.GetCurrentMethod()?.Name,
                                  info.Name);
 
@@ -67,11 +69,6 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
         }
 
         return responseModel;
-    }
-
-    public Task<List<HealthCheckModel>> GetAllGrpcHealthChecks()
-    {
-        throw new NotImplementedException();
     }
 
     public async Task<HealthCheckModel> GetHealthCheck(string serviceName)
@@ -110,7 +107,7 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
         {
             _logger.LogError(ex, "ERROR health check: {ExceptionMessage} - Method : {ClassName}.{MethodName} - Service name : {ServiceName}",
                              ex.Message,
-                             nameof(GetAllHealthChecks),
+                             nameof(HealthCheckDiagnosticService),
                              MethodBase.GetCurrentMethod()?.Name,
                              currentService.Name);
 
@@ -118,8 +115,68 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
         }
     }
 
-    public Task<HealthCheckModel> GetGrpcHealthCheck(string serviceName)
+    public async Task<List<GrpcHealthCheckModel>> GetAllGrpcHealthChecks()
     {
-        throw new NotImplementedException();
+        var responseModel = new List<GrpcHealthCheckModel>();
+
+        try
+        {
+            var serviceInformation = _configuration.GetSection($"GrpcServiceInformation:{this.Env}").Get<ServiceInformationSettings[]>();
+            if (serviceInformation == null)
+                return responseModel;
+
+            foreach (var service in serviceInformation)
+            {
+                var channel = GrpcChannel.ForAddress(service.Url);
+                var client = new Health.HealthClient(channel);
+
+                var response = await client.CheckAsync(new HealthCheckRequest());
+                var status = response.Status;
+
+                responseModel.Add(new GrpcHealthCheckModel(service.Name, service.Url, status));
+            }
+
+            return responseModel;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "ERROR grpc health check: {ExceptionMessage} - Method : {ClassName}.{MethodName}",
+                 ex.Message,
+                 nameof(HealthCheckDiagnosticService),
+                 MethodBase.GetCurrentMethod()?.Name);
+
+            return responseModel;
+        }
+    }
+
+    public async Task<GrpcHealthCheckModel> GetGrpcHealthCheck(string serviceName)
+    {
+        try
+        {
+            var serviceInformation = _configuration.GetSection($"GrpcServiceInformation:{this.Env}").Get<ServiceInformationSettings[]>();
+            if (serviceInformation == null)
+                return null;
+
+            var service = serviceInformation.FirstOrDefault(s => s.Name == serviceName);
+            if (service == null)
+                return null;
+
+            var channel = GrpcChannel.ForAddress(service.Url);
+            var client = new Health.HealthClient(channel);
+
+            var response = await client.CheckAsync(new HealthCheckRequest());
+            var status = response.Status;
+
+            return new GrpcHealthCheckModel(service.Name, service.Url, status);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "ERROR grpc health check: {ExceptionMessage} - Method : {ClassName}.{MethodName}",
+                 ex.Message,
+                 nameof(HealthCheckDiagnosticService),
+                 MethodBase.GetCurrentMethod()?.Name);
+
+            return null;
+        }
     }
 }

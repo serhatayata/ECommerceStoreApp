@@ -29,6 +29,15 @@ public class HealthCheckController : ControllerBase
 
     [AuthorizeMultiplePolicy("MonitoringWrite", false)]
     [HttpPost]
+    [Route("healthchecks-all-grpc")]
+    public async Task<IActionResult> GetHealthChecksGrpcAsync()
+    {
+        var result = await _diagnosticService.GetAllGrpcHealthChecks();
+        return Ok(result);
+    }
+
+    [AuthorizeMultiplePolicy("MonitoringWrite", false)]
+    [HttpPost]
     [Route("healthcheck")]
     public async Task<IActionResult> GetHealthChecksAsync([FromBody] StringModel model)
     {
