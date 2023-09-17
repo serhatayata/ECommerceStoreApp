@@ -11,11 +11,11 @@ public static class HttpExtensions
         services.AddScoped<MonitoringAuthorizationDelegatingHandler>();
 
         #region HttpClients
-        string gatewayClient = configuration.GetSection($"ServiceInformation:{env}:ApiGateway:Url").Value;
+        string monitoringClient = configuration.GetSection($"ServiceInformation:{env}:MonitoringService:Url").Value;
 
-        services.AddHttpClient("gateway", config =>
+        services.AddHttpClient("monitoring", config =>
         {
-            var baseAddress = $"{gatewayClient}";
+            var baseAddress = $"{monitoringClient}";
             config.BaseAddress = new Uri(baseAddress);
         }).AddHttpMessageHandler<MonitoringAuthorizationDelegatingHandler>();
 

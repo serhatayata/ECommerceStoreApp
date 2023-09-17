@@ -45,8 +45,6 @@ public static class ServiceDiscoveryExtensions
             //var uri = configuration.GetValue<Uri>("ConsulConfig:ServiceAddress");
             var consulSettings = configuration.GetSection("ConsulConfig").Get<ConsulSettings>();
 
-            var serviceChecks = new List<AgentServiceCheck>();
-
             var registration = new AgentServiceRegistration()
             {
                 ID = consulSettings?.ServiceId ?? "MonitoringService",

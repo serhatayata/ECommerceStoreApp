@@ -69,6 +69,11 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
         return responseModel;
     }
 
+    public Task<List<HealthCheckModel>> GetAllGrpcHealthChecks()
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<HealthCheckModel> GetHealthCheck(string serviceName)
     {
         var serviceInformation = _configuration.GetSection($"ServiceInformation:{this.Env}").Get<ServiceInformationSettings[]>();
@@ -111,5 +116,10 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
 
             return null;
         }
+    }
+
+    public Task<HealthCheckModel> GetGrpcHealthCheck(string serviceName)
+    {
+        throw new NotImplementedException();
     }
 }

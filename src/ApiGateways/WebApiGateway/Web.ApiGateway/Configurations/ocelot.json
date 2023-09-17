@@ -52,6 +52,28 @@
       //  }
       //]
     },
+    // CATALOG SERVICE
+    {
+      "UseServiceDiscovery": true,
+      "ServiceName": "CatalogService",
+      "DownstreamPathTemplate": "/{everything}",
+      "DownstreamScheme": "https",
+
+      "UpstreamPathTemplate": "/catalog/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "DELETE", "PUT" ],
+      "UpstreamScheme": "http"
+    },
+    // CATALOG GRPC SERVICE
+    {
+      "UseServiceDiscovery": true,
+      "ServiceName": "CatalogGrpcService",
+      "DownstreamPathTemplate": "/{everything}",
+      "DownstreamScheme": "https",
+
+      "UpstreamPathTemplate": "/cataloggrpc/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "DELETE", "PUT" ],
+      "UpstreamScheme": "http"
+    },
     // HEALTH CHECK SERVICE
     {
       "UseServiceDiscovery": true,

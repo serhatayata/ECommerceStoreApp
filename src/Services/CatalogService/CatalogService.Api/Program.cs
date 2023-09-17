@@ -25,15 +25,15 @@ using CatalogService.Api.Utilities.Options;
 using EventBus.Base;
 using EventBus.Base.Abstraction;
 using EventBus.Factory;
-using HealthChecks.UI.Client;
 using IntegrationEventLogEF;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Logging;
 using RabbitMQ.Client;
+using System.Net;
 using System.Reflection;
-using static IdentityModel.OidcConstants;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
@@ -59,6 +59,45 @@ builder.Services.AddTransient<IClientCredentialsTokenService, ClientCredentialsT
 #endregion
 #region Host
 builder.Host.AddHostExtensions(environment);
+#endregion
+#region WebHost
+if (environment.IsProduction())
+{
+    builder.WebHost.UseKestrel(options =>
+    {
+        var ports = GetDefinedPorts(builder.Configuration);
+        options.Listen(IPAddress.Any, ports.grpcPort, listenOptions =>
+        {
+            listenOptions.Protocols = HttpProtocols.Http1AndHttp2;
+        });
+        options.Listen(IPAddress.Any, ports.httpPort, listenOptions =>
+        {
+            listenOptions.Protocols = HttpProtocols.Http1AndHttp2;
+        });
+    });
+}
+else
+{
+    builder.WebHost.UseKestrel(options =>
+    {
+        var ports = GetDefinedPorts(builder.Configuration);
+        options.ListenLocalhost(ports.grpcPort, listenOptions =>
+        {
+            listenOptions.Protocols = HttpProtocols.Http1AndHttp2;
+        });
+        options.ListenLocalhost(ports.httpPort, listenOptions =>
+        {
+            listenOptions.Protocols = HttpProtocols.Http1AndHttp2;
+        });
+    });
+}
+
+(int httpPort, int grpcPort) GetDefinedPorts(IConfiguration config)
+{
+    var grpcPort = config.GetValue("GRPC_PORT", 5006);
+    var port = config.GetValue("PORT", 7006);
+    return (port, grpcPort);
+}
 #endregion
 #region Authorization-Authentication
 builder.Services.AddAuthenticationConfigurations(configuration);

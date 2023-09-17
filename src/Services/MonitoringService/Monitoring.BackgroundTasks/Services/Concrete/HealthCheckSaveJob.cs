@@ -30,9 +30,9 @@ public class HealthCheckSaveJob : IJob
         try
         {
             _logger.LogInformation("Health check saving started");
-            var gatewayClient = _httpClientFactory.CreateClient("gateway");
+            var gatewayClient = _httpClientFactory.CreateClient("monitoring");
 
-            var requestResult = await gatewayClient.PostGetResponseAsync<List<HealthCheckModel>, string>("monitoring/api/healthcheck/healthchecks-all", null);
+            var requestResult = await gatewayClient.PostGetResponseAsync<List<HealthCheckModel>, string>("api/healthcheck/healthchecks-all", null);
 
             //Connection
             if (requestResult != null &&

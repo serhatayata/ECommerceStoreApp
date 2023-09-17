@@ -11,7 +11,7 @@ public static class ServiceDiscoveryExtensions
     {
         services.AddSingleton<IConsulClient, ConsulClient>(p => new ConsulClient(consulConfig =>
         {
-            var address = configuration["ConsulConfig:Address"];
+            var address = configuration["ConsulConfig:Base:Address"];
             consulConfig.Address = new Uri(address);
         }));
 
@@ -26,42 +26,69 @@ public static class ServiceDiscoveryExtensions
             var loggingFactory = app.ApplicationServices.GetRequiredService<ILoggerFactory>();
             var server = app.ApplicationServices.GetRequiredService<IServer>();
 
-            //var name = Dns.GetHostName(); // container id
-            //var ip = Dns.GetHostEntry(name).AddressList.FirstOrDefault(x => x.AddressFamily == AddressFamily.InterNetwork); // container ip
-
             var addressFeature = server.Features.Get<IServerAddressesFeature>();
-            var addresses = addressFeature.Addresses;
-            var address = addresses.First();
-            Uri currentUri = new Uri(address, UriKind.Absolute);
+            var addresses = addressFeature?.Addresses;
 
-            //var address = configuration.GetSection("ConsulConfig:HostAddress").Value;
-            //Uri currentUri = new Uri(address, UriKind.Absolute);
+            if (addresses == null)
+                return app;
+
+
 
             var logger = loggingFactory.CreateLogger<IApplicationBuilder>();
 
-            //var uri = configuration.GetValue<Uri>("ConsulConfig:ServiceAddress");
-            var consulSettings = configuration.GetSection("ConsulConfig").Get<ConsulSettings>();
+            var consulSettings = configuration.GetSection("ConsulConfig:Base").Get<ConsulSettings>();
+            var consulGrpcSettings = configuration.GetSection("ConsulConfig:Grpc").Get<ConsulSettings>();
 
-            var serviceChecks = new List<AgentServiceCheck>();
-
-            var registration = new AgentServiceRegistration()
-            {
-                ID = consulSettings?.ServiceId ?? "CatalogService",
-                Name = consulSettings?.ServiceName ?? "CatalogService",
-                Address = currentUri.Host,
-                Port = currentUri.Port,
-                Tags = new[] { consulSettings?.ServiceName, consulSettings?.ServiceId}
-            };
-
+            var registrationIds = new List<string>();
             logger.LogInformation("Registering with consul");
-            consulClient.Agent.ServiceDeregister(registration.ID).Wait();
-            consulClient.Agent.ServiceRegister(registration).Wait();
+
+            //Base
+            if (consulSettings != null)
+            {
+                var address = addresses.Take(1).FirstOrDefault();
+                if (!string.IsNullOrWhiteSpace(address))
+                {
+                    Uri currentUri = new Uri(address, UriKind.Absolute);
+
+                    var baseRegistrationId = RegisterConsulService(
+                        app,
+                        consulSettings.ServiceId,
+                        consulSettings.ServiceName,
+                        currentUri.Host,
+                        currentUri.Port);
+
+                    if (!string.IsNullOrWhiteSpace(baseRegistrationId))
+                        registrationIds.Add(baseRegistrationId);
+                }
+            }
+            //GRPC
+            if (consulGrpcSettings != null)
+            {
+                var address = addresses.Skip(1).Take(1).FirstOrDefault();
+                if (!string.IsNullOrWhiteSpace(address))
+                {
+                    Uri currentUri = new Uri(address, UriKind.Absolute);
+
+                    var baseRegistrationId = RegisterConsulService(
+                        app,
+                        consulGrpcSettings.ServiceId,
+                        consulGrpcSettings.ServiceName,
+                        currentUri.Host,
+                        currentUri.Port);
+
+                    if (!string.IsNullOrWhiteSpace(baseRegistrationId))
+                        registrationIds.Add(baseRegistrationId);
+                }
+            }
 
             //When application stops, this service will be deregistered.
             lifeTime.ApplicationStopping.Register(() =>
             {
                 logger.LogInformation("Deregistering from Consul");
-                consulClient.Agent.ServiceDeregister(registration.ID).Wait();
+                foreach (var registrationId in registrationIds)
+                {
+                    consulClient.Agent.ServiceDeregister(registrationId).Wait();
+                }
             });
 
             return app;
@@ -70,5 +97,29 @@ public static class ServiceDiscoveryExtensions
         {
             throw ex;
         }
+    }
+
+    private static string? RegisterConsulService(
+        IApplicationBuilder app,
+        string serviceId,
+        string serviceName,
+        string host,
+        int port)
+    {
+        var consulClient = app.ApplicationServices.GetRequiredService<IConsulClient>();
+
+        var registration = new AgentServiceRegistration()
+        {
+            ID = serviceId,
+            Name = serviceName,
+            Address = host,
+            Port = port,
+            Tags = new[] { serviceName, serviceId }
+        };
+
+        consulClient.Agent.ServiceDeregister(registration.ID).Wait();
+        consulClient.Agent.ServiceRegister(registration).Wait();
+
+        return registration.ID;
     }
 }
