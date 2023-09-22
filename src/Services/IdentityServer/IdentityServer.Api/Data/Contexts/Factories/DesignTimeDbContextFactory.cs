@@ -9,7 +9,9 @@ namespace IdentityServer.Api.Data.Contexts.Factories
         {
             IConfigurationRoot configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("Configurations/appsettings.json")
+                .AddJsonFile("Configurations/appsettings.json", 
+                             optional: false, 
+                             reloadOnChange: true)
                 .Build();
 
             var builder = new DbContextOptionsBuilder<AppIdentityDbContext>();

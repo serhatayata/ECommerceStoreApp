@@ -9,8 +9,12 @@
             {
                 return new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile($"Configurations/appsettings.json", optional: false) // if same value is used like ConnectionString, this will be the second option (optional)
-                .AddJsonFile($"Configurations/appsettings.{env}.json", optional: true)
+                .AddJsonFile($"Configurations/appsettings.json", 
+                             optional: false, 
+                             reloadOnChange: true) // if same value is used like ConnectionString, this will be the second option (optional)
+                .AddJsonFile($"Configurations/appsettings.{env}.json", 
+                             optional: false, 
+                             reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .Build();
             }
@@ -22,8 +26,12 @@
             {
                 return new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile($"Configurations/serilog.json", optional: false) // if same value is used like ConnectionString, this will be the second option (optional)
-                .AddJsonFile($"Configurations/serilog.{env}.json", optional: true)
+                .AddJsonFile($"Configurations/serilog.json", 
+                             optional: false, 
+                             reloadOnChange: true) // if same value is used like ConnectionString, this will be the second option (optional)
+                .AddJsonFile($"Configurations/serilog.{env}.json", 
+                             optional: false, 
+                             reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .Build();
             }

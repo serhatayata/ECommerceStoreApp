@@ -1,7 +1,6 @@
-﻿using IdentityServer4.EntityFramework.DbContexts;
-using IdentityServer4.EntityFramework.Options;
-using Microsoft.EntityFrameworkCore.Design;
+﻿using IdentityServer4.EntityFramework.Options;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 
 namespace IdentityServer.Api.Data.Contexts.Factories
 {
@@ -13,7 +12,9 @@ namespace IdentityServer.Api.Data.Contexts.Factories
 
             var config = new ConfigurationBuilder()
                .SetBasePath(Path.Combine(Directory.GetCurrentDirectory()))
-               .AddJsonFile("Configurations/appsettings.json")
+               .AddJsonFile("Configurations/appsettings.json", 
+                            optional: false,
+                            reloadOnChange: true)
                .AddEnvironmentVariables()
                .Build();
 

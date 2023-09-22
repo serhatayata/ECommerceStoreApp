@@ -13,8 +13,12 @@ namespace IdentityServer.Api.Extensions
             var env = System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             //Get Config
             var configuration = new ConfigurationBuilder()
-                                .AddJsonFile("Configurations/serilog.json", optional: false, reloadOnChange: true)
-                                .AddJsonFile($"Configurations/serilog.{env}.json", optional: true)
+                                .AddJsonFile("Configurations/serilog.json", 
+                                             optional: false, 
+                                             reloadOnChange: true)
+                                .AddJsonFile($"Configurations/serilog.{env}.json", 
+                                             optional: false, 
+                                             reloadOnChange: true)
                                 .Build();
 
             //Create logger
