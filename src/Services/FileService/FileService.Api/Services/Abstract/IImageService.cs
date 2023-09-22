@@ -1,5 +1,5 @@
 ﻿using FileService.Api.Dtos.ImageDtos;
-using Shared.Utilities.Results;
+using FileService.Api.Utilities.Results;
 
 namespace FileService.Api.Services.Abstract
 {

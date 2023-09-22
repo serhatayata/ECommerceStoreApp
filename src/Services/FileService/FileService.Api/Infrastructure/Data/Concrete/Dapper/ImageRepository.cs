@@ -1,6 +1,6 @@
 ﻿using FileService.Api.Dtos.ImageDtos;
 using FileService.Api.Infrastructure.Data.Abstract.Dapper;
-using Shared.Utilities.Results;
+using FileService.Api.Utilities.Results;
 
 namespace FileService.Api.Infrastructure.Data.Concrete.Dapper
 {

@@ -1,11 +1,8 @@
-﻿using Shared.Utilities.Models;
+﻿using FileService.Api.Models.Base;
 
-namespace FileService.Api.Dtos.ImageDtos
+namespace FileService.Api.Dtos.ImageDtos;
+
+public class ImageEntityTypePagingDto : Paging
 {
-    public class ImageEntityTypePagingDto : Paging
-    {
-        public int EntityTypeId { get; set; }
-        public override int Page { get; set; } = 1;
-        public override int PageSize { get; set; } = 8;
-    }
+    public int EntityTypeId { get; set; }
 }
