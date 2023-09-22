@@ -1,5 +1,6 @@
 ﻿using Monitoring.BackgroundTasks.Extensions;
 using Monitoring.BackgroundTasks.Models.HealthCheckModels;
+using Monitoring.BackgroundTasks.Utilities.Results;
 using Npgsql;
 using Quartz;
 
@@ -32,7 +33,8 @@ public class HealthCheckSaveJob : IJob
             _logger.LogInformation("Health check saving started");
             var gatewayClient = _httpClientFactory.CreateClient("monitoring");
 
-            var requestResult = await gatewayClient.PostGetResponseAsync<List<HealthCheckModel>, string>("api/healthcheck/healthchecks-all", null);
+            var request = await gatewayClient.PostGetResponseAsync<DataResult<List<HealthCheckModel>>, string>("api/healthcheck/healthchecks-all", null);
+            var requestResult = request?.Data ?? new List<HealthCheckModel>();
 
             //Connection
             if (requestResult != null &&

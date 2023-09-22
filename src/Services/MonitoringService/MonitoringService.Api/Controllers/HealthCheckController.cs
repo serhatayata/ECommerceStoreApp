@@ -20,7 +20,7 @@ public class HealthCheckController : ControllerBase
 
     [AuthorizeMultiplePolicy("MonitoringWrite", false)]
     [HttpPost]
-    [Route("healthchecks-all")]
+    [Route("get-all")]
     public async Task<IActionResult> GetHealthChecksAsync()
     {
         var result = await _diagnosticService.GetAllHealthChecks();
@@ -29,7 +29,7 @@ public class HealthCheckController : ControllerBase
 
     [AuthorizeMultiplePolicy("MonitoringWrite", false)]
     [HttpPost]
-    [Route("healthchecks-all-grpc")]
+    [Route("get-all-grpc")]
     public async Task<IActionResult> GetHealthChecksGrpcAsync()
     {
         var result = await _diagnosticService.GetAllGrpcHealthChecks();
@@ -38,10 +38,10 @@ public class HealthCheckController : ControllerBase
 
     [AuthorizeMultiplePolicy("MonitoringWrite", false)]
     [HttpPost]
-    [Route("healthcheck")]
+    [Route("get-grpc")]
     public async Task<IActionResult> GetHealthChecksAsync([FromBody] StringModel model)
     {
-        var result = await _diagnosticService.GetHealthCheck(model.Value);
+        var result = await _diagnosticService.GetGrpcHealthCheck(model.Value);
         return Ok(result);
     }
 }

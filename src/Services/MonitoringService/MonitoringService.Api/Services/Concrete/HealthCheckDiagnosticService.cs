@@ -4,6 +4,7 @@ using MonitoringService.Api.Extensions;
 using MonitoringService.Api.Models.HealthCheckModels;
 using MonitoringService.Api.Models.Settings;
 using MonitoringService.Api.Services.Abstract;
+using MonitoringService.Api.Utilities.Results;
 using System.Reflection;
 
 namespace MonitoringService.Api.Services.Concrete;
@@ -24,11 +25,11 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
         _logger = logger;
     }
 
-    public async Task<List<HealthCheckModel>> GetAllHealthChecks()
+    public async Task<DataResult<List<HealthCheckModel>>> GetAllHealthChecks()
     {
         var serviceInformation = _configuration.GetSection($"ServiceInformation:{this.Env}").Get<ServiceInformationSettings[]>();
         if (serviceInformation == null)
-            return null;
+            return new ErrorDataResult<List<HealthCheckModel>>(null);
 
         var responseModel = new List<HealthCheckModel>();
 
@@ -68,18 +69,18 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
             }
         }
 
-        return responseModel;
+        return new SuccessDataResult<List<HealthCheckModel>>(null); ;
     }
 
-    public async Task<HealthCheckModel> GetHealthCheck(string serviceName)
+    public async Task<DataResult<HealthCheckModel>> GetHealthCheck(string serviceName)
     {
         var serviceInformation = _configuration.GetSection($"ServiceInformation:{this.Env}").Get<ServiceInformationSettings[]>();
         if (serviceInformation == null)
-            return null;
+            return new ErrorDataResult<HealthCheckModel>(null);
 
         var currentService = serviceInformation.FirstOrDefault(s => s.Name == serviceName);
         if (currentService == null)
-            return null;
+            return new ErrorDataResult<HealthCheckModel>(null);
 
         try
         {
@@ -92,9 +93,9 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
             var httpResponse = await client.PostGetResponseAsync<HealthCheckResponseModel, string>(requestUrl, null);
 
             if (httpResponse == null)
-                return null;
+                return new ErrorDataResult<HealthCheckModel>(null);
 
-            return new HealthCheckModel()
+            var result = new HealthCheckModel()
             {
                 ServiceName = currentService.Name,
                 Status = httpResponse.Status,
@@ -102,6 +103,8 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
                 TotalDuration = httpResponse.Duration,
                 Info = httpResponse.Info,
             };
+
+            return new SuccessDataResult<HealthCheckModel>(result);
         }
         catch (Exception ex)
         {
@@ -111,11 +114,11 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
                              MethodBase.GetCurrentMethod()?.Name,
                              currentService.Name);
 
-            return null;
+            return new ErrorDataResult<HealthCheckModel>(null);
         }
     }
 
-    public async Task<List<GrpcHealthCheckModel>> GetAllGrpcHealthChecks()
+    public async Task<DataResult<List<GrpcHealthCheckModel>>> GetAllGrpcHealthChecks()
     {
         var responseModel = new List<GrpcHealthCheckModel>();
 
@@ -123,7 +126,7 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
         {
             var serviceInformation = _configuration.GetSection($"GrpcServiceInformation:{this.Env}").Get<ServiceInformationSettings[]>();
             if (serviceInformation == null)
-                return responseModel;
+                return new ErrorDataResult<List<GrpcHealthCheckModel>>(responseModel);
 
             foreach (var service in serviceInformation)
             {
@@ -136,7 +139,7 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
                 responseModel.Add(new GrpcHealthCheckModel(service.Name, service.Url, status));
             }
 
-            return responseModel;
+            return new SuccessDataResult<List<GrpcHealthCheckModel>>(responseModel);
         }
         catch (Exception ex)
         {
@@ -145,29 +148,33 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
                  nameof(HealthCheckDiagnosticService),
                  MethodBase.GetCurrentMethod()?.Name);
 
-            return responseModel;
+            return new ErrorDataResult<List<GrpcHealthCheckModel>>(responseModel);
         }
     }
 
-    public async Task<GrpcHealthCheckModel> GetGrpcHealthCheck(string serviceName)
+    public async Task<DataResult<GrpcHealthCheckModel>> GetGrpcHealthCheck(string serviceName)
     {
         try
         {
             var serviceInformation = _configuration.GetSection($"GrpcServiceInformation:{this.Env}").Get<ServiceInformationSettings[]>();
             if (serviceInformation == null)
-                return null;
+                return new ErrorDataResult<GrpcHealthCheckModel>(null);
 
             var service = serviceInformation.FirstOrDefault(s => s.Name == serviceName);
             if (service == null)
-                return null;
+                return new ErrorDataResult<GrpcHealthCheckModel>(null);
 
             var channel = GrpcChannel.ForAddress(service.Url);
             var client = new Health.HealthClient(channel);
 
             var response = await client.CheckAsync(new HealthCheckRequest());
+            if(response == null)
+                return new ErrorDataResult<GrpcHealthCheckModel>(null);
+
             var status = response.Status;
 
-            return new GrpcHealthCheckModel(service.Name, service.Url, status);
+            var result = new GrpcHealthCheckModel(service.Name, service.Url, status);
+            return new SuccessDataResult<GrpcHealthCheckModel>(result);
         }
         catch (Exception ex)
         {
@@ -176,7 +183,7 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
                  nameof(HealthCheckDiagnosticService),
                  MethodBase.GetCurrentMethod()?.Name);
 
-            return null;
+            return new ErrorDataResult<GrpcHealthCheckModel>(null);
         }
     }
 }
