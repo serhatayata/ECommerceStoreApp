@@ -10,7 +10,7 @@ public static class ControllerExtensions
     {
         services.AddControllers(options =>
         {
-            options.Filters.Add(typeof(HttpGlobalExceptionFilter));
+            //options.Filters.Add(typeof(HttpGlobalExceptionFilter));
 
             options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
         }).AddJsonOptions(o =>

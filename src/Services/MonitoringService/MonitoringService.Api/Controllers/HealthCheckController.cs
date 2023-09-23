@@ -21,27 +21,27 @@ public class HealthCheckController : ControllerBase
     [AuthorizeMultiplePolicy("MonitoringWrite", false)]
     [HttpPost]
     [Route("get-all")]
-    public async Task<IActionResult> GetHealthChecksAsync()
+    public async Task<IActionResult> GetHealthChecksAsync(CancellationToken cancellationToken)
     {
-        var result = await _diagnosticService.GetAllHealthChecks();
+        var result = await _diagnosticService.GetAllHealthChecks(cancellationToken);
         return Ok(result);
     }
 
-    [AuthorizeMultiplePolicy("MonitoringWrite", false)]
+    //[AuthorizeMultiplePolicy("MonitoringWrite", false)]
     [HttpPost]
     [Route("get-all-grpc")]
-    public async Task<IActionResult> GetHealthChecksGrpcAsync()
+    public async Task<IActionResult> GetHealthChecksGrpcAsync(CancellationToken cancellationToken)
     {
-        var result = await _diagnosticService.GetAllGrpcHealthChecks();
+        var result = await _diagnosticService.GetAllGrpcHealthChecks(cancellationToken);
         return Ok(result);
     }
 
     [AuthorizeMultiplePolicy("MonitoringWrite", false)]
     [HttpPost]
     [Route("get-grpc")]
-    public async Task<IActionResult> GetHealthChecksAsync([FromBody] StringModel model)
+    public async Task<IActionResult> GetHealthCheckGrpcAsync([FromBody] StringModel model, CancellationToken cancellationToken)
     {
-        var result = await _diagnosticService.GetGrpcHealthCheck(model.Value);
+        var result = await _diagnosticService.GetGrpcHealthCheck(model.Value, cancellationToken);
         return Ok(result);
     }
 }

@@ -25,7 +25,7 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
         _logger = logger;
     }
 
-    public async Task<DataResult<List<HealthCheckModel>>> GetAllHealthChecks()
+    public async Task<DataResult<List<HealthCheckModel>>> GetAllHealthChecks(CancellationToken cancellationToken)
     {
         var serviceInformation = _configuration.GetSection($"ServiceInformation:{this.Env}").Get<ServiceInformationSettings[]>();
         if (serviceInformation == null)
@@ -40,7 +40,7 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
                 var client = _httpClientFactory.CreateClient(info.Name);
 
                 var requestUrl = string.Join(string.Empty, info.Url, info.UrlSuffix);
-                var httpResponse = await client.PostGetResponseAsync<HealthCheckResponseModel, string>(requestUrl, null);
+                var httpResponse = await client.PostGetResponseAsync<HealthCheckResponseModel, string>(requestUrl, null, cancellationToken);
 
                 if (httpResponse == null)
                     continue;
@@ -54,7 +54,7 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
                     Info = httpResponse.Info,
                 });
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!cancellationToken.IsCancellationRequested)
             {
                 _logger.LogError(ex, "ERROR health check: {ExceptionMessage} - Method : {ClassName}.{MethodName} - Service name : {ServiceName}",
                                  ex.Message,
@@ -72,7 +72,7 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
         return new SuccessDataResult<List<HealthCheckModel>>(null); ;
     }
 
-    public async Task<DataResult<HealthCheckModel>> GetHealthCheck(string serviceName)
+    public async Task<DataResult<HealthCheckModel>> GetHealthCheck(string serviceName, CancellationToken cancellationToken)
     {
         var serviceInformation = _configuration.GetSection($"ServiceInformation:{this.Env}").Get<ServiceInformationSettings[]>();
         if (serviceInformation == null)
@@ -90,7 +90,7 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
                                          currentService.Url,
                                          currentService.UrlSuffix);
 
-            var httpResponse = await client.PostGetResponseAsync<HealthCheckResponseModel, string>(requestUrl, null);
+            var httpResponse = await client.PostGetResponseAsync<HealthCheckResponseModel, string>(requestUrl, null, cancellationToken);
 
             if (httpResponse == null)
                 return new ErrorDataResult<HealthCheckModel>(null);
@@ -106,7 +106,7 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
 
             return new SuccessDataResult<HealthCheckModel>(result);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (!cancellationToken.IsCancellationRequested)
         {
             _logger.LogError(ex, "ERROR health check: {ExceptionMessage} - Method : {ClassName}.{MethodName} - Service name : {ServiceName}",
                              ex.Message,
@@ -118,7 +118,7 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
         }
     }
 
-    public async Task<DataResult<List<GrpcHealthCheckModel>>> GetAllGrpcHealthChecks()
+    public async Task<DataResult<List<GrpcHealthCheckModel>>> GetAllGrpcHealthChecks(CancellationToken cancellationToken)
     {
         var responseModel = new List<GrpcHealthCheckModel>();
 
@@ -133,7 +133,7 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
                 var channel = GrpcChannel.ForAddress(service.Url);
                 var client = new Health.HealthClient(channel);
 
-                var response = await client.CheckAsync(new HealthCheckRequest());
+                var response = await client.CheckAsync(request: new HealthCheckRequest(), cancellationToken: cancellationToken);
                 var status = response.Status;
 
                 responseModel.Add(new GrpcHealthCheckModel(service.Name, service.Url, status));
@@ -141,7 +141,7 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
 
             return new SuccessDataResult<List<GrpcHealthCheckModel>>(responseModel);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (!cancellationToken.IsCancellationRequested)
         {
             _logger.LogError(ex, "ERROR grpc health check: {ExceptionMessage} - Method : {ClassName}.{MethodName}",
                  ex.Message,
@@ -152,7 +152,7 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
         }
     }
 
-    public async Task<DataResult<GrpcHealthCheckModel>> GetGrpcHealthCheck(string serviceName)
+    public async Task<DataResult<GrpcHealthCheckModel>> GetGrpcHealthCheck(string serviceName, CancellationToken cancellationToken)
     {
         try
         {
@@ -167,7 +167,7 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
             var channel = GrpcChannel.ForAddress(service.Url);
             var client = new Health.HealthClient(channel);
 
-            var response = await client.CheckAsync(new HealthCheckRequest());
+            var response = await client.CheckAsync(request: new HealthCheckRequest(), cancellationToken: cancellationToken);
             if(response == null)
                 return new ErrorDataResult<GrpcHealthCheckModel>(null);
 
@@ -176,7 +176,7 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
             var result = new GrpcHealthCheckModel(service.Name, service.Url, status);
             return new SuccessDataResult<GrpcHealthCheckModel>(result);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (!cancellationToken.IsCancellationRequested)
         {
             _logger.LogError(ex, "ERROR grpc health check: {ExceptionMessage} - Method : {ClassName}.{MethodName}",
                  ex.Message,

@@ -4,7 +4,11 @@ namespace MonitoringService.Api.Extensions;
 
 public static class HttpClientExtensions
 {
-    public async static Task<TResult?> PostGetResponseAsync<TResult, TValue>(this HttpClient Client, string Url, TValue Value)
+    public async static Task<TResult?> PostGetResponseAsync<TResult, TValue>(
+        this HttpClient client, 
+        string url, 
+        TValue value, 
+        CancellationToken cancellationToken)
     {
         var jsonSerializerOptions = new JsonSerializerOptions
         {
@@ -13,18 +17,30 @@ public static class HttpClientExtensions
             DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
         };
 
-        var httpRes = await Client.PostAsJsonAsync(Url, Value);
+        var httpRes = await client.PostAsJsonAsync(requestUri: url, 
+                                                   value: value, 
+                                                   cancellationToken: cancellationToken);
 
-        return httpRes.IsSuccessStatusCode ? await httpRes.Content.ReadFromJsonAsync<TResult>(options: jsonSerializerOptions) : default;
+        return httpRes.IsSuccessStatusCode ? await httpRes.Content.ReadFromJsonAsync<TResult>(options: jsonSerializerOptions, 
+                                                                                              cancellationToken: cancellationToken) : default;
     }
 
-    public async static Task PostAsync<TValue>(this HttpClient Client, string Url, TValue Value)
+    public async static Task PostAsync<TValue>(
+        this HttpClient client, 
+        string url, 
+        TValue value,
+        CancellationToken cancellationToken)
     {
-        await Client.PostAsJsonAsync(Url, Value);
+        await client.PostAsJsonAsync(requestUri: url, 
+                                     value: value,
+                                     cancellationToken: cancellationToken);
     }
 
-    public async static Task<T?> GetResponseAsync<T>(this HttpClient Client, string Url)
+    public async static Task<T?> GetResponseAsync<T>(
+        this HttpClient client, 
+        string url,
+        CancellationToken cancellationToken)
     {
-        return await Client.GetFromJsonAsync<T>(Url);
+        return await client.GetFromJsonAsync<T>(requestUri: url, cancellationToken: cancellationToken);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.Reflection;
+using MonitoringService.Api.Services.Concrete;
 
 namespace MonitoringService.Api.Infrastructure.Converters;
 
@@ -30,7 +31,14 @@ public class DetailExceptionConverter : JsonConverter<Exception>
 
         foreach (var property in properties)
         {
-            jObject.AddFirst(new JProperty(property.Name, property.GetValue(value, null)));
+            try
+            {
+                jObject.AddFirst(new JProperty(property.Name, property.GetValue(value, null)));
+            }
+            catch (Exception ex)
+            {
+                continue;
+            }
         }
 
         jObject.WriteTo(writer);

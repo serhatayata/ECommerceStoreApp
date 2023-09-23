@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Logging;
 using MonitoringService.Api.DependencyResolvers.Autofac;
 using MonitoringService.Api.Extensions;
+using MonitoringService.Api.Extensions.MiddlewareExtensions;
 using MonitoringService.Api.Infrastructure.Contexts;
 using MonitoringService.Api.Mapping;
 
@@ -24,10 +25,10 @@ builder.Services.AddLogConfiguration();
 builder.Host.AddHostExtensions(environment);
 #endregion
 #region Authorization-Authentication
-builder.Services.AddAuthenticationConfigurations(configuration);
-builder.Services.AddAuthorizationConfigurations(configuration);
+//builder.Services.AddAuthenticationConfigurations(configuration);
+//builder.Services.AddAuthorizationConfigurations(configuration);
 
-IdentityModelEventSource.ShowPII = true;
+//IdentityModelEventSource.ShowPII = true;
 #endregion
 #region Http
 builder.Services.AddHttpClients(configuration);
@@ -55,13 +56,14 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+app.UseExceptionMiddleware();
 #region Routing-Redirection
 app.UseHttpsRedirection();
 app.UseRouting();
 #endregion
 #region Auth
-app.UseAuthentication();
-app.UseAuthorization();
+//app.UseAuthentication();
+//app.UseAuthorization();
 #endregion
 
 if (app.Environment.IsDevelopment())
