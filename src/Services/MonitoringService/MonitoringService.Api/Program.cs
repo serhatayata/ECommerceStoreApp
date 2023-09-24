@@ -7,6 +7,10 @@ using MonitoringService.Api.Extensions;
 using MonitoringService.Api.Extensions.MiddlewareExtensions;
 using MonitoringService.Api.Infrastructure.Contexts;
 using MonitoringService.Api.Mapping;
+using MonitoringService.Api.Services.Cache.Abstract;
+using MonitoringService.Api.Services.Cache.Concrete;
+using MonitoringService.Api.Services.Token.Abstract;
+using MonitoringService.Api.Services.Token.Concrete;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
@@ -17,6 +21,10 @@ var appConfig = ConfigurationExtension.appConfig;
 
 #region Controller
 builder.Services.AddControllerSettings();
+#endregion
+#region Startup DI
+builder.Services.AddScoped<IClientCredentialsTokenService, ClientCredentialsTokenService>();
+builder.Services.AddSingleton<IRedisService, RedisService>();
 #endregion
 #region Log
 builder.Services.AddLogConfiguration();
@@ -43,6 +51,12 @@ builder.Services.AddEntityFrameworkNpgsql()
 #region Consul
 builder.Services.ConfigureConsul(configuration);
 #endregion
+// DAHA SONRA DUZENLENECEK UZUN SURUYOR DIYE EKLENDI
+//if (environment.IsProduction())
+//{
+    await builder.Services.AddLocalizationSettingsAsync(configuration);
+    await builder.Services.AddLocalizationDataAsync(configuration);
+//}
 #region Autofac
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 builder.Host.ConfigureContainer<ContainerBuilder>(builder => builder.RegisterModule(new AutofacBusinessModule()));

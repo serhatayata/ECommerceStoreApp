@@ -1,6 +1,6 @@
 ﻿using Autofac;
-using MonitoringService.Api.Services.Abstract;
-using MonitoringService.Api.Services.Concrete;
+using MonitoringService.Api.Services.HealthCheck.Abstract;
+using MonitoringService.Api.Services.HealthCheck.Concrete;
 
 namespace MonitoringService.Api.DependencyResolvers.Autofac;
 

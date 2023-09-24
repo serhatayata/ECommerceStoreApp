@@ -1,7 +1,7 @@
 ﻿using MonitoringService.Api.Models.HealthCheckModels;
 using MonitoringService.Api.Utilities.Results;
 
-namespace MonitoringService.Api.Services.Abstract;
+namespace MonitoringService.Api.Services.HealthCheck.Abstract;
 
 public interface IHealthCheckDiagnosticService
 {

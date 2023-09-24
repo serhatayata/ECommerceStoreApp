@@ -3,11 +3,12 @@ using Grpc.Net.Client;
 using MonitoringService.Api.Extensions;
 using MonitoringService.Api.Models.HealthCheckModels;
 using MonitoringService.Api.Models.Settings;
-using MonitoringService.Api.Services.Abstract;
+using MonitoringService.Api.Services.Base;
+using MonitoringService.Api.Services.HealthCheck.Abstract;
 using MonitoringService.Api.Utilities.Results;
 using System.Reflection;
 
-namespace MonitoringService.Api.Services.Concrete;
+namespace MonitoringService.Api.Services.HealthCheck.Concrete;
 
 public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticService
 {
@@ -27,7 +28,7 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
 
     public async Task<DataResult<List<HealthCheckModel>>> GetAllHealthChecks(CancellationToken cancellationToken)
     {
-        var serviceInformation = _configuration.GetSection($"ServiceInformation:{this.Env}").Get<ServiceInformationSettings[]>();
+        var serviceInformation = _configuration.GetSection($"ServiceInformation:{Env}").Get<ServiceInformationSettings[]>();
         if (serviceInformation == null)
             return new ErrorDataResult<List<HealthCheckModel>>(null);
 
@@ -74,7 +75,7 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
 
     public async Task<DataResult<HealthCheckModel>> GetHealthCheck(string serviceName, CancellationToken cancellationToken)
     {
-        var serviceInformation = _configuration.GetSection($"ServiceInformation:{this.Env}").Get<ServiceInformationSettings[]>();
+        var serviceInformation = _configuration.GetSection($"ServiceInformation:{Env}").Get<ServiceInformationSettings[]>();
         if (serviceInformation == null)
             return new ErrorDataResult<HealthCheckModel>(null);
 
@@ -124,7 +125,7 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
 
         try
         {
-            var serviceInformation = _configuration.GetSection($"GrpcServiceInformation:{this.Env}").Get<ServiceInformationSettings[]>();
+            var serviceInformation = _configuration.GetSection($"GrpcServiceInformation:{Env}").Get<ServiceInformationSettings[]>();
             if (serviceInformation == null)
                 return new ErrorDataResult<List<GrpcHealthCheckModel>>(responseModel);
 
@@ -156,7 +157,7 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
     {
         try
         {
-            var serviceInformation = _configuration.GetSection($"GrpcServiceInformation:{this.Env}").Get<ServiceInformationSettings[]>();
+            var serviceInformation = _configuration.GetSection($"GrpcServiceInformation:{Env}").Get<ServiceInformationSettings[]>();
             if (serviceInformation == null)
                 return new ErrorDataResult<GrpcHealthCheckModel>(null);
 
@@ -168,7 +169,7 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
             var client = new Health.HealthClient(channel);
 
             var response = await client.CheckAsync(request: new HealthCheckRequest(), cancellationToken: cancellationToken);
-            if(response == null)
+            if (response == null)
                 return new ErrorDataResult<GrpcHealthCheckModel>(null);
 
             var status = response.Status;

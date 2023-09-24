@@ -1,4 +1,5 @@
-﻿using MonitoringService.Api.Models.Settings;
+﻿using MonitoringService.Api.Infrastructure.DelegatingHandlers;
+using MonitoringService.Api.Models.Settings;
 
 namespace MonitoringService.Api.Extensions;
 
@@ -8,18 +9,17 @@ public static class HttpExtensions
     {
         string env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
-        #region Service Http Clients
-        var serviceInformation = configuration.GetSection($"ServiceInformation:{env}").Get<ServiceInformationSettings[]>();
+        services.AddScoped<LocalizationAuthorizationDelegatingHandler>();
 
-        foreach (var info in serviceInformation)
+        #region Service Http Client Identity Server
+        var localizationInfo = configuration.GetSection($"ServiceInformation:{env}:LocalizationService").Get<ServiceInformationSettings>();
+        var gatewayInfo = configuration.GetSection($"ServiceInformation:{env}:ApiGateway").Get<ServiceInformationSettings>();
+
+        services.AddHttpClient(localizationInfo.Name, config =>
         {
-            services.AddHttpClient(info.Name, config =>
-            {
-                var baseAddress = info.Url;
-                config.BaseAddress = new Uri(baseAddress);
-            });
-        }
-
+            var baseAddress = localizationInfo.Url;
+            config.BaseAddress = new Uri(baseAddress);
+        }).AddHttpMessageHandler<LocalizationAuthorizationDelegatingHandler>();
         #endregion
     }
 }

@@ -8,7 +8,7 @@ public static class HttpClientExtensions
         this HttpClient client, 
         string url, 
         TValue value, 
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default(CancellationToken))
     {
         var jsonSerializerOptions = new JsonSerializerOptions
         {
@@ -29,7 +29,7 @@ public static class HttpClientExtensions
         this HttpClient client, 
         string url, 
         TValue value,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default(CancellationToken))
     {
         await client.PostAsJsonAsync(requestUri: url, 
                                      value: value,
@@ -39,7 +39,7 @@ public static class HttpClientExtensions
     public async static Task<T?> GetResponseAsync<T>(
         this HttpClient client, 
         string url,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default(CancellationToken))
     {
         return await client.GetFromJsonAsync<T>(requestUri: url, cancellationToken: cancellationToken);
     }

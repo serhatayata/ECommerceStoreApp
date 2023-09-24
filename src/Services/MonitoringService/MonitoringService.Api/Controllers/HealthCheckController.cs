@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MonitoringService.Api.Attributes;
 using MonitoringService.Api.Models.Base.Concrete;
-using MonitoringService.Api.Services.Abstract;
+using MonitoringService.Api.Services.HealthCheck.Abstract;
 
 namespace MonitoringService.Api.Controllers;
 
