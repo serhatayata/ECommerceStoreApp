@@ -6,17 +6,17 @@ using Quartz;
 
 namespace Monitoring.BackgroundTasks.Services.Concrete;
 
-public class HealthCheckSaveJob : IJob
+public class HealthCheckGrpcSaveJob : IJob
 {
-    private readonly ILogger<HealthCheckSaveJob> _logger;
+    private readonly ILogger<HealthCheckGrpcSaveJob> _logger;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IConfiguration _configuration;
 
     private readonly string monitoringConnString;
 
-    public HealthCheckSaveJob(
-        IHttpClientFactory httpClientFactory,
-        ILogger<HealthCheckSaveJob> logger,
+    public HealthCheckGrpcSaveJob(
+        ILogger<HealthCheckGrpcSaveJob> logger, 
+        IHttpClientFactory httpClientFactory, 
         IConfiguration configuration)
     {
         _logger = logger;
@@ -33,8 +33,8 @@ public class HealthCheckSaveJob : IJob
             _logger.LogInformation("Health check saving started");
             var gatewayClient = _httpClientFactory.CreateClient("monitoring");
 
-            var request = await gatewayClient.PostGetResponseAsync<DataResult<List<HealthCheckModel>>, string>("api/healthcheck/get-all", null);
-            var requestResult = request?.Data ?? new List<HealthCheckModel>();
+            var request = await gatewayClient.PostGetResponseAsync<DataResult<List<HealthCheckGrpcModel>>, string>("api/healthcheck/get-all-grpc", null);
+            var requestResult = request?.Data ?? new List<HealthCheckGrpcModel>();
 
             if (requestResult.Count > 0)
             {
@@ -45,20 +45,20 @@ public class HealthCheckSaveJob : IJob
                 {
                     await using var transaction = await conn.BeginTransactionAsync();
 
-                    if (healthCheckItem.Status == HealthCheckStatusValues.Healthy)
+                    if (healthCheckItem.Status == Models.Enums.HealthCheckGrpcStatus.SERVING)
                     {
                         try
                         {
                             string executionCommandText = $"INSERT INTO healthcheck.executions " +
-                                                          $"(status, execution_date, uri, service_name) " +
-                                                          $"VALUES (@status, @executionDate, @uri, @serviceName) " +
-                                                          $"RETURNING id";
+                                      $"(status, execution_date, uri, service_name) " +
+                                      $"VALUES (@status, @executionDate, @uri, @serviceName) " +
+                                      $"RETURNING id";
 
                             using var cmd = new NpgsqlCommand(cmdText: executionCommandText,
                                                               connection: conn,
                                                               transaction: transaction);
 
-                            cmd.Parameters.AddWithValue("status", healthCheckItem.Status);
+                            cmd.Parameters.AddWithValue("status", healthCheckItem.Status.ToString());
                             cmd.Parameters.AddWithValue("executionDate", DateTime.UtcNow);
                             cmd.Parameters.AddWithValue("uri", healthCheckItem.ServiceUri);
                             cmd.Parameters.AddWithValue("serviceName", healthCheckItem.ServiceName);
@@ -67,35 +67,16 @@ public class HealthCheckSaveJob : IJob
 
                             if (executionResult == null)
                             {
-                                _logger.LogError($"Health check execution saving error - " +
+                                _logger.LogError($"Health check GRPC execution saving error - " +
                                                  $"Saving execution for {healthCheckItem.ServiceName}");
                                 continue;
-                            }
-
-                            foreach (var info in healthCheckItem.Info)
-                            {
-                                string infoCommandText = $"INSERT INTO healthcheck.execution_entries " +
-                                                         $"(name, status, duration, tags, health_check_execution_id) " +
-                                                         $"VALUES (@name, @status, @duration, @tags, @healthCheckExecutionId)";
-
-                                using var infoCmd = new NpgsqlCommand(cmdText: infoCommandText,
-                                                                      connection: conn,
-                                                                      transaction: transaction);
-
-                                infoCmd.Parameters.AddWithValue("name", info.Key);
-                                infoCmd.Parameters.AddWithValue("status", info.Status);
-                                infoCmd.Parameters.AddWithValue("duration", info.Duration);
-                                infoCmd.Parameters.AddWithValue("tags", string.Join(',', info.Tags));
-                                infoCmd.Parameters.AddWithValue("healthCheckExecutionId", executionResult);
-
-                                var executionEntryResult = await infoCmd.ExecuteNonQueryAsync();
                             }
 
                             await transaction.CommitAsync();
                         }
                         catch (Exception ex)
                         {
-                            _logger.LogError($"Health check execution saving error - Saving execution for {healthCheckItem.ServiceName} - " +
+                            _logger.LogError($"Health check GRPC execution saving error - Saving execution for {healthCheckItem.ServiceName} - " +
                                              $"Status : {healthCheckItem.Status} - " +
                                              $"Message : {ex.Message}");
 
@@ -123,12 +104,12 @@ public class HealthCheckSaveJob : IJob
                             await transaction.CommitAsync();
 
                             if (failureResult < 1)
-                                _logger.LogError($"Health check failure saving error - " +
+                                _logger.LogError($"Health check GRPC failure saving error - " +
                                                  $"Saving failure for {healthCheckItem.ServiceName}");
                         }
                         catch (Exception ex)
                         {
-                            _logger.LogError($"Health check saving error - Saving failure for {healthCheckItem.ServiceName} - " +
+                            _logger.LogError($"Health check GRPC saving error - Saving failure for {healthCheckItem.ServiceName} - " +
                                              $"Status : {healthCheckItem.Status} - " +
                                              $"Message : {ex.Message}");
 
@@ -138,11 +119,11 @@ public class HealthCheckSaveJob : IJob
                 }
             }
 
-            _logger.LogInformation($"Health check saving finished");
+            _logger.LogInformation($"Health check GRPC saving finished");
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Health check saving exception error - " +
+            _logger.LogError($"Health check GRPC saving exception error - " +
                              $"Message : {ex.Message}");
         }
     }

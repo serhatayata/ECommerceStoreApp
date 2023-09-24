@@ -69,7 +69,7 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
             }
         }
 
-        return new SuccessDataResult<List<HealthCheckModel>>(null); ;
+        return new SuccessDataResult<List<HealthCheckModel>>(responseModel); ;
     }
 
     public async Task<DataResult<HealthCheckModel>> GetHealthCheck(string serviceName, CancellationToken cancellationToken)

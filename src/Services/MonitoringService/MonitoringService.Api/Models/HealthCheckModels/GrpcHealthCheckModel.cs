@@ -1,4 +1,5 @@
 ﻿using Grpc.Health.V1;
+using static Grpc.Health.V1.HealthCheckResponse.Types;
 
 namespace MonitoringService.Api.Models.HealthCheckModels;
 
@@ -6,8 +7,8 @@ public class GrpcHealthCheckModel
 {
     public GrpcHealthCheckModel(
         string serviceName, 
-        string serviceUri, 
-        HealthCheckResponse.Types.ServingStatus status)
+        string serviceUri,
+        ServingStatus status)
     {
         ServiceName = serviceName;
         ServiceUri = serviceUri;
@@ -31,5 +32,5 @@ public class GrpcHealthCheckModel
     /// <summary>
     /// Status of the service
     /// </summary>
-    public HealthCheckResponse.Types.ServingStatus Status { get; set; }
+    public ServingStatus Status { get; set; }
 }

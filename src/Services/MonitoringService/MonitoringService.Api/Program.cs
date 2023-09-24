@@ -25,10 +25,10 @@ builder.Services.AddLogConfiguration();
 builder.Host.AddHostExtensions(environment);
 #endregion
 #region Authorization-Authentication
-//builder.Services.AddAuthenticationConfigurations(configuration);
-//builder.Services.AddAuthorizationConfigurations(configuration);
+builder.Services.AddAuthenticationConfigurations(configuration);
+builder.Services.AddAuthorizationConfigurations(configuration);
 
-//IdentityModelEventSource.ShowPII = true;
+IdentityModelEventSource.ShowPII = true;
 #endregion
 #region Http
 builder.Services.AddHttpClients(configuration);
@@ -62,8 +62,8 @@ app.UseHttpsRedirection();
 app.UseRouting();
 #endregion
 #region Auth
-//app.UseAuthentication();
-//app.UseAuthorization();
+app.UseAuthentication();
+app.UseAuthorization();
 #endregion
 
 if (app.Environment.IsDevelopment())

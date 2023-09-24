@@ -27,7 +27,7 @@ public class HealthCheckController : ControllerBase
         return Ok(result);
     }
 
-    //[AuthorizeMultiplePolicy("MonitoringWrite", false)]
+    [AuthorizeMultiplePolicy("MonitoringWrite", false)]
     [HttpPost]
     [Route("get-all-grpc")]
     public async Task<IActionResult> GetHealthChecksGrpcAsync(CancellationToken cancellationToken)

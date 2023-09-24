@@ -48,9 +48,9 @@ public static class HealthCheckExtensions
 
         services.AddGrpcHealthChecks()
                 .AddCheck(
-                    name: $"{Assembly.GetCallingAssembly().GetName().Name}-HealthCheck",
+                    name: $"{Assembly.GetCallingAssembly().GetName().Name}",
                     check: () => Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy(),
-                    tags: new string[] { "Grpc" }
+                    tags: new string[] { "Catalog" }
                 );
     }
 
