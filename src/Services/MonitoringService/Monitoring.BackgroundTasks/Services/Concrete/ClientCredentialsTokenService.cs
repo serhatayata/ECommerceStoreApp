@@ -45,7 +45,7 @@ public class ClientCredentialsTokenService : IClientCredentialsTokenService
             });
 
             if (disco.IsError)
-                throw disco?.Exception;
+                throw disco?.Exception ?? new Exception("Discovery error");
 
             var clientCredentialTokenRequest = new ClientCredentialsTokenRequest
             {

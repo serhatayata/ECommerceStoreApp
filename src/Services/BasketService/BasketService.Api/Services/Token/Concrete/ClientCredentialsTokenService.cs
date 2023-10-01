@@ -48,7 +48,7 @@ namespace BasketService.Api.Services.Token.Concrete
             });
 
             if (disco.IsError)
-                throw disco.Exception;
+                throw disco?.Exception ?? new Exception("Discovery error");
 
             var clientCredentialTokenRequest = new ClientCredentialsTokenRequest
             {

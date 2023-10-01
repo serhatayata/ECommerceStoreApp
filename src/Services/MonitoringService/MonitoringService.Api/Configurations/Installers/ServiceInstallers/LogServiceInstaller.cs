@@ -14,10 +14,10 @@ public class LogServiceInstaller : IServiceInstaller
         var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
         //Get Config
         var serilogConfiguration = new ConfigurationBuilder()
-                            .AddJsonFile("Configurations/serilog.json",
+                            .AddJsonFile("Configurations/StaticFiles/serilog.json",
                                          optional: false,
                                          reloadOnChange: true)
-                            .AddJsonFile($"Configurations/serilog.{env}.json",
+                            .AddJsonFile($"Configurations/StaticFiles/serilog.{env}.json",
                                          optional: true,
                                          reloadOnChange: true)
                             .Build();
