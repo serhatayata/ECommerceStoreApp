@@ -1,5 +1,6 @@
 ﻿using Grpc.Health.V1;
 using Grpc.Net.Client;
+using Microsoft.AspNetCore.Http;
 using MonitoringService.Api.Extensions;
 using MonitoringService.Api.Models.HealthCheckModels;
 using MonitoringService.Api.Models.Settings;
@@ -19,7 +20,9 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
     public HealthCheckDiagnosticService(
         IConfiguration configuration,
         IHttpClientFactory httpClientFactory,
-        ILogger<HealthCheckDiagnosticService> logger)
+        ILogger<HealthCheckDiagnosticService> logger,
+        IHttpContextAccessor httpContextAccessor)
+        : base(httpContextAccessor)
     {
         _configuration = configuration;
         _httpClientFactory = httpClientFactory;
@@ -32,6 +35,7 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
         if (serviceInformation == null)
             return new ErrorDataResult<List<HealthCheckModel>>(null);
 
+        var values = this.GetLocalizedValue("test");
         var responseModel = new List<HealthCheckModel>();
 
         foreach (var info in serviceInformation)
