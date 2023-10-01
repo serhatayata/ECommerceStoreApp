@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MonitoringService.Api.Infrastructure.Filters;
 using System.Text.Json.Serialization;
 
-namespace MonitoringService.Api.Extensions;
+namespace MonitoringService.Api.Configurations.Installers.ServiceInstallers;
 
-public static class ControllerExtensions
+public class ControllerServiceInstaller : IServiceInstaller
 {
-    public static void AddControllerSettings(this IServiceCollection services)
+    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         services.AddControllers(options =>
         {
@@ -23,5 +22,4 @@ public static class ControllerExtensions
             options.SuppressModelStateInvalidFilter = true;
         });
     }
-
 }

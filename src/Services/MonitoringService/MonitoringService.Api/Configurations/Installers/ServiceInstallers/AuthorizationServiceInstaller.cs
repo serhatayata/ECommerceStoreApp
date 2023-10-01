@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Logging;
 using System.Security.Claims;
 
-namespace MonitoringService.Api.Extensions;
+namespace MonitoringService.Api.Configurations.Installers.ServiceInstallers;
 
-public static class AuthorizationExtensions
+public class AuthorizationServiceInstaller : IServiceInstaller
 {
-    public static void AddAuthorizationConfigurations(this IServiceCollection services, IConfiguration configuration)
+    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         services.AddAuthorization(options =>
         {
@@ -43,5 +44,7 @@ public static class AuthorizationExtensions
                 ));
             });
         });
+
+        IdentityModelEventSource.ShowPII = true;
     }
 }

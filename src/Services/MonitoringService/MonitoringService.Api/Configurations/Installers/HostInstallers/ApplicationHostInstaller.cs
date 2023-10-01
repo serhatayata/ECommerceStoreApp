@@ -1,10 +1,10 @@
 ﻿using Serilog;
 
-namespace MonitoringService.Api.Extensions;
+namespace MonitoringService.Api.Configurations.Installers.HostInstallers;
 
-public static class HostExtensions
+public class ApplicationHostInstaller : IHostInstaller
 {
-    public static void AddHostExtensions(this IHostBuilder host, IWebHostEnvironment environment)
+    public void Install(IHostBuilder host, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         host.UseDefaultServiceProvider((context, options) =>
         {
@@ -14,10 +14,10 @@ public static class HostExtensions
 
         host.ConfigureAppConfiguration(config =>
         {
-            config.AddJsonFile("Configurations/appsettings.json", 
-                               optional: false, 
+            config.AddJsonFile("Configurations/StaticFiles/appsettings.json",
+                               optional: false,
                                reloadOnChange: true)
-                  .AddJsonFile($"Configurations/appsettings.{environment.EnvironmentName}.json", 
+                  .AddJsonFile($"Configurations/StaticFiles/appsettings.{hostEnvironment.EnvironmentName}.json",
                                optional: true,
                                reloadOnChange: true)
                   .Build();

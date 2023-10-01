@@ -9,10 +9,10 @@ public static class ConfigurationExtension
         {
             return new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile($"Configurations/appsettings.json", 
+            .AddJsonFile($"Configurations/StaticFiles/appsettings.json", 
                          optional: false, 
                          reloadOnChange: true) // if same value is used like ConnectionString, this will be the second option (optional)
-            .AddJsonFile($"Configurations/appsettings.{env}.json", 
+            .AddJsonFile($"Configurations/StaticFiles/appsettings.{env}.json", 
                          optional: false, 
                          reloadOnChange: true)
             .AddEnvironmentVariables()

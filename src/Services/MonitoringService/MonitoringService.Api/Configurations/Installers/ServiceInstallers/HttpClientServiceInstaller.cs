@@ -1,11 +1,11 @@
 ﻿using MonitoringService.Api.Infrastructure.DelegatingHandlers;
 using MonitoringService.Api.Models.Settings;
 
-namespace MonitoringService.Api.Extensions;
+namespace MonitoringService.Api.Configurations.Installers.ServiceInstallers;
 
-public static class HttpExtensions
+public class HttpClientServiceInstaller : IServiceInstaller
 {
-    public static void AddHttpClients(this IServiceCollection services, ConfigurationManager configuration)
+    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         string env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 

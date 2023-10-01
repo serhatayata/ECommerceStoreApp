@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
-namespace MonitoringService.Api.Extensions;
+namespace MonitoringService.Api.Configurations.Installers.ServiceInstallers;
 
-public static class AuthenticationExtensions
+public class AuthenticationServiceInstaller : IServiceInstaller
 {
-    public static void AddAuthenticationConfigurations(this IServiceCollection services, IConfiguration configuration)
+    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         var identityServerUrl = configuration.GetSection("IdentityServerConfigurations:Url").Value;
         var identityServerAudience = configuration.GetSection("IdentityServerConfigurations:Audience").Value;

@@ -1,7 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Reflection;
-using MonitoringService.Api.Services.Concrete;
 
 namespace MonitoringService.Api.Infrastructure.Converters;
 
