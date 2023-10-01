@@ -35,7 +35,6 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
         if (serviceInformation == null)
             return new ErrorDataResult<List<HealthCheckModel>>(null);
 
-        var values = this.GetLocalizedValue("test");
         var responseModel = new List<HealthCheckModel>();
 
         foreach (var info in serviceInformation)
@@ -48,7 +47,7 @@ public class HealthCheckDiagnosticService : BaseService, IHealthCheckDiagnosticS
                 var httpResponse = await client.PostGetResponseAsync<HealthCheckResponseModel, string>(requestUrl, null, cancellationToken);
 
                 if (httpResponse == null)
-                    continue;
+                    throw new Exception("HTTP response null");
 
                 responseModel.Add(new HealthCheckModel()
                 {
