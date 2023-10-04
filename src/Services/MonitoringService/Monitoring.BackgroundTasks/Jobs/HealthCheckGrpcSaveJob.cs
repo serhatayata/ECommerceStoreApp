@@ -4,7 +4,7 @@ using Monitoring.BackgroundTasks.Utilities.Results;
 using Npgsql;
 using Quartz;
 
-namespace Monitoring.BackgroundTasks.Services.Concrete;
+namespace Monitoring.BackgroundTasks.Jobs;
 
 public class HealthCheckGrpcSaveJob : IJob
 {
@@ -15,8 +15,8 @@ public class HealthCheckGrpcSaveJob : IJob
     private readonly string monitoringConnString;
 
     public HealthCheckGrpcSaveJob(
-        ILogger<HealthCheckGrpcSaveJob> logger, 
-        IHttpClientFactory httpClientFactory, 
+        ILogger<HealthCheckGrpcSaveJob> logger,
+        IHttpClientFactory httpClientFactory,
         IConfiguration configuration)
     {
         _logger = logger;

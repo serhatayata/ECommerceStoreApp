@@ -1,5 +1,5 @@
-﻿using Monitoring.BackgroundTasks.Models.Settings;
-using Monitoring.BackgroundTasks.Services.Concrete;
+﻿using Monitoring.BackgroundTasks.Jobs;
+using Monitoring.BackgroundTasks.Models.Settings;
 using Quartz;
 using System.Runtime.CompilerServices;
 

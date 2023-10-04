@@ -1,0 +1,28 @@
+{
+  "name": "debezium-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.sqlserver.SqlServerConnector",
+    "topic.creation.enable": true,
+    "topic.creation.default.replication.factor": 1,
+    "topic.creation.default.partitions": 10,
+    "topic.creation.default.cleanup.policy": "compact",
+    "topic.creation.default.compression.type": "lz4",
+    "auto.create.topics.enable": true,
+    "database.server.name": "dbserver1",
+    "database.hostname": "sqlserver",
+    "database.port": "1433",
+    "database.user": "sa",
+    "database.password": "sa.++112233",
+    "database.names": "DebeziumTestDB",
+    "database.whitelist": "debezium.products",
+    "database.history.kafka.topic": "dbhistory",
+    "database.encrypt": "false",
+    "database.history.kafka.bootstrap.servers": "kafka1:29092,kafka2:29093",
+    "table.whitelist": "products",
+    "schema.include.list": "debezium",
+    "schema.history.internal.kafka.topic": "schemahistory",
+    "schema.history.internal.kafka.bootstrap.servers": "kafka1:29092,kafka2:29093",
+    "table.include.list": "debezium.products",
+    "topic.prefix": "topicprefix"
+  }
+}

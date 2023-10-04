@@ -4,7 +4,7 @@ using Monitoring.BackgroundTasks.Utilities.Results;
 using Npgsql;
 using Quartz;
 
-namespace Monitoring.BackgroundTasks.Services.Concrete;
+namespace Monitoring.BackgroundTasks.Jobs;
 
 public class HealthCheckSaveJob : IJob
 {
