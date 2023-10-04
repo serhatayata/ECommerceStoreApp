@@ -362,13 +362,7 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
-appsettings.json
-appsettings.Development.json
-
 auth_clients.txt
-
-serilog.json
-serilog.Development.json
 
 *.drawio
 *ECommerceStoreApp.jpg
