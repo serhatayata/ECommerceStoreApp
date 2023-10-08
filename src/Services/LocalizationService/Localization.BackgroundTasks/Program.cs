@@ -26,7 +26,7 @@ builder.Services
         typeof(IServiceInstaller).Assembly);
 
 builder.Services.Configure<QueueSettings>(configuration.GetSection($"LocalizationQueueSettings:{environment.EnvironmentName}"));
-builder.Services.Configure<RedisSettings>(configuration.GetSection($"RedisSettings:{environment.EnvironmentName}"));
+builder.Services.Configure<CacheSettings>(configuration.GetSection($"LocalizationCacheSettings:{environment.EnvironmentName}"));
 
 var app = builder.Build();
 

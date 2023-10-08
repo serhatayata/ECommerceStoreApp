@@ -1,6 +1,6 @@
 ﻿namespace Localization.BackgroundTasks.Models.Settings;
 
-public class RedisSettings
+public class CacheSettings
 {
     public string ConnectionString { get; set; }
     public string DbName { get; set; }

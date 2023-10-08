@@ -12,11 +12,11 @@ public class RedisService : IRedisService, IDisposable
     private readonly string _connectionString;
     private readonly ConfigurationOptions _configurationOptions;
 
-    private readonly RedisSettings _redisSettings;
+    private readonly CacheSettings _redisSettings;
 
     public RedisService(
         IConfiguration configuration,
-        IOptions<RedisSettings> redisSettings)
+        IOptions<CacheSettings> redisSettings)
     {
         _redisSettings = redisSettings.Value;
         _connectionString = _redisSettings.ConnectionString;

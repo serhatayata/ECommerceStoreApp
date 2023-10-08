@@ -14,12 +14,12 @@ namespace Localization.BackgroundTasks.Services.BackgroundServices
         private readonly IRedisService _redisService;
 
         private readonly QueueSettings _queueSettings;
-        private readonly RedisSettings _redisSettings;
+        private readonly CacheSettings _redisSettings;
 
         public ResourceChangeBackgroundService(
             IRedisService redisService,
             IOptions<QueueSettings> queueSettings,
-            IOptions<RedisSettings> redisSettings)
+            IOptions<CacheSettings> redisSettings)
         {
             _redisService = redisService;
 
@@ -57,17 +57,17 @@ namespace Localization.BackgroundTasks.Services.BackgroundServices
 
                         if (resourceBefore == null)
                         {
-                            await _redisService.SetAsync($"{_redisSettings.Prefix}-{resourceAfter.LanguageCode}-{resourceAfter.Tag}",
+                            _ = await _redisService.SetAsync($"{_redisSettings.Prefix}-{resourceAfter.LanguageCode}-{resourceAfter.Tag}",
                                                          resourceAfter,
                                                          _redisSettings.Duration,
                                                          _redisSettings.DatabaseId);
                         }
                         else
                         {
-                            await _redisService.RemoveAsync($"{_redisSettings.Prefix}-{resourceBefore.LanguageCode}-{resourceBefore.Tag}", 
+                            _ = await _redisService.RemoveAsync($"{_redisSettings.Prefix}-{resourceBefore.LanguageCode}-{resourceBefore.Tag}", 
                                                             _redisSettings.DatabaseId);
 
-                            await _redisService.SetAsync($"{_redisSettings.Prefix}-{resourceAfter.LanguageCode}-{resourceAfter.Tag}",
+                            _ = await _redisService.SetAsync($"{_redisSettings.Prefix}-{resourceAfter.LanguageCode}-{resourceAfter.Tag}",
                                                          resourceAfter,
                                                          _redisSettings.Duration,
                                                          _redisSettings.DatabaseId);
