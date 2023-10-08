@@ -1,5 +1,5 @@
 ﻿{
-  "name": "debezium-localization-resource-connector",
+  "name": "debezium-localization-resources-connector",
   "config": {
     "connector.class": "io.debezium.connector.sqlserver.SqlServerConnector",
     "topic.creation.enable": true,
@@ -14,13 +14,13 @@
     "database.user": "sa",
     "database.password": "sa.++112233",
     "database.names": "ECSA_Localization",
-    "database.whitelist": "localization.Members",
-    "database.history.kafka.topic": "localization.members.dbhistory",
+    "database.whitelist": "localization.Resources",
+    "database.history.kafka.topic": "localization.resources.dbhistory",
     "database.encrypt": "false",
     "database.history.kafka.bootstrap.servers": "kafka1:29092,kafka2:29093",
     "table.whitelist": "resources",
     "schema.include.list": "localization",
-    "schema.history.internal.kafka.topic": "localization.members.schemahistory",
+    "schema.history.internal.kafka.topic": "localization.resources.schemahistory",
     "schema.history.internal.kafka.bootstrap.servers": "kafka1:29092,kafka2:29093",
     "table.include.list": "localization.resources",
     "topic.prefix": "ecom",

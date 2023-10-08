@@ -7,7 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Services\" />
+    <Folder Include="Configurations\Installers\HostInstallers\" />
+    <Folder Include="Infrastructure\" />
+    <Folder Include="Jobs\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,6 +24,7 @@
     <PackageReference Include="Serilog.Exceptions" Version="8.4.0" />
     <PackageReference Include="Serilog.Sinks.Async" Version="1.5.0" />
     <PackageReference Include="Serilog.Sinks.Elasticsearch" Version="9.0.3" />
+    <PackageReference Include="StackExchange.Redis" Version="2.6.122" />
   </ItemGroup>
 
 </Project>

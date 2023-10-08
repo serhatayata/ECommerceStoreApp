@@ -127,9 +127,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Monitoring.BackgroundTasks"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Localization.BackgroundTasks", "src\Services\LocalizationService\Localization.BackgroundTasks\Localization.BackgroundTasks.csproj", "{B6E8142B-2F17-4F9A-AF59-FADA40291B75}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "debezium-kafka", "debezium-kafka", "{97BD9845-9572-4D32-9109-E5583D3AAFCB}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "debezium", "debezium", "{DEDFCCF2-D0F1-45B1-9FFD-89176A346529}"
 	ProjectSection(SolutionItems) = preProject
-		docker-compose-files\debezium-kafka\docker-compose.yml = docker-compose-files\debezium-kafka\docker-compose.yml
+		docker-compose-files\debezium\docker-compose.yml = docker-compose-files\debezium\docker-compose.yml
 	EndProjectSection
 EndProject
 Global
@@ -278,7 +278,7 @@ Global
 		{C48AE6F8-2FED-4E0B-8A79-AF3F13EACB8A} = {FADC1841-AE33-477A-8F5F-8E8BFA2E74D5}
 		{7D7984AA-766A-4CE6-ADDC-2A4F1E182226} = {FADC1841-AE33-477A-8F5F-8E8BFA2E74D5}
 		{B6E8142B-2F17-4F9A-AF59-FADA40291B75} = {5049EC0E-670E-4F6D-B426-7DC4BFD9E5C6}
-		{97BD9845-9572-4D32-9109-E5583D3AAFCB} = {3A931DA4-C6CA-496C-9E99-909BD7495FB1}
+		{DEDFCCF2-D0F1-45B1-9FFD-89176A346529} = {3A931DA4-C6CA-496C-9E99-909BD7495FB1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0EA7DAA1-E97E-4D4E-8989-8E0E33F3EDA4}

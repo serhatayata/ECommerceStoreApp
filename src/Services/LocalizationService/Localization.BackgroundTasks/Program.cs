@@ -1,6 +1,6 @@
+using Localization.BackgroundTasks.Configurations.Installers;
 using Localization.BackgroundTasks.Extensions;
-using Localization.BackgroundTasks.Infrastructure.Contexts;
-using Microsoft.EntityFrameworkCore;
+using Localization.BackgroundTasks.Models.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
@@ -13,8 +13,20 @@ var config = ConfigurationExtension.appConfig;
 
 builder.Configuration.AddConfiguration(config);
 
-string defaultConnString = configuration.GetConnectionString("Localization");
-builder.Services.AddDbContext<LocalizationDbContext>(options => options.UseSqlServer(defaultConnString, b => b.MigrationsAssembly(assembly)), ServiceLifetime.Transient);
+builder.Host
+    .InstallHost(
+    configuration,
+    environment,
+    typeof(IHostInstaller).Assembly);
+
+builder.Services
+    .InstallServices(
+        configuration,
+        environment,
+        typeof(IServiceInstaller).Assembly);
+
+builder.Services.Configure<QueueSettings>(configuration.GetSection($"LocalizationQueueSettings:{environment.EnvironmentName}"));
+builder.Services.Configure<RedisSettings>(configuration.GetSection($"RedisSettings:{environment.EnvironmentName}"));
 
 var app = builder.Build();
 
