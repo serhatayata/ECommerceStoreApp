@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Configurations\Installers\HostInstallers\" />
     <Folder Include="Infrastructure\" />
     <Folder Include="Jobs\" />
   </ItemGroup>
@@ -26,5 +25,7 @@
     <PackageReference Include="Serilog.Sinks.Elasticsearch" Version="9.0.3" />
     <PackageReference Include="StackExchange.Redis" Version="2.6.122" />
   </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties configurations_4staticfiles_4serilog_1development_1json__JsonSchema="https://json.schemastore.org/appsettings.json" configurations_4staticfiles_4serilog_1json__JsonSchema="https://json.schemastore.org/appsettings.json" /></VisualStudio></ProjectExtensions>
 
 </Project>
