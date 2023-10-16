@@ -11,12 +11,6 @@
       "UpstreamPathTemplate": "/localization/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "DELETE", "PUT" ],
       "UpstreamScheme": "http"
-      //"DownstreamHostAndPorts": [
-      //  {
-      //    "Host": "localhost",
-      //    "Port": 5002
-      //  }
-      //]
     },
     // IDENTITY SERVICE
     {
@@ -28,12 +22,6 @@
       "UpstreamPathTemplate": "/auth/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "DELETE", "PUT" ],
       "UpstreamScheme": "http"
-      //"DownstreamHostAndPorts": [
-      //  {
-      //    "Host": "localhost",
-      //    "Port": 5001
-      //  }
-      //]
     },
     // BASKET SERVICE
     {
@@ -45,12 +33,6 @@
       "UpstreamPathTemplate": "/basket/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "DELETE", "PUT" ],
       "UpstreamScheme": "http"
-      //"DownstreamHostAndPorts": [
-      //  {
-      //    "Host": "localhost",
-      //    "Port": 5001
-      //  }
-      //]
     },
     // CATALOG SERVICE
     {
@@ -84,6 +66,22 @@
       "UpstreamPathTemplate": "/monitoring/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "DELETE", "PUT" ],
       "UpstreamScheme": "http"
+    },
+    // CDC DEBEZIUM
+    {
+      "DownstreamPathTemplate": "/{everything}",
+      "DownstreamScheme": "http",
+
+      "UpstreamPathTemplate": "/cdcconnector/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "DELETE", "PUT" ],
+      "UpstreamScheme": "http",
+
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 8083
+        }
+      ]
     }
   ],
   "GlobalConfiguration": {

@@ -26,6 +26,6 @@
     <PackageReference Include="StackExchange.Redis" Version="2.6.122" />
   </ItemGroup>
 
-  <ProjectExtensions><VisualStudio><UserProperties configurations_4staticfiles_4serilog_1development_1json__JsonSchema="https://json.schemastore.org/appsettings.json" configurations_4staticfiles_4serilog_1json__JsonSchema="https://json.schemastore.org/appsettings.json" /></VisualStudio></ProjectExtensions>
+  <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
 
 </Project>

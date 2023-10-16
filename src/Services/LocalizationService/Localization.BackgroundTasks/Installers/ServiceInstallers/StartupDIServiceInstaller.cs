@@ -1,7 +1,7 @@
 ﻿using Localization.BackgroundTasks.Services.BackgroundServices;
 using Localization.BackgroundTasks.Services.Cache.Abstract;
 
-namespace Localization.BackgroundTasks.Configurations.Installers.ServiceInstallers;
+namespace Localization.BackgroundTasks.Installers.ServiceInstallers;
 
 public class StartupDIServiceInstaller : IServiceInstaller
 {
@@ -10,6 +10,6 @@ public class StartupDIServiceInstaller : IServiceInstaller
         // Background service
         services.AddSingleton<ResourceChangeBackgroundService>();
         // Scoped
-        services.AddSingleton<IRedisService,  RedisService>();
+        services.AddSingleton<IRedisService, RedisService>();
     }
 }

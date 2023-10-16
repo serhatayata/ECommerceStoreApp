@@ -4,21 +4,21 @@ using Serilog.Formatting.Elasticsearch;
 using Serilog.Sinks.Elasticsearch;
 using System.Reflection;
 
-namespace Localization.BackgroundTasks.Configurations.Installers.ServiceInstallers;
+namespace Localization.BackgroundTasks.Installers.ServiceInstallers;
 
 public class LogServiceInstaller : IServiceInstaller
 {
     public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         //Get the environment which the app is running on
-        var env = System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+        var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
         //Get Config
         var serilogConfig = new ConfigurationBuilder()
-                        .AddJsonFile("Configurations/staticFiles/serilog.json",
+                        .AddJsonFile("Configurations/serilog.json",
                                      optional: false,
                                      reloadOnChange: true)
-                        .AddJsonFile($"Configurations/staticFiles/serilog.{env}.json",
+                        .AddJsonFile($"Configurations/serilog.{env}.json",
                                      optional: true,
                                      reloadOnChange: true)
                         .Build();

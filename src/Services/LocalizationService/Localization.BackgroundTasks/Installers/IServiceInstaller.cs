@@ -1,4 +1,4 @@
-﻿namespace Localization.BackgroundTasks.Configurations.Installers;
+﻿namespace Localization.BackgroundTasks.Installers;
 
 public interface IServiceInstaller
 {

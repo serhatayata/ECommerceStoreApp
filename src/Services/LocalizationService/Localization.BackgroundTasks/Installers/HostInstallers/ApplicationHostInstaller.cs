@@ -1,6 +1,6 @@
 ﻿using Serilog;
 
-namespace Localization.BackgroundTasks.Configurations.Installers.HostInstallers;
+namespace Localization.BackgroundTasks.Installers.HostInstallers;
 
 public class ApplicationHostInstaller : IHostInstaller
 {
@@ -14,10 +14,10 @@ public class ApplicationHostInstaller : IHostInstaller
 
         host.ConfigureAppConfiguration(config =>
         {
-            config.AddJsonFile("Configurations/staticFiles/appsettings.json",
+            config.AddJsonFile("Configurations/appsettings.json",
                                optional: false,
                                reloadOnChange: true)
-                  .AddJsonFile($"Configurations/staticFiles/appsettings.{hostEnvironment.EnvironmentName}.json",
+                  .AddJsonFile($"Configurations/appsettings.{hostEnvironment.EnvironmentName}.json",
                                optional: true,
                                reloadOnChange: true)
                   .Build();

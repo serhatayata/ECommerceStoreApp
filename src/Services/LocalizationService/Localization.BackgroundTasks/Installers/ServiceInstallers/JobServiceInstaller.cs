@@ -1,6 +1,6 @@
 ﻿using Quartz;
 
-namespace Localization.BackgroundTasks.Configurations.Installers.ServiceInstallers;
+namespace Localization.BackgroundTasks.Installers.ServiceInstallers;
 
 public class JobServiceInstaller : IServiceInstaller
 {

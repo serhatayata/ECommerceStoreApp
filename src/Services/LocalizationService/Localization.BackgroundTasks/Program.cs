@@ -1,5 +1,5 @@
-using Localization.BackgroundTasks.Configurations.Installers;
 using Localization.BackgroundTasks.Extensions;
+using Localization.BackgroundTasks.Installers;
 using Localization.BackgroundTasks.Models.Settings;
 
 var builder = WebApplication.CreateBuilder(args);

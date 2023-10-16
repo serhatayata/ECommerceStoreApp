@@ -1,7 +1,7 @@
-﻿using Localization.BackgroundTasks.Configurations.Installers.ServiceInstallers;
+﻿using Localization.BackgroundTasks.Installers.ServiceInstallers;
 using System.Reflection;
 
-namespace Localization.BackgroundTasks.Configurations.Installers;
+namespace Localization.BackgroundTasks.Installers;
 
 public static class DependencyInjection
 {
@@ -11,17 +11,31 @@ public static class DependencyInjection
     IWebHostEnvironment hostEnvironment,
     params Assembly[] assemblies)
     {
+        var servicePriorities = new List<Type>()
+        {
+            typeof(StartupDIServiceInstaller),
+            typeof(HttpClientServiceInstaller)
+        };
+
         IEnumerable<IServiceInstaller> serviceInstallers = assemblies
             .SelectMany(a => a.DefinedTypes)
             .Where(IsAssignableToType<IServiceInstaller>)
             .Select(Activator.CreateInstance)
             .Cast<IServiceInstaller>()
+            .Select(t => new
+            {
+                Value = t,
+                Order = servicePriorities.IndexOf(t.GetType())
+            })
             .OrderBy(ord =>
             {
-                if (ord.GetType() == typeof(StartupDIServiceInstaller))
+                if (ord.Order != -1)
                     return false;
                 return true;
-            });
+            })
+            .ThenBy(o => o.Order)
+            .Select(s => s.Value)
+            .ToList();
 
         foreach (IServiceInstaller serviceInstaller in serviceInstallers)
         {

@@ -1,6 +1,6 @@
 ﻿using Localization.BackgroundTasks.Services.BackgroundServices;
 
-namespace Localization.BackgroundTasks.Configurations.Installers.ServiceInstallers;
+namespace Localization.BackgroundTasks.Installers.ServiceInstallers;
 
 public class BackgroundServiceInstaller : IServiceInstaller
 {
