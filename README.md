@@ -29,3 +29,9 @@ E-Commerce Microservices Application (STILL BEING IMPROVED)
 
 - Outbox Pattern
 ![OUTBOX](https://github.com/serhatayata/ECommerceStoreApp/assets/82120298/9c9d9c48-568a-452e-ae1d-b2b4a5f52488)
+
+- Debezium 
+
+Remove a connector with cURL
+
+curl -i -X DELETE localhost:8083/connectors/connector-name/
