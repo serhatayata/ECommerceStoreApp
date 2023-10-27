@@ -12,7 +12,7 @@ E-Commerce Microservices Application (STILL BEING IMPROVED)
 - SAGA Pattern
 - MassTransit
 
-![Architecture_ECommerceStoreApp](https://github.com/serhatayata/ECommerceStoreApp/assets/82120298/05c484b6-0ad3-40dc-bb84-51b6f095b973)
+![Architecture_ECommerceStoreApp](https://github.com/serhatayata/ECommerceStoreApp/assets/82120298/4d82902b-40fe-4236-b595-05bd06d21752)
 
 ## NOTES
 
