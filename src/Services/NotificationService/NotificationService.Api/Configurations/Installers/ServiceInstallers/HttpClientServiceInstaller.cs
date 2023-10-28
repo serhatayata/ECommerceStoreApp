@@ -1,4 +1,7 @@
-﻿namespace NotificationService.Api.Configurations.Installers.ServiceInstallers;
+﻿using NotificationService.Api.Infrastructure.DelegatingHandlers;
+using NotificationService.Api.Models.Settings;
+
+namespace NotificationService.Api.Configurations.Installers.ServiceInstallers;
 
 public class HttpClientServiceInstaller : IServiceInstaller
 {
@@ -6,17 +9,16 @@ public class HttpClientServiceInstaller : IServiceInstaller
     {
         string env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
-        //services.AddScoped<LocalizationAuthorizationDelegatingHandler>();
+        services.AddScoped<LocalizationAuthorizationDelegatingHandler>();
 
-        //#region Service Http Client Identity Server
-        //var localizationInfo = configuration.GetSection($"ServiceInformation:{env}:LocalizationService").Get<ServiceInformationSettings>();
-        //var gatewayInfo = configuration.GetSection($"ServiceInformation:{env}:ApiGateway").Get<ServiceInformationSettings>();
+        #region Service Http Client Identity Server
+        var localizationInfo = configuration.GetSection($"ServiceInformation:{env}:LocalizationService").Get<ServiceInformationSettings>();
 
-        //services.AddHttpClient(localizationInfo.Name, config =>
-        //{
-        //    var baseAddress = localizationInfo.Url;
-        //    config.BaseAddress = new Uri(baseAddress);
-        //}).AddHttpMessageHandler<LocalizationAuthorizationDelegatingHandler>();
-        //#endregion
+        services.AddHttpClient(localizationInfo.Name, config =>
+        {
+            var baseAddress = localizationInfo.Url;
+            config.BaseAddress = new Uri(baseAddress);
+        }).AddHttpMessageHandler<LocalizationAuthorizationDelegatingHandler>();
+        #endregion
     }
 }
