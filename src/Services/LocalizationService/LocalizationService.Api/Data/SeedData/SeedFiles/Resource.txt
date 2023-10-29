@@ -1,10 +1,14 @@
-﻿Tag,Value,LanguageCode
-test,testvalue,tr-TR,true
-test2,testvalue2,tr-TR,true
-test3,testvalue3,tr-TR,false
-test4,testvalue4,en-US,true
-test5,testvalue5,en-US,true
-test6,testvalue6,en-US,true
-test7,testvalue7,es-ES,true
-test8,testvalue8,es-ES,true
-test9,testvalue9,es-ES,false
+﻿Tag,Value,LanguageCode,true,MemberKey
+test,testvalue,tr-TR,true,IdentityV1
+test2,testvalue2,tr-TR,true,CatalogV1
+test3,testvalue3,tr-TR,true,CatalogV1
+test4,testvalue4,en-US,true,BasketV1
+test5,testvalue5,en-US,true,BasketV1
+test6,testvalue6,en-US,true,CatalogV1
+test7,testvalue7,es-ES,true,BasketV1
+test8,testvalue8,es-ES,true,IdentityV1
+test9,testvalue9,es-ES,true,CatalogV1
+BC22U.EmailSuccess,<p>Email Gönderildi {Name} </p>,tr-TR,true,NotificationV1
+BC22U.EmailSuccess,<p>Email sent {Name} </p>,en-US,true,NotificationV1
+BC22U.SmsSuccess,<p>Email Gönderildi {Name} </p>,tr-TR,true,NotificationV1
+BC22U.SmsSuccess,<p>Email sent {Name} </p>,en-US,true,NotificationV1

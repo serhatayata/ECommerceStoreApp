@@ -1,6 +1,9 @@
-﻿using LocalizationService.Api.Data.Contexts;
+﻿using AutoMapper;
+using LocalizationService.Api.Data.Contexts;
 using LocalizationService.Api.Entities;
 using LocalizationService.Api.Extensions;
+using LocalizationService.Api.Models.ResourceModels;
+using LocalizationService.Api.Services.Redis.Abstract;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Polly;
@@ -14,6 +17,8 @@ namespace LocalizationService.Api.Data.SeedData
         public async static Task LoadLocalizationSeedDataAsync(LocalizationDbContext context, IServiceScope scope, IWebHostEnvironment env, IConfiguration configuration)
         {
             var logger = scope.ServiceProvider.GetRequiredService<ILogger<LocalizationSeedData>>();
+            var redisService = scope.ServiceProvider.GetRequiredService<IRedisService>();
+            var mapper = scope.ServiceProvider.GetRequiredService<IMapper>();
 
             string rootPath = env.ContentRootPath;
             string seedFilePath = Path.Combine(rootPath, "Data", "SeedData", "SeedFiles");
@@ -54,8 +59,9 @@ namespace LocalizationService.Api.Data.SeedData
                             continue;
 
                         await context.Languages.AddAsync(lang);
-                        await context.SaveChangesAsync();
                     }
+
+                    await context.SaveChangesAsync();
                 }
 
                 if (!await context.Members.AnyAsync())
@@ -73,8 +79,6 @@ namespace LocalizationService.Api.Data.SeedData
                                           {
                                               Name = m[0],
                                               MemberKey = m[1],
-                                              LocalizationPrefix = m[2],
-                                              //MemberKey = RandomExtensions.RandomCode(memberCodeLength),
                                               CreateDate = DateTime.Now
                                           }).ToList();
 
@@ -84,8 +88,9 @@ namespace LocalizationService.Api.Data.SeedData
                             continue;
 
                         await context.Members.AddAsync(member);
-                        await context.SaveChangesAsync();
                     }
+
+                    await context.SaveChangesAsync();
                 }
 
                 if (!await context.Resources.AnyAsync())
@@ -101,17 +106,8 @@ namespace LocalizationService.Api.Data.SeedData
                                            .Select(m =>
                                            {
                                                var currentLanguage = context.Languages.FirstOrDefault(l => l.Code == m[2]);
-                                               var rnd = new Random();
-
-                                               var currentMember = memberList.ElementAtOrDefault(rnd.Next(0, 3));
-                                               if (memberList.Count() > 0 && currentMember == null)
-                                               {
-                                                   while(currentMember == null)
-                                                   {
-                                                       currentMember = memberList.ElementAtOrDefault(rnd.Next(0, 3));
-                                                   }
-                                               }
-
+                                               var currentMember = memberList.FirstOrDefault(s => s.MemberKey == m[4]);
+                                              
                                                return new Resource()
                                                {
                                                    Tag = m[0],
@@ -125,13 +121,29 @@ namespace LocalizationService.Api.Data.SeedData
                                                };
                                            }).ToList();
 
+
                     foreach (var resource in resourceList)
                     {
                         if (await context.Resources.AnyAsync(r => r.Tag == resource.Tag && r.ResourceCode == resource.ResourceCode))
                             continue;
 
                         await context.Resources.AddAsync(resource);
-                        await context.SaveChangesAsync();
+                    }
+
+                    await context.SaveChangesAsync();
+
+                    var cacheResourceList = mapper.Map<List<ResourceCacheModel>>(resourceList);
+                    foreach (var resourceData in cacheResourceList)
+                    {
+                        //Cache
+                        var currentMember = memberList.FirstOrDefault(s => s.Id == resourceData.MemberId);
+                        if (currentMember == null)
+                            continue;
+
+                        var duration = configuration.GetSection("LocalizationCacheSettings:Duration").Get<int>();
+                        var databaseId = configuration.GetSection("LocalizationCacheSettings:DatabaseId").Get<int>();
+                        var cacheKey = CacheExtensions.GetResourceCacheKey(currentMember.MemberKey, resourceData.Tag, resourceData.LanguageCode);
+                        await redisService.SetAsync(cacheKey, resourceData, duration, databaseId);
                     }
                 }
             });

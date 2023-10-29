@@ -1,4 +1,11 @@
-﻿using Polly;
+﻿using Microsoft.AspNetCore.Localization;
+using NotificationService.Api.Dtos.Localization;
+using NotificationService.Api.Extensions;
+using NotificationService.Api.Models.Settings;
+using NotificationService.Api.Utilities.Results;
+using Polly;
+using System.Globalization;
+using System.Net.Http;
 using System.Reflection;
 
 namespace NotificationService.Api.Configurations.Installers.ServiceInstallers;
@@ -9,43 +16,47 @@ public class LocalizationServiceInstaller : IServiceInstaller
     {
         if (!hostEnvironment.IsProduction())
         {
-            //services.AddLocalization();
+            services.AddLocalization();
 
-            //var serviceProvider = services.BuildServiceProvider();
-            //var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();
-            //var httpClientFactory = scope.ServiceProvider.GetRequiredService<IHttpClientFactory>();
+            var environmentName = hostEnvironment.EnvironmentName;
 
-            //var policy = Polly.Policy.Handle<Exception>()
-            //.WaitAndRetryAsync(5, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
-            //{
-            //    Serilog.Log.Error("ERROR handling message: {ExceptionMessage} - Method : {ClassName}.{MethodName}",
-            //                        ex.Message, nameof(LocalizationServiceInstaller),
-            //                        MethodBase.GetCurrentMethod()?.Name);
-            //});
+            var serviceProvider = services.BuildServiceProvider();
+            var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();
+            var httpClientFactory = scope.ServiceProvider.GetRequiredService<IHttpClientFactory>();
 
-            //Task.Run(async () =>
-            //{
-            //    await policy.ExecuteAsync(async () =>
-            //    {
-            //        var gatewayClient = httpClientFactory.CreateClient("LocalizationService");
-            //        var languageResult = await gatewayClient.PostGetResponseAsync<DataResult<List<LanguageDto>>, string>("languages/get-all-for-clients", string.Empty);
+            var policy = Polly.Policy.Handle<Exception>()
+            .WaitAndRetryAsync(5, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
+            {
+                Serilog.Log.Error("ERROR handling message: {ExceptionMessage} - Method : {ClassName}.{MethodName}",
+                                    ex.Message, nameof(LocalizationServiceInstaller),
+                                    MethodBase.GetCurrentMethod()?.Name);
+            });
 
-            //        if (languageResult == null || languageResult?.Data == null || !languageResult.Success)
-            //            throw new Exception($"Language result not found for {nameof(Install)}");
+            Task.Run(async () =>
+            {
+                await policy.ExecuteAsync(async () =>
+                {
+                    var localizationInfo = configuration.GetSection($"ServiceInformation:{environmentName}:LocalizationService").Get<ServiceInformationSettings>();
 
-            //        services.Configure<RequestLocalizationOptions>(options =>
-            //        {
-            //            var cultures = languageResult.Data.Select(x => new CultureInfo(x.Code)).ToArray();
+                    var gatewayClient = httpClientFactory.CreateClient(localizationInfo.Name);
+                    var languageResult = await gatewayClient.PostGetResponseAsync<DataResult<List<LanguageDto>>, string>("languages/get-all-for-clients", string.Empty);
 
-            //            var defaultCulture = cultures.FirstOrDefault(x => x.Name == "tr-TR");
-            //            options.DefaultRequestCulture = new RequestCulture(culture: defaultCulture?.Name ?? "tr-TR",
-            //                                                               uiCulture: defaultCulture?.Name ?? "tr-TR");
+                    if (languageResult == null || languageResult?.Data == null || !languageResult.Success)
+                        throw new Exception($"Language result not found for {nameof(Install)}");
 
-            //            options.SupportedCultures = cultures;
-            //            options.SupportedUICultures = cultures;
-            //        });
-            //    });
-            //}).Wait();
+                    services.Configure<RequestLocalizationOptions>(options =>
+                    {
+                        var cultures = languageResult.Data.Select(x => new CultureInfo(x.Code)).ToArray();
+
+                        var defaultCulture = cultures.FirstOrDefault(x => x.Name == "tr-TR");
+                        options.DefaultRequestCulture = new RequestCulture(culture: defaultCulture?.Name ?? "tr-TR",
+                                                                           uiCulture: defaultCulture?.Name ?? "tr-TR");
+
+                        options.SupportedCultures = cultures;
+                        options.SupportedUICultures = cultures;
+                    });
+                });
+            }).Wait();
         }
     }
 }

@@ -8,6 +8,8 @@ using LocalizationService.Api.Mapping;
 using LocalizationService.Api.Models.LogModels;
 using LocalizationService.Api.Services.ElasticSearch.Abstract;
 using LocalizationService.Api.Services.ElasticSearch.Concrete;
+using LocalizationService.Api.Services.Redis.Abstract;
+using LocalizationService.Api.Services.Redis.Concrete;
 using LocalizationService.Api.Utilities.IoC;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Logging;
@@ -25,6 +27,7 @@ builder.Services.AddLogConfiguration();
 
 #region Startup DI
 builder.Services.AddSingleton<IElasticSearchService, ElasticSearchService>();
+builder.Services.AddSingleton<IRedisService, RedisService>();
 #endregion
 #region Host
 builder.Host.AddHostExtensions(environment);

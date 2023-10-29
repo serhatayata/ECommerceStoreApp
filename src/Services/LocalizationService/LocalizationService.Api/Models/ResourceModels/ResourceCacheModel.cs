@@ -6,5 +6,6 @@
         public string Value { get; set; }
         public string ResourceCode { get; set; }
         public string LanguageCode { get; set; }
+        public int MemberId { get; set; }
     }
 }

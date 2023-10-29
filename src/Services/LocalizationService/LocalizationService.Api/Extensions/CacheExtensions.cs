@@ -1,4 +1,5 @@
-﻿using LocalizationService.Api.Models.CacheModels;
+﻿using LocalizationService.Api.Entities;
+using LocalizationService.Api.Models.CacheModels;
 using Newtonsoft.Json;
 
 namespace LocalizationService.Api.Extensions
@@ -66,6 +67,19 @@ namespace LocalizationService.Api.Extensions
                              model.MethodName,
                              model.Language,
                              parameters);
+
+            return result;
+        }
+
+        public static string GetResourceCacheKey(
+            string prefix,
+            string key,
+            string language)
+        {
+            var result = string.Join("-",
+                             prefix,
+                             key,
+                             language);
 
             return result;
         }

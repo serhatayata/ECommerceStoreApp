@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using LocalizationService.Api.Data.Repositories.Base;
+using LocalizationService.Api.Extensions;
 using LocalizationService.Api.Models.Base.Concrete;
 using LocalizationService.Api.Models.MemberModels;
 using LocalizationService.Api.Models.ResourceModels;
@@ -89,7 +90,8 @@ namespace LocalizationService.Api.Services.Concrete
                 {
                     resources.ForEach(async r =>
                     {
-                        await _redisService.SetAsync($"{data.LocalizationPrefix}-{r.LanguageCode}-{r.Tag}", r, duration, databaseId);
+                        var cacheKey = CacheExtensions.GetResourceCacheKey(data.MemberKey, r.Tag, r.LanguageCode);
+                        await _redisService.SetAsync(cacheKey, r, duration, databaseId);
                     });
 
                     var anyExists = _redisService.AnyKeyExistsByPrefix(model.Value, databaseId);
