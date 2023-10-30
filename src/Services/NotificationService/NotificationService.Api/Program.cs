@@ -43,4 +43,10 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+app.Start();
+
+app.InstallWebApp(app.Lifetime,
+                  configuration,
+                  typeof(IWebAppInstaller).Assembly);
+
+app.WaitForShutdown();

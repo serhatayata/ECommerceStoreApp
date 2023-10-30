@@ -34,6 +34,17 @@
       "UpstreamHttpMethod": [ "GET", "POST", "DELETE", "PUT" ],
       "UpstreamScheme": "http"
     },
+    // NOTIFICATION SERVICE
+    {
+      "UseServiceDiscovery": true,
+      "ServiceName": "NotificationService",
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+
+      "UpstreamPathTemplate": "/notification/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "DELETE", "PUT" ],
+      "UpstreamScheme": "http"
+    },
     // CATALOG SERVICE
     {
       "UseServiceDiscovery": true,

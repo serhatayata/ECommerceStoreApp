@@ -242,7 +242,7 @@ namespace LocalizationService.Api.Data.Repositories.Dapper.Concrete
             if (result == null)
                 return new ErrorDataResult<Member>(result);
 
-            var resourceQuery = "SELECT r.*, m.Id AS MemId, m.* " +
+            var resourceQuery = "SELECT r.Id, r.* " +
                                 $"FROM {_resourceTable} r " +
                                 $"INNER JOIN {_memberTable} m ON m.Id = r.MemberId " +
                                 "WHERE r.Status = @Status AND m.MemberKey=@MemberKey";

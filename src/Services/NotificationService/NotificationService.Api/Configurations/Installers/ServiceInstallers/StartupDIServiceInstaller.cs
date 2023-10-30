@@ -12,10 +12,10 @@ public class StartupDIServiceInstaller : IServiceInstaller
     {
         services.AddScoped<IClientCredentialsTokenService, ClientCredentialsTokenService>();
         services.AddSingleton<IRedisService, RedisService>();
-        //services.AddSingleton<IConsulClient, ConsulClient>(p => new ConsulClient(consulConfig =>
-        //{
-        //    var address = configuration["ConsulConfig:Address"];
-        //    consulConfig.Address = new Uri(address);
-        //}));
+        services.AddSingleton<IConsulClient, ConsulClient>(p => new ConsulClient(consulConfig =>
+        {
+            var address = configuration["ConsulConfig:Address"];
+            consulConfig.Address = new Uri(address);
+        }));
     }
 }

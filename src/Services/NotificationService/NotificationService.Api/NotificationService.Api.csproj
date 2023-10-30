@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Services\Localization\**" />
+    <Content Remove="Services\Localization\**" />
+    <EmbeddedResource Remove="Services\Localization\**" />
+    <None Remove="Services\Localization\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="7.1.0" />
     <PackageReference Include="Autofac" Version="7.1.0" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="8.0.0" />
@@ -44,7 +51,6 @@
     <Folder Include="Infrastructure\EntityConfigurations\" />
     <Folder Include="Infrastructure\Filters\" />
     <Folder Include="Services\Base\" />
-    <Folder Include="Services\Localization\" />
   </ItemGroup>
 
 </Project>
