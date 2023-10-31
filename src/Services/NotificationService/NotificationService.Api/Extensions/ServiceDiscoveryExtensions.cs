@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using NotificationService.Api.Models.Settings;
 
-namespace NotificationService.Api.Configurations.Installers.WebApplicationInstallers;
+namespace NotificationService.Api.Extensions;
 
-public class ServiceDiscoveryWebAppInstaller : IWebAppInstaller
+public static class ServiceDiscoveryExtensions
 {
-    public void Install(IApplicationBuilder app, IHostApplicationLifetime lifeTime, IConfiguration configuration)
+    public static IApplicationBuilder RegisterWithConsul(this IApplicationBuilder app, IHostApplicationLifetime lifeTime, IConfiguration configuration)
     {
         try
         {
@@ -19,7 +19,7 @@ public class ServiceDiscoveryWebAppInstaller : IWebAppInstaller
             var addresses = addressFeature.Addresses;
             var address = addresses.FirstOrDefault();
             if (address == null)
-                return;
+                return app;
 
             Uri currentUri = new Uri(address, UriKind.Absolute);
             var logger = loggingFactory.CreateLogger<IApplicationBuilder>();
@@ -45,6 +45,8 @@ public class ServiceDiscoveryWebAppInstaller : IWebAppInstaller
                 logger.LogInformation("Deregistering from Consul");
                 consulClient.Agent.ServiceDeregister(registration.ID).Wait();
             });
+
+            return app;
         }
         catch (Exception ex)
         {

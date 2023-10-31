@@ -1,4 +1,5 @@
 using NotificationService.Api.Configurations.Installers;
+using NotificationService.Api.Extensions;
 using NotificationService.Api.Extensions.MiddlewareExtensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -41,12 +42,14 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
+app.InstallWebApp(app.Lifetime,
+                  configuration,
+                  typeof(IWebAppInstaller).Assembly);
+
 app.MapControllers();
 
 app.Start();
 
-app.InstallWebApp(app.Lifetime,
-                  configuration,
-                  typeof(IWebAppInstaller).Assembly);
+app.RegisterWithConsul(app.Lifetime, configuration);
 
 app.WaitForShutdown();
