@@ -1,4 +1,5 @@
 ﻿using Consul;
+using NotificationService.Api.Models.Settings;
 using NotificationService.Api.Services.Cache.Abstract;
 using NotificationService.Api.Services.Cache.Concrete;
 using NotificationService.Api.Services.Token.Abstract;

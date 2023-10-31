@@ -8,6 +8,10 @@ public class AutofacBusinessModel : Module
 {
     protected override void Load(ContainerBuilder builder)
     {
+        //Services
         builder.RegisterType<LocalizationService>().As<ILocalizationService>().InstancePerDependency();
+
+        builder.RegisterType<EmailService>().As<IEmailService>().InstancePerLifetimeScope();
+        builder.RegisterType<SmsService>().As<ISmsService>().InstancePerLifetimeScope();
     }
 }

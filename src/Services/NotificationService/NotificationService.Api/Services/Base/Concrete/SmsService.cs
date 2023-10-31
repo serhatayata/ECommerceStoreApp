@@ -1,37 +1,35 @@
-﻿using Microsoft.Extensions.Options;
-using NotificationService.Api.Models.Email;
-using NotificationService.Api.Models.Settings;
+﻿using NotificationService.Api.Models.Sms;
 using NotificationService.Api.Services.Base.Abstract;
 using System.Reflection;
 
 namespace NotificationService.Api.Services.Base.Concrete;
 
-public class EmailService : BaseService, IEmailService
+public class SmsService : BaseService, ISmsService
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly ILogger<EmailService> _logger;
+    private readonly ILogger<SmsService> _logger;
 
-    public EmailService(
-        ILogger<EmailService> logger, 
+    public SmsService(
+        ILogger<SmsService> logger,
         IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
     {
         _httpContextAccessor = httpContextAccessor;
         _logger = logger;
     }
 
-    public async ValueTask<bool> SendOrderSuccessEmail(OrderSuccessEmail emailData)
+    public async ValueTask<bool> SendOrderSuccessSMS(OrderSuccessSMS emailData)
     {
         try
         {
-            var emailBody = this.GetLocalizedValue("BC22U.EmailSuccess");
-            var emailSubject = this.GetLocalizedValue("BC22U.EmailSuccessSubject");
-
+            var smsBody = this.GetLocalizedValue("BC22U.SmsSuccess");
+            var smsSubject = this.GetLocalizedValue("BC22U.SmsSuccessSubject");
+            throw new Exception();
             return true;
         }
         catch (Exception ex)
         {
             _logger.LogError("ERROR handling message: {ExceptionMessage} - Method : {ClassName}.{MethodName}",
-                    ex.Message, nameof(EmailService),
+                    ex.Message, nameof(SmsService),
                     MethodBase.GetCurrentMethod()?.Name);
             return false;
         }

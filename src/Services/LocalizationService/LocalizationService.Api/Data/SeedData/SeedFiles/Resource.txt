@@ -12,3 +12,5 @@ BC22U.EmailSuccess,<p>Email Gönderildi {Name} </p>,tr-TR,true,NotificationV1
 BC22U.EmailSuccess,<p>Email sent {Name} </p>,en-US,true,NotificationV1
 BC22U.SmsSuccess,<p>Email Gönderildi {Name} </p>,tr-TR,true,NotificationV1
 BC22U.SmsSuccess,<p>Email sent {Name} </p>,en-US,true,NotificationV1
+BC22U.SmsSuccessSubject, Ödeme tamamlandı başarılı mesajı,tr-TR,true,NotificationV1
+BC22U.SmsSuccessSubject, Payment completed success message,en-US,true,NotificationV1

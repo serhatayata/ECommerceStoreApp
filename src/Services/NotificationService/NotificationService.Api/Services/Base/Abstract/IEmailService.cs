@@ -1,9 +1,9 @@
 ﻿using NotificationService.Api.Models.Email;
+using NotificationService.Api.Models.Sms;
 
 namespace NotificationService.Api.Services.Base.Abstract;
 
 public interface IEmailService
 {
-    ValueTask<bool> SendSmtpEmail(EmailBase emailData);
-    ValueTask<bool> SendSmtpEmailWithAttachment(EmailWithAttachment emailData);
+    ValueTask<bool> SendOrderSuccessEmail(OrderSuccessEmail emailData);
 }

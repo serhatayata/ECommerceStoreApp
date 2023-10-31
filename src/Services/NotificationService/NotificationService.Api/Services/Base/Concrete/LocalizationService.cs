@@ -79,7 +79,7 @@ public class LocalizationService : ILocalizationService
 
     private string GetLocalizationData(string currentCulture, string resourceKey, params object[] args)
     {
-        string redisKey = $"{_localizationMemberKey}-{currentCulture}-{resourceKey}";
+        string redisKey = GetResourceCacheKey(_localizationMemberKey, currentCulture, resourceKey);
         var redisValue = _redisService.Get<ResourceDto>(redisKey, _databaseId);
 
         if (!_redisService.AnyKeyExistsByPrefix(_localizationMemberKey, _databaseId))
@@ -122,5 +122,18 @@ public class LocalizationService : ILocalizationService
         return (args == null || args.Length == 0) ?
                    value :
                    string.Format(value, args);
+    }
+
+    public static string GetResourceCacheKey(
+    string prefix,
+    string language,
+    string key)
+    {
+        var result = string.Join("-",
+                         prefix,
+                         language,
+                         key);
+
+        return result;
     }
 }

@@ -73,13 +73,13 @@ namespace LocalizationService.Api.Extensions
 
         public static string GetResourceCacheKey(
             string prefix,
-            string key,
-            string language)
+            string language,
+            string key)
         {
             var result = string.Join("-",
                              prefix,
-                             key,
-                             language);
+                             language,
+                             key);
 
             return result;
         }
