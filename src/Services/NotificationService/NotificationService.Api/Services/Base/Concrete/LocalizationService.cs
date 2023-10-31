@@ -20,11 +20,6 @@ public class LocalizationService : ILocalizationService
     private readonly IHttpClientFactory _httpClientFactory;
 
     private string _localizationMemberKey;
-    private string _localizationSuffix1;
-    private string _localizationSuffix2;
-
-    private int _redisCacheDuration;
-
     private int _databaseId;
 
     public LocalizationService(
@@ -43,10 +38,7 @@ public class LocalizationService : ILocalizationService
         var localizationSettings = _configuration.GetSection("LocalizationSettings").Get<LocalizationSettings>();
 
         _localizationMemberKey = localizationSettings.MemberKey;
-
         _databaseId = localizationSettings.DatabaseId;
-
-        _redisCacheDuration = localizationSettings.CacheDuration;
     }
 
     public string this[string culture, string key, params object[] args]
