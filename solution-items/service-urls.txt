@@ -11,6 +11,7 @@ OrderService -> 5007
 PaymentService -> 5008
 CampaignService -> 5009
 MonitoringService -> 5010
+StockService -> 5011
 
 -- Https Ports --
 
@@ -25,6 +26,7 @@ OrderService -> 6007
 PaymentService -> 6008
 CampaignService -> 6009
 MonitoringService -> 6010
+StockService -> 6011
 
 -- IIS Ports --
 
@@ -39,3 +41,4 @@ OrderService -> 12007
 PaymentService -> 12008
 CampaignService -> 12009
 MonitoringService -> 12010
+StockService -> 12011
