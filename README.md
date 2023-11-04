@@ -11,6 +11,7 @@ E-Commerce Microservices Application (STILL BEING IMPROVED)
 - gRPC
 - SAGA Pattern
 - MassTransit
+- CQRS
 
 ![Architecture_ECommerceStoreApp](https://github.com/serhatayata/ECommerceStoreApp/assets/82120298/da27a4d3-1cfa-455a-9c76-d83327302cba)
 
