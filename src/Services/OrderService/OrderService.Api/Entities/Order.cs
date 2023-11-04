@@ -10,6 +10,11 @@ public class Order : IEntity
     public int Id { get; set; }
 
     /// <summary>
+    /// Code of the order
+    /// </summary>
+    public string Code { get; set; }
+
+    /// <summary>
     /// Creation time of the order
     /// </summary>
     public DateTime CreatedDate { get; set; }

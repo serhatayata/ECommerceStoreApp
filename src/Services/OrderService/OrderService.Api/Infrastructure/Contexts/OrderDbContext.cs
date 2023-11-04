@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OrderService.Api.Entities;
+using OrderService.Api.Infrastructure.EntityTypeConfigurations;
 using System.Data;
 
 namespace OrderService.Api.Infrastructure.Contexts;
@@ -24,7 +25,8 @@ public class OrderDbContext : DbContext, IOrderDbContext
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
-        //builder.ApplyConfiguration(new HealthCheckConfigurationEntityTypeConfiguration());
+        builder.ApplyConfiguration(new OrderEntityTypeConfiguration());
+        builder.ApplyConfiguration(new OrderItemEntityTypeConfiguration());
     }
 
     public DbSet<Order> Orders { get; set; }
