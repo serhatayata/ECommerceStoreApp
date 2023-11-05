@@ -1,3 +1,4 @@
+using MassTransit;
 using OrderService.Api.Configurations.Installers;
 
 var builder = WebApplication.CreateBuilder(args);
