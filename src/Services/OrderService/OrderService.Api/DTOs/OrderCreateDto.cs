@@ -1,4 +1,6 @@
-﻿namespace OrderService.Api.DTOs;
+﻿using OrderService.Api.Models.Enums;
+
+namespace OrderService.Api.DTOs;
 
 public class OrderCreateDto
 {

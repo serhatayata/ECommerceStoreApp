@@ -4,6 +4,6 @@ using OrderService.Api.Repositories.Base;
 
 namespace OrderService.Api.Repositories.EntityFramework.Abstract;
 
-public interface IEfOrderRepository : IGenericRepository<Order, StringModel>
+public interface IEfOrderRepository : IEfGenericRepository<Order, IntModel>
 {
 }
