@@ -6,7 +6,7 @@ namespace OrderService.Api.Services.Abstract;
 
 public interface IOrderService
 {
-    Task<Result> AddAsync(OrderAddModel model);
+    Task<DataResult<int>> AddAsync(OrderAddModel model);
     Task<Result> UpdateAsync(OrderUpdateModel model);
     Task<Result> DeleteAsync(IntModel model);
 

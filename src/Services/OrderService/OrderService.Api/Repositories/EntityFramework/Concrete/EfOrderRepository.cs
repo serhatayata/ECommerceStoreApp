@@ -20,7 +20,7 @@ public class EfOrderRepository : IEfOrderRepository
         _context = context;
     }
 
-    public async Task<Result> AddAsync(Order entity)
+    public async Task<DataResult<int>> AddAsync(Order entity)
     {
         _context.Connection.Open();
         using (var transaction = _context.Connection.BeginTransaction())
@@ -34,10 +34,10 @@ public class EfOrderRepository : IEfOrderRepository
                 var result = _context.SaveChanges();
 
                 if (result < 1)
-                    return new ErrorResult("error for adding");
+                    return new ErrorDataResult<int>(default(int), "error for adding");
 
                 transaction.Commit();
-                return new SuccessResult("error for adding");
+                return new SuccessDataResult<int>(entity.Id, "error for adding");
             }
             catch (Exception ex)
             {

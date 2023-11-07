@@ -29,7 +29,7 @@ public class OrderService : IOrderService
         codeLength = _configuration.GetValue<int>("OrderCodeGenerationLength");
     }
 
-    public async Task<Result> AddAsync(OrderAddModel model)
+    public async Task<DataResult<int>> AddAsync(OrderAddModel model)
     {
         var mappedModel = _mapper.Map<Order>(model);
         //Code generation
@@ -37,7 +37,7 @@ public class OrderService : IOrderService
         //Code exists
         var orderCodeExists = await _efOrderRepository.GetAsync(c => c.Code == code);
         if (orderCodeExists.Success)
-            return new ErrorResult("order already exists");
+            return new ErrorDataResult<int>(default(int), "order already exists");
 
         mappedModel.Code = code;
         var result = await _efOrderRepository.AddAsync(mappedModel);
