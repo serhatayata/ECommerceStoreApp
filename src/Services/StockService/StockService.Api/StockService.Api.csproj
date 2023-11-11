@@ -31,6 +31,8 @@
 
   <ItemGroup>
     <Folder Include="Controllers\" />
+    <Folder Include="Repositories\Base\" />
+    <Folder Include="Repositories\EntityFramework\" />
   </ItemGroup>
 
 </Project>
