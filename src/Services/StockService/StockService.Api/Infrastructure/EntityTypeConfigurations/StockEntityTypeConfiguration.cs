@@ -22,13 +22,13 @@ public class StockEntityTypeConfiguration : IEntityTypeConfiguration<Stock>
             {
                 Id = 1,
                 ProductId = 1,
-                Count = 1
+                Count = 100
             },
             new Stock()
             {
                 Id = 2,
                 ProductId = 2,
-                Count = 2
+                Count = 200
             }
         };
         #endregion

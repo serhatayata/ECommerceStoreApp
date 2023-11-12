@@ -11,7 +11,7 @@ namespace NotificationService.Api.Configurations.Installers.ServiceInstallers;
 
 public class LocalizationDataServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public async void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         if (!hostEnvironment.IsProduction())
         {
@@ -29,25 +29,22 @@ public class LocalizationDataServiceInstaller : IServiceInstaller
                                                 MethodBase.GetCurrentMethod()?.Name);
                         });
 
-            Task.Run(async () =>
+            await policy.ExecuteAsync(async () =>
             {
-                await policy.ExecuteAsync(async () =>
+                var localizationSettings = configuration.GetSection("LocalizationSettings").Get<LocalizationSettings>();
+                var redisSettings = configuration.GetSection("RedisOptions").Get<RedisOptions>();
+
+                var localizationMemberKey = localizationSettings.MemberKey;
+                var redisCacheDuration = localizationSettings.CacheDuration;
+
+                int databaseId = localizationSettings.DatabaseId;
+
+                if (!redisService.AnyKeyExistsByPrefix(localizationMemberKey, databaseId))
                 {
-                    var localizationSettings = configuration.GetSection("LocalizationSettings").Get<LocalizationSettings>();
-                    var redisSettings = configuration.GetSection("RedisOptions").Get<RedisOptions>();
-
-                    var localizationMemberKey = localizationSettings.MemberKey;
-                    var redisCacheDuration = localizationSettings.CacheDuration;
-
-                    int databaseId = localizationSettings.DatabaseId;
-
-                    if (!redisService.AnyKeyExistsByPrefix(localizationMemberKey, databaseId))
-                    {
-                        var gatewayClient = httpClientFactory.CreateClient("LocalizationService");
-                        _ = await gatewayClient.PostGetResponseAsync<Result, StringModel>("members/get-with-resources-by-memberkey-and-save-default", new StringModel() { Value = localizationMemberKey });
-                    }
-                });
-            }).Wait();
+                    var gatewayClient = httpClientFactory.CreateClient("LocalizationService");
+                    _ = await gatewayClient.PostGetResponseAsync<Result, StringModel>("members/get-with-resources-by-memberkey-and-save-default", new StringModel() { Value = localizationMemberKey });
+                }
+            });
         }
     }
 }

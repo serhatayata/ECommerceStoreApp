@@ -12,7 +12,7 @@ namespace NotificationService.Api.Configurations.Installers.ServiceInstallers;
 
 public class LocalizationServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public async void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         if (!hostEnvironment.IsProduction())
         {
@@ -32,31 +32,28 @@ public class LocalizationServiceInstaller : IServiceInstaller
                                     MethodBase.GetCurrentMethod()?.Name);
             });
 
-            Task.Run(async () =>
+            await policy.ExecuteAsync(async () =>
             {
-                await policy.ExecuteAsync(async () =>
+                var localizationInfo = configuration.GetSection($"ServiceInformation:{environmentName}:LocalizationService").Get<ServiceInformationSettings>();
+
+                var gatewayClient = httpClientFactory.CreateClient(localizationInfo.Name);
+                var languageResult = await gatewayClient.PostGetResponseAsync<DataResult<List<LanguageDto>>, string>("languages/get-all-for-clients", string.Empty);
+
+                if (languageResult == null || languageResult?.Data == null || !languageResult.Success)
+                    throw new Exception($"Language result not found for {nameof(Install)}");
+
+                services.Configure<RequestLocalizationOptions>(options =>
                 {
-                    var localizationInfo = configuration.GetSection($"ServiceInformation:{environmentName}:LocalizationService").Get<ServiceInformationSettings>();
+                    var cultures = languageResult.Data.Select(x => new CultureInfo(x.Code)).ToArray();
 
-                    var gatewayClient = httpClientFactory.CreateClient(localizationInfo.Name);
-                    var languageResult = await gatewayClient.PostGetResponseAsync<DataResult<List<LanguageDto>>, string>("languages/get-all-for-clients", string.Empty);
+                    var defaultCulture = cultures.FirstOrDefault(x => x.Name == "tr-TR");
+                    options.DefaultRequestCulture = new RequestCulture(culture: defaultCulture?.Name ?? "tr-TR",
+                                                                       uiCulture: defaultCulture?.Name ?? "tr-TR");
 
-                    if (languageResult == null || languageResult?.Data == null || !languageResult.Success)
-                        throw new Exception($"Language result not found for {nameof(Install)}");
-
-                    services.Configure<RequestLocalizationOptions>(options =>
-                    {
-                        var cultures = languageResult.Data.Select(x => new CultureInfo(x.Code)).ToArray();
-
-                        var defaultCulture = cultures.FirstOrDefault(x => x.Name == "tr-TR");
-                        options.DefaultRequestCulture = new RequestCulture(culture: defaultCulture?.Name ?? "tr-TR",
-                                                                           uiCulture: defaultCulture?.Name ?? "tr-TR");
-
-                        options.SupportedCultures = cultures;
-                        options.SupportedUICultures = cultures;
-                    });
+                    options.SupportedCultures = cultures;
+                    options.SupportedUICultures = cultures;
                 });
-            }).Wait();
+            });
         }
     }
 }

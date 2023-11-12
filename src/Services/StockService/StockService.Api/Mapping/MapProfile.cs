@@ -10,5 +10,8 @@ public class MapProfile : Profile
     {
 
         CreateMap<Stock, StockAddModel>().ReverseMap();
+        CreateMap<Stock, StockUpdateModel>().ReverseMap();
+        CreateMap<Stock, StockModel>().ReverseMap();
+        CreateMap<StockModel, StockUpdateModel>().ReverseMap();
     }
 }

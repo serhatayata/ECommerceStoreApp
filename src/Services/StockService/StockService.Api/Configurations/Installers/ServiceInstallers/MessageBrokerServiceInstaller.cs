@@ -1,9 +1,12 @@
 ﻿using MassTransit;
 using Microsoft.Extensions.Options;
-using OrderService.Api.Models.Settings;
 using Shared.Queue.Events;
+using StockService.Api.Consumers;
+using StockService.Api.Extensions;
+using StockService.Api.Models.Settings;
+using System.Reflection;
 
-namespace OrderService.Api.Configurations.Installers.ServiceInstallers;
+namespace StockService.Api.Configurations.Installers.ServiceInstallers;
 
 public class MessageBrokerServiceInstaller : IServiceInstaller
 {
@@ -15,8 +18,11 @@ public class MessageBrokerServiceInstaller : IServiceInstaller
 
         services.AddMassTransit(m =>
         {
+            m.AddConsumer<OrderCreatedEventConsumer>();
+
             m.UsingRabbitMq((context, cfg) =>
             {
+                // Connection
                 if (envName == "Development")
                 {
                     cfg.Host(host: queueSettings.Host,
@@ -32,6 +38,18 @@ public class MessageBrokerServiceInstaller : IServiceInstaller
                 {
                     cfg.Host(host: queueSettings.Host);
                 }
+
+                //Send endpoints
+                var stockReservedEventQueueName = MessageBrokerExtensions.GetQueueName<StockReservedEvent>();
+                EndpointConvention.Map<StockReservedEvent>(new Uri($"queue:{stockReservedEventQueueName}"));
+
+                //Subscribe
+                //OrderCreatedEventConsumer
+                var nameOrderCreatedEventConsumer = MessageBrokerExtensions.GetQueueNameWithProject<OrderCreatedEventConsumer>();
+                cfg.ReceiveEndpoint(queueName: nameOrderCreatedEventConsumer, e =>
+                {
+                    e.ConfigureConsumer<OrderCreatedEventConsumer>(context);
+                });
             });
         });
     }
