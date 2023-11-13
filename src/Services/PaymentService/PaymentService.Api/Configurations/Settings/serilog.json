@@ -1,0 +1,14 @@
+{
+  "Serilog": {
+    "MinimumLevel": {
+      "Default": "Information",
+      "Override": {
+        "Microsoft": "Information",
+        "System": "Warning"
+      }
+    }
+  },
+  "ElasticSearchLogOptions": {
+    "ConnectionString": "http://localhost:9200"
+  }
+}

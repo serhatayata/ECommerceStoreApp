@@ -32,4 +32,8 @@
     <ProjectReference Include="..\..\Shared\Shared\Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Configurations\Installers\WebApplicationInstallers\" />
+  </ItemGroup>
+
 </Project>
