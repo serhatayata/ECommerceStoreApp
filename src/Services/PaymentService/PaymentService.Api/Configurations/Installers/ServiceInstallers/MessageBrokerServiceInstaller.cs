@@ -1,6 +1,9 @@
 ﻿using MassTransit;
 using Microsoft.Extensions.Options;
+using PaymentService.Api.Consumers;
+using PaymentService.Api.Extensions;
 using PaymentService.Api.Models.Settings;
+using Shared.Queue.Events;
 
 namespace PaymentService.Api.Configurations.Installers.ServiceInstallers;
 
@@ -14,7 +17,7 @@ public class MessageBrokerServiceInstaller : IServiceInstaller
 
         services.AddMassTransit(m =>
         {
-            //m.AddConsumer<OrderCreatedEventConsumer>();
+            m.AddConsumer<StockReservedEventConsumer>();
 
             m.UsingRabbitMq((context, cfg) =>
             {
@@ -35,17 +38,13 @@ public class MessageBrokerServiceInstaller : IServiceInstaller
                     cfg.Host(host: queueSettings.Host);
                 }
 
-                ////Send endpoints
-                //var stockReservedEventQueueName = MessageBrokerExtensions.GetQueueName<StockReservedEvent>();
-                //EndpointConvention.Map<StockReservedEvent>(new Uri($"queue:{stockReservedEventQueueName}"));
-
-                ////Subscribe
-                ////OrderCreatedEventConsumer
-                //var nameOrderCreatedEventConsumer = MessageBrokerExtensions.GetQueueNameWithProject<OrderCreatedEventConsumer>();
-                //cfg.ReceiveEndpoint(queueName: nameOrderCreatedEventConsumer, e =>
-                //{
-                //    e.ConfigureConsumer<OrderCreatedEventConsumer>(context);
-                //});
+                //Subscribe
+                //StockReservedEventConsumer
+                var nameStockReservedEventConsumer = MessageBrokerExtensions.GetQueueName<StockReservedEvent>();
+                cfg.ReceiveEndpoint(queueName: nameStockReservedEventConsumer, e =>
+                {
+                    e.ConfigureConsumer<StockReservedEventConsumer>(context);
+                });
             });
         });
     }
