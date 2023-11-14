@@ -30,6 +30,10 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
+app.InstallWebApp(app.Lifetime,
+                  configuration,
+                  typeof(IWebAppInstaller).Assembly);
+
 app.MapControllers();
 
 app.Run();

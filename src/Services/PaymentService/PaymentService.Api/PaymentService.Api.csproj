@@ -44,7 +44,6 @@
 
   <ItemGroup>
     <Folder Include="Consumers\" />
-    <Folder Include="Controllers\" />
     <Folder Include="Infrastructure\Contexts\" />
     <Folder Include="Infrastructure\EntityTypeConfigurations\" />
     <Folder Include="Services\" />

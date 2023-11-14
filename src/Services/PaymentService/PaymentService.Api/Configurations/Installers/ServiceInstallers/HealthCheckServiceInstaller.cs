@@ -1,5 +1,4 @@
 ﻿using PaymentService.Api.Models.Settings;
-using System.Reflection;
 using System.Web;
 
 namespace PaymentService.Api.Configurations.Installers.ServiceInstallers;
@@ -10,7 +9,7 @@ public class HealthCheckServiceInstaller : IServiceInstaller
     {
         services.AddHealthChecks()
                 .AddSqlServer(
-                    connectionString: configuration.GetConnectionString("DefaultConnection"),
+                    connectionString: configuration.GetConnectionString("PaymentDb"),
                     healthQuery: "SELECT 1",
                     name: "MSSQL Server check",
                     failureStatus: Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Healthy | Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Degraded,
