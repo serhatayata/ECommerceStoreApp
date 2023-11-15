@@ -1,4 +1,5 @@
 ﻿using OrderService.Api.Models.Base;
+using OrderService.Api.Models.Enums;
 using OrderService.Api.Models.OrderModels;
 using OrderService.Api.Utilities.Results;
 
@@ -8,8 +9,9 @@ public interface IOrderService
 {
     Task<DataResult<int>> AddAsync(OrderAddModel model);
     Task<Result> UpdateAsync(OrderUpdateModel model);
-    Task<Result> DeleteAsync(IntModel model);
+    Task<Result> UpdateOrderStatusAsync(int orderId, OrderStatus newStatus);
+    Task<Result> DeleteAsync(int model);
 
-    Task<DataResult<OrderModel>> GetAsync(IntModel model);
+    Task<DataResult<OrderModel>> GetAsync(int model);
     Task<DataResult<IReadOnlyList<OrderModel>>> GetAllAsync();
 }

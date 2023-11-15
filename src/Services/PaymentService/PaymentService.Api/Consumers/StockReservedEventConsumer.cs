@@ -24,7 +24,7 @@ public class StockReservedEventConsumer : IConsumer<StockReservedEvent>
         {
             _logger.LogInformation($"{context.Message.Payment.TotalPrice} TL was withdrawn from credit card for user id {context.Message.BuyerId}");
 
-            await _publishEndpoint.Publish(new PaymentSucceededEvent()
+            await _publishEndpoint.Publish(new PaymentCompletedEvent()
             {
                 OrderId = context.Message.OrderId,
                 BuyerId = context.Message.BuyerId

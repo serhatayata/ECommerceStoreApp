@@ -2,6 +2,7 @@
 using OrderService.Api.Entities;
 using OrderService.Api.Extensions;
 using OrderService.Api.Models.Base;
+using OrderService.Api.Models.Enums;
 using OrderService.Api.Models.OrderModels;
 using OrderService.Api.Repositories.EntityFramework.Abstract;
 using OrderService.Api.Services.Abstract;
@@ -48,7 +49,7 @@ public class OrderService : IOrderService
     {
         var mappedModel = _mapper.Map<Order>(model);
         //Check if name changed
-        var existingOrder = await _efOrderRepository.GetAsync(new IntModel(model.Id));
+        var existingOrder = await _efOrderRepository.GetAsync(model.Id);
         if (existingOrder?.Data != null)
         {
             var code = DataGenerationExtensions.RandomCode(codeLength);
@@ -59,7 +60,19 @@ public class OrderService : IOrderService
         return result;
     }
 
-    public async Task<Result> DeleteAsync(IntModel model)
+    public async Task<Result> UpdateOrderStatusAsync(int orderId, OrderStatus orderStatus)
+    {
+        var existingOrder = await _efOrderRepository.GetAsync(orderId);
+        if (existingOrder?.Data != null)
+        {
+            existingOrder.Data.Status = orderStatus;
+            return await _efOrderRepository.UpdateStatusCodeAsync(existingOrder.Data);
+        }
+
+        return new ErrorResult("Order not found");
+    }
+
+    public async Task<Result> DeleteAsync(int model)
     {
         var result = await _efOrderRepository.DeleteAsync(model);
         return result;
@@ -68,16 +81,16 @@ public class OrderService : IOrderService
     public async Task<DataResult<IReadOnlyList<OrderModel>>> GetAllAsync()
     {
         var result = await _efOrderRepository.GetAllAsync();
-        var resultData = _mapper.Map<DataResult<IReadOnlyList<OrderModel>>>(result);
+        var resultData = _mapper.Map<IReadOnlyList<OrderModel>>(result.Data);
 
-        return resultData;
+        return new SuccessDataResult<IReadOnlyList<OrderModel>>(resultData);
     }
 
-    public async Task<DataResult<OrderModel>> GetAsync(IntModel model)
+    public async Task<DataResult<OrderModel>> GetAsync(int model)
     {
         var result = await _efOrderRepository.GetAsync(model);
-        var resultData = _mapper.Map<DataResult<OrderModel>>(result);
+        var resultData = _mapper.Map<OrderModel>(result.Data);
 
-        return resultData;
+        return new SuccessDataResult<OrderModel>(resultData);
     }
 }

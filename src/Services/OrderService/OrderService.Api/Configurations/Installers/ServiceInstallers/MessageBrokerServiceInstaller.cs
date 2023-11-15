@@ -1,5 +1,7 @@
 ﻿using MassTransit;
 using Microsoft.Extensions.Options;
+using OrderService.Api.Consumers;
+using OrderService.Api.Extensions;
 using OrderService.Api.Models.Settings;
 using Shared.Queue.Events;
 
@@ -15,6 +17,8 @@ public class MessageBrokerServiceInstaller : IServiceInstaller
 
         services.AddMassTransit(m =>
         {
+            m.AddConsumer<PaymentCompletedEventConsumer>();
+
             m.UsingRabbitMq((context, cfg) =>
             {
                 if (envName == "Development")
@@ -32,6 +36,14 @@ public class MessageBrokerServiceInstaller : IServiceInstaller
                 {
                     cfg.Host(host: queueSettings.Host);
                 }
+
+                //Subscribe
+                //PaymentCompletedEventConsumer
+                var namePaymentCompletedEventConsumer = MessageBrokerExtensions.GetQueueNameWithProject<PaymentCompletedEventConsumer>();
+                cfg.ReceiveEndpoint(queueName: namePaymentCompletedEventConsumer, e =>
+                {
+                    e.ConfigureConsumer<PaymentCompletedEventConsumer>(context);
+                });
             });
         });
     }

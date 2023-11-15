@@ -37,7 +37,7 @@ public class EfOrderRepository : IEfOrderRepository
                     return new ErrorDataResult<int>(default(int), "error for adding");
 
                 transaction.Commit();
-                return new SuccessDataResult<int>(entity.Id, "error for adding");
+                return new SuccessDataResult<int>(entity.Id, "success for adding");
             }
             catch (Exception ex)
             {
@@ -86,7 +86,7 @@ public class EfOrderRepository : IEfOrderRepository
         }
     }
 
-    public async Task<Result> DeleteAsync(IntModel model)
+    public async Task<Result> UpdateStatusCodeAsync(Order entity)
     {
         _context.Connection.Open();
         using (var transaction = _context.Connection.BeginTransaction())
@@ -95,7 +95,40 @@ public class EfOrderRepository : IEfOrderRepository
             {
                 _context.Database.UseTransaction(transaction as DbTransaction);
 
-                var result = await _context.Orders.Where(b => b.Id == model.Value)
+                var result = await _context.Orders.Where(b => b.Id == entity.Id)
+                                        .ExecuteUpdateAsync(b => b
+                                            .SetProperty(p => p.Status, entity.Status));
+
+                _context.SaveChanges();
+
+                if (result < 1)
+                    return new ErrorResult("error updating");
+
+                transaction.Commit();
+                return new SuccessResult("error updating");
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _context.Connection.Close();
+            }
+        }
+    }
+
+    public async Task<Result> DeleteAsync(int model)
+    {
+        _context.Connection.Open();
+        using (var transaction = _context.Connection.BeginTransaction())
+        {
+            try
+            {
+                _context.Database.UseTransaction(transaction as DbTransaction);
+
+                var result = await _context.Orders.Where(b => b.Id == model)
                                                   .ExecuteDeleteAsync();
 
                 _context.SaveChanges();
@@ -136,9 +169,9 @@ public class EfOrderRepository : IEfOrderRepository
             new SuccessDataResult<IReadOnlyList<Order>>(result);
     }
 
-    public async Task<DataResult<Order>> GetAsync(IntModel model)
+    public async Task<DataResult<Order>> GetAsync(int model)
     {
-        var result = await _context.Orders.FirstOrDefaultAsync(b => b.Id == model.Value);
+        var result = await _context.Orders.FirstOrDefaultAsync(b => b.Id == model);
 
         return result == null ?
             new ErrorDataResult<Order>(result) :

@@ -3,6 +3,6 @@
 public enum OrderStatus : byte
 {
     Suspend = 1,
-    Success = 2,
+    Completed = 2,
     Fail = 3,
 }
