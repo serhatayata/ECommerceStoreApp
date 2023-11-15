@@ -10,12 +10,10 @@ namespace OrderService.Api.Consumers;
 public class PaymentCompletedEventConsumer : IConsumer<PaymentCompletedEvent>
 {
     private readonly IOrderService _orderService;
-    private readonly IMapper _mapper;
     private readonly ILogger<PaymentCompletedEventConsumer> _logger;
 
     public PaymentCompletedEventConsumer(
         IOrderService orderService, 
-        IMapper mapper,
         ILogger<PaymentCompletedEventConsumer> logger)
     {
         _orderService = orderService;
@@ -28,7 +26,6 @@ public class PaymentCompletedEventConsumer : IConsumer<PaymentCompletedEvent>
 
         if (order != null)
         {
-            order.Data.Status = OrderStatus.Completed;
             var updateResult = await _orderService.UpdateOrderStatusAsync(context.Message.OrderId, OrderStatus.Completed);
 
             if (!updateResult.Success)

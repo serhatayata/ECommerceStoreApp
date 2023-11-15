@@ -18,6 +18,7 @@ public class MessageBrokerServiceInstaller : IServiceInstaller
         services.AddMassTransit(m =>
         {
             m.AddConsumer<PaymentCompletedEventConsumer>();
+            m.AddConsumer<PaymentFailedEventConsumer>();
 
             m.UsingRabbitMq((context, cfg) =>
             {
@@ -43,6 +44,13 @@ public class MessageBrokerServiceInstaller : IServiceInstaller
                 cfg.ReceiveEndpoint(queueName: namePaymentCompletedEventConsumer, e =>
                 {
                     e.ConfigureConsumer<PaymentCompletedEventConsumer>(context);
+                });
+
+                //PaymentFailedEventConsumer
+                var namePaymentFailedEventConsumer = MessageBrokerExtensions.GetQueueNameWithProject<PaymentFailedEventConsumer>();
+                cfg.ReceiveEndpoint(queueName: namePaymentFailedEventConsumer, e =>
+                {
+                    e.ConfigureConsumer<PaymentFailedEventConsumer>(context);
                 });
             });
         });
