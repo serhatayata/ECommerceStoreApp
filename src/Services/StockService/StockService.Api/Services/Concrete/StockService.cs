@@ -44,6 +44,11 @@ public class StockService : IStockService
         return await _efStockRepository.DecreaseCountAsync(productId, count);
     }
 
+    public async Task<Result> IncreaseStockAsync(int productId, int count)
+    {
+        return await _efStockRepository.IncreaseCountAsync(productId, count);
+    }
+
     public async Task<Result> DeleteAsync(int id)
     {
         return await _efStockRepository.DeleteAsync(id);

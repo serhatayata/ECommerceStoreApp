@@ -149,6 +149,39 @@ public class EfStockRepository : IEfStockRepository
         }
     }
 
+    public async Task<Result> IncreaseCountAsync(int productId, int count)
+    {
+        _dbContext.Connection.Open();
+        using (var transaction = _dbContext.Connection.BeginTransaction())
+        {
+            try
+            {
+                _dbContext.Database.UseTransaction(transaction as DbTransaction);
+
+                var result = await _dbContext.Stocks.Where(b => b.ProductId == productId)
+                                                    .ExecuteUpdateAsync(b => b
+                                                    .SetProperty(p => p.Count, p => p.Count + count));
+
+                _dbContext.SaveChanges();
+
+                if (result < 1)
+                    return new ErrorResult("error updating");
+
+                transaction.Commit();
+                return new SuccessResult("success updating");
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _dbContext.Connection.Close();
+            }
+        }
+    }
+
     public async Task<Result> DecreaseCountAsync(Dictionary<int, int> prodIdCounts)
     {
         _dbContext.Connection.Open();

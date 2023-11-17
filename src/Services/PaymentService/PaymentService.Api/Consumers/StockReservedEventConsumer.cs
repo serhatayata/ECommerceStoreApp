@@ -38,7 +38,8 @@ public class StockReservedEventConsumer : IConsumer<StockReservedEvent>
             {
                 OrderId = context.Message.OrderId,
                 BuyerId = context.Message.BuyerId,
-                Message = "Not withdrawn because of balance"
+                Message = "Not withdrawn because of balance",
+                OrderItems = context.Message.OrderItems
             });
         }
     }
