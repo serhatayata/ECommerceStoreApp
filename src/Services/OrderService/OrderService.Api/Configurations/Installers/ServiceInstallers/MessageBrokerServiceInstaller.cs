@@ -19,6 +19,7 @@ public class MessageBrokerServiceInstaller : IServiceInstaller
         {
             m.AddConsumer<PaymentCompletedEventConsumer>();
             m.AddConsumer<PaymentFailedEventConsumer>();
+            m.AddConsumer<StockNotReservedEventConsumer>();
 
             m.UsingRabbitMq((context, cfg) =>
             {
@@ -51,6 +52,13 @@ public class MessageBrokerServiceInstaller : IServiceInstaller
                 cfg.ReceiveEndpoint(queueName: namePaymentFailedEventConsumer, e =>
                 {
                     e.ConfigureConsumer<PaymentFailedEventConsumer>(context);
+                });
+
+                //PaymentFailedEventConsumer
+                var stockNotReservedEventConsumer = MessageBrokerExtensions.GetQueueNameWithProject<StockNotReservedEventConsumer>();
+                cfg.ReceiveEndpoint(queueName: stockNotReservedEventConsumer, e =>
+                {
+                    e.ConfigureConsumer<StockNotReservedEventConsumer>(context);
                 });
             });
         });
