@@ -16,15 +16,18 @@ public class OrdersController : BaseController
     private readonly IOrderService _orderService;
     private readonly IPublishEndpoint _publishEndpoint;
     private readonly IMapper _mapper;
+    private readonly ILogger<OrdersController> _logger;
 
     public OrdersController(
         IOrderService orderService,
         IPublishEndpoint publishEndpoint,
-        IMapper mapper)
+        IMapper mapper,
+        ILogger<OrdersController> logger)
     {
         _orderService = orderService;
         _publishEndpoint = publishEndpoint;
         _mapper = mapper;
+        _logger = logger;
     }
 
     [HttpPost]
