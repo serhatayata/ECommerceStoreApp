@@ -20,7 +20,8 @@ builder.Services
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.UseExceptionHandler("/error");
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -30,7 +31,11 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
-app.UseExceptionHandler("/error");
+
+app.InstallWebApp(app.Lifetime,
+                  configuration,
+                  typeof(IWebAppInstaller).Assembly);
+
 app.MapControllers();
 
 app.Run();
