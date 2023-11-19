@@ -1,4 +1,5 @@
 using PaymentService.Api.Configurations.Installers;
+using PaymentService.Api.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
@@ -36,4 +37,8 @@ app.InstallWebApp(app.Lifetime,
 
 app.MapControllers();
 
-app.Run();
+app.Start();
+
+app.InstallServiceDiscovery(app.Lifetime, configuration);
+
+app.WaitForShutdown();
