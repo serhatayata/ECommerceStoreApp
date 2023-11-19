@@ -1,4 +1,5 @@
 ﻿using OrderService.Api.Configurations.Installers.ServiceInstallers;
+using OrderService.Api.Configurations.Installers.WebApplicationInstallers;
 using System.Reflection;
 
 namespace OrderService.Api.Configurations.Installers;
@@ -71,7 +72,8 @@ public static class DependencyInjection
             .SelectMany(a => a.DefinedTypes)
             .Where(IsAssignableToType<IWebAppInstaller>)
             .Select(Activator.CreateInstance)
-            .Cast<IWebAppInstaller>();
+            .Cast<IWebAppInstaller>()
+            .Where(s => s.GetType() != typeof(ServiceDiscoveryWebAppInstaller));
 
         foreach (IWebAppInstaller webAppIstaller in webAppInstallers)
         {

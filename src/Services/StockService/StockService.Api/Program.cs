@@ -1,4 +1,5 @@
 using StockService.Api.Configurations.Installers;
+using StockService.Api.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
@@ -29,6 +30,14 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
+app.InstallWebApp(app.Lifetime,
+                  configuration,
+                  typeof(IWebAppInstaller).Assembly);
+
 app.MapControllers();
 
-app.Run();
+app.Start();
+
+app.InstallServiceDiscovery(app.Lifetime, configuration);
+
+app.WaitForShutdown();
