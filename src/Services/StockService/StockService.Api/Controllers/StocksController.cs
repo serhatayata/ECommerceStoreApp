@@ -9,11 +9,14 @@ namespace StockService.Api.Controllers
     public class StocksController : ControllerBase
     {
         private readonly IStockService _stockService;
+        private readonly ILogger<StocksController> _logger;
 
         public StocksController(
-            IStockService stockService)
+            IStockService stockService,
+            ILogger<StocksController> logger)
         {
             _stockService = stockService;
+            _logger = logger;
         }
 
         [HttpGet]

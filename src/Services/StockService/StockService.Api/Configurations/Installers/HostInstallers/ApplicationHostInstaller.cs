@@ -1,4 +1,6 @@
-﻿namespace StockService.Api.Configurations.Installers.HostInstallers;
+﻿using Serilog;
+
+namespace StockService.Api.Configurations.Installers.HostInstallers;
 
 public class ApplicationHostInstaller : IHostInstaller
 {
@@ -20,8 +22,8 @@ public class ApplicationHostInstaller : IHostInstaller
                                reloadOnChange: true)
                   .Build();
         })
-        .ConfigureLogging(s => s.ClearProviders()); // Remove all added providers before
-                                                    // https://github.com/serilog/serilog-aspnetcore
-        //.UseSerilog();    }
+        .ConfigureLogging(s => s.ClearProviders()) // Remove all added providers before
+                                                   // https://github.com/serilog/serilog-aspnetcore
+        .UseSerilog();
     }
 }
