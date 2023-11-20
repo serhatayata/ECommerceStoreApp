@@ -7,8 +7,6 @@ using CatalogService.Api.Data.Repositories.Dapper.Abstract;
 using CatalogService.Api.Data.Repositories.Dapper.Concrete;
 using CatalogService.Api.Data.Repositories.EntityFramework.Abstract;
 using CatalogService.Api.Data.Repositories.EntityFramework.Concrete;
-using CatalogService.Api.IntegrationEvents;
-using CatalogService.Api.IntegrationEvents.EventHandling;
 using CatalogService.Api.Services.Base.Abstract;
 using CatalogService.Api.Services.Base.Concrete;
 using CatalogService.Api.Services.Elastic.Abstract;
@@ -17,8 +15,6 @@ using CatalogService.Api.Services.Localization.Abstract;
 using CatalogService.Api.Services.Localization.Concrete;
 using CatalogService.Api.Services.MongoDB.Abstract;
 using CatalogService.Api.Services.MongoDB.Concrete;
-using FluentValidation.Resources;
-using IntegrationEventLogEF.Services;
 
 namespace CatalogService.Api.DependencyResolvers.Autofac
 {
@@ -60,13 +56,6 @@ namespace CatalogService.Api.DependencyResolvers.Autofac
 
             builder.RegisterType<ElasticSearchService>().As<IElasticSearchService>().InstancePerDependency();
 
-            #endregion
-            #region Events
-            builder.RegisterType<CatalogIntegrationEventService>().As<ICatalogIntegrationEventService>().InstancePerDependency();
-            builder.RegisterType<IntegrationEventLogService>().As<IIntegrationEventLogService>().InstancePerDependency();
-            #endregion
-            #region EventHandlers
-            builder.RegisterType<ProductUpdatedIntegrationEventHandler>().InstancePerDependency();
             #endregion
         }
     }

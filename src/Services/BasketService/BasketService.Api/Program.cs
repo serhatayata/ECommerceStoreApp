@@ -104,10 +104,6 @@ builder.Services.AddSwaggerGen(options => {
     options.OperationFilter<AuthorizeCheckOperationFilter>();
 });
 #endregion
-#region EventBus
-builder.Services.RegisterEventBus(configuration);
-builder.Services.SubscribeEvents();
-#endregion
 #region AddGrpc
 builder.Services.AddGrpc(g =>
 {

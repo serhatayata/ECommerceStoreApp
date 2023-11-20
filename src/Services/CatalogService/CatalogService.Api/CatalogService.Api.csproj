@@ -75,11 +75,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\BuildingBlocks\EventBus\EventBus.Factory\EventBus.Factory.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\EventBus\IntegrationEventLogEF\IntegrationEventLogEF.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Protobuf Include="Protos\brand.proto" GrpcServices="Server" />
     <Protobuf Include="Protos\category.proto" GrpcServices="Server" />
     <Protobuf Include="Protos\comment.proto" GrpcServices="Server" />
@@ -87,10 +82,6 @@
     <Protobuf Include="Protos\feature.proto" GrpcServices="Server" />
     <Protobuf Include="Protos\product.proto" GrpcServices="Server" />
     <Protobuf Include="google\api\money.proto" GrpcServices="Server" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="IntegrationEvents\Events\DeadLetter\" />
   </ItemGroup>
 
 </Project>

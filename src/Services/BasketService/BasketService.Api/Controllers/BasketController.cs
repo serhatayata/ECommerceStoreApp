@@ -1,8 +1,6 @@
-﻿using BasketService.Api.IntegrationEvents.Events;
-using BasketService.Api.Models;
+﻿using BasketService.Api.Models;
 using BasketService.Api.Repositories.Abstract;
 using BasketService.Api.Services.Identity.Abstract;
-using EventBus.Base.Abstraction;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -17,17 +15,14 @@ namespace BasketService.Api.Controllers
     {
         private readonly IBasketRepository _basketRepository;
         private readonly IIdentityService _identityService;
-        private readonly IEventBus _eventBus;
         private readonly ILogger<BasketController> _logger;
 
         public BasketController(IBasketRepository basketRepository, 
                                 IIdentityService identityService, 
-                                IEventBus eventBus, 
                                 ILogger<BasketController> logger)
         {
             _basketRepository = basketRepository;
             _identityService = identityService;
-            _eventBus = eventBus;
             _logger = logger;
         }
 
@@ -69,20 +64,20 @@ namespace BasketService.Api.Controllers
 
             var userName = this.HttpContext.User.FindFirst(x => x.Type == ClaimTypes.Name)?.Value;
 
-            var eventMessage = new UserCheckoutAcceptedIntegrationEvent(userId, userName, basketCheckout.City, basketCheckout.Street,
-                basketCheckout.State, basketCheckout.Country, basketCheckout.ZipCode, basketCheckout.CardNumber, basketCheckout.CardHolderName,
-                basketCheckout.CardExpiration, basketCheckout.CardSecurityNumber, basketCheckout.CardTypeId, basketCheckout.Buyer, basketCheckout.RequestId, basket);
+            //var eventMessage = new UserCheckoutAcceptedIntegrationEvent(userId, userName, basketCheckout.City, basketCheckout.Street,
+            //    basketCheckout.State, basketCheckout.Country, basketCheckout.ZipCode, basketCheckout.CardNumber, basketCheckout.CardHolderName,
+            //    basketCheckout.CardExpiration, basketCheckout.CardSecurityNumber, basketCheckout.CardTypeId, basketCheckout.Buyer, basketCheckout.RequestId, basket);
 
             // Once basket is checkout, sends an integration event to
             // ordering.api to convert basket to order and proceeds with
             // order creation process
             try
             {
-                _eventBus.Publish(eventMessage);
+                //_eventBus.Publish(eventMessage);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "ERROR Publishing integration event: {IntegrationEventId} from {AppName}", eventMessage.Id, Program.appName);
+                //_logger.LogError(ex, "ERROR Publishing integration event: {IntegrationEventId} from {AppName}", eventMessage.Id, Program.appName);
 
                 throw;
             }
