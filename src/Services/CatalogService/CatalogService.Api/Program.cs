@@ -6,8 +6,6 @@ using CatalogService.Api.DependencyResolvers.Autofac;
 using CatalogService.Api.Extensions;
 using CatalogService.Api.Extensions.Middlewares;
 using CatalogService.Api.Infrastructure.Interceptors;
-using CatalogService.Api.IntegrationEvents.EventHandling;
-using CatalogService.Api.IntegrationEvents.Events;
 using CatalogService.Api.Mapping;
 using CatalogService.Api.Models.CacheModels;
 using CatalogService.Api.Models.Settings;
@@ -22,10 +20,6 @@ using CatalogService.Api.Services.Token.Abstract;
 using CatalogService.Api.Services.Token.Concrete;
 using CatalogService.Api.Utilities.IoC;
 using CatalogService.Api.Utilities.Options;
-using EventBus.Base;
-using EventBus.Base.Abstraction;
-using EventBus.Factory;
-using IntegrationEventLogEF;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
@@ -130,16 +124,6 @@ builder.Services.AddDbContext<CatalogDbContext>(options =>
                              //sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
                          });
 }, ServiceLifetime.Scoped);
-
-builder.Services.AddDbContext<IntegrationEventLogContext>(options =>
-{
-    options.UseSqlServer(connectionString: defaultConnString,
-                     sqlServerOptionsAction: sqlOptions =>
-                     {
-                         sqlOptions.MigrationsAssembly(assembly);
-                         //sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
-                     });
-}, ServiceLifetime.Scoped);
 #endregion
 #region Autofac
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
@@ -167,34 +151,6 @@ builder.Services.AddGrpcReflection();
 //    g.Interceptors.Add<ExceptionInterceptor>();
 //}).AddJsonTranscoding();
 #endregion
-#endregion
-#region Event Bus
-builder.Services.AddSingleton<IEventBus>(sp =>
-{
-    var queueSettings = configuration.GetSection("MessageBroker:QueueSettings").Get<MessageBrokerQueueSettings>();
-
-    EventBusConfig config = new()
-    {
-        ConnectionRetryCount = configuration.GetValue<int?>("EventBusConfigSettings:ConnectionRetryCount") ?? 5,
-        EventNameSuffix = configuration.GetSection("EventBusConfigSettings:EventNameSuffix").Value ?? "IntegrationEvent",
-        SubscriberClientAppName = configuration.GetSection("EventBusConfigSettings:SubscriberClientAppName").Value ?? "OrderService",
-        EventBusType = EventBusType.RabbitMQ,
-        Connection = new ConnectionFactory()
-        {
-            HostName = queueSettings?.HostName,
-            Port = queueSettings?.Port ?? default,
-            UserName = queueSettings?.UserName,
-            Password = queueSettings?.Password,
-            VirtualHost = queueSettings?.VirtualHost
-        }
-        //Connection = new ConnectionFactory()
-        //{
-        //    HostName = configuration.GetSection("EventBusConfigSettings:HostName").Value ?? "c_rabbitmq"
-        //}
-    };
-
-    return EventBusFactory.Create(config, sp);
-});
 #endregion
 #region Localization
 // DAHA SONRA DUZENLENECEK UZUN SURUYOR DIYE EKLENDI
@@ -271,12 +227,6 @@ var catalogDbContext = seedScope.ServiceProvider.GetService<CatalogDbContext>();
 
 await CatalogSeedData.LoadSeedDataAsync(catalogDbContext, seedScope, environment, configuration);
 #endregion
-#region Event
-var eventBus = app.Services.GetRequiredService<IEventBus>();
-eventBus.Subscribe<ProductUpdatedIntegrationEvent, ProductUpdatedIntegrationEventHandler>();
-#endregion
-
-ConfigureEventBusForSubscription(app);
 
 app.Start();
 
@@ -287,12 +237,5 @@ app.WaitForShutdown();
 public partial class Program
 {
     public static string appName = Assembly.GetExecutingAssembly().GetName().Name;
-
-    private static void ConfigureEventBusForSubscription(WebApplication app)
-    {
-        var eventBus = app.Services.GetRequiredService<IEventBus>();
-
-        //eventBus.Subscribe<OrderCreatedIntegrationEvent, OrderCreatedIntegrationEventHandler>();
-    }
 }
 

@@ -3,15 +3,12 @@ using CatalogService.Api.Data.Repositories.Dapper.Abstract;
 using CatalogService.Api.Data.Repositories.EntityFramework.Abstract;
 using CatalogService.Api.Entities;
 using CatalogService.Api.Extensions;
-using CatalogService.Api.IntegrationEvents;
-using CatalogService.Api.IntegrationEvents.Events;
 using CatalogService.Api.Models.Base.Concrete;
 using CatalogService.Api.Models.CacheModels;
 using CatalogService.Api.Models.ProductModels;
 using CatalogService.Api.Services.Base.Abstract;
 using CatalogService.Api.Services.Elastic.Abstract;
 using CatalogService.Api.Utilities.Results;
-using EventBus.Base.Abstraction;
 using Nest;
 using Result = CatalogService.Api.Utilities.Results.Result;
 
@@ -24,8 +21,6 @@ public class ProductService : BaseService, IProductService
     private readonly IElasticSearchService _elasticSearchService;
     private readonly IMapper _mapper;
     private readonly IConfiguration _configuration;
-    private readonly ICatalogIntegrationEventService _catalogIntegrationEventService;
-    private readonly IEventBus _eventBus;
     private readonly ILogger<ProductService> _logger;
 
     private readonly string productSearchIndex;
@@ -37,9 +32,7 @@ public class ProductService : BaseService, IProductService
         IElasticSearchService elasticSearchService,
         IMapper mapper,
         IConfiguration configuration,
-        ICatalogIntegrationEventService catalogIntegrationEventService,
         ILogger<ProductService> logger,
-        IEventBus eventBus,
         IHttpContextAccessor httpContextAccessor)
         : base(httpContextAccessor)
     {
@@ -48,9 +41,7 @@ public class ProductService : BaseService, IProductService
         _elasticSearchService = elasticSearchService;
         _mapper = mapper;
         _configuration = configuration;
-        _catalogIntegrationEventService = catalogIntegrationEventService;
         _logger = logger;
-        _eventBus = eventBus;
 
         codeLength = _configuration.GetValue<int>("ProductCodeGenerationLength");
         productSearchIndex = _configuration.GetSection("ElasticSearchIndex:Product:Search").Value ?? string.Empty;
@@ -99,14 +90,14 @@ public class ProductService : BaseService, IProductService
         if (result.Success && entity.Price != existingProduct.Data.Price)
         {
             //Creating integration event to be published
-            var priceChangedEvent = new ProductPriceChangedIntegrationEvent(existingProduct.Data.Id,
-                                                                            entity.Price,
-                                                                            existingProduct.Data.Price);
+            //var priceChangedEvent = new ProductPriceChangedIntegrationEvent(existingProduct.Data.Id,
+            //                                                                entity.Price,
+            //                                                                existingProduct.Data.Price);
 
-            await _catalogIntegrationEventService.SaveEventAndCatalogContextChangesAsync(priceChangedEvent);
+            //await _catalogIntegrationEventService.SaveEventAndCatalogContextChangesAsync(priceChangedEvent);
 
-            // Publish and mark the saved event as published
-            await _catalogIntegrationEventService.PublishThroughEventBusAsync(priceChangedEvent);
+            //// Publish and mark the saved event as published
+            //await _catalogIntegrationEventService.PublishThroughEventBusAsync(priceChangedEvent);
         }
 
         if (result.Success)
@@ -402,8 +393,8 @@ public class ProductService : BaseService, IProductService
     
     private void SendProductUpdateEvent(Product model)
     {
-        var currentEvent = _mapper.Map<ProductUpdatedIntegrationEvent>(model);
-        _eventBus.Publish(currentEvent);
+        //var currentEvent = _mapper.Map<ProductUpdatedIntegrationEvent>(model);
+        //_eventBus.Publish(currentEvent);
     }
 
     private List<SuggestionModel> GetSearchProductSuggestions(ISearchResponse<ProductElasticModel> searchResponse)
