@@ -45,6 +45,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Consumers\" />
     <Folder Include="Migrations\" />
   </ItemGroup>
 
