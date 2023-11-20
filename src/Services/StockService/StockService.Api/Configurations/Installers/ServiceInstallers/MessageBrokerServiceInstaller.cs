@@ -1,10 +1,8 @@
 ﻿using MassTransit;
 using Microsoft.Extensions.Options;
 using Shared.Queue.Events;
-using StockService.Api.Consumers;
 using StockService.Api.Extensions;
 using StockService.Api.Models.Settings;
-using System.Reflection;
 
 namespace StockService.Api.Configurations.Installers.ServiceInstallers;
 
@@ -18,8 +16,7 @@ public class MessageBrokerServiceInstaller : IServiceInstaller
 
         services.AddMassTransit(m =>
         {
-            m.AddConsumer<OrderCreatedEventConsumer>();
-            m.AddConsumer<PaymentFailedEventConsumer>();
+            //m.AddConsumer<OrderCreatedEventConsumer>();
 
             m.UsingRabbitMq((context, cfg) =>
             {
@@ -46,18 +43,11 @@ public class MessageBrokerServiceInstaller : IServiceInstaller
 
                 //Subscribe
                 //OrderCreatedEventConsumer
-                var nameOrderCreatedEventConsumer = MessageBrokerExtensions.GetQueueNameWithProject<OrderCreatedEventConsumer>();
-                cfg.ReceiveEndpoint(queueName: nameOrderCreatedEventConsumer, e =>
-                {
-                    e.ConfigureConsumer<OrderCreatedEventConsumer>(context);
-                });
-
-                //PaymentFailedEventConsumer
-                var namePaymentFailedEventConsumer = MessageBrokerExtensions.GetQueueNameWithProject<PaymentFailedEventConsumer>();
-                cfg.ReceiveEndpoint(queueName: namePaymentFailedEventConsumer, e =>
-                {
-                    e.ConfigureConsumer<PaymentFailedEventConsumer>(context);
-                });
+                //var nameOrderCreatedEventConsumer = MessageBrokerExtensions.GetQueueNameWithProject<OrderCreatedEventConsumer>();
+                //cfg.ReceiveEndpoint(queueName: nameOrderCreatedEventConsumer, e =>
+                //{
+                //    e.ConfigureConsumer<OrderCreatedEventConsumer>(context);
+                //});
             });
         });
     }

@@ -2,9 +2,11 @@
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using OrderService.Api.DTOs;
+using OrderService.Api.Extensions;
 using OrderService.Api.Models.OrderModels;
 using OrderService.Api.Services.Abstract;
 using Shared.Queue.Events;
+using Shared.Queue.Events.Interfaces;
 using Shared.Queue.Models;
 
 namespace OrderService.Api.Controllers;
@@ -14,18 +16,18 @@ namespace OrderService.Api.Controllers;
 public class OrdersController : BaseController
 {
     private readonly IOrderService _orderService;
-    private readonly IPublishEndpoint _publishEndpoint;
+    private readonly ISendEndpointProvider _sendEndpointProvider;
     private readonly IMapper _mapper;
     private readonly ILogger<OrdersController> _logger;
 
     public OrdersController(
         IOrderService orderService,
-        IPublishEndpoint publishEndpoint,
+        ISendEndpointProvider sendEndpointProvider,
         IMapper mapper,
         ILogger<OrdersController> logger)
     {
         _orderService = orderService;
-        _publishEndpoint = publishEndpoint;
+        _sendEndpointProvider = sendEndpointProvider;
         _mapper = mapper;
         _logger = logger;
     }
@@ -38,7 +40,7 @@ public class OrdersController : BaseController
         var result = await _orderService.AddAsync(addModel);
         if (result.Success)
         {
-            var orderCreatedEvent = new OrderCreatedEvent()
+            var orderCreatedRequestEvent = new OrderCreatedRequestEvent()
             {
                 BuyerId = model.BuyerId,
                 OrderId = result.Data,
@@ -50,7 +52,10 @@ public class OrdersController : BaseController
                 OrderItems = _mapper.Map<List<OrderItemMessage>>(model.OrderItems)
             };
 
-            await _publishEndpoint.Publish(orderCreatedEvent);
+            var orderCreatedRequestEventName = MessageBrokerExtensions.GetQueueName<OrderCreatedRequestEvent>();
+            var sendEndpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri($"queue:{orderCreatedRequestEventName}"));
+
+            await sendEndpoint.Send<IOrderCreatedRequestEvent>(orderCreatedRequestEvent);
 
             return Ok(result);
         }
