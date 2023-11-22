@@ -1,9 +1,10 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using SagaStateMachineWorkerService;
+using SagaStateMachineWorkerService.Extensions;
 using SagaStateMachineWorkerService.Infrastructure.Contexts;
 using SagaStateMachineWorkerService.Models;
-using Shared.Queue.Contants;
+using Shared.Queue.Events;
 using System.Reflection;
 
 IHost host = Host.CreateDefaultBuilder(args)
@@ -32,7 +33,8 @@ IHost host = Host.CreateDefaultBuilder(args)
                 cfg.Host(rabbitMQHost);
 
                 //Order Initial
-                cfg.ReceiveEndpoint(RabbitMQSettingsConst.OrderSaga, e =>
+                var orderCreatedRequestEventName = MessageBrokerExtensions.GetQueueName<OrderCreatedRequestEvent>();
+                cfg.ReceiveEndpoint(orderCreatedRequestEventName, e =>
                 {
                     // When OrderSaga queue get any message OrderStateInstance will be created as a record in DB
                     e.ConfigureSaga<OrderStateInstance>(context);
