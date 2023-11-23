@@ -1,12 +1,16 @@
-﻿using Shared.Queue.Models;
+﻿using Shared.Queue.Events.Interfaces;
+using Shared.Queue.Models;
 
 namespace Shared.Queue.Events;
 
-public class OrderCreatedEvent
+public class OrderCreatedEvent : IOrderCreatedEvent
 {
-    public int OrderId { get; set; }
-    public string BuyerId { get; set; }
+    public OrderCreatedEvent(Guid correlationId)
+    {
+        this.CorrelationId = correlationId;
+    }
 
-    public PaymentMessage Payment { get; set; }
     public List<OrderItemMessage> OrderItems { get; set; } = new List<OrderItemMessage>();
+
+    public Guid CorrelationId { get; }
 }
