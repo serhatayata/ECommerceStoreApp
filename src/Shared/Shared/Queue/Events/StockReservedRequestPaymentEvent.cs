@@ -14,4 +14,5 @@ public class StockReservedRequestPaymentEvent : IStockReservedRequestPaymentEven
     public List<OrderItemMessage> OrderItems { get; set; } = new();
 
     public Guid CorrelationId { get; }
+    public string BuyerId { get; set; }
 }

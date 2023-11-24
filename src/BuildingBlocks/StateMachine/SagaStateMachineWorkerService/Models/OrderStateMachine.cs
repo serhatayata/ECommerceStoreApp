@@ -10,9 +10,11 @@ public class OrderStateMachine : MassTransitStateMachine<OrderStateInstance>
 {
     public Event<IOrderCreatedRequestEvent> OrderCreatedRequestEvent { get; set; }
     public Event<IStockReservedEvent> StockReservedEvent { get; set; }
+    public Event<IPaymentCompletedEvent> PaymentCompletedEvent { get; set; }
 
     public State OrderCreated { get; private set; }
     public State StockReserved { get; private set; }
+    public State PaymentCompleted { get; private set; }
 
     public OrderStateMachine()
     {
@@ -25,6 +27,12 @@ public class OrderStateMachine : MassTransitStateMachine<OrderStateInstance>
               y => y.CorrelateBy<int>(d => d.OrderId, 
                                       z => z.Message.OrderId)
                                      .SelectId(context => Guid.NewGuid()));
+
+        // When stock reserved event is consumed, which correlation Id row we are going to change.
+        Event(() => StockReservedEvent, x => x.CorrelateById(y => y.Message.CorrelationId));
+
+        // When payment completed event is consumed, which correlation Id row we are going to change.
+        Event(() => PaymentCompletedEvent, x => x.CorrelateById(y => y.Message.CorrelationId));
 
         // During the first state, if OrderCreatedRequestEvent comes 
         Initially(
@@ -73,12 +81,29 @@ public class OrderStateMachine : MassTransitStateMachine<OrderStateInstance>
                         CVV = context.Saga.CVV,
                         Expiration = context.Saga.Expiration,
                         TotalPrice = context.Saga.TotalPrice
-                    }
+                    },
+                    BuyerId = context.Saga.BuyerId
                 })
             .Then(context =>
             {
                 Console.WriteLine($"{StockReservedEvent} after : {context.Saga}");
             })
+        );
+
+        // During stockReserved status, if payment completed event is consumed, status will be changed to PaymentCompleted
+        // Then we publish an event for order service to change the order's status to complete
+        During(StockReserved,
+            When(PaymentCompletedEvent)
+            .TransitionTo(PaymentCompleted)
+            .Publish(context => new OrderCompletedRequestEvent()
+            {
+                OrderId = context.Saga.OrderId
+            })
+            .Then(context =>
+            {
+                Console.WriteLine($"{PaymentCompletedEvent} after : {context.Saga}");
+            })
+            .Finalize()
         );
     }
 }

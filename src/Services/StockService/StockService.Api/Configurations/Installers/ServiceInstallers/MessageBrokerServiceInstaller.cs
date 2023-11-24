@@ -1,9 +1,7 @@
 ﻿using MassTransit;
-using Microsoft.Extensions.Options;
 using Shared.Queue.Events;
 using StockService.Api.Consumers;
 using StockService.Api.Extensions;
-using StockService.Api.Models.Settings;
 
 namespace StockService.Api.Configurations.Installers.ServiceInstallers;
 
@@ -29,7 +27,7 @@ public class MessageBrokerServiceInstaller : IServiceInstaller
 
                 //Subscribe
                 //OrderCreatedEventConsumer
-                var nameOrderCreatedEventConsumer = MessageBrokerExtensions.GetQueueNameWithProject<OrderCreatedEventConsumer>();
+                var nameOrderCreatedEventConsumer = MessageBrokerExtensions.GetQueueNameWithProject<OrderCreatedEvent>();
                 cfg.ReceiveEndpoint(queueName: nameOrderCreatedEventConsumer, e =>
                 {
                     e.ConfigureConsumer<OrderCreatedEventConsumer>(context);

@@ -11,4 +11,6 @@ public interface IStockReservedRequestPaymentEvent : CorrelatedBy<Guid>
     /// If payment fails, then we use this for compensable transaction (e.g. stock service)
     /// </summary>
     List<OrderItemMessage> OrderItems { get; set; }
+
+    string BuyerId { get; set; }
 }
