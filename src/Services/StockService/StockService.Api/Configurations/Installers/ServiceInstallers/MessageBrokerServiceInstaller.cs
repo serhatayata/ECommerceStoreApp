@@ -1,5 +1,6 @@
 ﻿using MassTransit;
 using Shared.Queue.Events;
+using Shared.Queue.Messages;
 using StockService.Api.Consumers;
 using StockService.Api.Extensions;
 
@@ -15,6 +16,7 @@ public class MessageBrokerServiceInstaller : IServiceInstaller
         services.AddMassTransit(m =>
         {
             m.AddConsumer<OrderCreatedEventConsumer>();
+            m.AddConsumer<StockRollbackMessageConsumer>();
 
             m.UsingRabbitMq((context, cfg) =>
             {
@@ -31,6 +33,12 @@ public class MessageBrokerServiceInstaller : IServiceInstaller
                 cfg.ReceiveEndpoint(queueName: nameOrderCreatedEventConsumer, e =>
                 {
                     e.ConfigureConsumer<OrderCreatedEventConsumer>(context);
+                });
+                //StockRollbackMessageConsumer
+                var nameStockRollbackMessageConsumer = MessageBrokerExtensions.GetQueueName<StockRollbackMessage>();
+                cfg.ReceiveEndpoint(queueName: nameStockRollbackMessageConsumer, e =>
+                {
+                    e.ConfigureConsumer<StockRollbackMessageConsumer>(context);
                 });
             });
         });

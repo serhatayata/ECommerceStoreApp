@@ -2,6 +2,7 @@
 using SagaStateMachineWorkerService.Extensions;
 using Shared.Queue.Events;
 using Shared.Queue.Events.Interfaces;
+using Shared.Queue.Messages;
 using Shared.Queue.Models;
 
 namespace SagaStateMachineWorkerService.Models;
@@ -10,11 +11,15 @@ public class OrderStateMachine : MassTransitStateMachine<OrderStateInstance>
 {
     public Event<IOrderCreatedRequestEvent> OrderCreatedRequestEvent { get; set; }
     public Event<IStockReservedEvent> StockReservedEvent { get; set; }
+    public Event<IStockNotReservedEvent> StockNotReservedEvent { get; set; }
     public Event<IPaymentCompletedEvent> PaymentCompletedEvent { get; set; }
+    public Event<IPaymentFailedEvent> PaymentFailedEvent { get; set; }
 
     public State OrderCreated { get; private set; }
     public State StockReserved { get; private set; }
+    public State StockNotReserved { get; private set; }
     public State PaymentCompleted { get; private set; }
+    public State PaymentFailed { get; private set; }
 
     public OrderStateMachine()
     {
@@ -31,8 +36,13 @@ public class OrderStateMachine : MassTransitStateMachine<OrderStateInstance>
         // When stock reserved event is consumed, which correlation Id row we are going to change.
         Event(() => StockReservedEvent, x => x.CorrelateById(y => y.Message.CorrelationId));
 
+        // When stock NOT reserved event is consumed, which correlation Id row we are going to change.
+        Event(() => StockNotReservedEvent, x => x.CorrelateById(y => y.Message.CorrelationId));
+
         // When payment completed event is consumed, which correlation Id row we are going to change.
         Event(() => PaymentCompletedEvent, x => x.CorrelateById(y => y.Message.CorrelationId));
+
+
 
         // During the first state, if OrderCreatedRequestEvent comes 
         Initially(
@@ -65,7 +75,8 @@ public class OrderStateMachine : MassTransitStateMachine<OrderStateInstance>
             })
         );
 
-        // During orderCreated state, if StockReservedEvent comes change state to StockReserved
+        // During orderCreated state, if StockReservedEvent is consumed, change state to StockReserved
+        // During orderCreated state, if StockNotReservedEvent is consumed, change state to StockNotReserved
         // After that we use send (We use send because there is only one endpoint using this)
         During(OrderCreated,
             When(StockReservedEvent)
@@ -87,11 +98,25 @@ public class OrderStateMachine : MassTransitStateMachine<OrderStateInstance>
             .Then(context =>
             {
                 Console.WriteLine($"{StockReservedEvent} after : {context.Saga}");
+            }),
+            When(StockNotReservedEvent)
+            .TransitionTo(StockNotReserved)
+            .Publish(context => new OrderFailedRequestEvent()
+            {
+                OrderId = context.Saga.OrderId,
+                Reason = context.Message.Reason
+            })
+            .Then(context =>
+            {
+                Console.WriteLine($"{StockNotReservedEvent} after : {context.Saga}");
             })
         );
 
         // During stockReserved status, if payment completed event is consumed, status will be changed to PaymentCompleted
         // Then we publish an event for order service to change the order's status to complete
+        // During stockReserved status, if payment NOT completed event is consumed, status will be changed to PaymentNOTCompleted
+        // Then we publish an event for order service to change the order's status to fail and
+        // send message for stock service to change the stock of the products
         During(StockReserved,
             When(PaymentCompletedEvent)
             .TransitionTo(PaymentCompleted)
@@ -103,7 +128,26 @@ public class OrderStateMachine : MassTransitStateMachine<OrderStateInstance>
             {
                 Console.WriteLine($"{PaymentCompletedEvent} after : {context.Saga}");
             })
-            .Finalize()
+            .Finalize(),
+            When(PaymentFailedEvent)
+            .Publish(context => new OrderFailedRequestEvent()
+            {
+                OrderId = context.Saga.OrderId,
+                Reason = context.Message.Reason
+            })
+            .Send(new Uri($"queue:{MessageBrokerExtensions.GetQueueName<StockRollbackMessage>()}"),
+                  context => new StockRollbackMessage()
+                  {
+                      OrderItems = context.Message.OrderItems
+                  })
+            .TransitionTo(PaymentFailed)
+            .Then(context =>
+            {
+                Console.WriteLine($"{PaymentFailedEvent} after : {context.Saga}");
+            })
         );
+
+        // This can be used to delete if the state of the record is Finalize
+        //SetCompletedWhenFinalized();
     }
 }
