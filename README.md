@@ -26,10 +26,6 @@ E-Commerce Microservices Application (STILL BEING IMPROVED)
   Remove a connector with cURL
   - curl -i -X DELETE localhost:8083/connectors/connector-name/
  
-- Saga Choreography Design
-
-![Saga_Choreography_Design](https://github.com/serhatayata/ECommerceStoreApp/assets/82120298/7e2022e1-4ff4-4542-912d-c1f93d1a8cd1)
- 
 - Migration commands IdentityServer
   - Adding Migrations
     - add-migration -c AppIdentityDbContext -name mig_v1
