@@ -28,11 +28,11 @@ E-Commerce Microservices Application (STILL BEING IMPROVED)
 
 #### Saga Choreography Design
 
-![Saga_Choreography_Design](https://github.com/serhatayata/ECommerceStoreApp/assets/82120298/8c77e35b-9acf-4409-87c4-bf6f2b6ba946)
+![Saga_Choreography_Design](https://github.com/serhatayata/ECommerceStoreApp/assets/82120298/b71b53f5-40ad-4b97-99d0-b93b02bed3e1)
 
 #### Saga Orchestration Design
 
-![Saga_Orchestration_Design](https://github.com/serhatayata/ECommerceStoreApp/assets/82120298/dc8824fe-08e1-47ab-b874-46f6406b85ab)
+![Saga_Orchestration_Design](https://github.com/serhatayata/ECommerceStoreApp/assets/82120298/11cbe585-0bc3-4185-b63d-6bca32b5654b)
 
 - Migration commands IdentityServer
   - Adding Migrations
