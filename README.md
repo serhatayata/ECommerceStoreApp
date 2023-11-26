@@ -32,7 +32,7 @@ E-Commerce Microservices Application (STILL BEING IMPROVED)
 
 #### Saga Orchestration Design
 
-![Saga_Orchestration_Design](https://github.com/serhatayata/ECommerceStoreApp/assets/82120298/d39e953d-d6cf-4ee9-aced-e972f4b36848)
+![Saga_Orchestration_Design](https://github.com/serhatayata/ECommerceStoreApp/assets/82120298/dc8824fe-08e1-47ab-b874-46f6406b85ab)
 
 - Migration commands IdentityServer
   - Adding Migrations
