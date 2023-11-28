@@ -25,7 +25,15 @@ E-Commerce Microservices Application (STILL BEING IMPROVED)
 - Debezium 
   Remove a connector with cURL
   - curl -i -X DELETE localhost:8083/connectors/connector-name/
- 
+
+#### Saga Choreography Design
+
+![Saga_Choreography_Design](https://github.com/serhatayata/ECommerceStoreApp/assets/82120298/b71b53f5-40ad-4b97-99d0-b93b02bed3e1)
+
+#### Saga Orchestration Design
+
+![Saga_Orchestration_Design](https://github.com/serhatayata/ECommerceStoreApp/assets/82120298/eeff04a6-b9f6-4259-8495-2bf1f411d9c6)
+
 - Migration commands IdentityServer
   - Adding Migrations
     - add-migration -c AppIdentityDbContext -name mig_v1
