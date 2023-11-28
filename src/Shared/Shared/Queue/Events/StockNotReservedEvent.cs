@@ -1,9 +1,16 @@
-﻿using Shared.Queue.Models;
+﻿using Shared.Queue.Events.Interfaces;
+using Shared.Queue.Models;
 
 namespace Shared.Queue.Events;
 
-public class StockNotReservedEvent
+public class StockNotReservedEvent : IStockNotReservedEvent
 {
-    public int OrderId { get; set; }
-    public string Message { get; set; }
+    public StockNotReservedEvent(Guid correlationId)
+    {
+        this.CorrelationId = correlationId;
+    }
+
+    public string Reason { get; set; }
+
+    public Guid CorrelationId { get; }
 }

@@ -14,18 +14,23 @@ public class MapProfile : Profile
     {
         #region Order
         CreateMap<Order, OrderModel>().ReverseMap();
-        CreateMap<Order, OrderAddModel>().ReverseMap();
+        CreateMap<Order, OrderAddModel>().ReverseMap()
+                                         .ForMember(o => o.Items, 
+                                                    m => m.MapFrom(u => u.Items));
         CreateMap<Order, OrderUpdateModel>().ReverseMap();
         CreateMap<Address, AddressModel>().ReverseMap();
         CreateMap<AddressDto, AddressModel>().ReverseMap();
 
         CreateMap<OrderAddModel, OrderCreateDto>().ReverseMap()
+                                                  .ForMember(o => o.Items, 
+                                                             m => m.MapFrom(u => u.OrderItems))
                                                   .ForMember(o => o.FailMessage, opt => opt.Ignore())
                                                   .ForMember(o => o.Status, 
                                                              m => m.MapFrom(u => OrderStatus.Suspend));
         #endregion
         #region OrderItem
         CreateMap<OrderItem, OrderItemModel>().ReverseMap();
+        CreateMap<OrderItemDto, OrderItemModel>().ReverseMap();
         CreateMap<PaymentMessage, PaymentDto>().ReverseMap();
         CreateMap<OrderItemMessage, OrderItemDto>().ReverseMap();
         CreateMap<OrderItemMessage, OrderItemDto>().ReverseMap();

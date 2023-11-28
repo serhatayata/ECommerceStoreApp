@@ -25,7 +25,7 @@ public class OrderStateInstance : SagaStateMachineInstance
         properties.ToList().ForEach(p =>
         {
             var value = p.GetValue(this, null);
-            sb.Append($"{p.Name}:{value}");
+            sb.AppendLine($"{p.Name}:{value}");
         });
 
         sb.Append("-----------");

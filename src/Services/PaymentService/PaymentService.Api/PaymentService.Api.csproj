@@ -41,11 +41,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Shared\Shared\Shared.csproj" />
-    <ProjectReference Include="..\..\Shared\Shared\Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Consumers\" />
     <Folder Include="Infrastructure\Contexts\" />
     <Folder Include="Infrastructure\EntityTypeConfigurations\" />
     <Folder Include="Services\" />

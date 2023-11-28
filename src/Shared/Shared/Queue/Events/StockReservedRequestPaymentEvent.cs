@@ -3,14 +3,16 @@ using Shared.Queue.Models;
 
 namespace Shared.Queue.Events;
 
-public class StockReservedEvent : IStockReservedEvent
+public class StockReservedRequestPaymentEvent : IStockReservedRequestPaymentEvent
 {
-    public StockReservedEvent(Guid correlationId)
+    public StockReservedRequestPaymentEvent(Guid correlationId)
     {
         this.CorrelationId = correlationId;
     }
 
+    public PaymentMessage Payment { get; set; }
     public List<OrderItemMessage> OrderItems { get; set; } = new();
 
     public Guid CorrelationId { get; }
+    public string BuyerId { get; set; }
 }
