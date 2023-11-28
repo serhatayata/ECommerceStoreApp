@@ -1,12 +1,17 @@
-﻿using Shared.Queue.Models;
+﻿using Shared.Queue.Events.Interfaces;
+using Shared.Queue.Models;
 
 namespace Shared.Queue.Events;
 
-public class PaymentFailedEvent
+public class PaymentFailedEvent : IPaymentFailedEvent
 {
-    public int OrderId { get; set; }
-    public string BuyerId { get; set; }
-    public string Message { get; set; }
+    public PaymentFailedEvent(Guid correlationId)
+    {
+        this.CorrelationId = correlationId;       
+    }
 
     public List<OrderItemMessage> OrderItems { get; set; }
+    public string Reason { get; set; }
+
+    public Guid CorrelationId { get; }
 }

@@ -1,8 +1,8 @@
 ﻿using MassTransit;
-using Microsoft.Extensions.Options;
 using Shared.Queue.Events;
+using Shared.Queue.Messages;
+using StockService.Api.Consumers;
 using StockService.Api.Extensions;
-using StockService.Api.Models.Settings;
 
 namespace StockService.Api.Configurations.Installers.ServiceInstallers;
 
@@ -11,31 +11,17 @@ public class MessageBrokerServiceInstaller : IServiceInstaller
     public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         var sp = services.BuildServiceProvider();
-        var queueSettings = sp.GetRequiredService<IOptions<QueueSettings>>().Value;
         var envName = hostEnvironment.EnvironmentName;
 
         services.AddMassTransit(m =>
         {
-            //m.AddConsumer<OrderCreatedEventConsumer>();
+            m.AddConsumer<OrderCreatedEventConsumer>();
+            m.AddConsumer<StockRollbackMessageConsumer>();
 
             m.UsingRabbitMq((context, cfg) =>
             {
                 // Connection
-                if (envName == "Development")
-                {
-                    cfg.Host(host: queueSettings.Host,
-                             port: (ushort)queueSettings.Port,
-                             virtualHost: queueSettings.VirtualHost,
-                             c =>
-                             {
-                                 c.Username(queueSettings.Username);
-                                 c.Password(queueSettings.Password);
-                             });
-                }
-                else if (envName == "Production")
-                {
-                    cfg.Host(host: queueSettings.Host);
-                }
+                cfg.Host(host: configuration.GetConnectionString("RabbitMQ"));
 
                 //Send endpoints
                 var stockReservedEventQueueName = MessageBrokerExtensions.GetQueueName<StockReservedEvent>();
@@ -43,11 +29,17 @@ public class MessageBrokerServiceInstaller : IServiceInstaller
 
                 //Subscribe
                 //OrderCreatedEventConsumer
-                //var nameOrderCreatedEventConsumer = MessageBrokerExtensions.GetQueueNameWithProject<OrderCreatedEventConsumer>();
-                //cfg.ReceiveEndpoint(queueName: nameOrderCreatedEventConsumer, e =>
-                //{
-                //    e.ConfigureConsumer<OrderCreatedEventConsumer>(context);
-                //});
+                var nameOrderCreatedEventConsumer = MessageBrokerExtensions.GetQueueNameWithProject<OrderCreatedEvent>();
+                cfg.ReceiveEndpoint(queueName: nameOrderCreatedEventConsumer, e =>
+                {
+                    e.ConfigureConsumer<OrderCreatedEventConsumer>(context);
+                });
+                //StockRollbackMessageConsumer
+                var nameStockRollbackMessageConsumer = MessageBrokerExtensions.GetQueueName<StockRollbackMessage>();
+                cfg.ReceiveEndpoint(queueName: nameStockRollbackMessageConsumer, e =>
+                {
+                    e.ConfigureConsumer<StockRollbackMessageConsumer>(context);
+                });
             });
         });
     }
