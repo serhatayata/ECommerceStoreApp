@@ -1,9 +1,9 @@
 using MassTransit;
 using OrderService.Api.Configurations.Installers;
-using OrderService.Api.Configurations.Installers.WebApplicationInstallers;
 using OrderService.Api.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
+
 ConfigurationManager configuration = builder.Configuration;
 var assembly = typeof(Program).Assembly.GetName().Name;
 IWebHostEnvironment environment = builder.Environment;
