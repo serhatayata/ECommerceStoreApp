@@ -16,6 +16,7 @@ namespace IdentityServer.Api.Extensions
             {
                 config.AddJsonFile("Configurations/appsettings.json", optional: false, reloadOnChange: true)
                       .AddJsonFile($"Configurations/appsettings.{environment.EnvironmentName}.json", optional: true)
+                      .AddEnvironmentVariables()
                       .Build();
             })
             .ConfigureLogging(s => s.ClearProviders()) // Remove all added providers before

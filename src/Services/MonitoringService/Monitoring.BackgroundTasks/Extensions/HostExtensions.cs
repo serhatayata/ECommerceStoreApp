@@ -20,6 +20,7 @@ public static class HostExtensions
                   .AddJsonFile($"Configurations/appsettings.{environment.EnvironmentName}.json", 
                                optional: false, 
                                reloadOnChange: true)
+                  .AddEnvironmentVariables()
                   .Build();
         })
         .ConfigureLogging(s => s.ClearProviders()) // Remove all added providers before

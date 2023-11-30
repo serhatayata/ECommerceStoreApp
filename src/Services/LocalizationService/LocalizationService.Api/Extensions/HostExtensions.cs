@@ -20,6 +20,7 @@ namespace LocalizationService.Api.Extensions
                       .AddJsonFile($"Configurations/appsettings.{environment.EnvironmentName}.json", 
                                    optional: false, 
                                    reloadOnChange: true)
+                      .AddEnvironmentVariables()
                       .Build();
             })
             .ConfigureLogging(s => s.ClearProviders()) // Remove all added providers before

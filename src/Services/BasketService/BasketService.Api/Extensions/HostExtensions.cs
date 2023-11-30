@@ -20,6 +20,7 @@ namespace BasketService.Api.Extensions
                       .AddJsonFile($"Configurations/appsettings.{environment.EnvironmentName}.json", 
                                    optional: true, 
                                    reloadOnChange: true)
+                      .AddEnvironmentVariables()
                       .Build();
             })
             .ConfigureLogging(s => s.ClearProviders()) // Remove all added providers before
