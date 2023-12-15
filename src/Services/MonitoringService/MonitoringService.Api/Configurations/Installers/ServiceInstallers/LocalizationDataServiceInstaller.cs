@@ -12,7 +12,7 @@ namespace MonitoringService.Api.Configurations.Installers.ServiceInstallers;
 
 public class LocalizationDataServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public async void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         if (!hostEnvironment.IsProduction())
         {
@@ -30,27 +30,30 @@ public class LocalizationDataServiceInstaller : IServiceInstaller
                                                 MethodBase.GetCurrentMethod()?.Name);
                         });
 
-            Task.Run(async () =>
+            var result = await policy.ExecuteAndCaptureAsync(async () =>
             {
-                await policy.ExecuteAsync(async () =>
+                var values = new Dictionary<string, RedisValue>();
+
+                var localizationSettings = configuration.GetSection("LocalizationSettings").Get<LocalizationSettings>();
+                var redisSettings = configuration.GetSection("RedisOptions").Get<RedisOptions>();
+
+                var localizationMemberKey = localizationSettings.MemberKey;
+                var redisCacheDuration = localizationSettings.CacheDuration;
+
+                int databaseId = localizationSettings.DatabaseId;
+
+                if (!redisService.AnyKeyExistsByPrefix(localizationMemberKey, databaseId))
                 {
-                    var values = new Dictionary<string, RedisValue>();
+                    var gatewayClient = httpClientFactory.CreateClient("LocalizationService");
+                    _ = await gatewayClient.PostGetResponseAsync<Result, StringModel>("members/get-with-resources-by-memberkey-and-save-default", new StringModel() { Value = localizationMemberKey });
+                }
+            });
 
-                    var localizationSettings = configuration.GetSection("LocalizationSettings").Get<LocalizationSettings>();
-                    var redisSettings = configuration.GetSection("RedisOptions").Get<RedisOptions>();
-
-                    var localizationMemberKey = localizationSettings.MemberKey;
-                    var redisCacheDuration = localizationSettings.CacheDuration;
-
-                    int databaseId = localizationSettings.DatabaseId;
-
-                    if (!redisService.AnyKeyExistsByPrefix(localizationMemberKey, databaseId))
-                    {
-                        var gatewayClient = httpClientFactory.CreateClient("LocalizationService");
-                        _ = await gatewayClient.PostGetResponseAsync<Result, StringModel>("members/get-with-resources-by-memberkey-and-save-default", new StringModel() { Value = localizationMemberKey });
-                    }
-                });
-            }).Wait();
+            if (result != null && result.FinalException != null)
+                Serilog.Log.Error("ERROR handling message: {ExceptionMessage} - Method : {ClassName}.{MethodName} - Final Exception Type : {FinalExceptionType}",
+                          result.FinalException.Message, nameof(LocalizationServiceInstaller),
+                          MethodBase.GetCurrentMethod()?.Name,
+                          result.ExceptionType);
         }
     }
 }

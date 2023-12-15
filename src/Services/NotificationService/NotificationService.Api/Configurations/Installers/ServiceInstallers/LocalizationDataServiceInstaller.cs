@@ -5,6 +5,7 @@ using NotificationService.Api.Models.Settings;
 using NotificationService.Api.Services.Cache.Abstract;
 using NotificationService.Api.Utilities.Results;
 using Polly;
+using Serilog;
 using System.Reflection;
 
 namespace NotificationService.Api.Configurations.Installers.ServiceInstallers;
@@ -29,7 +30,7 @@ public class LocalizationDataServiceInstaller : IServiceInstaller
                                                 MethodBase.GetCurrentMethod()?.Name);
                         });
 
-            await policy.ExecuteAsync(async () =>
+            var result = await policy.ExecuteAndCaptureAsync(async () =>
             {
                 var localizationSettings = configuration.GetSection("LocalizationSettings").Get<LocalizationSettings>();
                 var redisSettings = configuration.GetSection("RedisOptions").Get<RedisOptions>();
@@ -45,6 +46,12 @@ public class LocalizationDataServiceInstaller : IServiceInstaller
                     _ = await gatewayClient.PostGetResponseAsync<Result, StringModel>("members/get-with-resources-by-memberkey-and-save-default", new StringModel() { Value = localizationMemberKey });
                 }
             });
+
+            if (result != null && result.FinalException != null)
+                Log.Error("ERROR handling message: {ExceptionMessage} - Method : {ClassName}.{MethodName} - Final Exception Type : {FinalExceptionType}",
+                          result.FinalException.Message, nameof(LocalizationServiceInstaller),
+                          MethodBase.GetCurrentMethod()?.Name,
+                          result.ExceptionType);
         }
     }
 }

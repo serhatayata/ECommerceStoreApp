@@ -7,8 +7,6 @@ ConfigurationManager configuration = builder.Configuration;
 var assembly = typeof(Program).Assembly.GetName().Name;
 IWebHostEnvironment environment = builder.Environment;
 
-var appConfig = ConfigurationExtension.appConfig;
-
 builder.Host
     .InstallHost(
     configuration,

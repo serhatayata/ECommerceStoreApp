@@ -1,41 +1,30 @@
-﻿using CatalogService.Api.Models.Settings;
+﻿using BasketService.Api.Models.Settings;
 using Consul;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 
-namespace CatalogService.Api.Extensions;
+namespace BasketService.Api.Configurations.Installers.WebApplicationInstallers;
 
-public static class ServiceDiscoveryExtensions
+public class ServiceDiscoveryWebAppInstaller : IWebAppInstaller
 {
-    public static IServiceCollection ConfigureConsul(this IServiceCollection services, IConfiguration configuration)
-    {
-        services.AddSingleton<IConsulClient, ConsulClient>(p => new ConsulClient(consulConfig =>
-        {
-            var address = configuration["ConsulConfig:Base:Address"];
-            consulConfig.Address = new Uri(address);
-        }));
-
-        return services;
-    }
-
-    public static IApplicationBuilder RegisterWithConsul(this IApplicationBuilder app, IHostApplicationLifetime lifeTime, IConfiguration configuration)
+    public void Install(IApplicationBuilder app, IHostApplicationLifetime lifeTime, IConfiguration configuration)
     {
         try
         {
             var consulClient = app.ApplicationServices.GetRequiredService<IConsulClient>();
             var loggingFactory = app.ApplicationServices.GetRequiredService<ILoggerFactory>();
             var server = app.ApplicationServices.GetRequiredService<IServer>();
+            var logger = loggingFactory.CreateLogger<IApplicationBuilder>();
 
             var addressFeature = server.Features.Get<IServerAddressesFeature>();
             var addresses = addressFeature?.Addresses;
 
             if (addresses == null)
-                return app;
-
-            var logger = loggingFactory.CreateLogger<IApplicationBuilder>();
-
-            var consulSettings = configuration.GetSection("ConsulConfig:Base").Get<ConsulSettings>();
-            var consulGrpcSettings = configuration.GetSection("ConsulConfig:Grpc").Get<ConsulSettings>();
+            {
+                logger.LogInformation("Registering with consul not completed because address is NULL !");
+                return;
+            }
+            var consulSettings = configuration.GetSection("ServiceDiscoveryConfig").Get<ServiceDiscoverySettings>();
 
             var registrationIds = new List<string>();
             logger.LogInformation("Registering with consul");
@@ -59,25 +48,6 @@ public static class ServiceDiscoveryExtensions
                         registrationIds.Add(baseRegistrationId);
                 }
             }
-            //GRPC
-            if (consulGrpcSettings != null)
-            {
-                var address = addresses.Skip(1).Take(1).FirstOrDefault();
-                if (!string.IsNullOrWhiteSpace(address))
-                {
-                    Uri currentUri = new Uri(address, UriKind.Absolute);
-
-                    var baseRegistrationId = RegisterConsulService(
-                        app,
-                        consulGrpcSettings.ServiceId,
-                        consulGrpcSettings.ServiceName,
-                        currentUri.Host,
-                        currentUri.Port);
-
-                    if (!string.IsNullOrWhiteSpace(baseRegistrationId))
-                        registrationIds.Add(baseRegistrationId);
-                }
-            }
 
             //When application stops, this service will be deregistered.
             lifeTime.ApplicationStopping.Register(() =>
@@ -88,8 +58,6 @@ public static class ServiceDiscoveryExtensions
                     consulClient.Agent.ServiceDeregister(registrationId).Wait();
                 }
             });
-
-            return app;
         }
         catch (Exception ex)
         {
@@ -98,11 +66,11 @@ public static class ServiceDiscoveryExtensions
     }
 
     private static string? RegisterConsulService(
-        IApplicationBuilder app,
-        string serviceId,
-        string serviceName,
-        string host,
-        int port)
+    IApplicationBuilder app,
+    string serviceId,
+    string serviceName,
+    string host,
+    int port)
     {
         var consulClient = app.ApplicationServices.GetRequiredService<IConsulClient>();
 

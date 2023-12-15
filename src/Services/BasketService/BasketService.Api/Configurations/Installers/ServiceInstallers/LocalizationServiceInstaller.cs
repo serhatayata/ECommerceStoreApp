@@ -1,15 +1,13 @@
-﻿using Microsoft.AspNetCore.Localization;
-using NotificationService.Api.Dtos.Localization;
-using NotificationService.Api.Extensions;
-using NotificationService.Api.Models.Settings;
-using NotificationService.Api.Utilities.Results;
+﻿using BasketService.Api.Dtos.Localization;
+using BasketService.Api.Extensions;
+using BasketService.Api.Utilities.Results;
+using Microsoft.AspNetCore.Localization;
 using Polly;
 using Serilog;
 using System.Globalization;
-using System.Net.Http;
 using System.Reflection;
 
-namespace NotificationService.Api.Configurations.Installers.ServiceInstallers;
+namespace BasketService.Api.Configurations.Installers.ServiceInstallers;
 
 public class LocalizationServiceInstaller : IServiceInstaller
 {
@@ -17,29 +15,25 @@ public class LocalizationServiceInstaller : IServiceInstaller
     {
         services.AddLocalization();
 
-        var environmentName = hostEnvironment.EnvironmentName;
-
         var serviceProvider = services.BuildServiceProvider();
         var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();
         var httpClientFactory = scope.ServiceProvider.GetRequiredService<IHttpClientFactory>();
 
         var policy = Polly.Policy.Handle<Exception>()
-        .WaitAndRetryAsync(5, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
+        .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
         {
-            Serilog.Log.Error("ERROR handling message: {ExceptionMessage} - Method : {ClassName}.{MethodName}",
+            Log.Error("ERROR handling message: {ExceptionMessage} - Method : {ClassName}.{MethodName}",
                                 ex.Message, nameof(LocalizationServiceInstaller),
                                 MethodBase.GetCurrentMethod()?.Name);
         });
 
         var result = await policy.ExecuteAndCaptureAsync(async () =>
         {
-            var localizationInfo = configuration.GetSection($"ServiceInformation:{environmentName}:LocalizationService").Get<ServiceInformationSettings>();
-
-            var gatewayClient = httpClientFactory.CreateClient(localizationInfo.Name);
-            var languageResult = await gatewayClient.PostGetResponseAsync<DataResult<List<LanguageDto>>, string>("languages/get-all-for-clients", string.Empty);
+            var gatewayClient = httpClientFactory.CreateClient("gateway");
+            var languageResult = await gatewayClient.PostGetResponseAsync<DataResult<List<LanguageDto>>, string>("localization/languages/get-all-for-clients", string.Empty);
 
             if (languageResult == null || languageResult?.Data == null || !languageResult.Success)
-                throw new Exception($"Language result not found for {nameof(Install)}");
+                throw new Exception($"Language result not found for {nameof(LocalizationServiceInstaller)}");
 
             services.Configure<RequestLocalizationOptions>(options =>
             {
@@ -59,6 +53,5 @@ public class LocalizationServiceInstaller : IServiceInstaller
                       result.FinalException.Message, nameof(LocalizationServiceInstaller),
                       MethodBase.GetCurrentMethod()?.Name,
                       result.ExceptionType);
-
     }
 }

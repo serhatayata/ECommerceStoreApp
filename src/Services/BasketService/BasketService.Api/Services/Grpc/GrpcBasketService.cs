@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace BasketService.Api.Services.Grpc
 {
-    [Authorize(Policy = "BasketReadOrWrite")]
+    //[Authorize(Policy = "BasketReadOrWrite")]
     public class GrpcBasketService : BasketProtoService.BasketProtoServiceBase
     {
         private readonly IBasketRepository _basketRepository;
