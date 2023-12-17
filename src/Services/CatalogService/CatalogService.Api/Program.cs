@@ -41,7 +41,7 @@ app.UseHealthChecks("/health", new Microsoft.AspNetCore.Diagnostics.HealthChecks
 
 app.InstallWebApp(app.Lifetime,
                   configuration,
-                  typeof(IWebAppInstaller).Assembly);
+                  typeof(IWebApplicationInstaller).Assembly);
 
 app.InstallApplicationBuilder(app.Lifetime,
                               configuration,

@@ -1,10 +1,8 @@
 ﻿using CatalogService.Api.Extensions;
 using CatalogService.Api.Models.CacheModels;
-using CatalogService.Api.Services.Cache.Abstract;
 using CatalogService.Api.Utilities.IoC;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace CatalogService.Api.Controllers;

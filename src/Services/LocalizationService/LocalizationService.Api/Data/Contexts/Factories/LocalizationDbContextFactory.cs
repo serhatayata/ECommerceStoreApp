@@ -9,7 +9,7 @@ namespace LocalizationService.Api.Data.Contexts.Factories
         {
             IConfigurationRoot configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("Configurations/appsettings.json", 
+                .AddJsonFile("Configurations/Settings/appsettings.json", 
                              optional: false, 
                              reloadOnChange: true)
                 .Build();

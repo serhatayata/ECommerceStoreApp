@@ -1,5 +1,0 @@
-﻿Name,Description,Price,AvailableStock
-product-1,product description 1,100,1000
-product-2,product description 2,200,2000
-product-3,product description 3,300,3000
-product-4,product description 4,400,4000

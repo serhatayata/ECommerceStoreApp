@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using CatalogService.Api.Data.Contexts;
-using CatalogService.Api.Data.SeedData;
 using CatalogService.Api.Entities;
 using CatalogService.Api.Extensions;
 using CatalogService.Api.Models.ProductModels;
@@ -15,7 +14,7 @@ using System.Reflection;
 
 namespace CatalogService.Api.Configurations.Installers.WebApplicationInstallers;
 
-public class SeedDataWebApplicationInstaller : IWebAppInstaller
+public class SeedDataWebApplicationInstaller : IWebApplicationInstaller
 {
     public async void Install(WebApplication app, IHostApplicationLifetime lifeTime, IConfiguration configuration)
     {
@@ -23,7 +22,7 @@ public class SeedDataWebApplicationInstaller : IWebAppInstaller
         var scope = app.Services.CreateScope();
         var context = scope.ServiceProvider.GetService<CatalogDbContext>();
 
-        var logger = scope.ServiceProvider.GetRequiredService<ILogger<CatalogSeedData>>();
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<SeedDataWebApplicationInstaller>>();
         var mapper = scope.ServiceProvider.GetRequiredService<IMapper>();
 
         string rootPath = env.ContentRootPath;
@@ -36,7 +35,7 @@ public class SeedDataWebApplicationInstaller : IWebAppInstaller
         {
             logger.LogError(ex, "ERROR handling message: {ExceptionMessage} - Method : {ClassName}.{MethodName}",
                                 ex.Message,
-                                nameof(CatalogSeedData),
+                                nameof(SeedDataWebApplicationInstaller),
                                 MethodBase.GetCurrentMethod()?.Name);
         });
 

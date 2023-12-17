@@ -1,6 +1,6 @@
 ﻿namespace CatalogService.Api.Configurations.Installers;
 
-public interface IWebAppInstaller
+public interface IWebApplicationInstaller
 {
     void Install(WebApplication app, IHostApplicationLifetime lifeTime, IConfiguration configuration);
 }

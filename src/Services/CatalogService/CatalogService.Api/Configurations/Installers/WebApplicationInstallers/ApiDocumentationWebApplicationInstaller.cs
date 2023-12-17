@@ -2,7 +2,7 @@
 
 namespace CatalogService.Api.Configurations.Installers.WebApplicationInstallers;
 
-public class ApiDocumentationWebApplicationInstaller : IWebAppInstaller
+public class ApiDocumentationWebApplicationInstaller : IWebApplicationInstaller
 {
     public void Install(WebApplication app, IHostApplicationLifetime lifeTime, IConfiguration configuration)
     {

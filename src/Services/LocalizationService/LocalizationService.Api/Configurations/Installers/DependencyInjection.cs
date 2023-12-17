@@ -1,8 +1,8 @@
-﻿using CatalogService.Api.Configurations.Installers.ServiceInstallers;
-using CatalogService.Api.Configurations.Installers.WebApplicationInstallers;
+﻿using LocalizationService.Api.Configurations.Installers.ApplicationBuilderInstallers;
+using LocalizationService.Api.Configurations.Installers.ServiceInstallers;
 using System.Reflection;
 
-namespace CatalogService.Api.Configurations.Installers;
+namespace LocalizationService.Api.Configurations.Installers;
 
 public static class DependencyInjection
 {
@@ -97,7 +97,8 @@ public static class DependencyInjection
             .SelectMany(a => a.DefinedTypes)
             .Where(IsAssignableToType<IApplicationBuilderInstaller>)
             .Select(Activator.CreateInstance)
-            .Cast<IApplicationBuilderInstaller>();
+            .Cast<IApplicationBuilderInstaller>()
+            .Where(s => s.GetType() != typeof(ServiceDiscoveryApplicationBuilderInstaller));
 
         foreach (IApplicationBuilderInstaller webAppIstaller in webAppInstallers)
         {

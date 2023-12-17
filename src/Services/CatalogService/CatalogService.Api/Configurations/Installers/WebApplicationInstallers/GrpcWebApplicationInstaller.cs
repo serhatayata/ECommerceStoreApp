@@ -3,7 +3,7 @@ using CatalogService.Api.Services.Grpc;
 
 namespace CatalogService.Api.Configurations.Installers.WebApplicationInstallers;
 
-public class GrpcWebApplicationInstaller : IWebAppInstaller
+public class GrpcWebApplicationInstaller : IWebApplicationInstaller
 {
     public void Install(WebApplication app, IHostApplicationLifetime lifeTime, IConfiguration configuration)
     {
