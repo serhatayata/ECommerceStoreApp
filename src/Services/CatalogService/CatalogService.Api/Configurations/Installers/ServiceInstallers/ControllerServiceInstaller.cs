@@ -1,24 +1,23 @@
-﻿using FluentValidation.AspNetCore;
-using FluentValidation;
-using Microsoft.AspNetCore.Mvc;
-using System.Text.Json.Serialization;
-using CatalogService.Api.Attributes;
+﻿using CatalogService.Api.Attributes;
 using CatalogService.Api.Infrastructure.Filters;
+using CatalogService.Api.Utilities.Providers;
 using CatalogService.Api.Utilities.Validations.FluentValidation.Base;
 using CatalogService.Api.Utilities.Validations.FluentValidation.BrandValidators;
 using CatalogService.Api.Utilities.Validations.FluentValidation.CategoryValidators;
 using CatalogService.Api.Utilities.Validations.FluentValidation.CommentValidators;
 using CatalogService.Api.Utilities.Validations.FluentValidation.FeatureValidators;
 using CatalogService.Api.Utilities.Validations.FluentValidation.ProductValidators;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
-using CatalogService.Api.Utilities.Providers;
-using CatalogService.Api.Services.Localization.Concrete;
+using System.Text.Json.Serialization;
 
-namespace CatalogService.Api.Extensions;
+namespace CatalogService.Api.Configurations.Installers.ServiceInstallers;
 
-public static class ControllerExtensions
+public class ControllerServiceInstaller : IServiceInstaller
 {
-    public static void AddControllerSettings(this IServiceCollection services)
+    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         services.AddControllers(options =>
         {
