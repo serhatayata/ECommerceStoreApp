@@ -1,15 +1,28 @@
-var builder = WebApplication.CreateBuilder(args);
+using CampaignService.Api.Configurations.Installers;
 
-// Add services to the container.
+var builder = WebApplication.CreateBuilder(args);
+ConfigurationManager configuration = builder.Configuration;
+var assembly = typeof(Program).Assembly.GetName().Name;
+IWebHostEnvironment environment = builder.Environment;
+
+builder.Host
+    .InstallHost(
+    configuration,
+    environment,
+    typeof(IHostInstaller).Assembly);
+
+builder.Services
+    .InstallServices(
+        configuration,
+        environment,
+        typeof(IServiceInstaller).Assembly);
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
