@@ -1,6 +1,9 @@
 ﻿namespace CampaignService.Api.Entities;
 
-public class CampaignEntity
+/// <summary>
+/// Used for product or category's Id as EntityId
+/// </summary>
+public class CampaignSource
 {
     /// <summary>
     /// Id of the campaign entity
@@ -18,4 +21,8 @@ public class CampaignEntity
     /// then ProductId 6 is specified here
     /// </summary>
     public int EntityId { get; set; }
+    /// <summary>
+    /// Campaign of the source
+    /// </summary>
+    public virtual Campaign Campaign { get; set; }
 }

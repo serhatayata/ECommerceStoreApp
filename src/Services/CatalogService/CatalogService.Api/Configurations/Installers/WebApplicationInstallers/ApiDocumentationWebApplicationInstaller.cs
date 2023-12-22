@@ -6,15 +6,18 @@ public class ApiDocumentationWebApplicationInstaller : IWebApplicationInstaller
 {
     public void Install(WebApplication app, IHostApplicationLifetime lifeTime, IConfiguration configuration)
     {
-        app.UseSwagger();
-        app.UseSwaggerUI(options =>
+        if (app.Environment.IsDevelopment())
         {
-            var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
-
-            foreach (var description in provider.ApiVersionDescriptions)
+            app.UseSwagger();
+            app.UseSwaggerUI(options =>
             {
-                options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
-            }
-        });
+                var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+
+                foreach (var description in provider.ApiVersionDescriptions)
+                {
+                    options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
+                }
+            });
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Data;
 using CampaignService.Api.Entities;
+using CampaignService.Api.Infrastructure.EntityTypeConfigurations;
 
 namespace CampaignService.Api.Infrastructure.Contexts;
 
@@ -19,16 +20,20 @@ public class CampaignDbContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
         // connect to sqlserver with connection string from app settings
-        options.UseSqlServer(Configuration.GetConnectionString("OrderDB"));
+        options.UseSqlServer(Configuration.GetConnectionString("CampaignDB"));
     }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
-        //builder.ApplyConfiguration(new OrderEntityTypeConfiguration());
+        builder.ApplyConfiguration(new CampaignEntityTypeConfiguration());
+        builder.ApplyConfiguration(new CampaignSourceEntityTypeConfiguration());
+        builder.ApplyConfiguration(new CampaignItemEntityTypeConfiguration());
+
+        base.OnModelCreating(builder);
     }
 
     public DbSet<Campaign> Campaigns { get; set; }
-    public DbSet<CampaignEntity> CampaignEntities { get; set; }
+    public DbSet<CampaignSource> CampaignSources { get; set; }
     public DbSet<CampaignItem> CampaignItems { get; set; }
     public DbSet<CampaignRule> CampaignRules { get; set; }
 

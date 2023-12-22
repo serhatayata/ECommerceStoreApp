@@ -53,4 +53,29 @@ public static class DependencyInjection
             !typeInfo.IsInterface &&
             !typeInfo.IsAbstract;
     }
+
+    public static WebApplication InstallWebApp(
+    this WebApplication app,
+    IHostApplicationLifetime appLifeTime,
+    IConfiguration configuration,
+    params Assembly[] assemblies)
+    {
+        IEnumerable<IWebApplicationInstaller> webAppInstallers = assemblies
+            .SelectMany(a => a.DefinedTypes)
+            .Where(IsAssignableToType<IWebApplicationInstaller>)
+            .Select(Activator.CreateInstance)
+            .Cast<IWebApplicationInstaller>();
+
+        foreach (IWebApplicationInstaller webAppIstaller in webAppInstallers)
+        {
+            webAppIstaller.Install(app, appLifeTime, configuration);
+        }
+
+        return app;
+
+        static bool IsAssignableToType<T>(TypeInfo typeInfo) =>
+            typeof(T).IsAssignableFrom(typeInfo) &&
+            !typeInfo.IsInterface &&
+            !typeInfo.IsAbstract;
+    }
 }

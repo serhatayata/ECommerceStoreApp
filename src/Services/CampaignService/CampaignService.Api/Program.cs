@@ -1,4 +1,6 @@
 using CampaignService.Api.Configurations.Installers;
+using GraphQL.Types;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
@@ -17,22 +19,19 @@ builder.Services
         environment,
         typeof(IServiceInstaller).Assembly);
 
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.Configure<KestrelServerOptions>(opt =>
+{
+    opt.AllowSynchronousIO = true;
+});
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
 
-app.MapControllers();
+app.InstallWebApp(app.Lifetime,
+                  configuration,
+                  typeof(IWebApplicationInstaller).Assembly);
 
+app.MapControllers();
 app.Run();

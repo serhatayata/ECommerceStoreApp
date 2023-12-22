@@ -58,4 +58,12 @@ public class Campaign
     /// If false then campaign entity's entity Ids are for productIds
     /// </summary>
     public bool IsForAllCategory { get; set; }
+    /// <summary>
+    /// Sources of the campaign
+    /// </summary>
+    public virtual ICollection<CampaignSource> CampaignSources { get; set; }
+    /// <summary>
+    /// Items of the campaign
+    /// </summary>
+    public virtual ICollection<CampaignItem> CampaignItems { get; set; }
 }

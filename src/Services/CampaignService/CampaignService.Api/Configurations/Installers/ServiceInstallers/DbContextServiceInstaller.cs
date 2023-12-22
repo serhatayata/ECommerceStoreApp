@@ -1,4 +1,4 @@
-﻿
+﻿using CampaignService.Api.Infrastructure.Contexts;
 using Microsoft.EntityFrameworkCore;
 
 namespace CampaignService.Api.Configurations.Installers.ServiceInstallers;

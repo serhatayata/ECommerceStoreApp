@@ -36,4 +36,8 @@ public class CampaignItem
     /// Expiration date of the campaign item
     /// </summary>
     public DateTime ExpirationDate { get; set; }
+    /// <summary>
+    /// Item of the campaign
+    /// </summary>
+    public virtual Campaign Campaign { get; set; }
 }
