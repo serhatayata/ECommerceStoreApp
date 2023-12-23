@@ -15,16 +15,6 @@ public class GraphQLServiceInstaller : IServiceInstaller
         services.AddSingleton<IDataLoaderContextAccessor, DataLoaderContextAccessor>();
         services.AddSingleton<DataLoaderDocumentListener>();
 
-        services.AddScoped<CampaignItemQuery>()
-                .AddScoped<CampaignQuery>()
-                .AddScoped<CampaignSourceQuery>()
-                .AddScoped<CampaignRuleQuery>();
-
-        services.AddScoped<ISchema, CampaignItemSchema>()
-                .AddScoped<ISchema, CampaignSchema>()
-                .AddScoped<ISchema, CampaignSourceSchema>()
-                .AddScoped<ISchema, CampaignRuleSchema>();
-
         services.AddGraphQL(builder =>
                      builder
                     .AddSystemTextJson()
