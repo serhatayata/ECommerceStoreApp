@@ -9,6 +9,7 @@ E-Commerce Microservices Application (STILL BEING IMPROVED)
 - MSSQL, Redis, PostgreSQL
 - EntityFramework, Dapper
 - gRPC
+- GraphQL
 - MassTransit
 - CQRS
 - SAGA Pattern (Choreography, Orchestration)
