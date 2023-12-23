@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using CampaignService.Api.Configurations.Installers.ServiceInstallers;
 
 namespace CampaignService.Api.Configurations.Installers;
 
@@ -14,7 +15,13 @@ public static class DependencyInjection
             .SelectMany(a => a.DefinedTypes)
             .Where(IsAssignableToType<IServiceInstaller>)
             .Select(Activator.CreateInstance)
-            .Cast<IServiceInstaller>();
+            .Cast<IServiceInstaller>()
+            .OrderBy(ord =>
+            {
+                if (ord.GetType() == typeof(StartupDIServiceInstaller))
+                    return false;
+                return true;
+            });
 
         foreach (IServiceInstaller serviceInstaller in serviceInstallers)
         {

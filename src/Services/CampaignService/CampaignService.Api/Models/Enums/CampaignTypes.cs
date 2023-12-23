@@ -1,6 +1,6 @@
 ﻿namespace CampaignService.Api.Models.Enums;
 
-public enum CampaignType : byte
+public enum CampaignTypes : byte
 {
     Price = 0,
     OverPrice = 1,

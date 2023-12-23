@@ -21,6 +21,7 @@ public class CampaignDbContext : DbContext
     {
         // connect to sqlserver with connection string from app settings
         options.UseSqlServer(Configuration.GetConnectionString("CampaignDB"));
+        options.EnableSensitiveDataLogging();
     }
 
     protected override void OnModelCreating(ModelBuilder builder)
@@ -28,6 +29,7 @@ public class CampaignDbContext : DbContext
         builder.ApplyConfiguration(new CampaignEntityTypeConfiguration());
         builder.ApplyConfiguration(new CampaignSourceEntityTypeConfiguration());
         builder.ApplyConfiguration(new CampaignItemEntityTypeConfiguration());
+        builder.ApplyConfiguration(new CampaignRuleEntityTypeConfiguration());
 
         base.OnModelCreating(builder);
     }

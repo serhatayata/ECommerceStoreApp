@@ -43,7 +43,7 @@ public class Campaign
     /// <summary>
     /// Type of the campaign
     /// </summary>
-    public CampaignType CampaignType { get; set; }
+    public CampaignTypes CampaignType { get; set; }
     /// <summary>
     /// Rate of the campaign
     /// </summary>

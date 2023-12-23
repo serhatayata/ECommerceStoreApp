@@ -8,11 +8,7 @@ namespace CampaignService.Api.GraphQL.GraphQLTypes;
 
 public class CampaignType : ObjectGraphType<Campaign>
 {
-    public CampaignType(
-        ICampaignRepository campaignRepository, 
-        ICampaignItemRepository campaignItemRepository, 
-        ICampaignSourceRepository campaignsourceRepository, 
-        IDataLoaderContextAccessor dataLoader)
+    public CampaignType()
     {
         Field(o => o.Id, type: typeof(IdGraphType)).Description("Id property from the campaign object");
         Field<CampaignStatusEnumType>("status").Resolve(context => context.Source.Status);
@@ -34,7 +30,7 @@ public class CampaignType : ObjectGraphType<Campaign>
                 var loader = context.RequestServices?.GetRequiredService<CampaignSourceCollectionBatchDataLoader>();
                 return loader?.LoadAsync(context.Source.Id);
             });
-        Field<ListGraphType<CampaignSourceType>, IEnumerable<CampaignItem>>("campaignItems")
+        Field<ListGraphType<CampaignItemType>, IEnumerable<CampaignItem>>("campaignItems")
             .Description("All campaign items for this campaign")
             .ResolveAsync(context =>
             {

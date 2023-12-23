@@ -2,7 +2,7 @@
 
 namespace CampaignService.Api.GraphQL.GraphQLTypes;
 
-public class CampaignTypeEnumType : EnumerationGraphType<Models.Enums.CampaignType>
+public class CampaignTypeEnumType : EnumerationGraphType<Models.Enums.CampaignTypes>
 {
 
 }

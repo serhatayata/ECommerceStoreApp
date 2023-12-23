@@ -20,6 +20,6 @@ public class DbContextServiceInstaller : IServiceInstaller
                                      // If we enable retry on failure, then we have to use execution strategy to follow the transactions seperately
                                      //sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
                                  });
-        }, ServiceLifetime.Scoped);
+        }, ServiceLifetime.Transient);
     }
 }
