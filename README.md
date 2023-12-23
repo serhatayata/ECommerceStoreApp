@@ -20,7 +20,7 @@ E-Commerce Microservices Application (STILL BEING IMPROVED)
 
 ### ARCHITECTURE
 
-![Architecture_ECommerceStoreApp](https://github.com/serhatayata/ECommerceStoreApp/assets/82120298/da27a4d3-1cfa-455a-9c76-d83327302cba)
+![Architecture_ECommerceStoreApp](https://github.com/serhatayata/ECommerceStoreApp/assets/82120298/ae672ea0-a273-4d5d-92ef-1b5e63295dfe)
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 
