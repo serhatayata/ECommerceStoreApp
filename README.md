@@ -45,7 +45,9 @@ E-Commerce Microservices Application (STILL BEING IMPROVED)
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 
-### GraphQL Queries
+## GraphQL Queries - Mutations
+### Queries
+
 - Schema URLs
   - api/campaign
   - api/campaignsource
@@ -169,6 +171,160 @@ query GetAllCampaignRulesQuery{
     name
   }
 }
+```
+### Mutations
+```graphql
+#CampaignItem
+
+#createCampaignItem
+
+mutation($campaignItem: campaignItemInput!){
+  createCampaignItem(campaignItem: $campaignItem){
+    campaignId
+    userId
+    description
+    status
+    expirationDate
+  }
+}
+
+#query variables
+
+{
+  "campaignItem" : {
+    "campaignId" : 1,
+    "userId" : "112233",
+    "description" : "description new added 1",
+    "status" : "ACTIVE",
+    "expirationDate" : "2024-02-03T13:00:00"
+  }
+}
+
+#updateCampaignItem
+
+mutation($campaignItem: campaignItemInput!){
+  updateCampaignItem(campaignItem: $campaignItem){
+    id
+    campaignId
+    userId
+    description
+    status
+    expirationDate
+  }
+}
+
+#query variables
+
+{
+  "campaignItem" : {
+    "id" : 1002,
+    "campaignId" : 1,
+    "userId" : "112234",
+    "description" : "description new added 1-1",
+    "status" : "USED",
+    "expirationDate" : "2024-02-03T14:00:00"
+  }
+}
+
+#deleteCampaignItem
+
+mutation($id: Int!)
+{
+  deleteCampaignItem(id: $id)
+}
+
+#query variables
+{
+  "id" : 1002
+}
+```
+
+```graphql
+#Campaign
+# createCampaign
+
+mutation($campaign: campaignInput!) {
+  createCampaign(campaign: $campaign) {
+    status
+    name
+    description
+    expirationDate
+    startDate
+    sponsor
+    type
+    rate
+    amount
+    isForAllCategory
+  }
+}
+
+#query variables
+
+{
+	"campaign" : {
+    "status" : "ACTIVE",
+    "name" : "campaign-test-1.1",
+    "description" : "campaign test 1.1 description",
+    "expirationDate": "2024-02-03T16:00:00",
+    "startDate" : "2024-01-02T16:00:00",
+    "sponsor" : "test-sponsor1",
+    "type" : "PRICE",
+    "rate" : 0.0,
+    "amount" : 100.0,
+    "isForAllCategory" : false
+  }
+}
+
+# updateCampaign
+
+mutation($campaign: campaignInput!) {
+  updateCampaign(campaign: $campaign) {
+    id
+    status
+    name
+    description
+    expirationDate
+    startDate
+    sponsor
+    type
+    rate
+    amount
+    isForAllCategory
+  }
+}
+
+# query variables
+
+{
+	"campaign" : {
+    "id": 1001,
+    "status" : "PASSIVE",
+    "name" : "campaign-test-1.2",
+    "description" : "campaign test 1.2 description",
+    "expirationDate": "2024-02-03T17:00:00",
+    "startDate" : "2024-01-02T17:00:00",
+    "sponsor" : "test-sponsor2",
+    "type" : "PRICE",
+    "rate" : 0.0,
+    "amount" : 200.0,
+    "isForAllCategory" : false
+  }
+}
+
+# deleteCampaign
+
+mutation($id: Int!){
+  deleteCampaign(id: $id)
+}
+
+{
+	"id" : 1001
+}
+
+```
+
+```graphql
+
 ```
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 
