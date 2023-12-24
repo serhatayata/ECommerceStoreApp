@@ -261,7 +261,7 @@ mutation($campaign: campaignInput!) {
 #query variables
 
 {
-	"campaign" : {
+    "campaign" : {
     "status" : "ACTIVE",
     "name" : "campaign-test-1.1",
     "description" : "campaign test 1.1 description",
@@ -296,7 +296,7 @@ mutation($campaign: campaignInput!) {
 # query variables
 
 {
-	"campaign" : {
+    "campaign" : {
     "id": 1001,
     "status" : "PASSIVE",
     "name" : "campaign-test-1.2",
@@ -318,7 +318,7 @@ mutation($id: Int!){
 }
 
 {
-	"id" : 1001
+   "id" : 1001
 }
 
 ```
