@@ -395,7 +395,7 @@ mutation($campaignSource: campaignSourceInput!){
 # query variables
 
 {
-	"campaignSource": {
+    "campaignSource": {
     "entityId": 12,
     "campaignId": 1
   }
@@ -414,7 +414,7 @@ mutation($campaignSource: campaignSourceInput!){
 # query variables
 
 {
-	"campaignSource": {
+    "campaignSource": {
     "id": 6,
     "entityId": 32,
     "campaignId": 2
@@ -430,7 +430,7 @@ mutation($id: Int!){
 # query variables
 
 {
-	"id": 1001
+    "id": 1001
 }
 
 ```
