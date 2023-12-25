@@ -338,7 +338,7 @@ mutation($campaignRule: campaignRuleInput!){
 # query variables
 
 {
-	"campaignRule": {
+    "campaignRule": {
     "name": "test-rule-1",
     "description": "test description campaign rule 1",
     "value": "{ \"id\" : 1 }"
@@ -360,7 +360,7 @@ mutation($campaignRule: campaignRuleInput!){
 # query variables
 
 {
-	"campaignRule": {
+    "campaignRule": {
     "id": 1002,
     "name": "test-rule-1.1",
     "description": "test description campaign rule 1.1",
@@ -377,7 +377,7 @@ mutation($id: Int!){
 # query variables
 
 {
-	"id": 1002
+    "id": 1002
 }
 ```
 
