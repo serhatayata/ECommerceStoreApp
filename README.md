@@ -324,6 +324,114 @@ mutation($id: Int!){
 ```
 
 ```graphql
+# Campaign rule
+# createCampaignRule
+
+mutation($campaignRule: campaignRuleInput!){
+  createCampaignRule(campaignRule: $campaignRule){
+    name
+    description
+    value
+  }
+}
+
+# query variables
+
+{
+	"campaignRule": {
+    "name": "test-rule-1",
+    "description": "test description campaign rule 1",
+    "value": "{ \"id\" : 1 }"
+  }
+}
+
+# updateCampaignRule
+
+# updateCampaignRule
+mutation($campaignRule: campaignRuleInput!){
+  updateCampaignRule(campaignRule: $campaignRule){
+    id
+    name
+    description
+    value
+  }
+}
+
+# query variables
+
+{
+	"campaignRule": {
+    "id": 1002,
+    "name": "test-rule-1.1",
+    "description": "test description campaign rule 1.1",
+    "value": "{ \"name\" : 1 }"
+  }
+}
+
+#deleteCampaignRule
+
+mutation($id: Int!){
+  deleteCampaignRule(id: $id)
+}
+
+# query variables
+
+{
+	"id": 1002
+}
+```
+
+```graphql
+# Campaign source
+# createCampaignSource
+
+mutation($campaignSource: campaignSourceInput!){
+  createCampaignSource(campaignSource: $campaignSource){
+    entityId
+    campaignId
+  }
+}
+
+# query variables
+
+{
+	"campaignSource": {
+    "entityId": 12,
+    "campaignId": 1
+  }
+}
+
+# updateCampaignSource
+
+mutation($campaignSource: campaignSourceInput!){
+  updateCampaignSource(campaignSource: $campaignSource){	
+    id
+    entityId
+    campaignId
+  }
+}
+
+# query variables
+
+{
+	"campaignSource": {
+    "id": 6,
+    "entityId": 32,
+    "campaignId": 2
+  }
+}
+
+# deleteCampaignSource
+
+mutation($id: Int!){
+  deleteCampaignSource(id: $id)
+}
+
+# query variables
+
+{
+	"id": 1001
+}
 
 ```
 --------------------------------------------------------------------------------------------------------------------------------------------------------
