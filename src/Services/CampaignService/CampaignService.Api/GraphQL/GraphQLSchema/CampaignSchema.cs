@@ -9,6 +9,6 @@ public class CampaignSchema : Schema
     public CampaignSchema(IServiceProvider provider) : base(provider)
     {
         Query = provider.GetRequiredService<CampaignQuery>();
-        //Mutation = provider.GetRequiredService<CampaignMutation>();
+        Mutation = provider.GetRequiredService<CampaignMutation>();
     }
 }

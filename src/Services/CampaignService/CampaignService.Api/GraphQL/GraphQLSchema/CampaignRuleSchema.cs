@@ -9,6 +9,6 @@ public class CampaignRuleSchema : Schema
     public CampaignRuleSchema(IServiceProvider provider) : base(provider)
     {
         Query = provider.GetRequiredService<CampaignRuleQuery>();
-        //Mutation = provider.GetRequiredService<CampaignRuleMutation>();
+        Mutation = provider.GetRequiredService<CampaignRuleMutation>();
     }
 }

@@ -1,4 +1,5 @@
 ﻿using CampaignService.Api.Entities;
+using CampaignService.Api.GraphQL.GraphQLTypes.Enums;
 using GraphQL.Types;
 
 namespace CampaignService.Api.GraphQL.GraphQLTypes;

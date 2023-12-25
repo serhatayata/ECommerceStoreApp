@@ -15,7 +15,7 @@ public class CampaignRuleRepository : ICampaignRuleRepository
         _context = context;
     }
 
-    public async Task<bool> Create(CampaignRule model)
+    public async Task<CampaignRule?> CreateAsync(CampaignRule model)
     {
         _context.Connection.Open();
         using (var transaction = _context.Connection.BeginTransaction())
@@ -29,10 +29,10 @@ public class CampaignRuleRepository : ICampaignRuleRepository
                 var result = _context.SaveChanges();
 
                 if (result < 1)
-                    return false;
+                    return null;
 
                 transaction.Commit();
-                return true;
+                return model;
             }
             catch (Exception ex)
             {
@@ -46,7 +46,7 @@ public class CampaignRuleRepository : ICampaignRuleRepository
         }
     }
 
-    public async Task<CampaignRule?> Update(CampaignRule model)
+    public async Task<CampaignRule?> UpdateAsync(CampaignRule model)
     {
         _context.Connection.Open();
         using (var transaction = _context.Connection.BeginTransaction())
@@ -64,7 +64,7 @@ public class CampaignRuleRepository : ICampaignRuleRepository
                 _context.SaveChanges();
 
                 transaction.Commit();
-                return await _context.CampaignRules.FirstOrDefaultAsync(c => c.Id == model.Id);
+                return model;
             }
             catch (Exception ex)
             {
@@ -78,7 +78,7 @@ public class CampaignRuleRepository : ICampaignRuleRepository
         }
     }
 
-    public async Task<bool> Delete(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
         _context.Connection.Open();
         using (var transaction = _context.Connection.BeginTransaction())

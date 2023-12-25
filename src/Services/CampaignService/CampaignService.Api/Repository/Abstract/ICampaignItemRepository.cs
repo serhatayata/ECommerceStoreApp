@@ -10,19 +10,19 @@ public interface ICampaignItemRepository
     /// </summary>
     /// <param name="model">Model of the data added</param>
     /// <returns><see cref="bool"/> value, TRUE if created</returns>
-    Task<bool> Create(CampaignItem model);
+    Task<CampaignItem?> CreateAsync(CampaignItem model);
     /// <summary>
     /// Update campaign item, returns updated entity
     /// </summary>
     /// <param name="model">Model of updated data</param>
     /// <returns></returns>
-    Task<CampaignItem?> Update(CampaignItem model);
+    Task<CampaignItem?> UpdateAsync(CampaignItem model);
     /// <summary>
     /// Delete campaign item by id
     /// </summary>
     /// <param name="id">Id of the campaign item</param>
     /// <returns><see cref="bool"/> value, TRUE if deleted</returns>
-    Task<bool> Delete(int id);
+    Task<bool> DeleteAsync(int id);
     /// <summary>
     /// Get campaign item by id
     /// </summary>

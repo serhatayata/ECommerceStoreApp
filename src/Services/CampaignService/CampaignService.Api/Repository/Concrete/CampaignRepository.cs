@@ -15,7 +15,7 @@ public class CampaignRepository : ICampaignRepository
         _context = context;
     }
 
-    public async Task<bool> Create(Campaign model)
+    public async Task<Campaign?> CreateAsync(Campaign model)
     {
         _context.Connection.Open();
         using (var transaction = _context.Connection.BeginTransaction())
@@ -29,10 +29,10 @@ public class CampaignRepository : ICampaignRepository
                 var result = _context.SaveChanges();
 
                 if (result < 1)
-                    return false;
+                    return null;
 
                 transaction.Commit();
-                return true;
+                return model;
             }
             catch (Exception ex)
             {
@@ -46,7 +46,7 @@ public class CampaignRepository : ICampaignRepository
         }
     }
 
-    public async Task<Campaign?> Update(Campaign model)
+    public async Task<Campaign?> UpdateAsync(Campaign model)
     {
         _context.Connection.Open();
         using (var transaction = _context.Connection.BeginTransaction())
@@ -72,7 +72,7 @@ public class CampaignRepository : ICampaignRepository
                 _context.SaveChanges();
 
                 transaction.Commit();
-                return await _context.Campaigns.FirstOrDefaultAsync(c => c.Id == model.Id);
+                return model;
             }
             catch (Exception ex)
             {
@@ -86,7 +86,7 @@ public class CampaignRepository : ICampaignRepository
         }
     }
 
-    public async Task<bool> Delete(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
         _context.Connection.Open();
         using (var transaction = _context.Connection.BeginTransaction())

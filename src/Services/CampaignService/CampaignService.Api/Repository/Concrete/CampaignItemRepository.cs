@@ -1,4 +1,5 @@
 ﻿using CampaignService.Api.Entities;
+using CampaignService.Api.Extensions;
 using CampaignService.Api.Infrastructure.Contexts;
 using CampaignService.Api.Repository.Abstract;
 using Microsoft.EntityFrameworkCore;
@@ -16,13 +17,14 @@ public class CampaignItemRepository : ICampaignItemRepository
         _context = context;
     }
 
-    public async Task<bool> Create(CampaignItem model)
+    public async Task<CampaignItem?> CreateAsync(CampaignItem model)
     {
         _context.Connection.Open();
         using (var transaction = _context.Connection.BeginTransaction())
         {
             try
             {
+                model.Code = DataGenerationExtensions.RandomCode(10);
                 _context.Database.UseTransaction(transaction as DbTransaction);
 
                 await _context.CampaignItems.AddAsync(model);
@@ -30,10 +32,10 @@ public class CampaignItemRepository : ICampaignItemRepository
                 var result = _context.SaveChanges();
 
                 if (result < 1)
-                    return false;
+                    return null;
 
                 transaction.Commit();
-                return true;
+                return model;
             }
             catch (Exception ex)
             {
@@ -47,7 +49,7 @@ public class CampaignItemRepository : ICampaignItemRepository
         }
     }
 
-    public async Task<CampaignItem> Update(CampaignItem model)
+    public async Task<CampaignItem> UpdateAsync(CampaignItem model)
     {
         _context.Connection.Open();
         using (var transaction = _context.Connection.BeginTransaction())
@@ -66,7 +68,7 @@ public class CampaignItemRepository : ICampaignItemRepository
                 _context.SaveChanges();
 
                 transaction.Commit();
-                return await _context.CampaignItems.FirstOrDefaultAsync(c => c.Id == model.Id);
+                return model;
             }
             catch (Exception ex)
             {
@@ -80,7 +82,7 @@ public class CampaignItemRepository : ICampaignItemRepository
         }
     }
 
-    public async Task<bool> Delete(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
         _context.Connection.Open();
         using (var transaction = _context.Connection.BeginTransaction())

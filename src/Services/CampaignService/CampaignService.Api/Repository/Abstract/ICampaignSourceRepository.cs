@@ -9,19 +9,19 @@ public interface ICampaignSourceRepository
     /// </summary>
     /// <param name="model">Model of the data added</param>
     /// <returns><see cref="bool"/> value, TRUE if created</returns>
-    Task<bool> Create(CampaignSource model);
+    Task<CampaignSource?> CreateAsync(CampaignSource model);
     /// <summary>
     /// Update campaign source, returns updated entity
     /// </summary>
     /// <param name="model">Model of updated data</param>
     /// <returns></returns>
-    Task<CampaignSource?> Update(CampaignSource model);
+    Task<CampaignSource?> UpdateAsync(CampaignSource model);
     /// <summary>
     /// Delete campaign source by id
     /// </summary>
     /// <param name="id">Id of the campaign source</param>
     /// <returns><see cref="bool"/> value, TRUE if deleted</returns>
-    Task<bool> Delete(int id);
+    Task<bool> DeleteAsync(int id);
     /// <summary>
     /// Get campaign source by id
     /// </summary>

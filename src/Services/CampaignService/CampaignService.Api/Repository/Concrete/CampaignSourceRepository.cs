@@ -15,7 +15,7 @@ public class CampaignSourceRepository : ICampaignSourceRepository
         _context = context;
     }
 
-    public async Task<bool> Create(CampaignSource model)
+    public async Task<CampaignSource?> CreateAsync(CampaignSource model)
     {
         _context.Connection.Open();
         using (var transaction = _context.Connection.BeginTransaction())
@@ -29,10 +29,10 @@ public class CampaignSourceRepository : ICampaignSourceRepository
                 var result = _context.SaveChanges();
 
                 if (result < 1)
-                    return false;
+                    return null;
 
                 transaction.Commit();
-                return true;
+                return model;
             }
             catch (Exception ex)
             {
@@ -46,7 +46,7 @@ public class CampaignSourceRepository : ICampaignSourceRepository
         }
     }
 
-    public async Task<CampaignSource?> Update(CampaignSource model)
+    public async Task<CampaignSource?> UpdateAsync(CampaignSource model)
     {
         _context.Connection.Open();
         using (var transaction = _context.Connection.BeginTransaction())
@@ -55,15 +55,16 @@ public class CampaignSourceRepository : ICampaignSourceRepository
             {
                 _context.Database.UseTransaction(transaction as DbTransaction);
 
-                var result = await _context.CampaignSources.Where(c => c.Id == model.Id)
+                var result = await _context.CampaignSources.AsNoTracking()
+                                           .Where(c => c.Id == model.Id)
                                            .ExecuteUpdateAsync(c => c
                                            .SetProperty(p => p.EntityId, model.EntityId)
                                            .SetProperty(b => b.CampaignId, model.CampaignId));
 
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
 
                 transaction.Commit();
-                return await _context.CampaignSources.FirstOrDefaultAsync(c => c.Id == model.Id);
+                return model;
             }
             catch (Exception ex)
             {
@@ -77,7 +78,7 @@ public class CampaignSourceRepository : ICampaignSourceRepository
         }
     }
 
-    public async Task<bool> Delete(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
         _context.Connection.Open();
         using (var transaction = _context.Connection.BeginTransaction())

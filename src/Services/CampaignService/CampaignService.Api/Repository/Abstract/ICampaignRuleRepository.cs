@@ -9,19 +9,19 @@ public interface ICampaignRuleRepository
     /// </summary>
     /// <param name="model">Model of the data added</param>
     /// <returns><see cref="bool"/> value, TRUE if created</returns>
-    Task<bool> Create(CampaignRule model);
+    Task<CampaignRule?> CreateAsync(CampaignRule model);
     /// <summary>
     /// Update campaign rule, returns updated entity
     /// </summary>
     /// <param name="model">Model of updated data</param>
     /// <returns></returns>
-    Task<CampaignRule?> Update(CampaignRule model);
+    Task<CampaignRule?> UpdateAsync(CampaignRule model);
     /// <summary>
     /// Delete campaign rule by id
     /// </summary>
     /// <param name="id">Id of the campaign rule</param>
     /// <returns><see cref="bool"/> value, TRUE if deleted</returns>
-    Task<bool> Delete(int id);
+    Task<bool> DeleteAsync(int id);
     /// <summary>
     /// Get campaign rule by id
     /// </summary>

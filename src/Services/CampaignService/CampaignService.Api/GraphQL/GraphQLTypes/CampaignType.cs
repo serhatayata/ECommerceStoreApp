@@ -1,5 +1,6 @@
 ﻿using CampaignService.Api.Entities;
 using CampaignService.Api.GraphQL.DataLoaders.CollectionBatchDataLoaders;
+using CampaignService.Api.GraphQL.GraphQLTypes.Enums;
 using CampaignService.Api.Repository.Abstract;
 using GraphQL.DataLoader;
 using GraphQL.Types;
