@@ -15,18 +15,15 @@ public class StartupDIServiceInstaller : IServiceInstaller
         services.AddScoped<ISchema, CampaignSchema>();
         services.AddScoped<ISchema, CampaignItemSchema>();
         services.AddScoped<ISchema, CampaignSourceSchema>();
-        services.AddScoped<ISchema, CampaignRuleSchema>();
 
         services.AddScoped<ICampaignRepository, CampaignRepository>();
         services.AddScoped<ICampaignItemRepository, CampaignItemRepository>();
-        services.AddScoped<ICampaignRuleRepository, CampaignRuleRepository>();
         services.AddScoped<ICampaignSourceRepository, CampaignSourceRepository>();
 
         //DataLoader
         services.AddScoped<CampaignBatchDataLoader>();
         services.AddScoped<CampaignItemBatchDataLoader>();
         services.AddScoped<CampaignSourceBatchDataLoader>();
-        services.AddScoped<CampaignRuleBatchDataLoader>();
         services.AddScoped<CampaignSourceCollectionBatchDataLoader>();
         services.AddScoped<CampaignItemCollectionBatchDataLoader>();
     }

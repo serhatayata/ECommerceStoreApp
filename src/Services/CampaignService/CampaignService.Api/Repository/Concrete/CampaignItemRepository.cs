@@ -2,9 +2,12 @@
 using CampaignService.Api.Extensions;
 using CampaignService.Api.Infrastructure.Contexts;
 using CampaignService.Api.Repository.Abstract;
+using CampaignService.Api.Utilities.Json;
+using GraphQLParser;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
 using System.Linq.Expressions;
+using System.Text.Json;
 
 namespace CampaignService.Api.Repository.Concrete;
 
@@ -126,4 +129,24 @@ public class CampaignItemRepository : ICampaignItemRepository
 
     public async Task<List<CampaignItem>> GetAllByCampaignIdAsync(int id) => 
         await _context.CampaignItems.Where(c => c.CampaignId == id).ToListAsync();
+
+    public async Task<List<CampaignItem>> GetAllByRulesync(string rule)
+    {
+        try
+        {
+            var jsonDocument = JsonDocument.Parse(rule);
+            var parser = new JsonExpressionParser();
+            var expression = parser.ParseExpressionOf<CampaignItem>(jsonDocument);
+
+            var result = await _context.CampaignItems
+                                       .Where(expression)
+                                       .ToListAsync();
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            throw new FormatException("Error", ex);
+        }
+    }
 }

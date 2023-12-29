@@ -12,7 +12,6 @@ public class GraphQLWebApplicationInstaller : IWebApplicationInstaller
         app.UseGraphQL<CampaignSchema>("/api/campaign");
         app.UseGraphQL<CampaignItemSchema>("/api/campaignitem");
         app.UseGraphQL<CampaignSourceSchema>("/api/campaignsource");
-        app.UseGraphQL<CampaignRuleSchema>("/api/campaignrule");
 
         if (app.Environment.IsDevelopment())
         {

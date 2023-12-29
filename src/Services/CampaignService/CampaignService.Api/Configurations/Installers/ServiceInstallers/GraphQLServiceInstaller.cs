@@ -21,15 +21,13 @@ public class GraphQLServiceInstaller : IServiceInstaller
                     .AddNewtonsoftJson()
                     .AddSchema<CampaignItemSchema>()
                     .AddSchema<CampaignSourceSchema>()
-                    .AddSchema<CampaignRuleSchema>()
                     .AddSchema<CampaignSchema>()
-                    .AddGraphTypes(typeof(CampaignItemSchema).Assembly)
                     .AddErrorInfoProvider((opts, serviceProvider) =>
                     {
                         opts.ExposeExceptionDetails = true;
                     })
                     .AddGraphTypes(typeof(CampaignSourceSchema).Assembly)
-                    .AddGraphTypes(typeof(CampaignRuleSchema).Assembly)
+                    .AddGraphTypes(typeof(CampaignItemSchema).Assembly)
                     .AddGraphTypes(typeof(CampaignSchema).Assembly)
                     .AddDataLoader());
 

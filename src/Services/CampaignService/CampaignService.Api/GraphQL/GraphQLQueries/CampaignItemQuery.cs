@@ -1,6 +1,7 @@
 ﻿using CampaignService.Api.Entities;
 using CampaignService.Api.GraphQL.DataLoaders.BatchDataLoaders;
 using CampaignService.Api.GraphQL.GraphQLTypes;
+using CampaignService.Api.Models.Rules;
 using CampaignService.Api.Repository.Abstract;
 using GraphQL;
 using GraphQL.DataLoader;
@@ -50,6 +51,37 @@ public class CampaignItemQuery : ObjectGraphType<CampaignItem>
                 }
 
                 var result = await campaignItemRepository.GetAllByCampaignIdAsync(id);
+                return result;
+            });
+
+        Field<ListGraphType<CampaignItemType>>(name: "allByRule")
+            .Description("Get all items by rule")
+            .Arguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "rule" })
+            .ResolveAsync(async (context) =>
+            {
+                var rule = context.GetArgument<string>("rule");
+                if (string.IsNullOrWhiteSpace(rule))
+                {
+                    context.Errors.Add(new ExecutionError("Wrong value for rule"));
+                    return null;
+                }
+
+                var result = await campaignItemRepository.GetAllByRulesync(rule);
+                return result;
+            });
+
+        Field<RuleModel>(name: "getRuleModel")
+            .Description("Get rule model")
+            .ResolveAsync(async (context) =>
+            {
+                var rule = context.GetArgument<string>("rule");
+                if (string.IsNullOrWhiteSpace(rule))
+                {
+                    context.Errors.Add(new ExecutionError("Wrong value for rule"));
+                    return null;
+                }
+
+                var result = await campaignItemRepository.GetAllByRulesync(rule);
                 return result;
             });
     }

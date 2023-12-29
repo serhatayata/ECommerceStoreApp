@@ -29,7 +29,6 @@ public class CampaignDbContext : DbContext
         builder.ApplyConfiguration(new CampaignEntityTypeConfiguration());
         builder.ApplyConfiguration(new CampaignSourceEntityTypeConfiguration());
         builder.ApplyConfiguration(new CampaignItemEntityTypeConfiguration());
-        builder.ApplyConfiguration(new CampaignRuleEntityTypeConfiguration());
 
         base.OnModelCreating(builder);
     }
@@ -37,7 +36,6 @@ public class CampaignDbContext : DbContext
     public DbSet<Campaign> Campaigns { get; set; }
     public DbSet<CampaignSource> CampaignSources { get; set; }
     public DbSet<CampaignItem> CampaignItems { get; set; }
-    public DbSet<CampaignRule> CampaignRules { get; set; }
 
     public string GetTableNameWithScheme<T>() where T : class, IEntity
     {

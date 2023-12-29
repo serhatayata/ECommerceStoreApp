@@ -46,4 +46,10 @@ public interface ICampaignItemRepository
     /// <param name="id">Id of the campaign</param>
     /// <returns><see cref="List{T}"/></returns>
     Task<List<CampaignItem>> GetAllByCampaignIdAsync(int id);
+    /// <summary>
+    /// Get all by rule
+    /// </summary>
+    /// <param name="rule">rule of campaign items</param>
+    /// <returns><see cref="List{T}"/></returns>
+    Task<List<CampaignItem>> GetAllByRulesync(string rule);
 }

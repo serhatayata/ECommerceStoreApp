@@ -15,18 +15,15 @@ namespace CampaignService.Api.DependencyResolvers.Autofac
             builder.RegisterType<CampaignSchema>().As<ISchema>().InstancePerDependency();
             builder.RegisterType<CampaignItemSchema>().As<ISchema>().InstancePerDependency();
             builder.RegisterType<CampaignSourceSchema>().As<ISchema>().InstancePerDependency();
-            builder.RegisterType<CampaignRuleSchema>().As<ISchema>().InstancePerDependency();
 
             builder.RegisterType<CampaignRepository>().As<ICampaignRepository>().InstancePerLifetimeScope();
             builder.RegisterType<CampaignItemRepository>().As<ICampaignItemRepository>().InstancePerLifetimeScope();
-            builder.RegisterType<CampaignRuleRepository>().As<ICampaignRuleRepository>().InstancePerLifetimeScope();
             builder.RegisterType<CampaignSourceRepository>().As<ICampaignSourceRepository>().InstancePerLifetimeScope();
 
             //DataLoader
             builder.RegisterType<CampaignBatchDataLoader>().InstancePerLifetimeScope();
             builder.RegisterType<CampaignItemBatchDataLoader>().InstancePerLifetimeScope();
             builder.RegisterType<CampaignSourceBatchDataLoader>().InstancePerLifetimeScope();
-            builder.RegisterType<CampaignRuleBatchDataLoader>().InstancePerLifetimeScope();
             builder.RegisterType<CampaignSourceCollectionBatchDataLoader>().InstancePerLifetimeScope();
             builder.RegisterType<CampaignItemCollectionBatchDataLoader>().InstancePerLifetimeScope();
         }
