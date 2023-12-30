@@ -15,6 +15,7 @@ E-Commerce Microservices Application (STILL BEING IMPROVED)
 - SAGA Pattern (Choreography, Orchestration)
 - Event Sourcing Pattern
 - Retry Pattern, Circuit Breaker Pattern
+- Expression Builder
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -52,7 +53,6 @@ E-Commerce Microservices Application (STILL BEING IMPROVED)
   - api/campaign
   - api/campaignsource
   - api/campaignitem
-  - api/campaignrule
 
 ```graphql
 # Campaigns
@@ -151,27 +151,7 @@ query GetByIdCampaignItemQuery($campaignItemID: ID!)
    }
  }
 ```
-```graphql
-# CampaignRules
 
-query GetByIdCampaignRuleQuery($campaignRuleID: ID!) {
-  campaignRule(id: $campaignRuleID) {
-    id
-    description
-    value
-    name
-  }
-}
-
-query GetAllCampaignRulesQuery{
-  allCampaignRules {
-    id
-    description
-    value
-    name
-  }
-}
-```
 ### Mutations
 ```graphql
 #CampaignItem
@@ -321,64 +301,6 @@ mutation($id: Int!){
    "id" : 1001
 }
 
-```
-
-```graphql
-# Campaign rule
-# createCampaignRule
-
-mutation($campaignRule: campaignRuleInput!){
-  createCampaignRule(campaignRule: $campaignRule){
-    name
-    description
-    value
-  }
-}
-
-# query variables
-
-{
-    "campaignRule": {
-    "name": "test-rule-1",
-    "description": "test description campaign rule 1",
-    "value": "{ \"id\" : 1 }"
-  }
-}
-
-# updateCampaignRule
-
-# updateCampaignRule
-mutation($campaignRule: campaignRuleInput!){
-  updateCampaignRule(campaignRule: $campaignRule){
-    id
-    name
-    description
-    value
-  }
-}
-
-# query variables
-
-{
-    "campaignRule": {
-    "id": 1002,
-    "name": "test-rule-1.1",
-    "description": "test description campaign rule 1.1",
-    "value": "{ \"name\" : 1 }"
-  }
-}
-
-#deleteCampaignRule
-
-mutation($id: Int!){
-  deleteCampaignRule(id: $id)
-}
-
-# query variables
-
-{
-    "id": 1002
-}
 ```
 
 ```graphql
