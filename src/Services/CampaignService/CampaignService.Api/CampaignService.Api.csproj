@@ -41,7 +41,6 @@
   <ItemGroup>
     <Folder Include="Configurations\Installers\ApplicationBuilderInstallers\" />
     <Folder Include="Configurations\Installers\WebHostBuilderInstallers\" />
-    <Folder Include="Controllers\" />
   </ItemGroup>
 
 </Project>

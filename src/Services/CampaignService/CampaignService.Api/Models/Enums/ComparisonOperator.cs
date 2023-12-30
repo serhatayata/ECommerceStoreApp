@@ -7,5 +7,6 @@ public enum ComparisonOperator
     less,
     lessorequal,
     greater,
-    greaterorequal
+    greaterorequal,
+    @in
 }

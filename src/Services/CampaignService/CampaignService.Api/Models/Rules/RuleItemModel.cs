@@ -2,6 +2,17 @@
 
 public class RuleItemModel
 {
+    public RuleItemModel()
+    {
+        
+    }
+
+    public RuleItemModel(string field, string type)
+    {
+        this.Field = field;
+        this.Type = type;
+    }
+
     /// <summary>
     /// Field of the entity
     /// </summary>

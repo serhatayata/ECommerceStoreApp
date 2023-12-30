@@ -3,6 +3,7 @@ using CampaignService.Api.GraphQL.DataLoaders.BatchDataLoaders;
 using CampaignService.Api.GraphQL.GraphQLTypes;
 using CampaignService.Api.Models.Rules;
 using CampaignService.Api.Repository.Abstract;
+using CampaignService.Api.Utilities;
 using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Types;
@@ -70,19 +71,11 @@ public class CampaignItemQuery : ObjectGraphType<CampaignItem>
                 return result;
             });
 
-        Field<RuleModel>(name: "getRuleModel")
+        Field<RuleModelType>(name: "getRuleModel")
             .Description("Get rule model")
-            .ResolveAsync(async (context) =>
+            .Resolve(context =>
             {
-                var rule = context.GetArgument<string>("rule");
-                if (string.IsNullOrWhiteSpace(rule))
-                {
-                    context.Errors.Add(new ExecutionError("Wrong value for rule"));
-                    return null;
-                }
-
-                var result = await campaignItemRepository.GetAllByRulesync(rule);
-                return result;
+                return RuleModelBuilder.GetModelRule<CampaignItem>();
             });
     }
 }
