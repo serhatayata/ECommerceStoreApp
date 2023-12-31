@@ -3,6 +3,8 @@ using CampaignService.Api.GraphQL.DataLoaders.CollectionBatchDataLoaders;
 using CampaignService.Api.GraphQL.Schemas;
 using CampaignService.Api.Repository.Abstract;
 using CampaignService.Api.Repository.Concrete;
+using CampaignService.Api.Services.Cache.Abstract;
+using CampaignService.Api.Services.Cache.Concrete;
 using GraphQL.Types;
 
 namespace CampaignService.Api.Configurations.Installers.ServiceInstallers;
@@ -25,5 +27,7 @@ public class StartupDIServiceInstaller : IServiceInstaller
         services.AddScoped<CampaignSourceBatchDataLoader>();
         services.AddScoped<CampaignSourceCollectionBatchDataLoader>();
         services.AddScoped<CampaignItemCollectionBatchDataLoader>();
+
+        services.AddSingleton<IRedisService, RedisService>();
     }
 }

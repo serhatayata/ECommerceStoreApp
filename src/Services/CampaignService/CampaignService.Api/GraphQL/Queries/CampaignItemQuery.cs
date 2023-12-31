@@ -2,17 +2,20 @@
 using CampaignService.Api.GraphQL.DataLoaders.BatchDataLoaders;
 using CampaignService.Api.GraphQL.Types;
 using CampaignService.Api.Repository.Abstract;
+using CampaignService.Api.Services.Cache.Abstract;
 using CampaignService.Api.Utilities;
 using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Types;
+using CampaignService.Api.Extensions;
 
 namespace CampaignService.Api.GraphQL.Queries;
 
 public class CampaignItemQuery : ObjectGraphType<CampaignItem>
 {
     public CampaignItemQuery(
-        ICampaignItemRepository campaignItemRepository)
+        ICampaignItemRepository campaignItemRepository,
+        IRedisService r)
     {
         Name = nameof(CampaignItemQuery);
         Description = $"{nameof(CampaignItemQuery)} description";

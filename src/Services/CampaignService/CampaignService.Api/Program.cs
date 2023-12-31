@@ -1,6 +1,7 @@
 using CampaignService.Api.Configurations.Installers;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
@@ -35,3 +36,8 @@ app.InstallWebApp(app.Lifetime,
 
 app.MapControllers();
 app.Run();
+
+public partial class Program
+{
+    public static string appName = Assembly.GetExecutingAssembly().GetName().Name;
+}

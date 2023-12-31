@@ -2,6 +2,7 @@
 using CampaignService.Api.Extensions;
 using CampaignService.Api.Infrastructure.Contexts;
 using CampaignService.Api.Repository.Abstract;
+using CampaignService.Api.Services.Cache.Abstract;
 using CampaignService.Api.Utilities.Json;
 using GraphQLParser;
 using Microsoft.EntityFrameworkCore;
@@ -14,13 +15,16 @@ namespace CampaignService.Api.Repository.Concrete;
 public class CampaignItemRepository : ICampaignItemRepository
 {
     private readonly CampaignDbContext _context;
+    private readonly IRedisService _redisService;
     private readonly ILogger<CampaignItemRepository> _logger;
 
     public CampaignItemRepository(
         CampaignDbContext context,
+        IRedisService redisService,
         ILogger<CampaignItemRepository> logger)
     {
         _context = context;
+        _redisService = redisService;
         _logger = logger;
     }
 
