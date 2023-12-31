@@ -1,6 +1,9 @@
-﻿using CampaignService.Api.Entities;
+﻿using AutoMapper;
+using CampaignService.Api.Entities;
+using CampaignService.Api.Extensions;
 using CampaignService.Api.GraphQL.Types;
 using CampaignService.Api.GraphQL.Types.Inputs;
+using CampaignService.Api.GraphQL.Types.InputTypes;
 using CampaignService.Api.Repository.Abstract;
 using GraphQL;
 using GraphQL.Types;
@@ -10,13 +13,24 @@ namespace CampaignService.Api.GraphQL.Mutations;
 public class CampaignItemMutation : ObjectGraphType<CampaignItem>
 {
     public CampaignItemMutation(
-        ICampaignItemRepository campaignItemRepository)
+        ICampaignItemRepository campaignItemRepository,
+        IMapper mapper)
     {
         Field<CampaignItemType>("createCampaignItem")
             .Arguments(new QueryArgument<NonNullGraphType<CampaignItemInputType>> { Name = "campaignItem" })
             .ResolveAsync(async (context) =>
             {
-                var campaignItem = context.GetArgument<CampaignItem>("campaignItem");
+                var validationResult = context.GetValidationResult<CampaignItem, CampaignItemInput>("campaignItem");
+                if (!validationResult.IsSuccess)
+                {
+                    var errors = validationResult.ErrorMessages
+                                                 .Select(s => new ExecutionError(s));
+
+                    context.Errors.AddRange(errors);
+                    return null;
+                }
+
+                var campaignItem = mapper.Map<CampaignItem>(validationResult.Model);
                 var result = await campaignItemRepository.CreateAsync(campaignItem);
                 return result;
             });
@@ -26,13 +40,17 @@ public class CampaignItemMutation : ObjectGraphType<CampaignItem>
                 new QueryArgument<NonNullGraphType<CampaignItemInputType>> { Name = "campaignItem" })
             .ResolveAsync(async (context) =>
             {
-                var campaignItem = context.GetArgument<CampaignItem>("campaignItem");
-                if (campaignItem == null || campaignItem?.Id == default)
+                var validationResult = context.GetValidationResult<CampaignItem, CampaignItemInput>("campaignItem");
+                if (!validationResult.IsSuccess)
                 {
-                    context.Errors.Add(new ExecutionError("Couldn't find parameters for update"));
+                    var errors = validationResult.ErrorMessages
+                                                 .Select(s => new ExecutionError(s));
+
+                    context.Errors.AddRange(errors);
                     return null;
                 }
 
+                var campaignItem = mapper.Map<CampaignItem>(validationResult.Model);
                 return await campaignItemRepository.UpdateAsync(campaignItem);
             });
 

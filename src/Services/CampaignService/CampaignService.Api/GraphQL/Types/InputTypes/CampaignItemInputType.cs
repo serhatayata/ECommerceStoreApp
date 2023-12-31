@@ -1,7 +1,7 @@
 ﻿using CampaignService.Api.GraphQL.Types.Enums;
 using GraphQL.Types;
 
-namespace CampaignService.Api.GraphQL.Types.Inputs;
+namespace CampaignService.Api.GraphQL.Types.InputTypes;
 
 public class CampaignItemInputType : InputObjectGraphType
 {

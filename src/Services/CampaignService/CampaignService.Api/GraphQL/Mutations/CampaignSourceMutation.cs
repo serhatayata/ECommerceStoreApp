@@ -1,22 +1,36 @@
-﻿using CampaignService.Api.Entities;
+﻿using AutoMapper;
+using CampaignService.Api.Entities;
+using CampaignService.Api.Extensions;
 using CampaignService.Api.GraphQL.Types;
 using CampaignService.Api.GraphQL.Types.Inputs;
+using CampaignService.Api.GraphQL.Types.InputTypes;
 using CampaignService.Api.Repository.Abstract;
 using GraphQL;
 using GraphQL.Types;
 
 namespace CampaignService.Api.GraphQL.Mutations;
 
-public class CampaignSourceMutation : ObjectGraphType
+public class CampaignSourceMutation : ObjectGraphType<CampaignSource>
 {
     public CampaignSourceMutation(
-        ICampaignSourceRepository campaignSourceRepository)
+        ICampaignSourceRepository campaignSourceRepository,
+        IMapper mapper)
     {
         Field<CampaignSourceType>("createCampaignSource")
             .Arguments(new QueryArgument<NonNullGraphType<CampaignSourceInputType>> { Name = "campaignSource" })
             .ResolveAsync(async (context) =>
             {
-                var campaignSource = context.GetArgument<CampaignSource>("campaignSource");
+                var validationResult = context.GetValidationResult<CampaignSource, CampaignSourceInput>("campaignSource");
+                if (!validationResult.IsSuccess)
+                {
+                    var errors = validationResult.ErrorMessages
+                                                 .Select(s => new ExecutionError(s));
+
+                    context.Errors.AddRange(errors);
+                    return null;
+                }
+
+                var campaignSource = mapper.Map<CampaignSource>(validationResult.Model);
                 var result = await campaignSourceRepository.CreateAsync(campaignSource);
                 return result;
             });
@@ -26,13 +40,17 @@ public class CampaignSourceMutation : ObjectGraphType
                 new QueryArgument<NonNullGraphType<CampaignSourceInputType>> { Name = "campaignSource" })
             .ResolveAsync(async (context) =>
             {
-                var campaignSource = context.GetArgument<CampaignSource>("campaignSource");
-                if (campaignSource == null || campaignSource?.Id == default)
+                var validationResult = context.GetValidationResult<CampaignSource, CampaignSourceInput>("campaignSource");
+                if (!validationResult.IsSuccess)
                 {
-                    context.Errors.Add(new ExecutionError("Couldn't find parameters for update"));
+                    var errors = validationResult.ErrorMessages
+                                                 .Select(s => new ExecutionError(s));
+
+                    context.Errors.AddRange(errors);
                     return null;
                 }
 
+                var campaignSource = mapper.Map<CampaignSource>(validationResult.Model);
                 return await campaignSourceRepository.UpdateAsync(campaignSource);
             });
 
