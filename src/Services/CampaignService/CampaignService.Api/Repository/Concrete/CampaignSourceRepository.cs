@@ -9,10 +9,14 @@ namespace CampaignService.Api.Repository.Concrete;
 public class CampaignSourceRepository : ICampaignSourceRepository
 {
     private readonly CampaignDbContext _context;
+    private ILogger<CampaignSourceRepository> _logger;
 
-    public CampaignSourceRepository(CampaignDbContext context)
+    public CampaignSourceRepository(
+        CampaignDbContext context,
+        ILogger<CampaignSourceRepository> logger)
     {
         _context = context;
+        _logger = logger;
     }
 
     public async Task<CampaignSource?> CreateAsync(CampaignSource model)
@@ -37,6 +41,7 @@ public class CampaignSourceRepository : ICampaignSourceRepository
             catch (Exception ex)
             {
                 transaction.Rollback();
+                _logger.LogError(ex, "ERROR - {Message}", ex.Message);
                 throw new Exception(ex.Message);
             }
             finally
@@ -69,6 +74,7 @@ public class CampaignSourceRepository : ICampaignSourceRepository
             catch (Exception ex)
             {
                 transaction.Rollback();
+                _logger.LogError(ex, "ERROR - {Message}", ex.Message);
                 throw new Exception(ex.Message);
             }
             finally
@@ -102,6 +108,7 @@ public class CampaignSourceRepository : ICampaignSourceRepository
             catch (Exception ex)
             {
                 transaction.Rollback();
+                _logger.LogError(ex, "ERROR - {Message}", ex.Message);
                 throw new Exception(ex.Message);
             }
             finally

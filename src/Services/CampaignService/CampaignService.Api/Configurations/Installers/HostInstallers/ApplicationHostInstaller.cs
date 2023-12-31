@@ -1,4 +1,6 @@
 ﻿
+using Serilog;
+
 namespace CampaignService.Api.Configurations.Installers.HostInstallers;
 
 public class ApplicationHostInstaller : IHostInstaller
@@ -22,8 +24,8 @@ public class ApplicationHostInstaller : IHostInstaller
                   .AddEnvironmentVariables()
                   .Build();
         })
-        .ConfigureLogging(s => s.ClearProviders()); // Remove all added providers before
+        .ConfigureLogging(s => s.ClearProviders()) // Remove all added providers before
                                                    // https://github.com/serilog/serilog-aspnetcore
-        //.UseSerilog();
+        .UseSerilog();
     }
 }
