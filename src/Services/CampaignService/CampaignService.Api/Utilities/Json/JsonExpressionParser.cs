@@ -17,6 +17,23 @@ public class JsonExpressionParser
 
     private delegate Expression Binder(Expression left, Expression right);
 
+    public Func<T, bool> ParsePredicateOf<T>(JsonDocument doc)
+    {
+        var query = ParseExpressionOf<T>(doc);
+        return query.Compile();
+    }
+
+    public Expression<Func<T, bool>> ParseExpressionOf<T>(JsonDocument doc)
+    {
+        var itemExpression = Expression.Parameter(typeof(T));
+        var conditions = ParseTree<T>(doc.RootElement, itemExpression);
+        if (conditions.CanReduce)
+            conditions = conditions.ReduceAndCheck();
+
+        var query = Expression.Lambda<Func<T, bool>>(conditions, itemExpression);
+        return query;
+    }
+
     private Expression ParseTree<T>(
         JsonElement condition,
         ParameterExpression parm)
@@ -48,7 +65,7 @@ public class JsonExpressionParser
 
             var property = Expression.Property(parm, field);
 
-            if (@operator == In)
+            if (@operator == ComparisonOperator.@in.ToString())
             {
                 var contains = MethodContains.MakeGenericMethod(typeof(string));
                 object val = value.EnumerateArray().Select(e => e.GetString())
@@ -71,9 +88,9 @@ public class JsonExpressionParser
         return left;
     }
 
-    BinaryExpression? GetExpressionComparison(
-        MemberExpression property,
-        ConstantExpression toCompare,
+    private BinaryExpression? GetExpressionComparison(
+            MemberExpression property,
+            ConstantExpression toCompare,
         string @operator)
     {
         var comparisonParse = Enum.TryParse(@operator, out ComparisonOperator comparisonOperator);
@@ -99,32 +116,21 @@ public class JsonExpressionParser
         }
     }
 
-    public Expression<Func<T, bool>> ParseExpressionOf<T>(JsonDocument doc)
-    {
-        var itemExpression = Expression.Parameter(typeof(T));
-        var conditions = ParseTree<T>(doc.RootElement, itemExpression);
-        if (conditions.CanReduce)
-            conditions = conditions.ReduceAndCheck();
-
-        var query = Expression.Lambda<Func<T, bool>>(conditions, itemExpression);
-        return query;
-    }
-
-    public object GetTypeValue(
+    private object GetTypeValue(
         string type,
         JsonElement value)
     {
-        string StringStr = nameof(String).ToLowerInvariant();
-        string BooleanStr = nameof(Boolean).ToLowerInvariant();
-        string Int32Str = nameof(Int32).ToLowerInvariant();
-        string DecimalStr = nameof(Decimal).ToLowerInvariant();
-        string DateTimeStr = nameof(DateTime).ToLowerInvariant();
+        string StringStr = TypeCode.String.ToString().ToLowerInvariant();
+        string BooleanStr = TypeCode.Boolean.ToString().ToLowerInvariant();
+        string IntStr = TypeCode.Int32.ToString().Substring(0, 3).ToLowerInvariant();
+        string DecimalStr = TypeCode.Decimal.ToString().ToLowerInvariant();
+        string DateTimeStr = TypeCode.DateTime.ToString().ToLowerInvariant();
 
         if (type == StringStr)
             return (object)value.GetString();
         else if (type == BooleanStr)
             return (object)value.GetBoolean();
-        else if (type == Int32Str)
+        else if (type == IntStr)
             return (object)value.GetInt32();
         else if (type == DecimalStr)
             return (object)value.GetDecimal();
@@ -132,11 +138,5 @@ public class JsonExpressionParser
             return (object)value.GetDateTime();
 
         throw new ArgumentException("Type not found");
-    }
-
-    public Func<T, bool> ParsePredicateOf<T>(JsonDocument doc)
-    {
-        var query = ParseExpressionOf<T>(doc);
-        return query.Compile();
     }
 }

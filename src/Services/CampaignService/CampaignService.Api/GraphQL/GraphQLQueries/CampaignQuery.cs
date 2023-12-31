@@ -35,7 +35,5 @@ public class CampaignQuery : ObjectGraphType<Campaign>
         Field<ListGraphType<CampaignType>>(name: "allCampaigns")
             .Description("Campaign type description")
             .ResolveAsync(async (context) => await campaignRepository.GetAllAsync());
-
-
     }
 }
