@@ -1,12 +1,11 @@
 ﻿using CampaignService.Api.Entities;
-using CampaignService.Api.GraphQL.GraphQLTypes.Inputs;
-using CampaignService.Api.GraphQL.GraphQLTypes;
+using CampaignService.Api.GraphQL.Types;
+using CampaignService.Api.GraphQL.Types.Inputs;
 using CampaignService.Api.Repository.Abstract;
-using CampaignService.Api.Repository.Concrete;
 using GraphQL;
 using GraphQL.Types;
 
-namespace CampaignService.Api.GraphQL.GraphQLMutations;
+namespace CampaignService.Api.GraphQL.Mutations;
 
 public class CampaignSourceMutation : ObjectGraphType
 {

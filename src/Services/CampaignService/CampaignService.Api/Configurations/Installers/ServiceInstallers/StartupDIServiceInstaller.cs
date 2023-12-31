@@ -1,7 +1,6 @@
-﻿
-using CampaignService.Api.GraphQL.DataLoaders.BatchDataLoaders;
+﻿using CampaignService.Api.GraphQL.DataLoaders.BatchDataLoaders;
 using CampaignService.Api.GraphQL.DataLoaders.CollectionBatchDataLoaders;
-using CampaignService.Api.GraphQL.GraphQLSchema;
+using CampaignService.Api.GraphQL.Schemas;
 using CampaignService.Api.Repository.Abstract;
 using CampaignService.Api.Repository.Concrete;
 using GraphQL.Types;

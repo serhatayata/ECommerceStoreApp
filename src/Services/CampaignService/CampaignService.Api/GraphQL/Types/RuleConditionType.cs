@@ -1,7 +1,7 @@
 ﻿using CampaignService.Api.Models.Rules;
 using GraphQL.Types;
 
-namespace CampaignService.Api.GraphQL.GraphQLTypes;
+namespace CampaignService.Api.GraphQL.Types;
 
 public class RuleConditionType : ObjectGraphType<RuleConditionModel>
 {

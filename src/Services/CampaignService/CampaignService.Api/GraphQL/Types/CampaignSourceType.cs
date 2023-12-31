@@ -1,7 +1,7 @@
 ﻿using CampaignService.Api.Entities;
 using GraphQL.Types;
 
-namespace CampaignService.Api.GraphQL.GraphQLTypes;
+namespace CampaignService.Api.GraphQL.Types;
 
 public class CampaignSourceType : ObjectGraphType<CampaignSource>
 {

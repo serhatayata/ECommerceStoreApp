@@ -1,14 +1,13 @@
 ﻿using CampaignService.Api.Entities;
 using CampaignService.Api.GraphQL.DataLoaders.BatchDataLoaders;
-using CampaignService.Api.GraphQL.GraphQLTypes;
-using CampaignService.Api.Models.Rules;
+using CampaignService.Api.GraphQL.Types;
 using CampaignService.Api.Repository.Abstract;
 using CampaignService.Api.Utilities;
 using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Types;
 
-namespace CampaignService.Api.GraphQL.GraphQLQueries;
+namespace CampaignService.Api.GraphQL.Queries;
 
 public class CampaignItemQuery : ObjectGraphType<CampaignItem>
 {

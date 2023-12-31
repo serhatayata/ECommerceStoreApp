@@ -1,6 +1,6 @@
 ﻿using GraphQL.Types;
 
-namespace CampaignService.Api.GraphQL.GraphQLTypes.Enums;
+namespace CampaignService.Api.GraphQL.Types.Enums;
 
 public class CampaignTypeEnumType : EnumerationGraphType<Models.Enums.CampaignTypes>
 {

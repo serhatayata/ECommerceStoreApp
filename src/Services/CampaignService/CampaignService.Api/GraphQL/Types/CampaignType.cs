@@ -1,11 +1,11 @@
 ﻿using CampaignService.Api.Entities;
 using CampaignService.Api.GraphQL.DataLoaders.CollectionBatchDataLoaders;
-using CampaignService.Api.GraphQL.GraphQLTypes.Enums;
+using CampaignService.Api.GraphQL.Types.Enums;
 using CampaignService.Api.Repository.Abstract;
 using GraphQL.DataLoader;
 using GraphQL.Types;
 
-namespace CampaignService.Api.GraphQL.GraphQLTypes;
+namespace CampaignService.Api.GraphQL.Types;
 
 public class CampaignType : ObjectGraphType<Campaign>
 {

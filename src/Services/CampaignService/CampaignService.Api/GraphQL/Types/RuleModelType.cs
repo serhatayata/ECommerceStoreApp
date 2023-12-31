@@ -1,8 +1,7 @@
-﻿using CampaignService.Api.Entities;
-using CampaignService.Api.Models.Rules;
+﻿using CampaignService.Api.Models.Rules;
 using GraphQL.Types;
 
-namespace CampaignService.Api.GraphQL.GraphQLTypes;
+namespace CampaignService.Api.GraphQL.Types;
 
 public class RuleModelType : ObjectGraphType<RuleModel>
 {

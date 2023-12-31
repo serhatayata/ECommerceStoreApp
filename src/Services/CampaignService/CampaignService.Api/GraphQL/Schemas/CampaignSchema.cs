@@ -1,8 +1,8 @@
-﻿using CampaignService.Api.GraphQL.GraphQLMutations;
-using CampaignService.Api.GraphQL.GraphQLQueries;
+﻿using CampaignService.Api.GraphQL.Mutations;
+using CampaignService.Api.GraphQL.Queries;
 using GraphQL.Types;
 
-namespace CampaignService.Api.GraphQL.GraphQLSchema;
+namespace CampaignService.Api.GraphQL.Schemas;
 
 public class CampaignSchema : Schema
 {

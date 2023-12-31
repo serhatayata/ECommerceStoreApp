@@ -1,6 +1,5 @@
-﻿using CampaignService.Api.GraphQL.GraphQLSchema;
+﻿using CampaignService.Api.GraphQL.Schemas;
 using GraphQL.Server.Ui.Playground;
-using GraphQL.Types;
 
 namespace CampaignService.Api.Configurations.Installers.WebApplicationInstallers;
 

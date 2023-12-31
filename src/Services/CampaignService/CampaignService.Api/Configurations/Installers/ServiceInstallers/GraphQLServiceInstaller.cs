@@ -1,10 +1,6 @@
-﻿
-using CampaignService.Api.GraphQL.GraphQLQueries;
-using CampaignService.Api.GraphQL.GraphQLSchema;
+﻿using CampaignService.Api.GraphQL.Schemas;
 using GraphQL;
 using GraphQL.DataLoader;
-using GraphQL.Types;
-using Microsoft.Extensions.Options;
 
 namespace CampaignService.Api.Configurations.Installers.ServiceInstallers;
 
