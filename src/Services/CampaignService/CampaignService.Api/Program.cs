@@ -39,9 +39,17 @@ app.InstallWebApp(app.Lifetime,
                   configuration,
                   typeof(IWebApplicationInstaller).Assembly);
 
-app.MapControllers();
-app.Run();
+app.InstallApplicationBuilder(app.Lifetime,
+                              configuration,
+                              typeof(IApplicationBuilderInstaller).Assembly);
 
+app.MapControllers();
+
+app.Start();
+
+app.InstallServiceDiscovery(app.Lifetime, configuration);
+
+app.WaitForShutdown();
 public partial class Program
 {
     public static string appName = Assembly.GetExecutingAssembly().GetName().Name;

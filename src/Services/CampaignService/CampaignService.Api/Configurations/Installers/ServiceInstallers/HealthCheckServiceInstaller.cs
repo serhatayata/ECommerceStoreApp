@@ -24,6 +24,18 @@ public class HealthCheckServiceInstaller : IServiceInstaller
             name: "ElasticSearch",
             failureStatus: Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Unhealthy | Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Degraded,
             tags: new string[] { "elasticSearch" }
-        );
+        )
+        .AddConsul(
+          c => {
+              var consulAddress = configuration.GetSection("ConsulConfig:Address").Value;
+              var consulUrl = new Uri(consulAddress);
+
+              c.RequireHttps = false;
+              c.Port = consulUrl.Port;
+              c.HostName = consulUrl.Host;
+          },
+          name: "Consul",
+          failureStatus: Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Unhealthy | Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Degraded,
+          tags: new string[] { "consul" });
     }
 }
