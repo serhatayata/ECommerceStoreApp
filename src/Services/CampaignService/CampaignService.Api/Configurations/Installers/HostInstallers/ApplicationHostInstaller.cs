@@ -26,6 +26,9 @@ public class ApplicationHostInstaller : IHostInstaller
         })
         .ConfigureLogging(s => s.ClearProviders()) // Remove all added providers before
                                                    // https://github.com/serilog/serilog-aspnetcore
-        .UseSerilog();
+        .UseSerilog((hostingContext, loggerConfiguration) =>
+        {
+            loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration);
+        });
     }
 }

@@ -1,5 +1,5 @@
 using CampaignService.Api.Configurations.Installers;
-using GraphQL.Types;
+using CampaignService.Api.Extensions;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using System.Reflection;
 
@@ -29,6 +29,11 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
+
+app.UseHealthChecks("/health", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions()
+{
+    ResponseWriter = HealthCheckExtensions.WriteResponse
+});
 
 app.InstallWebApp(app.Lifetime,
                   configuration,
