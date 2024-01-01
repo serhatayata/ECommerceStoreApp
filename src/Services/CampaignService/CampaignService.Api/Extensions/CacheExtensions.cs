@@ -83,25 +83,18 @@ public static class CacheExtensions
         }
     }
 
-    public static string GetCacheKeyByModel(CacheKeyModel model)
-    {
-        return string.Join("-", model.GetModelValuesAsList());
-    }
-
     public static string GetCacheKey(
     string methodName,
-    string projectName,
     string className,
     string prefix = null,
     params string[] parameters)
     {
-        var cacheKeyModel = new CacheKeyModel(projectName,
-                                              className,
-                                              methodName,
-                                              prefix,
-                                              parameters);
+        var appName = Program.appName;
+        var parms = string.Join("-", parameters);
 
-        var cacheKey = GetCacheKeyByModel(cacheKeyModel);
-        return cacheKey;
+        var result = string.Join("-", appName, className, methodName, parms);
+        if (!string.IsNullOrWhiteSpace(prefix))
+            result = string.Join("-", prefix, result);
+        return result;
     }
 }

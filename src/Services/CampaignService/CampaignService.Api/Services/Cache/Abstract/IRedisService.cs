@@ -94,6 +94,15 @@ namespace CampaignService.Api.Services.Cache.Abstract
         /// <returns></returns>
         T Get<T>(string key, int databaseId) where T : class;
         /// <summary>
+        /// Gets the key if it exists by databaseId from filter
+        /// </summary>
+        /// <param name="key">key of the cache</param>
+        /// <param name="databaseId">database id of the cache</param>
+        /// <param name="duration">duration of the cache</param>
+        /// <param name="filter">filter</param>
+        /// <returns></returns>
+        T Get<T>(string key, int databaseId, int duration, Func<T> filter) where T : class;
+        /// <summary>
         /// Gets the key if it exists ASYNC
         /// </summary>
         /// <typeparam name="T"></typeparam>

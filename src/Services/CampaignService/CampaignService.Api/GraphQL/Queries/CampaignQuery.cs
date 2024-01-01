@@ -1,16 +1,24 @@
 ﻿using CampaignService.Api.Entities;
+using CampaignService.Api.Extensions;
 using CampaignService.Api.GraphQL.DataLoaders.BatchDataLoaders;
 using CampaignService.Api.GraphQL.Types;
 using CampaignService.Api.Repository.Abstract;
+using CampaignService.Api.Services.Cache.Abstract;
 using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Types;
+using System.Reflection;
 
 namespace CampaignService.Api.GraphQL.Queries;
 
 public class CampaignQuery : ObjectGraphType<Campaign>
 {
-    public CampaignQuery(ICampaignRepository campaignRepository)
+    private int cacheDbId = 11;
+    private string className = MethodBase.GetCurrentMethod()?.DeclaringType?.Name ?? string.Empty;
+
+    public CampaignQuery(
+        ICampaignRepository campaignRepository,
+        IRedisService redisService)
     {
         Name = nameof(CampaignQuery);
         Description = $"{nameof(CampaignQuery)} description";
@@ -34,6 +42,15 @@ public class CampaignQuery : ObjectGraphType<Campaign>
 
         Field<ListGraphType<CampaignType>>(name: "allCampaigns")
             .Description("Campaign type description")
-            .ResolveAsync(async (context) => await campaignRepository.GetAllAsync());
+            .ResolveAsync(async (context) =>
+            {
+                var cacheKey = CacheExtensions.GetCacheKey("allCampaigns", className, null);
+                return await redisService.GetAsync(cacheKey, cacheDbId,
+                                                   new TimeSpan(2, 30, 0).Minutes,
+                                                   async () =>
+                                                   {
+                                                       return await campaignRepository.GetAllAsync();
+                                                   });
+            });
     }
 }

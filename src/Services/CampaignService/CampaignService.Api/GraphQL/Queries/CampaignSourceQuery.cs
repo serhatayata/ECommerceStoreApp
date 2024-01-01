@@ -1,17 +1,24 @@
 ﻿using CampaignService.Api.Entities;
+using CampaignService.Api.Extensions;
 using CampaignService.Api.GraphQL.DataLoaders.BatchDataLoaders;
 using CampaignService.Api.GraphQL.Types;
 using CampaignService.Api.Repository.Abstract;
+using CampaignService.Api.Services.Cache.Abstract;
 using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Types;
+using System.Reflection;
 
 namespace CampaignService.Api.GraphQL.Queries;
 
 public class CampaignSourceQuery : ObjectGraphType<CampaignSource>
 {
+    private int cacheDbId = 11;
+    private string className = MethodBase.GetCurrentMethod()?.DeclaringType?.Name ?? string.Empty;
+
     public CampaignSourceQuery(
-        ICampaignSourceRepository campaignSourceRepository)
+        ICampaignSourceRepository campaignSourceRepository,
+        IRedisService redisService)
     {
         Name = nameof(CampaignSourceQuery);
         Description = $"{nameof(CampaignSourceQuery)} description";
@@ -35,7 +42,13 @@ public class CampaignSourceQuery : ObjectGraphType<CampaignSource>
 
         Field<ListGraphType<CampaignSourceType>>(name: "allCampaignSources")
         .Description("All campaign sources type description")
-            .ResolveAsync(async (context) => await campaignSourceRepository.GetAllAsync());
+            .ResolveAsync(async (context) =>
+            {
+                var cacheKey = CacheExtensions.GetCacheKey("allCampaignSources", className);
+                return await redisService.GetAsync(cacheKey, cacheDbId,
+                                                   new TimeSpan(2, 30, 0).Minutes,
+                                                   async () => await campaignSourceRepository.GetAllAsync());
+            });
 
         Field<ListGraphType<CampaignSourceType>>(name: "allByCampaignId")
             .Description("Get all sources by campaign id")
@@ -49,8 +62,10 @@ public class CampaignSourceQuery : ObjectGraphType<CampaignSource>
                     return null;
                 }
 
-                var result = await campaignSourceRepository.GetAllByCampaignIdAsync(id);
-                return result;
+                var cacheKey = CacheExtensions.GetCacheKey("allByCampaignId", className, id.ToString());
+                return await redisService.GetAsync(cacheKey, cacheDbId,
+                                                   new TimeSpan(2, 30, 0).Minutes,
+                                                   async () => await campaignSourceRepository.GetAllByCampaignIdAsync(id));
             });
     }
 }

@@ -95,6 +95,11 @@ namespace CampaignService.Api.Services.Cache.Concrete
 
             return value.ToObject<T>();
         }
+
+        public T Get<T>(string key, int databaseId, int duration, Func<T> filter) where T : class
+        {
+            return _client.GetDatabase(databaseId).CacheOrGet<T>(key, duration, filter);
+        }
         #endregion
         #region GetValuesByPrefix
         public RedisValue[] GetValuesByPrefix(string prefix, int databaseId = 1)

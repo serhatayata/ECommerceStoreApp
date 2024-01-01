@@ -1,21 +1,26 @@
 ﻿using CampaignService.Api.Entities;
+using CampaignService.Api.Extensions;
 using CampaignService.Api.GraphQL.DataLoaders.BatchDataLoaders;
 using CampaignService.Api.GraphQL.Types;
 using CampaignService.Api.Repository.Abstract;
+using CampaignService.Api.Repository.Concrete;
 using CampaignService.Api.Services.Cache.Abstract;
 using CampaignService.Api.Utilities;
 using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Types;
-using CampaignService.Api.Extensions;
+using System.Reflection;
 
 namespace CampaignService.Api.GraphQL.Queries;
 
 public class CampaignItemQuery : ObjectGraphType<CampaignItem>
 {
+    private int cacheDbId = 11;
+    private string className = MethodBase.GetCurrentMethod()?.DeclaringType?.Name ?? string.Empty;
+
     public CampaignItemQuery(
         ICampaignItemRepository campaignItemRepository,
-        IRedisService r)
+        IRedisService redisService)
     {
         Name = nameof(CampaignItemQuery);
         Description = $"{nameof(CampaignItemQuery)} description";
@@ -39,7 +44,17 @@ public class CampaignItemQuery : ObjectGraphType<CampaignItem>
 
         Field<ListGraphType<CampaignItemType>>(name: "allCampaignItems")
             .Description("All campaign items type description")
-            .ResolveAsync(async (context) => await campaignItemRepository.GetAllAsync());
+            .ResolveAsync(async (context) =>
+            {
+                var cacheKey = CacheExtensions.GetCacheKey("allCampaignItems", className, null);
+                return await redisService.GetAsync(cacheKey, cacheDbId, 
+                                                   new TimeSpan(2, 30, 0).Minutes,
+                                                   async () =>
+                                                   {
+                                                       return await campaignItemRepository.GetAllAsync();
+                                                   });
+                
+            });
 
         Field<ListGraphType<CampaignItemType>>(name: "allByCampaignId")
             .Description("Get all items by campaign id")
@@ -53,8 +68,10 @@ public class CampaignItemQuery : ObjectGraphType<CampaignItem>
                     return null;
                 }
 
-                var result = await campaignItemRepository.GetAllByCampaignIdAsync(id);
-                return result;
+                var cacheKey = CacheExtensions.GetCacheKey("allByCampaignId", className, id.ToString());
+                return await redisService.GetAsync(cacheKey, cacheDbId,
+                                                   new TimeSpan(2, 30, 0).Minutes,
+                                                   async () => await campaignItemRepository.GetAllByCampaignIdAsync(id));
             });
 
         Field<ListGraphType<CampaignItemType>>(name: "allByRule")
@@ -77,7 +94,10 @@ public class CampaignItemQuery : ObjectGraphType<CampaignItem>
             .Description("Get rule model")
             .Resolve(context =>
             {
-                return RuleModelBuilder.GetModelRule<CampaignItem>();
+                var cacheKey = CacheExtensions.GetCacheKey("getRuleModel", className, null);
+                return redisService.Get(cacheKey, cacheDbId,
+                                        new TimeSpan(2, 30, 0).Minutes,
+                                        () => RuleModelBuilder.GetModelRule<CampaignItem>());
             });
     }
 }
