@@ -235,6 +235,7 @@ mutation($campaign: campaignInput!) {
     rate
     amount
     isForAllCategory
+    maxUsage
   }
 }
 
@@ -270,6 +271,7 @@ mutation($campaign: campaignInput!) {
     rate
     amount
     isForAllCategory
+    maxUsage
   }
 }
 
