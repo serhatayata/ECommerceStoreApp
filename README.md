@@ -164,7 +164,6 @@ mutation($campaignItem: campaignItemInput!){
     userId
     description
     status
-    expirationDate
   }
 }
 
@@ -175,8 +174,7 @@ mutation($campaignItem: campaignItemInput!){
     "campaignId" : 1,
     "userId" : "112233",
     "description" : "description new added 1",
-    "status" : "ACTIVE",
-    "expirationDate" : "2024-02-03T13:00:00"
+    "status" : "ACTIVE"
   }
 }
 
@@ -189,7 +187,6 @@ mutation($campaignItem: campaignItemInput!){
     userId
     description
     status
-    expirationDate
   }
 }
 
@@ -201,8 +198,7 @@ mutation($campaignItem: campaignItemInput!){
     "campaignId" : 1,
     "userId" : "112234",
     "description" : "description new added 1-1",
-    "status" : "USED",
-    "expirationDate" : "2024-02-03T14:00:00"
+    "status" : "USED"
   }
 }
 
