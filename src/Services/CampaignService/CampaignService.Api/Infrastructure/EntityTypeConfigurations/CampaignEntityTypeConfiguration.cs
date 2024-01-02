@@ -80,7 +80,9 @@ public class CampaignEntityTypeConfiguration : IEntityTypeConfiguration<Campaign
                 IsForAllCategory = true,
                 CampaignType = Models.Enums.CampaignTypes.Percentage,
                 ExpirationDate = DateTime.Now.AddMonths(3),
-                StartDate = DateTime.Now.AddHours(2)
+                StartDate = DateTime.Now.AddHours(2),
+                MaxUsage = 1000,
+                UsageCount = 0
             },
             new Campaign()
             {
@@ -94,7 +96,9 @@ public class CampaignEntityTypeConfiguration : IEntityTypeConfiguration<Campaign
                 IsForAllCategory = false,
                 CampaignType = Models.Enums.CampaignTypes.Price,
                 ExpirationDate = DateTime.Now.AddMonths(2),
-                StartDate = DateTime.Now.AddHours(1)
+                StartDate = DateTime.Now.AddHours(1),
+                MaxUsage = 2000,
+                UsageCount = 0
             }
         };
 

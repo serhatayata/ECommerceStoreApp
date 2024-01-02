@@ -11,7 +11,6 @@ public class CampaignItemInputValidator : AbstractValidator<CampaignItemInput>
             .NotNull().NotEmpty().WithMessage("Campaign cannot be empty");
 
         RuleFor(c => c.UserId)
-            .NotNull().NotEmpty().WithMessage("User id cannot be empty")
             .Length(1, 40).WithMessage("User id length must be between 1-40");
 
         RuleFor(c => c.Description)

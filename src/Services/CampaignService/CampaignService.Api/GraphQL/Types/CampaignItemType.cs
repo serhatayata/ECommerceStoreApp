@@ -15,6 +15,5 @@ public class CampaignItemType : ObjectGraphType<CampaignItem>
         Field(o => o.Code).Description("Code property from the campaign item");
         Field<CampaignItemStatusEnumType>("status").Resolve(context => context.Source.Status);
         Field(o => o.CreationDate).Description("Creation date property from the campaign item");
-        Field(o => o.ExpirationDate).Description("Expiration date property from the campaign item");
     }
 }

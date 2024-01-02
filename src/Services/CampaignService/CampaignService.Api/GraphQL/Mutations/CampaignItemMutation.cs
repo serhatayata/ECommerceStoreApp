@@ -14,6 +14,7 @@ public class CampaignItemMutation : ObjectGraphType<CampaignItem>
 {
     public CampaignItemMutation(
         ICampaignItemRepository campaignItemRepository,
+        ICampaignRepository campaignRepository,
         IMapper mapper)
     {
         Field<CampaignItemType>("createCampaignItem")
@@ -26,11 +27,38 @@ public class CampaignItemMutation : ObjectGraphType<CampaignItem>
                     var errors = validationResult.ErrorMessages
                                                  .Select(s => new ExecutionError(s));
 
-                    context.Errors.AddRange(errors);
                     return null;
                 }
 
-                var campaignItem = mapper.Map<CampaignItem>(validationResult.Model);
+                var model = validationResult.Model;
+
+                var campaign = await campaignRepository.GetAsync(id: validationResult.Model.CampaignId);
+                if (campaign == null)
+                {
+                    context.Errors.Add(new ExecutionError("Campaign not exists"));
+                    return null;
+                }
+                else if (campaign.ExpirationDate > DateTime.Now)
+                {
+                    context.Errors.Add(new ExecutionError("Campaign expiration date ended"));
+                    return null;
+                }
+                else if (campaign.MaxUsage <= campaign.UsageCount)
+                {
+                    context.Errors.Add(new ExecutionError("Campaign usage limit error"));
+                    return null;
+                }
+
+                var existingCampaignItem = campaignItemRepository.GetAsync(s => s.CampaignId == campaign.Id &&
+                                                                                s.UserId == model.UserId);
+
+                if (existingCampaignItem != null)
+                {
+                    context.Errors.Add(new ExecutionError("This campaign is already declared to this user"));
+                    return null;
+                }
+
+                var campaignItem = mapper.Map<CampaignItem>(model);
                 var result = await campaignItemRepository.CreateAsync(campaignItem);
                 return result;
             });
@@ -66,6 +94,15 @@ public class CampaignItemMutation : ObjectGraphType<CampaignItem>
                     return false;
                 }
 
+                var campaign = await campaignRepository.GetAsync(id);
+                if (campaign == null)
+                {
+                    context.Errors.Add(new ExecutionError("Campaign not found"));
+                    return false;
+                }
+
+                campaign.UsageCount -= 1; 
+                await campaignRepository.UpdateAsync(campaign);
                 return await campaignItemRepository.DeleteAsync(id);
             });
     }

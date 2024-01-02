@@ -59,6 +59,14 @@ public class Campaign
     /// </summary>
     public bool IsForAllCategory { get; set; }
     /// <summary>
+    /// Remaining count of the campaign
+    /// </summary>
+    public int MaxUsage { get; set; }
+    /// <summary>
+    /// Remaining count of the campaign
+    /// </summary>
+    public int UsageCount { get; set; }
+    /// <summary>
     /// Sources of the campaign
     /// </summary>
     public virtual ICollection<CampaignSource> CampaignSources { get; set; }

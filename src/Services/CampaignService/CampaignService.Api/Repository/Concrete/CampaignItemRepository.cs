@@ -1,6 +1,7 @@
 ﻿using CampaignService.Api.Entities;
 using CampaignService.Api.Extensions;
 using CampaignService.Api.Infrastructure.Contexts;
+using CampaignService.Api.Models;
 using CampaignService.Api.Repository.Abstract;
 using CampaignService.Api.Services.Cache.Abstract;
 using CampaignService.Api.Utilities.Json;
@@ -61,6 +62,51 @@ public class CampaignItemRepository : ICampaignItemRepository
         }
     }
 
+    public async Task<List<CampaignItem>> CreateBulkAsync(CampaignCreateBulkModel model)
+    {
+        _context.Connection.Open();
+        using (var transaction = _context.Connection.BeginTransaction())
+        {
+            try
+            {
+                _context.Database.UseTransaction(transaction as DbTransaction);
+
+                var data = new List<CampaignItem>();
+                for (int i = 0; i < model.Count; i++)
+                {
+                    var item = new CampaignItem()
+                    {
+                        CampaignId = model.CampaignId,
+                        Code = DataGenerationExtensions.RandomCode(10),
+                        Description = string.Empty,
+                        Status = Models.Enums.CampaignItemStatus.Active
+                    };
+
+                    data.Add(item);
+                }
+
+                await _context.AddRangeAsync(data);
+                var result = _context.SaveChanges();
+
+                if (result < 1)
+                    return new List<CampaignItem>();
+
+                transaction.Commit();
+                return data;
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                _logger.LogError(ex, "ERROR - {Message}", ex.Message);
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                _context.Connection.Close();
+            }
+        }
+    }
+
     public async Task<CampaignItem> UpdateAsync(CampaignItem model)
     {
         _context.Connection.Open();
@@ -74,7 +120,6 @@ public class CampaignItemRepository : ICampaignItemRepository
                                            .ExecuteUpdateAsync(c => c
                                            .SetProperty(p => p.UserId, model.UserId)
                                            .SetProperty(b => b.Description, model.Description)
-                                           .SetProperty(b => b.ExpirationDate, model.ExpirationDate)
                                            .SetProperty(b => b.Status, model.Status));
 
                 _context.SaveChanges();

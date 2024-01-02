@@ -1,4 +1,5 @@
 ﻿using CampaignService.Api.Entities;
+using CampaignService.Api.Models;
 using System.Linq.Expressions;
 
 namespace CampaignService.Api.Repository.Abstract;
@@ -11,6 +12,12 @@ public interface ICampaignItemRepository
     /// <param name="model">Model of the data added</param>
     /// <returns><see cref="bool"/> value, TRUE if created</returns>
     Task<CampaignItem?> CreateAsync(CampaignItem model);
+    /// <summary>
+    /// Create bulk campaign items
+    /// </summary>
+    /// <param name="model">Model of the data added</param>
+    /// <returns><see cref="bool"/> value, TRUE if created</returns>
+    Task<List<CampaignItem>> CreateBulkAsync(CampaignCreateBulkModel model);
     /// <summary>
     /// Update campaign item, returns updated entity
     /// </summary>

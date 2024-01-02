@@ -35,10 +35,6 @@ public class CampaignItemEntityTypeConfiguration : IEntityTypeConfiguration<Camp
                .IsRequired()
                .HasDefaultValueSql(sql: "getdate()");
 
-        builder.Property(o => o.ExpirationDate)
-               .HasColumnType(typeName: "datetime2")
-               .IsRequired();
-
         builder.HasOne(ci => ci.Campaign)
                .WithMany(c => c.CampaignItems)
                .HasForeignKey(cs => cs.CampaignId)
@@ -55,8 +51,7 @@ public class CampaignItemEntityTypeConfiguration : IEntityTypeConfiguration<Camp
                 UserId = "12s3a45d6",
                 Code = DataGenerationExtensions.RandomCode(10),
                 Status = Models.Enums.CampaignItemStatus.Active,
-                Description = "Campaign Item 1",
-                ExpirationDate = DateTime.Now.AddMonths(2)
+                Description = "Campaign Item 1"
             },
             new CampaignItem()
             {
@@ -65,8 +60,7 @@ public class CampaignItemEntityTypeConfiguration : IEntityTypeConfiguration<Camp
                 UserId = "21d23a45d6",
                 Code = DataGenerationExtensions.RandomCode(10),
                 Status = Models.Enums.CampaignItemStatus.Passive,
-                Description = "Campaign Item 2",
-                ExpirationDate = DateTime.Now.AddMonths(1)
+                Description = "Campaign Item 2"
             },
             new CampaignItem()
             {
@@ -75,8 +69,7 @@ public class CampaignItemEntityTypeConfiguration : IEntityTypeConfiguration<Camp
                 UserId = "41d2dd46d6",
                 Code = DataGenerationExtensions.RandomCode(10),
                 Status = Models.Enums.CampaignItemStatus.Active,
-                Description = "Campaign Item 3",
-                ExpirationDate = DateTime.Now.AddMonths(2)
+                Description = "Campaign Item 3"
             },
             new CampaignItem()
             {
@@ -85,8 +78,7 @@ public class CampaignItemEntityTypeConfiguration : IEntityTypeConfiguration<Camp
                 UserId = "188aa45d6",
                 Code = DataGenerationExtensions.RandomCode(10),
                 Status = Models.Enums.CampaignItemStatus.Active,
-                Description = "Campaign Item 4",
-                ExpirationDate = DateTime.Now.AddMonths(1)
+                Description = "Campaign Item 4"
             },
             new CampaignItem()
             {
@@ -95,8 +87,7 @@ public class CampaignItemEntityTypeConfiguration : IEntityTypeConfiguration<Camp
                 UserId = "2er23575d6",
                 Code = DataGenerationExtensions.RandomCode(10),
                 Status = Models.Enums.CampaignItemStatus.Passive,
-                Description = "Campaign Item 5",
-                ExpirationDate = DateTime.Now.AddDays(6)
+                Description = "Campaign Item 5"
             },
             new CampaignItem()
             {
@@ -105,8 +96,7 @@ public class CampaignItemEntityTypeConfiguration : IEntityTypeConfiguration<Camp
                 UserId = "51d24as46d6",
                 Code = DataGenerationExtensions.RandomCode(10),
                 Status = Models.Enums.CampaignItemStatus.Active,
-                Description = "Campaign Item 6",
-                ExpirationDate = DateTime.Now.AddMonths(1)
+                Description = "Campaign Item 6"
             }
         };
 
