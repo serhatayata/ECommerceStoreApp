@@ -95,9 +95,11 @@ public class CampaignItemQuery : ObjectGraphType<CampaignItem>
             .Resolve(context =>
             {
                 var cacheKey = CacheExtensions.GetCacheKey("getRuleModel", className, null);
-                return redisService.Get(cacheKey, cacheDbId,
-                                        new TimeSpan(2, 30, 0).Minutes,
-                                        () => RuleModelBuilder.GetModelRule<CampaignItem>());
+                var result = redisService.Get(cacheKey, cacheDbId,
+                                          new TimeSpan(2, 30, 0).Minutes,
+                                          () => RuleModelBuilder.GetModelRule(typeof(CampaignItem)));
+
+                return result;
             });
     }
 }

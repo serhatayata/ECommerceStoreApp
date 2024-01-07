@@ -1,47 +1,77 @@
 ﻿using CampaignService.Api.Models.Enums;
 using CampaignService.Api.Models.Rules;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq.Expressions;
 using System.Reflection;
 
 namespace CampaignService.Api.Utilities;
 
 public static class RuleModelBuilder
 {
-    public static RuleModel GetModelRule<T>()
+    private static TypeCode[] notAllowedTypeCodes = new[] { TypeCode.Empty, TypeCode.Object, TypeCode.DBNull };
+
+    public static RuleModel GetModelRule(Type type)
     {
-		try
-		{
+        try
+        {
             var ruleModel = new RuleModel();
-            var type = typeof(T);
 
             ruleModel.Conditions = GetConditions();
             ruleModel.Operators = GetOperators();
-            TypeCode[] notAllowedTypeCodes = new[] { TypeCode.Empty, TypeCode.Object, TypeCode.DBNull };
-            PropertyInfo[] props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                                       .Where(p => !p.PropertyType.IsAssignableFrom(typeof(IEnumerable)) &&
-                                                   !p.PropertyType.IsAbstract &&
-                                                   !p.GetAccessors().Any(a => a.IsVirtual) &&
-                                                   !notAllowedTypeCodes.Contains(Type.GetTypeCode(p.PropertyType)))
-                                       .ToArray();
+            ruleModel.Items = GetRuleItems(type);
+            ruleModel.ChildItems = GetRuleChildItems(type);
 
-            var ruleItems = new List<RuleItemModel>();
-            foreach (var prop in props)
-            {
-                var propertyName = prop.Name;
-                string typeName = GetTypeName(prop.PropertyType);
-
-                ruleItems.Add(new RuleItemModel(propertyName, typeName));
-            }
-            ruleModel.Items = ruleItems;
             return ruleModel;
         }
         catch (Exception ex)
-		{
+        {
             //Log
             return new RuleModel();
-		}
+        }
+    }
+
+    private static List<RuleItemModel> GetRuleItems(Type type)
+    {
+        PropertyInfo[] props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                                   .Where(p => !p.PropertyType.IsAssignableFrom(typeof(IEnumerable)) &&
+                                               !p.PropertyType.IsAbstract &&
+                                               !notAllowedTypeCodes.Contains(Type.GetTypeCode(p.PropertyType)))
+                                   .ToArray();
+
+        var ruleItems = new List<RuleItemModel>();
+        foreach (var prop in props)
+        {
+            var propertyName = prop.Name;
+            string typeName = GetTypeName(prop.PropertyType);
+
+            ruleItems.Add(new RuleItemModel(propertyName, typeName));
+        }
+
+        return ruleItems;
+    }
+
+    private static List<RuleChildItemModel> GetRuleChildItems(Type type)
+    {
+        var childItems = new List<RuleChildItemModel>();
+        var childProps = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                             .Where(p => !p.PropertyType.IsAbstract &&
+                                         p.PropertyType.IsClass &&
+                                         p.CanRead && p.CanWrite &&
+                                         p.PropertyType != typeof(string))
+                             .ToArray();
+
+        foreach (var childProp in childProps)
+        {
+            var childPropertyName = childProp.Name;
+            var childType = childProp.PropertyType;
+            childItems.Add(new RuleChildItemModel()
+            {
+                Entity = childPropertyName,
+                Items = GetRuleItems(childType),
+                ChildItems = GetRuleChildItems(childType)
+            });
+        }
+
+        return childItems;
     }
 
     private static List<RuleConditionModel> GetConditions()
@@ -76,12 +106,14 @@ public static class RuleModelBuilder
             var symbol = op switch
             {
                 ComparisonOperator.equal => "=",
-                ComparisonOperator.notequal => "!=",
+                ComparisonOperator.not_equal => "!=",
                 ComparisonOperator.greater => ">",
-                ComparisonOperator.greaterorequal => ">=",
+                ComparisonOperator.greater_or_equal => ">=",
                 ComparisonOperator.less => "<",
-                ComparisonOperator.lessorequal => "<=",
+                ComparisonOperator.less_or_equal => "<=",
                 ComparisonOperator.@in => "in",
+                ComparisonOperator.contains => "contains",
+                ComparisonOperator.starts_with => "startsWith",
             };
             var model = new RuleOperatorModel(op.ToString(), symbol);
             result.Add(model);

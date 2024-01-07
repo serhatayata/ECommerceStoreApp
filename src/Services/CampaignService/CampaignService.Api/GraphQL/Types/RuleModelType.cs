@@ -10,5 +10,6 @@ public class RuleModelType : ObjectGraphType<RuleModel>
         Field(o => o.Conditions, type: typeof(ListGraphType<RuleConditionType>)).Description("Rule model conditions");
         Field(o => o.Operators, type: typeof(ListGraphType<RuleOperatorType>)).Description("Rule model operators");
         Field(o => o.Items, type: typeof(ListGraphType<RuleItemType>)).Description("Rule model items");
+        Field(o => o.ChildItems, type: typeof(ListGraphType<RuleChildItemType>)).Description("Rule child items");
     }
 }

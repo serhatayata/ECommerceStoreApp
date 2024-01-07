@@ -3,10 +3,12 @@
 public enum ComparisonOperator
 {
     equal,
-    notequal,
+    not_equal,
     less,
-    lessorequal,
+    less_or_equal,
     greater,
-    greaterorequal,
-    @in
+    greater_or_equal,
+    @in,
+    contains,
+    starts_with
 }
