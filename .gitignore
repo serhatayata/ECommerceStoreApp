@@ -370,10 +370,12 @@ auth_clients.txt
 *log-identity-api.txt
 
 DatabaseDesign.png
-/.$Architecture_ECommerceStoreApp.drawio.bkp
-/Architecture_ECommerceStoreApp.png
-/Saga_Choreography_Design.png
-/.$Saga_Choreography_Design.*
-/Saga_Orchestration_Design.png
-/.$Saga_Orchestration_Design.*
-/.$DatabaseDesign.drawio.dtmp
+design/.$Architecture_ECommerceStoreApp.drawio.bkp
+design/Architecture_ECommerceStoreApp.png
+design/Saga_Choreography_Design.png
+design/.$Saga_Choreography_Design.*
+design/Saga_Orchestration_Design.png
+design/.$Saga_Orchestration_Design.*
+design/.$DatabaseDesign.drawio.dtmp
+design/.$DatabaseDesign.drawio.bkp
+design/.$DatabaseDesign.png.bkp
