@@ -1,5 +1,4 @@
 ﻿using CampaignService.Api.Entities;
-using CampaignService.Api.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -50,14 +49,18 @@ public class CampaignEntityTypeConfiguration : IEntityTypeConfiguration<Campaign
                .HasColumnType(typeName: "smallint")
                .IsRequired();
 
-        builder.Property(o => o.Rate)
+        builder.Property(o => o.Amount)
                .HasColumnType(typeName: "decimal")
                .HasPrecision(8, 2)
                .IsRequired();
 
-        builder.Property(o => o.Amount)
+        builder.Property(o => o.CalculationAmount)
                .HasColumnType(typeName: "decimal")
                .HasPrecision(8, 2)
+               .IsRequired();
+
+        builder.Property(c => c.CalculationType)
+               .HasColumnType(typeName: "smallint")
                .IsRequired();
 
         builder.Property(c => c.IsForAllCategory)
@@ -75,14 +78,15 @@ public class CampaignEntityTypeConfiguration : IEntityTypeConfiguration<Campaign
                 Status = Models.Enums.CampaignStatus.Active,
                 Description = "Campaign test 1 description",
                 Sponsor = "Sponsor 1",
-                Rate = 20M,
-                Amount = 100,
                 IsForAllCategory = true,
-                CampaignType = Models.Enums.CampaignTypes.Percentage,
                 ExpirationDate = DateTime.Now.AddMonths(3),
                 StartDate = DateTime.Now.AddHours(2),
                 MaxUsage = 1000,
-                UsageCount = 0
+                CampaignType = Models.Enums.CampaignTypes.Percentage,
+                Amount = 10,
+                CalculationAmount = 1000.0M,
+                CalculationType = Models.Enums.CalculationTypes.Normal,
+                MaxUsagePerUser = 1
             },
             new Campaign()
             {
@@ -91,14 +95,15 @@ public class CampaignEntityTypeConfiguration : IEntityTypeConfiguration<Campaign
                 Status = Models.Enums.CampaignStatus.Active,
                 Description = "Campaign test 2 description",
                 Sponsor = "Sponsor 2",
-                Rate = 30M,
-                Amount = 200,
                 IsForAllCategory = false,
-                CampaignType = Models.Enums.CampaignTypes.Price,
                 ExpirationDate = DateTime.Now.AddMonths(2),
                 StartDate = DateTime.Now.AddHours(1),
                 MaxUsage = 2000,
-                UsageCount = 0
+                CampaignType = Models.Enums.CampaignTypes.Price,
+                Amount = 200,
+                CalculationAmount = 2000.0M,
+                CalculationType = Models.Enums.CalculationTypes.OverPrice,
+                MaxUsagePerUser = 1
             }
         };
 

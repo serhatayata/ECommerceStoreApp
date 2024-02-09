@@ -102,7 +102,7 @@ public static class DependencyInjection
 
         foreach (IWebHostBuilderInstaller builderInstaller in builderInstallers)
         {
-            builderInstaller.Install(builder, hostEnvironment, configuration);
+            builderInstaller. Install(builder, hostEnvironment, configuration);
         }
 
         return builder;

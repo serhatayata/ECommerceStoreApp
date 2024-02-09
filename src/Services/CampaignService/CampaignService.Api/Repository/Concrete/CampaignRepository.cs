@@ -70,7 +70,10 @@ public class CampaignRepository : ICampaignRepository
                                            .SetProperty(b => b.UpdateDate, model.UpdateDate)
                                            .SetProperty(b => b.Sponsor, model.Sponsor)
                                            .SetProperty(b => b.CampaignType, model.CampaignType)
-                                           .SetProperty(b => b.Rate, model.Rate)
+                                           .SetProperty(b => b.CalculationType, model.CalculationType)
+                                           .SetProperty(b => b.CalculationAmount, model.CalculationAmount)
+                                           .SetProperty(b => b.MaxUsagePerUser, model.MaxUsagePerUser)
+                                           .SetProperty(b => b.MaxUsage, model.MaxUsage)
                                            .SetProperty(b => b.IsForAllCategory, model.IsForAllCategory)
                                            .SetProperty(b => b.Amount, model.Amount));
 

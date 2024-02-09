@@ -33,6 +33,14 @@ public class CampaignItem
     /// </summary>
     public DateTime CreationDate { get; set; }
     /// <summary>
+    /// Expiration date of the campaign item
+    /// </summary>
+    public DateTime ExpirationDate { get; set; }
+    /// <summary>
+    /// Id of the order
+    /// </summary>
+    public int OrderId { get; set; }
+    /// <summary>
     /// Item of the campaign
     /// </summary>
     public virtual Campaign Campaign { get; set; }

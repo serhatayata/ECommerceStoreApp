@@ -12,7 +12,10 @@ public class CampaignInput
     public DateTime StartDate { get; set; }
     public string Sponsor { get; set; }
     public CampaignTypes Type { get; set; }
-    public decimal Rate { get; set; }
+    public CalculationTypes CalculationType { get; set; }
+    public decimal CalculationAmount { get; set; }
     public decimal Amount { get; set; }
     public bool IsForAllCategory { get; set; }
+    public int MaxUsage { get; set; }
+    public int MaxUsagePerUser { get; set; }
 }
