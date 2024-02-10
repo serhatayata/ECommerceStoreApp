@@ -11,7 +11,7 @@ public class CampaignInput
     public DateTime ExpirationDate { get; set; }
     public DateTime StartDate { get; set; }
     public string Sponsor { get; set; }
-    public CampaignTypes Type { get; set; }
+    public CampaignDiscountTypes DiscountType { get; set; }
     public CalculationTypes CalculationType { get; set; }
     public decimal CalculationAmount { get; set; }
     public decimal Amount { get; set; }

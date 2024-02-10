@@ -52,7 +52,12 @@ public class Campaign
     /// <summary>
     /// Type of the campaign
     /// </summary>
-    public CampaignTypes CampaignType { get; set; }
+    public CampaignDiscountTypes DiscountType { get; set; }
+
+    /// <summary>
+    /// Type of the campaign
+    /// </summary>
+    public PlatformTypes PlatformType { get; set; }
 
     /// <summary>
     /// Calculation type of campaign
@@ -95,4 +100,9 @@ public class Campaign
     /// Items of the campaign
     /// </summary>
     public virtual ICollection<CampaignItem> CampaignItems { get; set; }
+
+    /// <summary>
+    /// Rules of the campaign
+    /// </summary>
+    public virtual ICollection<CampaignRule> CampaignRules { get; set; }
 }

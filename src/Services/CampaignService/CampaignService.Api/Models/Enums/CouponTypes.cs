@@ -2,6 +2,7 @@
 
 public enum CouponTypes : byte
 {
-    Price = 1,
+    Price = 0,
+    OverPrice = 1,
     Percentage = 2
 }

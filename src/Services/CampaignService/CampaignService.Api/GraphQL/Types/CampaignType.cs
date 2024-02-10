@@ -20,10 +20,14 @@ public class CampaignType : ObjectGraphType<Campaign>
         Field(o => o.CreationDate).Description("CreationDate property from the campaign");
         Field(o => o.UpdateDate).Description("UpdateDate property from the campaign");
         Field(o => o.Sponsor).Description("Sponsor property from the campaign");
-        Field<CampaignTypeEnumType>("type").Resolve(context => context.Source.CampaignType);
-        Field(o => o.Rate).Description("Rate property from the campaign");
+        Field<CampaignDiscountTypeEnumType>("discountType").Resolve(context => context.Source.DiscountType);
+        Field<PlatformTypeEnumType>("platformType").Resolve(context => context.Source.PlatformType);
+        Field<CalculationTypeEnumType>("calculationType").Resolve(context => context.Source.CalculationType);
+        Field(o => o.CalculationAmount).Description("Calculation amount property from the campaign");
         Field(o => o.Amount).Description("Rate property from the campaign");
         Field(o => o.IsForAllCategory).Description("IsForAllCategory property from the campaign");
+        Field(o => o.MaxUsage).Description("Max usage property from the campaign");
+        Field(o => o.MaxUsagePerUser).Description("Max usage per user property from the campaign");
         Field<ListGraphType<CampaignSourceType>, IEnumerable<CampaignSource>>("campaignSources")
             .Description("All campaign sources for this campaign")
             .ResolveAsync(context =>
@@ -38,5 +42,6 @@ public class CampaignType : ObjectGraphType<Campaign>
                 var loader = context.RequestServices?.GetRequiredService<CampaignItemCollectionBatchDataLoader>();
                 return loader?.LoadAsync(context.Source.Id);
             });
+        // CAMPAIGN RULES WILL BE ADDED HERE
     }
 }

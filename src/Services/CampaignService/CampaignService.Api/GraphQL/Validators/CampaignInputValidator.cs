@@ -28,7 +28,7 @@ public class CampaignInputValidator : AbstractValidator<CampaignInput>
             .NotNull().NotEmpty().WithMessage("Sponsor cannot be empty")
             .Length(1,255).WithMessage("Sponsor length must be between 1-255");
 
-        RuleFor(c => c.Type)
+        RuleFor(c => c.DiscountType)
             .IsInEnum().WithMessage("Type is not valid");
 
         RuleFor(c => c.Rate)

@@ -15,9 +15,13 @@ public class CampaignInputType : InputObjectGraphType
         Field<NonNullGraphType<DateTimeGraphType>>("expirationDate");
         Field<NonNullGraphType<DateTimeGraphType>>("startDate");
         Field<NonNullGraphType<StringGraphType>>("sponsor");
-        Field<NonNullGraphType<CampaignTypeEnumType>>("type");
-        Field<NonNullGraphType<DecimalGraphType>>("rate");
+        Field<NonNullGraphType<CampaignDiscountTypeEnumType>>("discountType");
+        Field<NonNullGraphType<PlatformTypeEnumType>>("platformType");
+        Field<NonNullGraphType<CalculationTypeEnumType>>("calculationType");
+        Field<NonNullGraphType<DecimalGraphType>>("calculationAmount");
         Field<NonNullGraphType<DecimalGraphType>>("amount");
         Field<NonNullGraphType<BooleanGraphType>>("isForAllCategory");
+        Field<NonNullGraphType<IntGraphType>>("maxUsage");
+        Field<NonNullGraphType<IntGraphType>>("maxUsagePerUser");
     }
 }

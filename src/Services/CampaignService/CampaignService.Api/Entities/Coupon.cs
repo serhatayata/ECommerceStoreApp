@@ -30,6 +30,16 @@ public class Coupon
     public UsageTypes UsageType { get; set; }
 
     /// <summary>
+    /// Calculation type of campaign
+    /// </summary>
+    public CalculationTypes CalculationType { get; set; }
+
+    /// <summary>
+    /// Amount of the campaign
+    /// </summary>
+    public decimal CalculationAmount { get; set; }
+
+    /// <summary>
     /// Amount of the coupon
     /// </summary>
     public decimal Amount { get; set; }
@@ -37,7 +47,7 @@ public class Coupon
     /// <summary>
     /// Total max item count of the coupon
     /// </summary>
-    public int TotalCount { get; set; }
+    public int MaxUsage { get; set; }
 
     /// <summary>
     /// Total max item count of the coupon
