@@ -29,12 +29,24 @@ public class CampaignInputValidator : AbstractValidator<CampaignInput>
             .Length(1,255).WithMessage("Sponsor length must be between 1-255");
 
         RuleFor(c => c.DiscountType)
-            .IsInEnum().WithMessage("Type is not valid");
+            .IsInEnum().WithMessage("Discount type is not valid");
 
-        RuleFor(c => c.Rate)
-            .PrecisionScale(8, 2, true).WithMessage("Rate value is not valid scale must be 8,2");
+        RuleFor(c => c.PlatformType)
+            .IsInEnum().WithMessage("Platform type is not valid");
+
+        RuleFor(c => c.CalculationType)
+            .IsInEnum().WithMessage("Calculation type is not valid");
+
+        RuleFor(c => c.CalculationAmount)
+            .PrecisionScale(8, 2, true).WithMessage("Calculation amount value is not valid scale must be 8,2");
 
         RuleFor(c => c.Amount)
             .PrecisionScale(8, 2, true).WithMessage("Amount value is not valid scale must be 8,2");
+
+        RuleFor(c => c.MaxUsage)
+            .NotNull().NotEmpty().WithMessage("Max usage cannot be empty");
+
+        RuleFor(c => c.MaxUsagePerUser)
+            .NotNull().NotEmpty().WithMessage("Max usage per user cannot be empty");
     }
 }

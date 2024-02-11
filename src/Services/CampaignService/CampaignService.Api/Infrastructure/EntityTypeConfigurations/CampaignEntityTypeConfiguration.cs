@@ -45,7 +45,7 @@ public class CampaignEntityTypeConfiguration : IEntityTypeConfiguration<Campaign
                .HasColumnType(typeName: "nvarchar(255)")
                .IsRequired();
 
-        builder.Property(c => c.CampaignType)
+        builder.Property(c => c.DiscountType)
                .HasColumnType(typeName: "smallint")
                .IsRequired();
 
@@ -68,6 +68,11 @@ public class CampaignEntityTypeConfiguration : IEntityTypeConfiguration<Campaign
                .HasDefaultValue(0)
                .IsRequired();
 
+        builder.Property(c => c.UsageCount)
+               .HasColumnType(typeName: "int")
+               .HasDefaultValue(0)
+               .IsRequired();
+
         #region SEED DATA
         Campaign[] campaigns = new[]
         {
@@ -82,7 +87,7 @@ public class CampaignEntityTypeConfiguration : IEntityTypeConfiguration<Campaign
                 ExpirationDate = DateTime.Now.AddMonths(3),
                 StartDate = DateTime.Now.AddHours(2),
                 MaxUsage = 1000,
-                CampaignType = Models.Enums.CampaignDiscountTypes.Percentage,
+                DiscountType = Models.Enums.CampaignDiscountTypes.Percentage,
                 Amount = 10,
                 CalculationAmount = 1000.0M,
                 CalculationType = Models.Enums.CalculationTypes.Normal,
@@ -99,7 +104,7 @@ public class CampaignEntityTypeConfiguration : IEntityTypeConfiguration<Campaign
                 ExpirationDate = DateTime.Now.AddMonths(2),
                 StartDate = DateTime.Now.AddHours(1),
                 MaxUsage = 2000,
-                CampaignType = Models.Enums.CampaignDiscountTypes.Price,
+                DiscountType = Models.Enums.CampaignDiscountTypes.Price,
                 Amount = 200,
                 CalculationAmount = 2000.0M,
                 CalculationType = Models.Enums.CalculationTypes.OverPrice,

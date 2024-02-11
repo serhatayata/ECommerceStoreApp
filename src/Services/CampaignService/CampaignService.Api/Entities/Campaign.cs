@@ -82,6 +82,11 @@ public class Campaign
     public bool IsForAllCategory { get; set; }
 
     /// <summary>
+    /// Usage count of the campaign
+    /// </summary>
+    public int UsageCount { get; set; }
+
+    /// <summary>
     /// Remaining count of the campaign
     /// </summary>
     public int MaxUsage { get; set; }

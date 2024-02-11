@@ -12,6 +12,7 @@ public class CampaignInput
     public DateTime StartDate { get; set; }
     public string Sponsor { get; set; }
     public CampaignDiscountTypes DiscountType { get; set; }
+    public PlatformTypes PlatformType { get; set; }
     public CalculationTypes CalculationType { get; set; }
     public decimal CalculationAmount { get; set; }
     public decimal Amount { get; set; }

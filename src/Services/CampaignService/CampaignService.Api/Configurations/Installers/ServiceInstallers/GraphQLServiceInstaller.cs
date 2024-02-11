@@ -17,6 +17,7 @@ public class GraphQLServiceInstaller : IServiceInstaller
                      builder
                     .AddSystemTextJson()
                     .AddNewtonsoftJson()
+                    .AddSchema<CampaignRuleSchema>()
                     .AddSchema<CampaignItemSchema>()
                     .AddSchema<CampaignSourceSchema>()
                     .AddSchema<CampaignSchema>()
@@ -32,10 +33,12 @@ public class GraphQLServiceInstaller : IServiceInstaller
                     .AddGraphTypes(typeof(CampaignSourceSchema).Assembly)
                     .AddGraphTypes(typeof(CampaignItemSchema).Assembly)
                     .AddGraphTypes(typeof(CampaignSchema).Assembly)
+                    .AddGraphTypes(typeof(CampaignRuleSchema).Assembly)
                     .AddDataLoader());
 
         services.AddValidatorsFromAssemblyContaining<CampaignInputValidator>();
         services.AddValidatorsFromAssemblyContaining<CampaignItemInputValidator>();
         services.AddValidatorsFromAssemblyContaining<CampaignSourceInputValidator>();
+        services.AddValidatorsFromAssemblyContaining<CampaignRuleInputValidator>();
     }
 }

@@ -1,25 +1,26 @@
 ﻿using CampaignService.Api.Entities;
 using CampaignService.Api.Infrastructure.Contexts;
+using CampaignService.Api.Models.CampaignRule;
 using CampaignService.Api.Repository.Abstract;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
 
 namespace CampaignService.Api.Repository.Concrete;
 
-public class CampaignRepository : ICampaignRepository
+public class CampaignRuleRepository : ICampaignRuleRepository
 {
     private readonly CampaignDbContext _context;
-    private readonly ILogger<CampaignRepository> _logger;
+    private readonly ILogger<CampaignRuleRepository> _logger;
 
-    public CampaignRepository(
+    public CampaignRuleRepository(
         CampaignDbContext context, 
-        ILogger<CampaignRepository> logger)
+        ILogger<CampaignRuleRepository> logger)
     {
         _context = context;
         _logger = logger;
     }
 
-    public async Task<Campaign?> CreateAsync(Campaign model)
+    public async Task<CampaignRule?> CreateAsync(CampaignRule model)
     {
         _context.Connection.Open();
         using (var transaction = _context.Connection.BeginTransaction())
@@ -28,7 +29,7 @@ public class CampaignRepository : ICampaignRepository
             {
                 _context.Database.UseTransaction(transaction as DbTransaction);
 
-                await _context.Campaigns.AddAsync(model);
+                await _context.CampaignRules.AddAsync(model);
 
                 var result = _context.SaveChanges();
 
@@ -51,7 +52,7 @@ public class CampaignRepository : ICampaignRepository
         }
     }
 
-    public async Task<Campaign?> UpdateAsync(Campaign model)
+    public async Task<CampaignRule?> UpdateAsync(CampaignRule model)
     {
         _context.Connection.Open();
         using (var transaction = _context.Connection.BeginTransaction())
@@ -60,22 +61,11 @@ public class CampaignRepository : ICampaignRepository
             {
                 _context.Database.UseTransaction(transaction as DbTransaction);
 
-                var result = await _context.Campaigns.Where(c => c.Id == model.Id)
+                var result = await _context.CampaignRules.Where(c => c.Id == model.Id)
                                            .ExecuteUpdateAsync(c => c
-                                           .SetProperty(p => p.Status, model.Status)
-                                           .SetProperty(b => b.Name, model.Name)
-                                           .SetProperty(b => b.Description, model.Description)
-                                           .SetProperty(b => b.ExpirationDate, model.ExpirationDate)
-                                           .SetProperty(b => b.StartDate, model.StartDate)
-                                           .SetProperty(b => b.UpdateDate, model.UpdateDate)
-                                           .SetProperty(b => b.Sponsor, model.Sponsor)
-                                           .SetProperty(b => b.DiscountType, model.DiscountType)
-                                           .SetProperty(b => b.CalculationType, model.CalculationType)
-                                           .SetProperty(b => b.CalculationAmount, model.CalculationAmount)
-                                           .SetProperty(b => b.MaxUsagePerUser, model.MaxUsagePerUser)
-                                           .SetProperty(b => b.MaxUsage, model.MaxUsage)
-                                           .SetProperty(b => b.IsForAllCategory, model.IsForAllCategory)
-                                           .SetProperty(b => b.Amount, model.Amount));
+                                           .SetProperty(p => p.Type, model.Type)
+                                           .SetProperty(p => p.Data, model.Data)
+                                           .SetProperty(p => p.Data, model.Value);
 
                 _context.SaveChanges();
 
@@ -104,7 +94,7 @@ public class CampaignRepository : ICampaignRepository
             {
                 _context.Database.UseTransaction(transaction as DbTransaction);
 
-                var result = await _context.Campaigns
+                var result = await _context.CampaignRules
                                            .Where(c => c.Id == id)
                                            .ExecuteDeleteAsync();
 
@@ -129,9 +119,25 @@ public class CampaignRepository : ICampaignRepository
         }
     }
 
-    public async Task<Campaign?> GetAsync(int id) => 
-        await _context.Campaigns.FirstOrDefaultAsync(c => c.Id == id);
+    public async Task<CampaignRule?> GetAsync(int id) =>
+        await _context.CampaignRules.FirstOrDefaultAsync(c => c.Id == id);
 
-    public async Task<List<Campaign>> GetAllAsync() => 
-        await _context.Campaigns.ToListAsync();
+    public async Task<List<CampaignRule>> GetAllAsync() => 
+        await _context.CampaignRules.ToListAsync();
+
+    public async Task<List<CampaignRule>> GetAllByFilterAsync(CampaignRuleGetByFilterModel model)
+    {
+        if (model.CampaignId == null && model.Type == null)
+            return new List<CampaignRule>();
+
+        var query = _context.CampaignRules;
+
+        if (model.CampaignId != default)
+            query.Where(c => c.CampaignId == model.CampaignId);
+
+        if (model.Type == model.Type)
+            query.Where(c => c.Type == model.Type);
+
+        return await query.ToListAsync();
+    }
 }

@@ -11,5 +11,6 @@ public class MapProfile : Profile
         CreateMap<Campaign, CampaignInput>().ReverseMap();
         CreateMap<CampaignItem, CampaignItemInput>().ReverseMap();
         CreateMap<CampaignSource, CampaignSourceInput>().ReverseMap();
+        CreateMap<CampaignRule, CampaignRuleInput>().ReverseMap();
     }
 }
