@@ -30,6 +30,8 @@ public class CampaignDbContext : DbContext
         builder.ApplyConfiguration(new CampaignSourceEntityTypeConfiguration());
         builder.ApplyConfiguration(new CampaignItemEntityTypeConfiguration());
         builder.ApplyConfiguration(new CampaignRuleEntityTypeConfiguration());
+        builder.ApplyConfiguration(new CouponEntityTypeConfiguration());
+        builder.ApplyConfiguration(new CouponItemEntityTypeConfiguration());
 
         base.OnModelCreating(builder);
     }
@@ -38,6 +40,8 @@ public class CampaignDbContext : DbContext
     public DbSet<CampaignSource> CampaignSources { get; set; }
     public DbSet<CampaignItem> CampaignItems { get; set; }
     public DbSet<CampaignRule> CampaignRules { get; set; }
+    public DbSet<Coupon> Coupons { get; set; }
+    public DbSet<CouponItem> CouponItems { get; set; }
 
     public string GetTableNameWithScheme<T>() where T : class, IEntity
     {

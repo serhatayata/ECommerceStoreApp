@@ -1,18 +1,13 @@
 ﻿using CampaignService.Api.Models.Enums;
 
-namespace CampaignService.Api.Entities;
+namespace CampaignService.Api.Models.CouponItem;
 
-public class CouponItem : IEntity
+public class CouponItemGetByFilterModel
 {
-    /// <summary>
-    /// Id of the item
-    /// </summary>
-    public int Id { get; set; }
-
     /// <summary>
     /// Id of the coupon
     /// </summary>
-    public int CouponId { get; set; }
+    public int? CouponId { get; set; }
 
     /// <summary>
     /// Id of the user
@@ -22,12 +17,12 @@ public class CouponItem : IEntity
     /// <summary>
     /// Code of the campaign item
     /// </summary>
-    public string Code { get; set; }
+    public string? Code { get; set; }
 
     /// <summary>
     /// Coupon item status
     /// </summary>
-    public CouponItemStatus Status { get; set; }
+    public CouponItemStatus? Status { get; set; }
 
     /// <summary>
     /// Id of the order

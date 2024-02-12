@@ -3,7 +3,7 @@
 /// <summary>
 /// Used for product or category's Id as EntityId
 /// </summary>
-public class CampaignSource
+public class CampaignSource : IEntity
 {
     /// <summary>
     /// Id of the campaign entity

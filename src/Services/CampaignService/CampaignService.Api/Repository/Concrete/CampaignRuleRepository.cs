@@ -65,7 +65,7 @@ public class CampaignRuleRepository : ICampaignRuleRepository
                                            .ExecuteUpdateAsync(c => c
                                            .SetProperty(p => p.Type, model.Type)
                                            .SetProperty(p => p.Data, model.Data)
-                                           .SetProperty(p => p.Data, model.Value);
+                                           .SetProperty(p => p.Data, model.Value));
 
                 _context.SaveChanges();
 

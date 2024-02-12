@@ -2,7 +2,7 @@
 
 namespace CampaignService.Api.Entities;
 
-public class Coupon
+public class Coupon : IEntity
 {
     /// <summary>
     /// Id of the coupon

@@ -9,7 +9,7 @@ public class DbContextServiceInstaller : IServiceInstaller
     {
         var assembly = typeof(Program).Assembly.GetName().Name;
 
-        string defaultConnString = configuration.GetConnectionString("DefaultConnection");
+        string defaultConnString = configuration.GetConnectionString("CampaignDB");
 
         services.AddDbContext<CampaignDbContext>(options =>
         {

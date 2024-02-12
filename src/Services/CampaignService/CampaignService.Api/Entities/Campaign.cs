@@ -2,7 +2,7 @@
 
 namespace CampaignService.Api.Entities;
 
-public class Campaign
+public class Campaign : IEntity
 {
     /// <summary>
     /// Id of the campaign
