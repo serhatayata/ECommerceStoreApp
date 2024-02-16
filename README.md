@@ -53,6 +53,9 @@ E-Commerce Microservices Application (STILL BEING IMPROVED)
   - api/campaign
   - api/campaignsource
   - api/campaignitem
+  - api/campaignrule
+  - api/coupon
+  - api/couponitem
 
 ```graphql
 # Campaigns
@@ -148,6 +151,41 @@ query GetByIdCampaignItemQuery($campaignItemID: ID!)
    allByCampaignId(campaignId: $campaignId) {
      id,
      status
+   }
+ }
+```
+
+```graphql
+# CampaignRules
+
+query GetByIdCampaignRuleQuery($campaignRuleID: ID!)
+{
+ campaignRule(id: $campaignRuleID){
+    id
+    campaignId
+    type
+    data
+    value
+  }
+}
+
+ query GetAllCampaignRules {
+   allCampaignRules {
+     id
+     campaignId
+     type
+     data
+     value
+   }
+ }
+
+ query GetCampaignRulesByFilter ($filter:String!)
+ {
+   campaignRulesByFilter(filter: $filter) {
+     id
+     type
+     data
+     value
    }
  }
 ```
@@ -357,6 +395,10 @@ mutation($id: Int!){
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 
 - Migration commands IdentityServer
+
+  - dotnet ef migrations add mig_v1 --project CampaignService.Api
+  - dotnet ef database update --project CampaignService.Api
+
   - Adding Migrations
     - add-migration -c AppIdentityDbContext -name mig_v1
     - add-migration -c AppPersistedGrantDbContext -name mig_persisted_v1
