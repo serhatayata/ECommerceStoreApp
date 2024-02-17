@@ -190,6 +190,95 @@ query GetByIdCampaignRuleQuery($campaignRuleID: ID!)
  }
 ```
 
+```graphql
+# Coupon
+
+query GetByIdCouponQuery($couponID: ID!)
+{
+  coupon(id: $couponID){
+    id
+    name
+    description
+    type
+    usageType
+    calculationType
+    calculationAmount
+    amount
+    maxUsage
+    usageCount
+    code
+    expirationDate
+    creationDate
+    couponItems {
+      id
+      userId
+      status
+      code
+      orderId
+    }
+  }
+}
+
+ query GetAllCoupons {
+   allCoupons {
+    id
+    name
+    description
+    type
+    usageType
+    calculationType
+    calculationAmount
+    amount
+    maxUsage
+    usageCount
+    code
+    expirationDate
+    creationDate
+    couponItems {
+      id
+      userId
+      status
+      code
+      orderId
+    }
+   }
+ }
+
+ query GetCouponsByFilter ($filter:String!)
+ {
+   couponsByFilter(filter: $filter) {
+     allCoupons {
+      id
+      name
+      description
+      type
+      usageType
+      calculationType
+      calculationAmount
+      amount
+      maxUsage
+      usageCount
+      code
+      expirationDate
+      creationDate
+      couponItems {
+        id
+        userId
+        status
+        code
+        orderId
+      }
+     }
+   }
+ }
+
+# query variables 
+
+{
+    "filter": "{\n  \"condition\": \"and\",\n  \"order\" : {\n     \"field\" : \"Name\",\n     \"sort\" : \"descending\"\n  },\n  \"rules\": [\n    {\n      \"field\": \"Name\",\n      \"operator\": \"starts_with\",\n      \"type\": \"string\",\n      \"value\": \"C\"\n    },\n    {\n       \"condition\" : \"and\",\n       \"rules\" : [\n         {\n           \"field\": \"MaxUsage\",\n\t       \"operator\": \"less\",\n\t       \"type\": \"int\",\n\t       \"value\": 150\n         }\n       ]\n    },\n    {\n       \"field\": \"CalculationAmount\",\n       \"operator\": \"greater\",\n       \"type\": \"decimal\",\n       \"value\": 10.0\n    }\n  ]\n}"
+}
+```
+
 ### Mutations
 ```graphql
 #CampaignItem
