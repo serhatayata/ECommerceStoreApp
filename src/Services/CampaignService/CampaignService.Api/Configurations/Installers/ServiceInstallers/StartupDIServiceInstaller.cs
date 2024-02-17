@@ -16,17 +16,27 @@ public class StartupDIServiceInstaller : IServiceInstaller
         services.AddScoped<ISchema, CampaignSchema>();
         services.AddScoped<ISchema, CampaignItemSchema>();
         services.AddScoped<ISchema, CampaignSourceSchema>();
+        services.AddScoped<ISchema, CampaignRuleSchema>();
+        services.AddScoped<ISchema, CouponSchema>();
+        services.AddScoped<ISchema, CouponItemSchema>();
 
         services.AddScoped<ICampaignRepository, CampaignRepository>();
         services.AddScoped<ICampaignItemRepository, CampaignItemRepository>();
         services.AddScoped<ICampaignSourceRepository, CampaignSourceRepository>();
+        services.AddScoped<ICampaignRuleRepository, CampaignRuleRepository>();
+        services.AddScoped<ICouponRepository, CouponRepository>();
+        services.AddScoped<ICouponItemRepository, CouponItemRepository>();
 
         //DataLoader
         services.AddScoped<CampaignBatchDataLoader>();
         services.AddScoped<CampaignItemBatchDataLoader>();
         services.AddScoped<CampaignSourceBatchDataLoader>();
-        services.AddScoped<CampaignSourceCollectionBatchDataLoader>();
+        services.AddScoped<CampaignSourceBatchDataLoader>();
+        services.AddScoped<CouponBatchDataLoader>();
+        services.AddScoped<CouponItemBatchDataLoader>();
+        services.AddScoped<CampaignRuleBatchDataLoader>();
         services.AddScoped<CampaignItemCollectionBatchDataLoader>();
+        services.AddScoped<CouponItemCollectionBatchDataLoader>();
 
         services.AddSingleton<IRedisService, RedisService>();
     }

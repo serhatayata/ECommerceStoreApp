@@ -1,5 +1,5 @@
 ﻿using CampaignService.Api.Entities;
-using CampaignService.Api.Models.CouponItem;
+using System.Linq.Expressions;
 
 namespace CampaignService.Api.Repository.Abstract;
 
@@ -17,7 +17,7 @@ public interface ICouponItemRepository
     /// </summary>
     /// <param name="model">Model of the data added</param>
     /// <returns><see cref="bool"/> model</returns>
-    Task<CouponItem?> CreateBulkAsync(List<CouponItem> model);
+    Task<bool> CreateBulkAsync(List<CouponItem> model);
 
     /// <summary>
     /// Update coupon, returns updated entity, if not updated, returns null
@@ -46,10 +46,9 @@ public interface ICouponItemRepository
     /// <returns><see cref="List{T}"/></returns>
     Task<List<CouponItem>> GetAllAsync();
 
-
     /// <summary>
     /// Get all campaign items
     /// </summary>
     /// <returns><see cref="List{T}"/></returns>
-    Task<List<CouponItem>> GetAllByFilterAsync(CouponItemGetByFilterModel model);
+    Task<List<CouponItem>> GetAllByFilterAsync(Expression<Func<CouponItem, bool>> expression);
 }

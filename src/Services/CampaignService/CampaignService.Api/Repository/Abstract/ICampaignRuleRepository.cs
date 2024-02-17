@@ -1,5 +1,6 @@
 ﻿using CampaignService.Api.Entities;
 using CampaignService.Api.Models.CampaignRule;
+using System.Linq.Expressions;
 
 namespace CampaignService.Api.Repository.Abstract;
 
@@ -43,5 +44,5 @@ public interface ICampaignRuleRepository
     /// Get all campaign rules by filter
     /// </summary>
     /// <returns><see cref="List{T}"/></returns>
-    Task<List<CampaignRule>> GetAllByFilterAsync(CampaignRuleGetByFilterModel model);
+    Task<List<CampaignRule>> GetAllByFilterAsync(Expression<Func<CampaignRule, bool>> expression);
 }

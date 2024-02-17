@@ -11,13 +11,16 @@ public class GraphQLWebApplicationInstaller : IWebApplicationInstaller
         app.UseGraphQL<CampaignSchema>("/api/campaign");
         app.UseGraphQL<CampaignItemSchema>("/api/campaignitem");
         app.UseGraphQL<CampaignSourceSchema>("/api/campaignsource");
+        app.UseGraphQL<CampaignRuleSchema>("/api/campaignrule");
+        app.UseGraphQL<CouponSchema>("/api/coupon");
+        app.UseGraphQL<CouponItemSchema>("/api/couponitem");
 
         if (app.Environment.IsDevelopment())
         {
             app.UseGraphQLPlayground(
             options: new PlaygroundOptions()
             {
-                GraphQLEndPoint = "/api/campaignitem"
+                GraphQLEndPoint = "/api/campaign"
             });
         }
     }

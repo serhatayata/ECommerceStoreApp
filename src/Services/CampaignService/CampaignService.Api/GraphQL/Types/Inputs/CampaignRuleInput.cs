@@ -4,6 +4,7 @@ namespace CampaignService.Api.GraphQL.Types.Inputs;
 
 public class CampaignRuleInput
 {
+    public int Id { get; set; }
     public int CampaignId { get; set; }
     public CampaignRuleTypes Type { get; set; }
     public string Data { get; set; }

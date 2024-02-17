@@ -68,4 +68,6 @@ public class Coupon : IEntity
     /// Creation date of the coupon
     /// </summary>
     public DateTime CreationDate { get; set; }
+
+    public virtual ICollection<CouponItem> CouponItems { get; set; }
 }

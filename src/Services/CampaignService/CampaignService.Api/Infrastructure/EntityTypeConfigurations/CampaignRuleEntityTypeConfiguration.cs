@@ -1,4 +1,5 @@
 ﻿using CampaignService.Api.Entities;
+using CampaignService.Api.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -33,5 +34,37 @@ public class CampaignRuleEntityTypeConfiguration : IEntityTypeConfiguration<Camp
                .HasForeignKey(cs => cs.CampaignId)
                .IsRequired(required: false)
                .OnDelete(DeleteBehavior.Cascade);
+
+        #region SEED DATA
+        CampaignRule[] rules = new []
+        {
+            new CampaignRule()
+            {
+                Id = 1,
+                CampaignId = 1,
+                Type = CampaignRuleTypes.NProductDiscount,
+                Data = "2",
+                Value = "15"
+            },
+            new CampaignRule()
+            {
+                Id = 2,
+                CampaignId = 1,
+                Type = CampaignRuleTypes.NProductDiscount,
+                Data = "3",
+                Value = "20"
+            },
+            new CampaignRule()
+            {
+                Id = 3,
+                CampaignId = 2,
+                Type = CampaignRuleTypes.BuyAPayB,
+                Data = "4",
+                Value = "3"
+            }
+        };
+
+        builder.HasData(rules);
+        #endregion
     }
 }

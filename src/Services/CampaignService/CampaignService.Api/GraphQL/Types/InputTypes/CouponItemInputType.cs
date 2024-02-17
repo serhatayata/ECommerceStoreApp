@@ -1,18 +1,16 @@
-﻿using CampaignService.Api.Entities;
-using CampaignService.Api.GraphQL.Types.Enums;
+﻿using CampaignService.Api.GraphQL.Types.Enums;
 using GraphQL.Types;
 
-namespace CampaignService.Api.GraphQL.Types;
+namespace CampaignService.Api.GraphQL.Types.InputTypes;
 
-public class CouponItemType : ObjectGraphType<CouponItem>
+public class CouponItemInputType : InputObjectGraphType
 {
-    public CouponItemType()
+    public CouponItemInputType()
     {
         Name = "couponItemInput";
         Field<IntGraphType>("id");
         Field<NonNullGraphType<IntGraphType>>("couponId");
         Field<StringGraphType>("userId");
-        Field<NonNullGraphType<StringGraphType>>("code");
         Field<NonNullGraphType<CouponItemStatusEnumType>>("status");
         Field<IntGraphType>("orderId");
     }

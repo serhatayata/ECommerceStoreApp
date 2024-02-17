@@ -21,6 +21,8 @@ public class GraphQLServiceInstaller : IServiceInstaller
                     .AddSchema<CampaignItemSchema>()
                     .AddSchema<CampaignSourceSchema>()
                     .AddSchema<CampaignSchema>()
+                    .AddSchema<CouponSchema>()
+                    .AddSchema<CouponItemSchema>()
                     .AddErrorInfoProvider((opts, serviceProvider) =>
                     {
                         opts.ExposeExceptionDetails = true;
@@ -34,11 +36,15 @@ public class GraphQLServiceInstaller : IServiceInstaller
                     .AddGraphTypes(typeof(CampaignItemSchema).Assembly)
                     .AddGraphTypes(typeof(CampaignSchema).Assembly)
                     .AddGraphTypes(typeof(CampaignRuleSchema).Assembly)
+                    .AddGraphTypes(typeof(CouponSchema).Assembly)
+                    .AddGraphTypes(typeof(CouponItemSchema).Assembly)
                     .AddDataLoader());
 
         services.AddValidatorsFromAssemblyContaining<CampaignInputValidator>();
         services.AddValidatorsFromAssemblyContaining<CampaignItemInputValidator>();
         services.AddValidatorsFromAssemblyContaining<CampaignSourceInputValidator>();
         services.AddValidatorsFromAssemblyContaining<CampaignRuleInputValidator>();
+        services.AddValidatorsFromAssemblyContaining<CouponInputValidator>();
+        services.AddValidatorsFromAssemblyContaining<CouponItemInputValidator>();
     }
 }

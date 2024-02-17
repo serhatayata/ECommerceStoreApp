@@ -2,31 +2,32 @@
 using CampaignService.Api.Extensions;
 using CampaignService.Api.GraphQL.DataLoaders.BatchDataLoaders;
 using CampaignService.Api.GraphQL.Types;
-using CampaignService.Api.Models.CampaignRule;
-using CampaignService.Api.Models.Enums;
 using CampaignService.Api.Repository.Abstract;
-using CampaignService.Api.Repository.Concrete;
 using CampaignService.Api.Services.Cache.Abstract;
+using CampaignService.Api.Utilities;
 using CampaignService.Api.Utilities.Json;
 using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Types;
 using System.Reflection;
-using System.Text.Json;
+using System.Text.Json; 
 
 namespace CampaignService.Api.GraphQL.Queries;
 
-public class CampaignRuleQuery : ObjectGraphType<CampaignRule>
+public class CouponItemQuery : ObjectGraphType<CouponItem>
 {
     private int cacheDbId = 11;
     private string className = MethodBase.GetCurrentMethod()?.DeclaringType?.Name ?? string.Empty;
 
-    public CampaignRuleQuery(
-        ICampaignRuleRepository campaignRuleRepository,
+    public CouponItemQuery(
+        ICouponItemRepository couponItemRepository,
         IRedisService redisService)
     {
-        Field<CampaignRuleType, CampaignRule>(name: "campaignRule")
-            .Description("campaign rule description")
+        Name = nameof(CouponItem);
+        Description = $"{nameof(CouponItem)} description";
+
+        Field<CouponItemType, CouponItem>(name: "couponItem")
+            .Description("coupon item type description")
             .Argument<IdGraphType>("id")
             .ResolveAsync(context =>
             {
@@ -37,25 +38,25 @@ public class CampaignRuleQuery : ObjectGraphType<CampaignRule>
                     return null;
                 }
 
-                var loader = context.RequestServices.GetRequiredService<CampaignRuleBatchDataLoader>();
+                var loader = context.RequestServices.GetRequiredService<CouponItemBatchDataLoader>();
                 return loader.LoadAsync(id);
             });
 
-        Field<ListGraphType<CampaignRuleType>>(name: "allCampaignRules")
-            .Description("Campaign rule description")
+        Field<ListGraphType<CouponType>>(name: "allCouponItems")
+            .Description("Coupon type description")
             .ResolveAsync(async (context) =>
             {
-                var cacheKey = CacheExtensions.GetCacheKey("allCampaignRules", className, null);
+                var cacheKey = CacheExtensions.GetCacheKey("allCouponItems", className, null);
                 return await redisService.GetAsync(cacheKey, cacheDbId,
                                                    new TimeSpan(2, 30, 0).Minutes,
                                                    async () =>
                                                    {
-                                                       return await campaignRuleRepository.GetAllAsync();
+                                                       return await couponItemRepository.GetAllAsync();
                                                    });
             });
 
-        Field<ListGraphType<CampaignRuleType>>(name: "campaignRulesByFilter")
-            .Description("Campaign rule by filter description")
+        Field<ListGraphType<CouponItemType>>(name: "couponItemsByFilter")
+            .Description("Coupon item type description")
             .Argument<StringGraphType>("filter")
             .ResolveAsync(async (context) =>
             {
@@ -68,8 +69,20 @@ public class CampaignRuleQuery : ObjectGraphType<CampaignRule>
 
                 var jsonDocument = JsonDocument.Parse(rule);
                 var parser = new JsonExpressionParser();
-                var expression = parser.ParseExpressionOf<CampaignRule>(jsonDocument);
-                return await campaignRuleRepository.GetAllByFilterAsync(expression);
+                var expression = parser.ParseExpressionOf<CouponItem>(jsonDocument);
+                return await couponItemRepository.GetAllByFilterAsync(expression);
+            });
+
+        Field<RuleModelType>(name: "getRuleModel")
+            .Description("Get rule model")
+            .Resolve(context =>
+            {
+                var cacheKey = CacheExtensions.GetCacheKey("getRuleModel", className, null);
+                var result = redisService.Get(cacheKey, cacheDbId,
+                                          new TimeSpan(2, 30, 0).Minutes,
+                                          () => RuleModelBuilder.GetModelRule(typeof(CouponItem)));
+
+                return result;
             });
     }
 }

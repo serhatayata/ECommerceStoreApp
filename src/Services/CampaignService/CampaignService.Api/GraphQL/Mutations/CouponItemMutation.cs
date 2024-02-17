@@ -10,17 +10,17 @@ using GraphQL.Types;
 
 namespace CampaignService.Api.GraphQL.Mutations;
 
-public class CampaignRuleMutation : ObjectGraphType<CampaignRule>
+public class CouponItemMutation : ObjectGraphType<CouponItem>
 {
-    public CampaignRuleMutation(
-        ICampaignRuleRepository campaignRuleRepository,
+    public CouponItemMutation(
+        ICouponItemRepository couponItemRepository,
         IMapper mapper)
     {
-        Field<CampaignRuleType>("createCampaignRule")
-            .Arguments(new QueryArgument<NonNullGraphType<CampaignRuleInputType>> { Name = "campaignRule" })
+        Field<CouponItemType>("createCouponItem")
+            .Arguments(new QueryArgument<NonNullGraphType<CouponItemInputType>> { Name = "couponItem" })
             .ResolveAsync(async (context) =>
             {
-                var validationResult = context.GetValidationResult<CampaignRule, CampaignRuleInput>("campaignRule");
+                var validationResult = context.GetValidationResult<CouponItem, CouponItemInput>("couponItem");
                 if (!validationResult.IsSuccess)
                 {
                     var errors = validationResult.ErrorMessages
@@ -30,17 +30,17 @@ public class CampaignRuleMutation : ObjectGraphType<CampaignRule>
                     return null;
                 }
 
-                var campaignRule = mapper.Map<CampaignRule>(validationResult.Model);
-                var result = await campaignRuleRepository.CreateAsync(campaignRule);
+                var couponItem = mapper.Map<CouponItem>(validationResult.Model);
+                var result = await couponItemRepository.CreateAsync(couponItem);
                 return result;
             });
 
-        Field<CampaignRuleType>("updateCampaignRule")
+        Field<CouponItemType>("updateCouponItem")
             .Arguments(
-                new QueryArgument<NonNullGraphType<CampaignRuleInputType>> { Name = "campaignRule" })
+                new QueryArgument<NonNullGraphType<CouponItemInputType>> { Name = "couponItem" })
             .ResolveAsync(async (context) =>
             {
-                var validationResult = context.GetValidationResult<CampaignRule, CampaignRuleInput>("campaignRule");
+                var validationResult = context.GetValidationResult<CouponItem, CouponItemInput>("couponItem");
                 if (!validationResult.IsSuccess)
                 {
                     var errors = validationResult.ErrorMessages
@@ -50,11 +50,11 @@ public class CampaignRuleMutation : ObjectGraphType<CampaignRule>
                     return null;
                 }
 
-                var campaignRule = mapper.Map<CampaignRule>(validationResult.Model);
-                return await campaignRuleRepository.UpdateAsync(campaignRule);
+                var couponItem = mapper.Map<CouponItem>(validationResult.Model);
+                return await couponItemRepository.UpdateAsync(couponItem);
             });
 
-        Field<BooleanGraphType>("deleteCampaignRule")
+        Field<BooleanGraphType>("deleteCouponItem")
             .Arguments(
                 new QueryArgument<NonNullGraphType<IntGraphType>> { Name = "id" })
             .ResolveAsync(async (context) =>
@@ -66,7 +66,7 @@ public class CampaignRuleMutation : ObjectGraphType<CampaignRule>
                     return false;
                 }
 
-                return await campaignRuleRepository.DeleteAsync(id);
+                return await couponItemRepository.DeleteAsync(id);
             });
     }
 }

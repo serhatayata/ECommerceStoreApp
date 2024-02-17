@@ -9,7 +9,6 @@ using CampaignService.Api.Utilities.Json;
 using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Types;
-using System.Data;
 using System.Reflection;
 using System.Text.Json;
 
@@ -58,9 +57,10 @@ public class CouponQuery : ObjectGraphType<Coupon>
 
         Field<ListGraphType<CouponType>>(name: "couponsByFilter")
             .Description("Coupon type description")
+            .Argument<StringGraphType>("filter")
             .ResolveAsync(async (context) =>
             {
-                var rule = context.GetArgument<string>("string");
+                var rule = context.GetArgument<string>("filter");
                 if (string.IsNullOrWhiteSpace(rule))
                 {
                     context.Errors.Add(new ExecutionError("Wrong value for id"));
@@ -80,7 +80,7 @@ public class CouponQuery : ObjectGraphType<Coupon>
                 var cacheKey = CacheExtensions.GetCacheKey("getRuleModel", className, null);
                 var result = redisService.Get(cacheKey, cacheDbId,
                                           new TimeSpan(2, 30, 0).Minutes,
-                                          () => RuleModelBuilder.GetModelRule(typeof(CampaignItem)));
+                                          () => RuleModelBuilder.GetModelRule(typeof(Coupon)));
 
                 return result;
             });

@@ -5,26 +5,26 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CampaignService.Api.GraphQL.DataLoaders.BatchDataLoaders;
 
-public class CouponBatchDataLoader : DataLoaderBase<int, Coupon>
+public class CouponItemBatchDataLoader : DataLoaderBase<int, CouponItem>
 {
     private readonly CampaignDbContext _context;
 
-    public CouponBatchDataLoader(
+    public CouponItemBatchDataLoader(
         CampaignDbContext context)
     {
         _context = context;
     }
 
     protected override async Task FetchAsync(
-        IEnumerable<DataLoaderPair<int, Coupon>> list,
+        IEnumerable<DataLoaderPair<int, CouponItem>> list,
         CancellationToken cancellationToken)
     {
         IEnumerable<int> ids = list.Select(pair => pair.Key);
-        IDictionary<int, Coupon> data = await _context.Coupons
-                                    .Where(coupon => ids.Contains(coupon.Id))
+        IDictionary<int, CouponItem> data = await _context.CouponItems
+                                    .Where(couponItem => ids.Contains(couponItem.Id))
                                     .ToDictionaryAsync(x => x.Id, cancellationToken);
 
-        foreach (DataLoaderPair<int, Coupon> entry in list)
-            entry.SetResult(data.TryGetValue(entry.Key, out var coupon) ? coupon : null);
+        foreach (DataLoaderPair<int, CouponItem> entry in list)
+            entry.SetResult(data.TryGetValue(entry.Key, out var couponItem) ? couponItem : null);
     }
 }

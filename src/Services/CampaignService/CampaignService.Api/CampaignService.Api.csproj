@@ -61,6 +61,7 @@
 
   <ItemGroup>
     <Folder Include="Configurations\Installers\WebHostBuilderInstallers\" />
+    <Folder Include="Models\CouponItem\" />
   </ItemGroup>
 
 </Project>

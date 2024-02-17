@@ -4,6 +4,8 @@ using CampaignService.Api.Models.CampaignRule;
 using CampaignService.Api.Repository.Abstract;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace CampaignService.Api.Repository.Concrete;
 
@@ -65,7 +67,7 @@ public class CampaignRuleRepository : ICampaignRuleRepository
                                            .ExecuteUpdateAsync(c => c
                                            .SetProperty(p => p.Type, model.Type)
                                            .SetProperty(p => p.Data, model.Data)
-                                           .SetProperty(p => p.Data, model.Value));
+                                           .SetProperty(p => p.Value, model.Value));
 
                 _context.SaveChanges();
 
@@ -125,19 +127,6 @@ public class CampaignRuleRepository : ICampaignRuleRepository
     public async Task<List<CampaignRule>> GetAllAsync() => 
         await _context.CampaignRules.ToListAsync();
 
-    public async Task<List<CampaignRule>> GetAllByFilterAsync(CampaignRuleGetByFilterModel model)
-    {
-        if (model.CampaignId == null && model.Type == null)
-            return new List<CampaignRule>();
-
-        var query = _context.CampaignRules;
-
-        if (model.CampaignId != default)
-            query.Where(c => c.CampaignId == model.CampaignId);
-
-        if (model.Type == model.Type)
-            query.Where(c => c.Type == model.Type);
-
-        return await query.ToListAsync();
-    }
+    public async Task<List<CampaignRule>> GetAllByFilterAsync(Expression<Func<CampaignRule, bool>> expression) =>
+        await _context.CampaignRules.Where(expression).ToListAsync();
 }
