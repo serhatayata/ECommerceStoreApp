@@ -543,6 +543,66 @@ mutation($id: Int!){
 
 ```
 
+```graphql
+# Coupon
+# createCoupon
+
+mutation($coupon: couponInput!){
+  createCoupon(coupon: $coupon){
+      id
+      name
+      description
+      type
+      usageType
+      calculationType
+      calculationAmount
+      amount
+      maxUsage
+      usageCount
+      code
+      expirationDate
+      creationDate
+  }
+}
+
+# updateCampaignRule
+
+mutation($campaignRule: campaignRuleInput!){
+  updateCampaignRule(campaignRule: $campaignRule){	
+    id
+    campaignId
+    type
+    data
+    value
+  }
+}
+
+# query variables
+
+{
+  "campaignRule": {
+    "id": 1002
+    "campaignId": 2,
+    "type": "BUY_A_PAY_B",
+    "data": "5",
+    "value": "4"
+  }
+}
+
+# deleteCampaignSource
+
+mutation($id: Int!){
+  deleteCampaignRule(id: $id)
+}
+
+# query variables
+
+{
+    "id": 1001
+}
+
+```
+
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 
 - Migration commands IdentityServer
