@@ -53,6 +53,9 @@ E-Commerce Microservices Application (STILL BEING IMPROVED)
   - api/campaign
   - api/campaignsource
   - api/campaignitem
+  - api/campaignrule
+  - api/coupon
+  - api/couponitem
 
 ```graphql
 # Campaigns
@@ -150,6 +153,130 @@ query GetByIdCampaignItemQuery($campaignItemID: ID!)
      status
    }
  }
+```
+
+```graphql
+# CampaignRules
+
+query GetByIdCampaignRuleQuery($campaignRuleID: ID!)
+{
+ campaignRule(id: $campaignRuleID){
+    id
+    campaignId
+    type
+    data
+    value
+  }
+}
+
+ query GetAllCampaignRules {
+   allCampaignRules {
+     id
+     campaignId
+     type
+     data
+     value
+   }
+ }
+
+ query GetCampaignRulesByFilter ($filter:String!)
+ {
+   campaignRulesByFilter(filter: $filter) {
+     id
+     type
+     data
+     value
+   }
+ }
+```
+
+```graphql
+# Coupon
+
+query GetByIdCouponQuery($couponID: ID!)
+{
+  coupon(id: $couponID){
+    id
+    name
+    description
+    type
+    usageType
+    calculationType
+    calculationAmount
+    amount
+    maxUsage
+    usageCount
+    code
+    expirationDate
+    creationDate
+    couponItems {
+      id
+      userId
+      status
+      code
+      orderId
+    }
+  }
+}
+
+ query GetAllCoupons {
+   allCoupons {
+    id
+    name
+    description
+    type
+    usageType
+    calculationType
+    calculationAmount
+    amount
+    maxUsage
+    usageCount
+    code
+    expirationDate
+    creationDate
+    couponItems {
+      id
+      userId
+      status
+      code
+      orderId
+    }
+   }
+ }
+
+ query GetCouponsByFilter ($filter:String!)
+ {
+   couponsByFilter(filter: $filter) {
+     allCoupons {
+      id
+      name
+      description
+      type
+      usageType
+      calculationType
+      calculationAmount
+      amount
+      maxUsage
+      usageCount
+      code
+      expirationDate
+      creationDate
+      couponItems {
+        id
+        userId
+        status
+        code
+        orderId
+      }
+     }
+   }
+ }
+
+# query variables 
+
+{
+    "filter": "{\n  \"condition\": \"and\",\n  \"order\" : {\n     \"field\" : \"Name\",\n     \"sort\" : \"descending\"\n  },\n  \"rules\": [\n    {\n      \"field\": \"Name\",\n      \"operator\": \"starts_with\",\n      \"type\": \"string\",\n      \"value\": \"C\"\n    },\n    {\n       \"condition\" : \"and\",\n       \"rules\" : [\n         {\n           \"field\": \"MaxUsage\",\n\t       \"operator\": \"less\",\n\t       \"type\": \"int\",\n\t       \"value\": 150\n         }\n       ]\n    },\n    {\n       \"field\": \"CalculationAmount\",\n       \"operator\": \"greater\",\n       \"type\": \"decimal\",\n       \"value\": 10.0\n    }\n  ]\n}"
+}
 ```
 
 ### Mutations
@@ -354,9 +481,75 @@ mutation($id: Int!){
 }
 
 ```
+
+```graphql
+# Campaign rule
+# createCampaignRule
+
+mutation($campaignRule: campaignRuleInput!){
+  createCampaignRule(campaignRule: $campaignRule){
+    id
+    campaignId
+    type
+    data
+    value
+  }
+}
+
+{
+  "campaignRule": {
+    "campaignId": 2,
+    "type": "BUY_A_PAY_B",
+    "data": "4",
+    "value": "3"
+  }
+}
+
+# updateCampaignRule
+
+mutation($campaignRule: campaignRuleInput!){
+  updateCampaignRule(campaignRule: $campaignRule){	
+    id
+    campaignId
+    type
+    data
+    value
+  }
+}
+
+# query variables
+
+{
+  "campaignRule": {
+    "id": 1002
+    "campaignId": 2,
+    "type": "BUY_A_PAY_B",
+    "data": "5",
+    "value": "4"
+  }
+}
+
+# deleteCampaignSource
+
+mutation($id: Int!){
+  deleteCampaignRule(id: $id)
+}
+
+# query variables
+
+{
+    "id": 1001
+}
+
+```
+
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 
 - Migration commands IdentityServer
+
+  - dotnet ef migrations add mig_v1 --project CampaignService.Api
+  - dotnet ef database update --project CampaignService.Api
+
   - Adding Migrations
     - add-migration -c AppIdentityDbContext -name mig_v1
     - add-migration -c AppPersistedGrantDbContext -name mig_persisted_v1
