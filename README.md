@@ -543,6 +543,110 @@ mutation($id: Int!){
 
 ```
 
+```graphql
+# Coupon
+# createCoupon
+
+mutation($coupon: couponInput!){
+  createCoupon(coupon: $coupon){
+      id
+      name
+      description
+      type
+      usageType
+      calculationType
+      calculationAmount
+      amount
+      maxUsage
+      usageCount
+      code
+      expirationDate
+      creationDate
+      couponItems
+  }
+}
+
+# query variables
+
+{
+  "coupon": {
+    "name": "test_1000",
+    "description": "test 1000 description",
+    "type": "PRICE",
+    "usageType": "CODE_BASED",
+    "calculationType": "NORMAL",
+    "calculationAmount": 0,
+    "amount": 100,
+    "maxUsage": 200,
+    "expirationDate": "2024-03-02T17:00:00",
+    "couponItems": [
+      {
+        "couponId": 1,
+        "userId": null,
+        "status": "ACTIVE",
+        "orderId": 1122333
+      }
+    ]
+  }
+}
+
+# updateCoupon
+
+mutation($coupon: couponInput!){
+  updateCoupon(coupon: $coupon){
+      id
+      name
+      description
+      type
+      usageType
+      calculationType
+      calculationAmount
+      amount
+      maxUsage
+      usageCount
+      code
+      expirationDate
+      creationDate
+      couponItems {
+        id
+        userId
+        status
+        orderId
+      }
+  }
+}
+
+# query variables
+
+{
+  "coupon": {
+    "id": 5,
+    "name": "test_1001",
+    "description": "test 1001 description",
+    "type": "PRICE",
+    "usageType": "CODE_BASED",
+    "calculationType": "NORMAL",
+    "calculationAmount": 0,
+    "amount": 210,
+    "maxUsage": 310,
+    "expirationDate": "2024-05-02T17:00:00"
+  }
+}
+
+# deleteCoupon
+
+mutation($id: Int!){
+  deleteCoupon(id: $id)
+}
+
+# query variables
+
+{
+    "id": 1001
+}
+
+```
+
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 
 - Migration commands IdentityServer
