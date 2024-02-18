@@ -18,6 +18,6 @@ public class CouponInputType : InputObjectGraphType
         Field<NonNullGraphType<DecimalGraphType>>("amount");
         Field<NonNullGraphType<IntGraphType>>("maxUsage");
         Field<NonNullGraphType<DateTimeGraphType>>("expirationDate");
-        Field<CouponItemInputType>("couponItem");
+        Field<ListGraphType<CouponItemInputType>>("couponItems");
     }
 }

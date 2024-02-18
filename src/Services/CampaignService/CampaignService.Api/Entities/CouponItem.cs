@@ -20,11 +20,6 @@ public class CouponItem : IEntity
     public string? UserId { get; set; }
 
     /// <summary>
-    /// Code of the campaign item
-    /// </summary>
-    public string Code { get; set; }
-
-    /// <summary>
     /// Coupon item status
     /// </summary>
     public CouponItemStatus Status { get; set; }

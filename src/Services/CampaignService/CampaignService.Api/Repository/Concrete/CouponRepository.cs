@@ -73,9 +73,7 @@ public class CouponRepository : ICouponRepository
                                            .SetProperty(b => b.Amount, model.Amount)
                                            .SetProperty(b => b.MaxUsage, model.MaxUsage)
                                            .SetProperty(b => b.UsageCount, model.UsageCount)
-                                           .SetProperty(b => b.Code, model.Code)
-                                           .SetProperty(b => b.ExpirationDate, model.ExpirationDate)
-                                           .SetProperty(b => b.CreationDate, model.CreationDate));
+                                           .SetProperty(b => b.ExpirationDate, model.ExpirationDate));
 
                 _context.SaveChanges();
 

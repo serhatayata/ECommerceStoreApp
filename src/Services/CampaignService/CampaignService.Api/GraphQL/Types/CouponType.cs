@@ -20,7 +20,7 @@ public class CouponType : ObjectGraphType<Coupon>
         Field(o => o.Amount).Description("Amount property from the campaign");
         Field(o => o.MaxUsage).Description("Max usage property from the campaign");
         Field(o => o.UsageCount).Description("Usage count property from the campaign");
-        Field(o => o.Code).Description("Code property from the campaign");
+        Field(o => o.Code, type: typeof(StringGraphType)).Description("Code property from the campaign");
         Field(o => o.ExpirationDate).Description("Expiration date property from the campaign");
         Field(o => o.CreationDate).Description("Creation date property from the campaign");
         Field<ListGraphType<CouponItemType>, IEnumerable<CouponItem>>("couponItems")

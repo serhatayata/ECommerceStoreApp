@@ -9,6 +9,6 @@ public class CouponItemSchema : Schema
     public CouponItemSchema(IServiceProvider provider) : base(provider)
     {
         Query = provider.GetRequiredService<CouponItemQuery>();
-        Mutation = provider.GetRequiredService<CouponItemMutation>();
+        //Mutation = provider.GetRequiredService<CouponItemMutation>();
     }
 }

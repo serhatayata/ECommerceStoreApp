@@ -23,8 +23,8 @@ public class CouponItemQuery : ObjectGraphType<CouponItem>
         ICouponItemRepository couponItemRepository,
         IRedisService redisService)
     {
-        Name = nameof(CouponItem);
-        Description = $"{nameof(CouponItem)} description";
+        Name = nameof(CouponItemQuery);
+        Description = $"{nameof(CouponItemQuery)} description";
 
         Field<CouponItemType, CouponItem>(name: "couponItem")
             .Description("coupon item type description")

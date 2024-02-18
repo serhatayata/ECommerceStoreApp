@@ -17,10 +17,6 @@ public class CouponItemEntityTypeConfiguration : IEntityTypeConfiguration<Coupon
                .HasColumnType(typeName: "nvarchar(40)")
                .IsRequired(required: false);
 
-        builder.Property(o => o.Code)
-               .HasColumnType(typeName: "nvarchar(40)")
-               .IsRequired(required: false);
-
         builder.Property(c => c.Status)
                .HasColumnType(typeName: "smallint")
                .IsRequired();
