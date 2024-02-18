@@ -562,37 +562,81 @@ mutation($coupon: couponInput!){
       code
       expirationDate
       creationDate
-  }
-}
-
-# updateCampaignRule
-
-mutation($campaignRule: campaignRuleInput!){
-  updateCampaignRule(campaignRule: $campaignRule){	
-    id
-    campaignId
-    type
-    data
-    value
+      couponItems
   }
 }
 
 # query variables
 
 {
-  "campaignRule": {
-    "id": 1002
-    "campaignId": 2,
-    "type": "BUY_A_PAY_B",
-    "data": "5",
-    "value": "4"
+  "coupon": {
+    "name": "test_1000",
+    "description": "test 1000 description",
+    "type": "PRICE",
+    "usageType": "CODE_BASED",
+    "calculationType": "NORMAL",
+    "calculationAmount": 0,
+    "amount": 100,
+    "maxUsage": 200,
+    "expirationDate": "2024-03-02T17:00:00",
+    "couponItems": [
+      {
+        "couponId": 1,
+        "userId": null,
+        "status": "ACTIVE",
+        "orderId": 1122333
+      }
+    ]
   }
 }
 
-# deleteCampaignSource
+# updateCoupon
+
+mutation($coupon: couponInput!){
+  updateCoupon(coupon: $coupon){
+      id
+      name
+      description
+      type
+      usageType
+      calculationType
+      calculationAmount
+      amount
+      maxUsage
+      usageCount
+      code
+      expirationDate
+      creationDate
+      couponItems {
+        id
+        userId
+        status
+        orderId
+      }
+  }
+}
+
+# query variables
+
+{
+  "coupon": {
+    "id": 5,
+    "name": "test_1001",
+    "description": "test 1001 description",
+    "type": "PRICE",
+    "usageType": "CODE_BASED",
+    "calculationType": "NORMAL",
+    "calculationAmount": 0,
+    "amount": 210,
+    "maxUsage": 310,
+    "expirationDate": "2024-05-02T17:00:00"
+  }
+}
+
+# deleteCoupon
 
 mutation($id: Int!){
-  deleteCampaignRule(id: $id)
+  deleteCoupon(id: $id)
 }
 
 # query variables
