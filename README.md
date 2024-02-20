@@ -279,6 +279,62 @@ query GetByIdCouponQuery($couponID: ID!)
 }
 ```
 
+```graphql
+# CouponItem
+
+query GetByIdCouponItemQuery($couponItemID: ID!)
+{
+  couponItem(id: $couponItemID){
+    id
+    couponId
+    userId
+    status
+    orderId
+  }
+}
+
+ query GetAllCouponItems {
+   allCouponItems {
+    id
+    couponId
+    userId
+    status
+    orderId
+  }
+ }
+
+ query GetRuleModel {
+   getRuleModel {
+    conditions {
+      name
+      symbol
+    }
+    operators {
+      name
+      symbol
+    }
+    items {
+      field
+      type
+    }
+    childItems {
+      entity
+      items {
+        field
+        type
+      }
+      childItems {
+        entity
+        items {
+          field
+          type
+        }
+      }
+    }
+  }
+ }
+```
+
 ### Mutations
 ```graphql
 #CampaignItem
