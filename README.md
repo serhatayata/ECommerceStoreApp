@@ -4,7 +4,7 @@ E-Commerce Microservices Application (STILL BEING IMPROVED)
 - .NET Blazor SPA
 - Ocelot Gateway
 - Consul (Service Discovery)
-- ElasticSearch, Kibana
+- ElasticSearch
 - RabbitMQ
 - MSSQL, Redis, PostgreSQL
 - EntityFramework, Dapper
