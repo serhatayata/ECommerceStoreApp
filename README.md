@@ -4,7 +4,7 @@ E-Commerce Microservices Application (STILL BEING IMPROVED)
 - .NET Blazor SPA
 - Ocelot Gateway
 - Consul (Service Discovery)
-- ElasticSearch, Kibana
+- ElasticSearch
 - RabbitMQ
 - MSSQL, Redis, PostgreSQL
 - EntityFramework, Dapper
@@ -277,6 +277,62 @@ query GetByIdCouponQuery($couponID: ID!)
 {
     "filter": "{\n  \"condition\": \"and\",\n  \"order\" : {\n     \"field\" : \"Name\",\n     \"sort\" : \"descending\"\n  },\n  \"rules\": [\n    {\n      \"field\": \"Name\",\n      \"operator\": \"starts_with\",\n      \"type\": \"string\",\n      \"value\": \"C\"\n    },\n    {\n       \"condition\" : \"and\",\n       \"rules\" : [\n         {\n           \"field\": \"MaxUsage\",\n\t       \"operator\": \"less\",\n\t       \"type\": \"int\",\n\t       \"value\": 150\n         }\n       ]\n    },\n    {\n       \"field\": \"CalculationAmount\",\n       \"operator\": \"greater\",\n       \"type\": \"decimal\",\n       \"value\": 10.0\n    }\n  ]\n}"
 }
+```
+
+```graphql
+# CouponItem
+
+query GetByIdCouponItemQuery($couponItemID: ID!)
+{
+  couponItem(id: $couponItemID){
+    id
+    couponId
+    userId
+    status
+    orderId
+  }
+}
+
+ query GetAllCouponItems {
+   allCouponItems {
+    id
+    couponId
+    userId
+    status
+    orderId
+  }
+ }
+
+ query GetRuleModel {
+   getRuleModel {
+    conditions {
+      name
+      symbol
+    }
+    operators {
+      name
+      symbol
+    }
+    items {
+      field
+      type
+    }
+    childItems {
+      entity
+      items {
+        field
+        type
+      }
+      childItems {
+        entity
+        items {
+          field
+          type
+        }
+      }
+    }
+  }
+ }
 ```
 
 ### Mutations
