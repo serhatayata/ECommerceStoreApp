@@ -10,7 +10,7 @@ public class CouponItemType : ObjectGraphType<CouponItem>
     {
         Field(o => o.Id, type: typeof(IdGraphType)).Description("Id property from the coupon item object");
         Field(o => o.CouponId, type: typeof(NonNullGraphType<IntGraphType>)).Description("Coupon Id property from the coupon item");
-        Field(o => o.UserId, type: typeof(IntGraphType)).Description("User Id property from the coupon item");
+        Field(o => o.UserId, type: typeof(StringGraphType)).Description("User Id property from the coupon item");
         Field<CouponItemStatusEnumType>("status").Resolve(context => context.Source.Status);
         Field(o => o.OrderId, type: typeof(IntGraphType)).Description("Order id property from the coupon item");
     }
