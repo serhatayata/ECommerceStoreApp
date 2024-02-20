@@ -703,6 +703,69 @@ mutation($id: Int!){
 
 ```
 
+```graphql
+# CouponItem
+# createCouponItem
+
+mutation($couponItem: couponItemInput!){
+  createCouponItem(couponItem: $couponItem){
+      couponId
+      userId
+      status
+      orderId
+  }
+}
+
+# query variables
+
+{
+  "couponItem": {
+    "couponId": 1,
+    "status": "ACTIVE",
+    "userId": "123adsa1231241",
+    "orderId": 1231241
+  }
+}
+
+# updateCouponItem
+
+mutation($couponItem: couponItemInput!){
+  updateCouponItem(couponItem: $couponItem){
+      id
+      couponId
+      userId
+      status
+      orderId
+  }
+}
+
+# query variables
+
+{
+  "couponItem": {
+    "id": 5,
+    "couponId": 2,
+    "status": "ACTIVE",
+    "userId": "123testad231241",
+    "orderId": 11111
+  }
+}
+
+# deleteCoupon
+
+mutation($id: Int!)
+{
+  deleteCouponItem(id: $id)
+}
+
+# query variables
+
+{
+    "id": 1001
+}
+
+```
+
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 
 - Migration commands IdentityServer
