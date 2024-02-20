@@ -42,7 +42,7 @@ public class CouponItemQuery : ObjectGraphType<CouponItem>
                 return loader.LoadAsync(id);
             });
 
-        Field<ListGraphType<CouponType>>(name: "allCouponItems")
+        Field<ListGraphType<CouponItemType>>(name: "allCouponItems")
             .Description("Coupon type description")
             .ResolveAsync(async (context) =>
             {
