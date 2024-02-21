@@ -29,6 +29,13 @@ public interface ICouponRepository
     Task<bool> DeleteAsync(int id);
 
     /// <summary>
+    /// Use coupon
+    /// </summary>
+    /// <param name="model">Model of the data added</param>
+    /// <returns><see cref="bool"/> model</returns>
+    Task<CouponUsage> CouponUsageAsync(CouponUsage model);
+
+    /// <summary>
     /// Get coupon by id
     /// </summary>
     /// <param name="id">Id of the coupon</param>

@@ -1,5 +1,8 @@
-﻿using CampaignService.Api.Entities;
+﻿using AutoMapper;
+using CampaignService.Api.Entities;
 using CampaignService.Api.Infrastructure.Contexts;
+using CampaignService.Api.Models.Coupon;
+using CampaignService.Api.Models.Enums;
 using CampaignService.Api.Repository.Abstract;
 using Microsoft.EntityFrameworkCore;
 using Nest;
@@ -12,13 +15,16 @@ public class CouponRepository : ICouponRepository
 {
     private readonly CampaignDbContext _context;
     private readonly ILogger<CouponRepository> _logger;
+    private readonly IMapper _mapper;
 
     public CouponRepository(
         CampaignDbContext context,
-        ILogger<CouponRepository> logger)
+        ILogger<CouponRepository> logger,
+        IMapper mapper)
     {
         _context = context;
         _logger = logger;
+        _mapper = mapper;
     }
 
     public async Task<Coupon?> CreateAsync(Coupon model)
@@ -124,6 +130,44 @@ public class CouponRepository : ICouponRepository
             {
                 _context.Connection.Close();
             }
+        }
+    }
+
+    public async Task<CouponUsage> CouponUsageAsync(CouponUsage model)
+    {
+        try
+        {
+            var coupon = await _context.Coupons
+                                       .Include(c => c.CouponItems)
+                                       .FirstOrDefaultAsync(s => s.Code == model.Code);
+
+            if (coupon == null)
+                return new CouponUsage("Coupon not found");
+
+            var userId = model.UserId;
+            if (coupon.UsageType == UsageTypes.UserBased)
+            {
+                var couponItem = coupon.CouponItems.FirstOrDefault(ci => ci.UserId == userId);
+                if (couponItem == null)
+                {
+                    return new CouponUsage("Coupon not found for this user");
+                }
+                else
+                {
+                    var data = _mapper.Map<CouponUsage>(coupon);
+                    data.UserId = userId;
+                    return data;
+                }
+            }
+            else
+            {
+                return _mapper.Map<CouponUsage>(coupon);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "ERROR - {Message}", ex.Message);
+            throw new Exception(ex.Message);
         }
     }
 

@@ -4,6 +4,7 @@ using CampaignService.Api.Extensions;
 using CampaignService.Api.GraphQL.Types;
 using CampaignService.Api.GraphQL.Types.Inputs;
 using CampaignService.Api.GraphQL.Types.InputTypes;
+using CampaignService.Api.Models.Coupon;
 using CampaignService.Api.Repository.Abstract;
 using GraphQL;
 using GraphQL.Types;
@@ -69,6 +70,25 @@ public class CouponMutation : ObjectGraphType<Coupon>
                 }
 
                 return await couponRepository.DeleteAsync(id);
+            });
+
+        Field<CouponUsageType>("couponUsage")
+            .Arguments(new QueryArgument<NonNullGraphType<CouponUsageInputType>> { Name = "coupon" })
+            .ResolveAsync(async (context) =>
+            {
+                var validationResult = context.GetValidationResult<Coupon, CouponUsageInput>("coupon");
+                if (!validationResult.IsSuccess)
+                {
+                    var errors = validationResult.ErrorMessages
+                    .Select(s => new ExecutionError(s));
+
+                    context.Errors.AddRange(errors);
+                    return null;
+                }
+
+                var couponUsage = mapper.Map<CouponUsage>(validationResult.Model);
+                var result = await couponRepository.CouponUsageAsync(couponUsage);
+                return result;
             });
     }
 }
