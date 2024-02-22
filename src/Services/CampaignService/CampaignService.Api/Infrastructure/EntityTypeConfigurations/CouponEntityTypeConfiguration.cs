@@ -15,6 +15,8 @@ public class CouponEntityTypeConfiguration : IEntityTypeConfiguration<Coupon>
         builder.HasKey(c => c.Id);
         builder.Property(c => c.Id).ValueGeneratedOnAdd();
 
+        builder.Property(c => c.RowVersion).IsRowVersion();
+
         builder.Property(o => o.Name)
                .HasColumnType(typeName: "nvarchar(255)")
                .IsRequired();
@@ -92,7 +94,8 @@ public class CouponEntityTypeConfiguration : IEntityTypeConfiguration<Coupon>
                 MaxUsage = 100,
                 UsageCount = 0,
                 Code = DataGenerationExtensions.RandomCode(10),
-                ExpirationDate = DateTime.Now.AddMonths(2)
+                ExpirationDate = DateTime.Now.AddMonths(2),
+                RowVersion = DataGenerationExtensions.GenerateRandomByteArray()
             },
             /// Maximum 150 usage
             /// 1 month limited,
@@ -112,7 +115,8 @@ public class CouponEntityTypeConfiguration : IEntityTypeConfiguration<Coupon>
                 MaxUsage = 150,
                 UsageCount = 0,
                 Code = DataGenerationExtensions.RandomCode(10),
-                ExpirationDate = DateTime.Now.AddMonths(1)
+                ExpirationDate = DateTime.Now.AddMonths(1),
+                RowVersion = DataGenerationExtensions.GenerateRandomByteArray()
             },
             /// Maximum 200 usage
             /// 3 months limited,
@@ -132,7 +136,8 @@ public class CouponEntityTypeConfiguration : IEntityTypeConfiguration<Coupon>
                 MaxUsage = 200,
                 UsageCount = 0,
                 Code = DataGenerationExtensions.RandomCode(10),
-                ExpirationDate = DateTime.Now.AddMonths(3)
+                ExpirationDate = DateTime.Now.AddMonths(3),
+                RowVersion = DataGenerationExtensions.GenerateRandomByteArray()
             },
             /// Maximum 120 usage
             /// 1 month limited,
@@ -152,7 +157,8 @@ public class CouponEntityTypeConfiguration : IEntityTypeConfiguration<Coupon>
                 MaxUsage = 120,
                 UsageCount = 0,
                 Code = DataGenerationExtensions.RandomCode(10),
-                ExpirationDate = DateTime.Now.AddMonths(1)
+                ExpirationDate = DateTime.Now.AddMonths(1),
+                RowVersion = DataGenerationExtensions.GenerateRandomByteArray()
             }
         };
 

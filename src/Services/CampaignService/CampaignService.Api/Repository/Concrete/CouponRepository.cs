@@ -6,6 +6,7 @@ using CampaignService.Api.Models.Enums;
 using CampaignService.Api.Repository.Abstract;
 using Microsoft.EntityFrameworkCore;
 using Nest;
+using System.Data;
 using System.Data.Common;
 using System.Linq.Expressions;
 
@@ -68,18 +69,20 @@ public class CouponRepository : ICouponRepository
             {
                 _context.Database.UseTransaction(transaction as DbTransaction);
 
-                var result = await _context.Coupons.Where(c => c.Id == model.Id)
-                                           .ExecuteUpdateAsync(c => c
-                                           .SetProperty(b => b.Name, model.Name)
-                                           .SetProperty(b => b.Description, model.Description)
-                                           .SetProperty(b => b.Type, model.Type)
-                                           .SetProperty(b => b.UsageType, model.UsageType)
-                                           .SetProperty(b => b.CalculationType, model.CalculationType)
-                                           .SetProperty(b => b.CalculationAmount, model.CalculationAmount)
-                                           .SetProperty(b => b.Amount, model.Amount)
-                                           .SetProperty(b => b.MaxUsage, model.MaxUsage)
-                                           .SetProperty(b => b.UsageCount, model.UsageCount)
-                                           .SetProperty(b => b.ExpirationDate, model.ExpirationDate));
+                var data = await _context.Coupons.FirstOrDefaultAsync(c => c.Id == model.Id);
+                if (data == null)
+                    return null;
+
+                data.Name = model.Name;
+                data.Description = model.Description;
+                data.Type = model.Type;
+                data.UsageType = model.UsageType;
+                data.CalculationType = model.CalculationType;
+                data.CalculationAmount = model.CalculationAmount;
+                data.Amount = model.Amount;
+                data.MaxUsage = model.MaxUsage;
+                data.UsageCount = model.UsageCount;
+                data.ExpirationDate = model.ExpirationDate;
 
                 _context.SaveChanges();
 

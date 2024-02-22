@@ -154,4 +154,38 @@ public static class DataGenerationExtensions
         }
     }
     #endregion
+    #region RANDOM UINT
+    public static uint GenerateRandomUint()
+    {
+        var data = (uint)new Random().Next(-int.MaxValue, int.MaxValue);
+        return data;
+    }
+    #endregion
+    #region RANDOM BYTE
+    public static byte[] GenerateRandomByteArray()
+    {
+        var exclusions = new HashSet<byte> { 1, 200, 58, 11, 66, 9 };
+
+        var results = GetRandomByteList()
+                      .Where(b => exclusions.Contains(b) == false)
+                      .Take(50)
+                      .ToArray();
+
+        return results;
+    }
+
+    private static IEnumerable<byte> GetRandomByteList()
+    {
+        var random = new Random();
+        byte[] buffer = new byte[32];
+        while (true)
+        {
+            random.NextBytes(buffer);
+            foreach (var ret in buffer)
+            {
+                yield return ret;
+            }
+        }
+    }
+    #endregion
 }

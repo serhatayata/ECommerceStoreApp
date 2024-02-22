@@ -1,4 +1,5 @@
 ﻿using CampaignService.Api.Models.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace CampaignService.Api.Entities;
 
@@ -68,6 +69,8 @@ public class Coupon : IEntity
     /// Creation date of the coupon
     /// </summary>
     public DateTime CreationDate { get; set; }
+
+    public byte[] RowVersion { get; set; }
 
     public virtual ICollection<CouponItem> CouponItems { get; set; }
 }
