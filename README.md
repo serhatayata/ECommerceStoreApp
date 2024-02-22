@@ -793,6 +793,89 @@ mutation($coupon: couponUsageInput!){
 ```
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------
+- Identity Server API
+  - Add Client (identityservice.api/add-client)
+  ```json
+  {
+    "clientId": "campaignClient",
+    "clientName": "campaignClientName",
+    "description" : "api client for campaign service",
+    "secrets": [
+      {
+        "description": "api campaignService specific",
+        "value": "campaign_secret_key",
+        "type": "SharedSecret"
+      }
+    ],
+    "allowedGrantTypes": [
+      "client_credentials"
+    ],
+    "allowedCorsOrigins": null,
+    "allowOfflineAccess": true,
+    "allowedScopes": [
+      "openid",
+      "profile",
+      "roles",
+      "role"
+    ],
+    "properties": null
+  }
+  ```
+  
+  - Add API Scope (identityservice.api/add-apiscope)
+  ```json
+  {
+    "enabled": true,
+    "name": "campaign_readpermission",
+    "displayName": "campaign service api read name",
+    "description": "campaign service api read description",
+    "required": false,
+    "emphasize": false,
+    "showInDiscoveryDocument": true,
+    "userClaims" : [
+        "campaign_readpermission"
+    ],
+    "properties" : [
+        { "key" : "campaign_permissionkey", "value" : "campaign_permissionvalue" }
+    ]
+  }
+  ```
+  - Add API Resource (identityservice.api/add-apiresource)
+  ```json
+  {
+    "enabled": true,
+    "name": "resource_campaignservice",
+    "displayName": "Resource campaign service Name",
+    "description": "Resource campaign description",
+    "allowedAccessTokenSigningAlgorithms": [],
+    "showInDiscoveryDocument": true,
+    "secrets": [
+      {
+        "description": "secret key campaign",
+        "value": "campaign_secret_key",
+        "expiration": null,
+        "type": null
+      }
+    ],
+    "scopes": [
+      "campaign_readpermission",
+      "campaign_writepermission",
+      "campaign_fullpermission"
+    ],
+    "userClaims": [
+      "test claim campaign"
+    ],
+    "properties": [
+      {
+        "key": "apiresource_propid4key",
+        "value": "apiresource_propid4value"
+      }
+    ],
+    "nonEditable": false
+  }
+  ```
+  
+----------
 
 - Migration commands IdentityServer
 
