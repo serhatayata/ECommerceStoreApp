@@ -764,6 +764,32 @@ mutation($id: Int!)
     "id": 1001
 }
 
+# CouponUsage
+
+mutation($coupon: couponUsageInput!){
+  couponUsage(coupon: $coupon){
+    userId
+    reason
+    name
+    type
+    usageType
+    calculationType
+    calculationAmount
+    amount
+    maxUsage
+    expirationDate
+  }
+}
+
+# query variables
+
+{
+  "coupon": {
+    "code": "NDASD12",
+    "userId": "1231231asda"
+  }
+}
+
 ```
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------
