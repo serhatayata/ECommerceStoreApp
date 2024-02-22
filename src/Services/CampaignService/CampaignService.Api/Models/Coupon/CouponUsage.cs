@@ -4,6 +4,11 @@ namespace CampaignService.Api.Models.Coupon;
 
 public class CouponUsage
 {
+    public CouponUsage()
+    {
+        
+    }
+
     public CouponUsage(string reason)
     {
         this.Reason = reason;

@@ -144,6 +144,9 @@ public class CouponRepository : ICouponRepository
             if (coupon == null)
                 return new CouponUsage("Coupon not found");
 
+            if (coupon.CouponItems.Count() >= coupon.MaxUsage)
+                return new CouponUsage("Coupon max usage reached");
+
             var userId = model.UserId;
             if (coupon.UsageType == UsageTypes.UserBased)
             {

@@ -85,8 +85,12 @@ public class CouponMutation : ObjectGraphType<Coupon>
                     context.Errors.AddRange(errors);
                     return null;
                 }
-
-                var couponUsage = mapper.Map<CouponUsage>(validationResult.Model);
+                var model = validationResult.Model;
+                var couponUsage = new CouponUsage()
+                {
+                    Code = model.Code,
+                    UserId = model.UserId
+                };
                 var result = await couponRepository.CouponUsageAsync(couponUsage);
                 return result;
             });

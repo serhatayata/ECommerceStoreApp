@@ -19,7 +19,7 @@ public class CouponEntityTypeConfiguration : IEntityTypeConfiguration<Coupon>
                .HasColumnType(typeName: "nvarchar(255)")
                .IsRequired();
 
-        builder.Property(o => o.Name)
+        builder.Property(o => o.Description)
                .HasColumnType(typeName: "nvarchar(500)")
                .IsRequired();
 
@@ -52,6 +52,10 @@ public class CouponEntityTypeConfiguration : IEntityTypeConfiguration<Coupon>
         builder.Property(c => c.UsageCount)
                .HasColumnType(typeName: "int")
                .HasDefaultValue(0)
+               .IsRequired();
+
+        builder.Property(o => o.Code)
+               .HasColumnType(typeName: "nvarchar(40)")
                .IsRequired();
 
         builder.Property(o => o.Name)
