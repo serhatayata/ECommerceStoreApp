@@ -816,7 +816,10 @@ mutation($coupon: couponUsageInput!){
       "openid",
       "profile",
       "roles",
-      "role"
+      "role",
+      "campaign_readpermission",
+      "campaign_writepermission",
+      "campaign_fullpermission"
     ],
     "properties": null
   }
