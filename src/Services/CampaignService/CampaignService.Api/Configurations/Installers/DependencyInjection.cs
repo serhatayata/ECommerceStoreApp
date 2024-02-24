@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using CampaignService.Api.Attributes;
 using CampaignService.Api.Configurations.Installers.ApplicationBuilderInstallers;
 using CampaignService.Api.Configurations.Installers.ServiceInstallers;
 
@@ -19,9 +20,14 @@ public static class DependencyInjection
             .Cast<IServiceInstaller>()
             .OrderBy(ord =>
             {
-                if (ord.GetType() == typeof(StartupDIServiceInstaller))
-                    return false;
-                return true;
+                var att = ord.GetType()
+                             .GetCustomAttributes(typeof(InstallerOrderAttribute), true)
+                             .FirstOrDefault() as InstallerOrderAttribute;
+
+                if (att == null)
+                    return int.MaxValue;
+
+                return att.Order;
             });
 
         foreach (IServiceInstaller serviceInstaller in serviceInstallers)
@@ -47,7 +53,18 @@ public static class DependencyInjection
             .SelectMany(a => a.DefinedTypes)
             .Where(IsAssignableToType<IHostInstaller>)
             .Select(Activator.CreateInstance)
-            .Cast<IHostInstaller>();
+            .Cast<IHostInstaller>()
+            .OrderBy(ord =>
+            {
+                var att = ord.GetType()
+                             .GetCustomAttributes(typeof(InstallerOrderAttribute), true)
+                             .FirstOrDefault() as InstallerOrderAttribute;
+
+                if (att == null)
+                    return int.MaxValue;
+
+                return att.Order;
+            });
 
         foreach (IHostInstaller hostInstaller in hostInstallers)
         {
@@ -72,7 +89,18 @@ public static class DependencyInjection
             .SelectMany(a => a.DefinedTypes)
             .Where(IsAssignableToType<IWebApplicationInstaller>)
             .Select(Activator.CreateInstance)
-            .Cast<IWebApplicationInstaller>();
+            .Cast<IWebApplicationInstaller>()
+            .OrderBy(ord =>
+            {
+                var att = ord.GetType()
+                             .GetCustomAttributes(typeof(InstallerOrderAttribute), true)
+                             .FirstOrDefault() as InstallerOrderAttribute;
+
+                if (att == null)
+                    return int.MaxValue;
+
+                return att.Order;
+            });
 
         foreach (IWebApplicationInstaller webAppIstaller in webAppInstallers)
         {
@@ -98,7 +126,18 @@ public static class DependencyInjection
             .Where(IsAssignableToType<IApplicationBuilderInstaller>)
             .Select(Activator.CreateInstance)
             .Cast<IApplicationBuilderInstaller>()
-            .Where(s => s.GetType() != typeof(ServiceDiscoveryApplicationBuilderInstaller));
+            .Where(s => s.GetType() != typeof(ServiceDiscoveryApplicationBuilderInstaller))
+            .OrderBy(ord =>
+            {
+                var att = ord.GetType()
+                             .GetCustomAttributes(typeof(InstallerOrderAttribute), true)
+                             .FirstOrDefault() as InstallerOrderAttribute;
+
+                if (att == null)
+                    return int.MaxValue;
+
+                return att.Order;
+            });
 
         foreach (IApplicationBuilderInstaller webAppIstaller in webAppInstallers)
         {

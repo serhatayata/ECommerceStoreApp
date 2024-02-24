@@ -1,8 +1,10 @@
-﻿using CampaignService.Api.GraphQL.Schemas;
+﻿using CampaignService.Api.Attributes;
+using CampaignService.Api.GraphQL.Schemas;
 using GraphQL.Server.Ui.Playground;
 
 namespace CampaignService.Api.Configurations.Installers.WebApplicationInstallers;
 
+[InstallerOrder(Order = 1)]
 public class GraphQLWebApplicationInstaller : IWebApplicationInstaller
 {
     public void Install(WebApplication app, IHostApplicationLifetime lifeTime, IConfiguration configuration)

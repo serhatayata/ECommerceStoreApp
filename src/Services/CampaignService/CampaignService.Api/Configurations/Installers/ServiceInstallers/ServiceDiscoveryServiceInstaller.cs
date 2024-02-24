@@ -1,7 +1,9 @@
-﻿using Consul;
+﻿using CampaignService.Api.Attributes;
+using Consul;
 
 namespace CampaignService.Api.Configurations.Installers.ServiceInstallers;
 
+[InstallerOrder(Order = 9)]
 public class ServiceDiscoveryServiceInstaller : IServiceInstaller
 {
     public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)

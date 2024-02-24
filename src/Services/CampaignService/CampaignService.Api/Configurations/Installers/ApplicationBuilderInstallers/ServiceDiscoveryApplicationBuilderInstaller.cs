@@ -1,5 +1,6 @@
 ﻿namespace CampaignService.Api.Configurations.Installers.ApplicationBuilderInstallers;
 
+using CampaignService.Api.Attributes;
 using CampaignService.Api.Configurations.Installers;
 using CampaignService.Api.Models.Settings;
 using Consul;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
+[InstallerOrder(Order = 1)]
 public class ServiceDiscoveryApplicationBuilderInstaller : IApplicationBuilderInstaller
 {
     public void Install(IApplicationBuilder app, IHostApplicationLifetime lifeTime, IConfiguration configuration)

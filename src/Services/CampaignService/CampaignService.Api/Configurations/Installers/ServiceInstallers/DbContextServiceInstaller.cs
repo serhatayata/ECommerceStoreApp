@@ -1,8 +1,10 @@
-﻿using CampaignService.Api.Infrastructure.Contexts;
+﻿using CampaignService.Api.Attributes;
+using CampaignService.Api.Infrastructure.Contexts;
 using Microsoft.EntityFrameworkCore;
 
 namespace CampaignService.Api.Configurations.Installers.ServiceInstallers;
 
+[InstallerOrder(Order = 3)]
 public class DbContextServiceInstaller : IServiceInstaller
 {
     public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)

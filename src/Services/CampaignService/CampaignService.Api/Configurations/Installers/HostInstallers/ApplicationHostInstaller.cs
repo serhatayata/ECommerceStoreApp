@@ -1,8 +1,10 @@
 ﻿
+using CampaignService.Api.Attributes;
 using Serilog;
 
 namespace CampaignService.Api.Configurations.Installers.HostInstallers;
 
+[InstallerOrder(Order = 1)]
 public class ApplicationHostInstaller : IHostInstaller
 {
     public void Install(IHostBuilder host, IConfiguration configuration, IWebHostEnvironment hostEnvironment)

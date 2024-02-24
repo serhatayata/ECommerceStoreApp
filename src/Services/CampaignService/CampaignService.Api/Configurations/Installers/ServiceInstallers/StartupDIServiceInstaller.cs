@@ -1,4 +1,5 @@
-﻿using CampaignService.Api.GraphQL.DataLoaders.BatchDataLoaders;
+﻿using CampaignService.Api.Attributes;
+using CampaignService.Api.GraphQL.DataLoaders.BatchDataLoaders;
 using CampaignService.Api.GraphQL.DataLoaders.CollectionBatchDataLoaders;
 using CampaignService.Api.GraphQL.Schemas;
 using CampaignService.Api.Repository.Abstract;
@@ -9,6 +10,7 @@ using GraphQL.Types;
 
 namespace CampaignService.Api.Configurations.Installers.ServiceInstallers;
 
+[InstallerOrder(Order = 1)]
 public class StartupDIServiceInstaller : IServiceInstaller
 {
     public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
