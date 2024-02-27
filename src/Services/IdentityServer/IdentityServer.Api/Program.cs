@@ -12,7 +12,6 @@ using IdentityServer.Api.Mapping;
 using IdentityServer.Api.Models.LogModels;
 using IdentityServer.Api.Models.Settings;
 using IdentityServer.Api.Models.UserModels;
-using IdentityServer.Api.Services.Base.Concrete;
 using IdentityServer.Api.Services.ElasticSearch.Abstract;
 using IdentityServer.Api.Services.ElasticSearch.Concrete;
 using IdentityServer.Api.Services.Redis.Abstract;
@@ -175,11 +174,6 @@ builder.Services.UseVerifyCodeTokenAuthentication();
 //        .Build());
 //});
 
-#endregion
-#region Localization
-builder.Services.AddHostedService<InitializeCacheService>();
-
-await builder.Services.AddLocalizationSettingsAsync(configuration);
 #endregion
 #region Consul
 builder.Services.ConfigureConsul(configuration);
