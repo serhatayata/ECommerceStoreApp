@@ -410,11 +410,14 @@ mutation($campaign: campaignInput!) {
     expirationDate
     startDate
     sponsor
-    type
-    rate
+    platformType
+    discountType
+    calculationType
+    calculationAmount
     amount
     isForAllCategory
     maxUsage
+    maxUsagePerUser
   }
 }
 
@@ -423,15 +426,19 @@ mutation($campaign: campaignInput!) {
 {
     "campaign" : {
       "status" : "ACTIVE",
-      "name" : "campaign-test-1.1",
-      "description" : "campaign test 1.1 description",
-      "expirationDate": "2024-02-03T16:00:00",
-      "startDate" : "2024-01-02T16:00:00",
-      "sponsor" : "test-sponsor1",
-      "type" : "PRICE",
-      "rate" : 0.0,
-      "amount" : 100.0,
-      "isForAllCategory" : false
+      "name" : "campaign-test-10.1",
+      "description" : "campaign test 10.1 description",
+      "expirationDate": "2024-03-03T16:00:00",
+      "startDate" : "2024-03-02T16:00:00",
+      "sponsor" : "test-sponsor2000",
+      "platformType": "WEB",
+      "discountType": "PRICE",
+      "calculationType": "NORMAL",
+      "amount" : 200.0,
+      "calculationAmount": 0,
+      "isForAllCategory" : false,
+      "maxUsagePerUser": 2,
+      "maxUsage": 200
   }
 }
 
