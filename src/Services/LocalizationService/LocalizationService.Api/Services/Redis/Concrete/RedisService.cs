@@ -13,7 +13,7 @@ namespace LocalizationService.Api.Services.Redis.Concrete
 
         public RedisService(IConfiguration configuration)
         {
-            _connectionString = configuration?.GetSection("RedisSettings:ConnectionString")?.Value ?? string.Empty;
+            _connectionString = configuration?.GetSection("LocalizationCacheSettings:ConnectionString")?.Value ?? string.Empty;
             var connectionStrings = _connectionString.Split(",");
 
             _configurationOptions = new ConfigurationOptions()

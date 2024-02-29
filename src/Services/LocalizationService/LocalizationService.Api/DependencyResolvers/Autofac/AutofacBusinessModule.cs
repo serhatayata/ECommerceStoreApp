@@ -21,8 +21,6 @@ namespace LocalizationService.Api.DependencyResolvers.Autofac
             #region DB
             builder.RegisterType<LocalizationReadDbConnection>().As<ILocalizationReadDbConnection>().InstancePerLifetimeScope();
             builder.RegisterType<LocalizationWriteDbConnection>().As<ILocalizationWriteDbConnection>().InstancePerLifetimeScope();
-
-            builder.Register<ILocalizationDbContext>(l => l.Resolve<LocalizationDbContext>());
             #endregion
             #region REPOSITORIES
             builder.RegisterType<UnitOfWork>().As<IUnitOfWork>().InstancePerDependency();

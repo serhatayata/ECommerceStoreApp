@@ -1,10 +1,12 @@
 ﻿
 using Consul;
+using LocalizationService.Api.Attributes;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 
 namespace LocalizationService.Api.Configurations.Installers.ApplicationBuilderInstallers;
 
+[InstallerOrder(Order = 1)]
 public class ServiceDiscoveryApplicationBuilderInstaller : IApplicationBuilderInstaller
 {
     public void Install(IApplicationBuilder app, IHostApplicationLifetime lifeTime, IConfiguration configuration)

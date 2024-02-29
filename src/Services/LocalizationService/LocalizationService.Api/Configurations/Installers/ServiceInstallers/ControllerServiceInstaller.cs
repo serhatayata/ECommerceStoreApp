@@ -10,6 +10,7 @@ using System.Text.Json.Serialization;
 
 namespace LocalizationService.Api.Configurations.Installers.ServiceInstallers;
 
+[InstallerOrder(Order = 4)]
 public class ControllerServiceInstaller : IServiceInstaller
 {
     public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)

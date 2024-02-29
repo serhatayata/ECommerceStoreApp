@@ -1,7 +1,9 @@
-﻿using Serilog;
+﻿using LocalizationService.Api.Attributes;
+using Serilog;
 
 namespace LocalizationService.Api.Configurations.Installers.HostInstallers;
 
+[InstallerOrder(Order = 2)]
 public class ApplicationHostInstaller : IHostInstaller
 {
     public void Install(IHostBuilder host, IConfiguration configuration, IWebHostEnvironment hostEnvironment)

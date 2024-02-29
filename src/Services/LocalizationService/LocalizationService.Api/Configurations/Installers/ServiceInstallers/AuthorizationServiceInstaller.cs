@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using LocalizationService.Api.Attributes;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Logging;
 
 namespace LocalizationService.Api.Configurations.Installers.ServiceInstallers;
 
+[InstallerOrder(Order = 3)]
 public class AuthorizationServiceInstaller : IServiceInstaller
 {
     public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)

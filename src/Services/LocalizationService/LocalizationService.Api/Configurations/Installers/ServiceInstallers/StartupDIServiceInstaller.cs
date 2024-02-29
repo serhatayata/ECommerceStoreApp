@@ -1,4 +1,5 @@
-﻿using LocalizationService.Api.Models.LogModels;
+﻿using LocalizationService.Api.Attributes;
+using LocalizationService.Api.Models.LogModels;
 using LocalizationService.Api.Services.ElasticSearch.Abstract;
 using LocalizationService.Api.Services.ElasticSearch.Concrete;
 using LocalizationService.Api.Services.Redis.Abstract;
@@ -6,6 +7,7 @@ using LocalizationService.Api.Services.Redis.Concrete;
 
 namespace LocalizationService.Api.Configurations.Installers.ServiceInstallers;
 
+[InstallerOrder(Order = 1)]
 public class StartupDIServiceInstaller : IServiceInstaller
 {
     public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)

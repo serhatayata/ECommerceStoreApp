@@ -1,9 +1,6 @@
 ﻿using AutoMapper;
 using LocalizationService.Api.Data.Contexts;
 using LocalizationService.Api.Entities;
-using LocalizationService.Api.Extensions;
-using LocalizationService.Api.Models.ResourceModels;
-using LocalizationService.Api.Services.Redis.Abstract;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Polly;
@@ -22,7 +19,6 @@ public class SeedDataWebApplicationInstaller : IWebApplicationInstaller
         var context = scope.ServiceProvider.GetService<LocalizationDbContext>();
 
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<SeedDataWebApplicationInstaller>>();
-        var redisService = scope.ServiceProvider.GetRequiredService<IRedisService>();
         var mapper = scope.ServiceProvider.GetRequiredService<IMapper>();
 
         string rootPath = env.ContentRootPath;
@@ -92,20 +88,6 @@ public class SeedDataWebApplicationInstaller : IWebApplicationInstaller
                 }
 
                 await context.SaveChangesAsync();
-            }
-
-            var cacheResourceList = mapper.Map<List<ResourceCacheModel>>(resourceFileList);
-            foreach (var resourceData in cacheResourceList)
-            {
-                //Cache
-                var currentMember = context.Members.FirstOrDefault(s => s.Id == resourceData.MemberId);
-                if (currentMember == null)
-                    continue;
-
-                var duration = configuration.GetSection("LocalizationCacheSettings:Duration").Get<int>();
-                var databaseId = configuration.GetSection("LocalizationCacheSettings:DatabaseId").Get<int>();
-                var cacheKey = CacheExtensions.GetResourceCacheKey(currentMember.MemberKey, resourceData.LanguageCode, resourceData.Tag);
-                await redisService.SetAsync(cacheKey, resourceData, duration, databaseId);
             }
         });
 

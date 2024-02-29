@@ -1,9 +1,11 @@
-﻿using Serilog;
+﻿using LocalizationService.Api.Attributes;
+using Serilog;
 using Serilog.Sinks.Elasticsearch;
 using System.Reflection;
 
 namespace LocalizationService.Api.Configurations.Installers.ServiceInstallers;
 
+[InstallerOrder(Order = 9)]
 public class LogServiceInstaller : IServiceInstaller
 {
     public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
