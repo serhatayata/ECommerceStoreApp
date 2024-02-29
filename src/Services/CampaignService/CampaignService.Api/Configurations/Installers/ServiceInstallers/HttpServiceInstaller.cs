@@ -1,8 +1,8 @@
-﻿using LocalizationService.Api.Attributes;
+﻿using CampaignService.Api.Attributes;
 
-namespace LocalizationService.Api.Configurations.Installers.ServiceInstallers;
+namespace CampaignService.Api.Configurations.Installers.ServiceInstallers;
 
-[InstallerOrder(Order = 9)]
+[InstallerOrder(Order = 10)]
 public class HttpServiceInstaller : IServiceInstaller
 {
     public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)

@@ -8,7 +8,7 @@ using StackExchange.Redis;
 
 namespace LocalizationService.Api.Configurations.Installers.ServiceInstallers;
 
-[InstallerOrder(Order = 6)]
+[InstallerOrder(Order = 7)]
 public class DataLoadServiceInstaller : IServiceInstaller
 {
     public async void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
@@ -20,6 +20,8 @@ public class DataLoadServiceInstaller : IServiceInstaller
         var databaseId = configuration.GetValue<int>("LocalizationCacheSettings:DatabaseId");
         var database = redisService.GetDatabase(databaseId);
 
+        var members = await dbContext.Members.ToListAsync();
+        var languages = await dbContext.Languages.ToListAsync();
         var resources = await dbContext.Resources.ToListAsync();
         var batchData = resources.Batch(1000);
         foreach (var data in batchData)
@@ -27,9 +29,10 @@ public class DataLoadServiceInstaller : IServiceInstaller
             var dataList = new Dictionary<RedisKey, RedisValue>();
             foreach (var resource in data)
             {
+                var memberName = members.FirstOrDefault(m => m.Id == resource.MemberId);
                 var key = CacheExtensions.GetResourceCacheKey(
-                                resource.MemberId.ToString(),
-                                resource.LanguageId?.ToString() ?? string.Empty,
+                                memberName?.MemberKey ?? string.Empty,
+                                resource.LanguageCode ?? string.Empty,
                                 resource.Tag);
 
                 var resourceModel = new ResourceCacheModel()

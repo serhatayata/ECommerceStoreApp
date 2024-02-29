@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using LocalizationService.Api.Attributes;
 using LocalizationService.Api.Data.Contexts;
 using LocalizationService.Api.Entities;
 using Microsoft.Data.SqlClient;
@@ -8,18 +9,18 @@ using Serilog;
 using System.Data.SqlTypes;
 using System.Reflection;
 
-namespace LocalizationService.Api.Configurations.Installers.WebApplicationInstallers;
+namespace LocalizationService.Api.Configurations.Installers.ServiceInstallers;
 
-public class SeedDataWebApplicationInstaller : IWebApplicationInstaller
+[InstallerOrder(Order = 6)]
+public class SeedDataServiceInstaller : IServiceInstaller
 {
-    public async void Install(WebApplication app, IHostApplicationLifetime lifeTime, IConfiguration configuration)
+    public async void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
-        var env = app.Environment;
-        var scope = app.Services.CreateScope();
-        var context = scope.ServiceProvider.GetService<LocalizationDbContext>();
-
-        var logger = scope.ServiceProvider.GetRequiredService<ILogger<SeedDataWebApplicationInstaller>>();
-        var mapper = scope.ServiceProvider.GetRequiredService<IMapper>();
+        var env = hostEnvironment;
+        var serviceProvider = services.BuildServiceProvider();
+        var context = serviceProvider.GetRequiredService<LocalizationDbContext>();
+        var logger = serviceProvider.GetRequiredService<ILogger<SeedDataServiceInstaller>>();
+        var mapper = serviceProvider.GetRequiredService<IMapper>();
 
         string rootPath = env.ContentRootPath;
         string seedFilePath = Path.Combine(rootPath, "Data", "SeedData", "SeedFiles");
@@ -31,7 +32,7 @@ public class SeedDataWebApplicationInstaller : IWebApplicationInstaller
                     {
                         logger.LogError(ex, "ERROR handling message: {ExceptionMessage} - Method : {ClassName}.{MethodName}",
                                             ex.Message,
-                                            nameof(SeedDataWebApplicationInstaller),
+                                            nameof(SeedDataServiceInstaller),
                                             MethodBase.GetCurrentMethod()?.Name);
                     });
 
@@ -93,7 +94,7 @@ public class SeedDataWebApplicationInstaller : IWebApplicationInstaller
 
         if (result != null && result.FinalException != null)
             Log.Error("ERROR handling message: {ExceptionMessage} - Method : {ClassName}.{MethodName} - Final Exception Type : {FinalExceptionType}",
-                      result.FinalException.Message, nameof(SeedDataWebApplicationInstaller),
+                      result.FinalException.Message, nameof(SeedDataServiceInstaller),
                       MethodBase.GetCurrentMethod()?.Name,
                       result.ExceptionType);
 

@@ -3,3 +3,4 @@ IdentityMember1,IdentityV1
 CatalogMember1,CatalogV1
 BasketMember1,BasketV1
 NotificationMember1,NotificationV1
+CampaignMember1,CampaignV1

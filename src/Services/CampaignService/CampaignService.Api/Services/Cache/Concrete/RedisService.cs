@@ -13,7 +13,7 @@ namespace CampaignService.Api.Services.Cache.Concrete
 
         public RedisService(IConfiguration configuration)
         {
-            _connectionString = configuration?.GetSection("RedisOptions:ConnectionString")?.Value ?? string.Empty;
+            _connectionString = configuration?.GetSection("LocalizationSettings:ConnectionString")?.Value ?? string.Empty;
             var connectionStrings = _connectionString.Split(",");
 
             _configurationOptions = new ConfigurationOptions()

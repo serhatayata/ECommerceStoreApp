@@ -6,6 +6,8 @@ using CampaignService.Api.Repository.Abstract;
 using CampaignService.Api.Repository.Concrete;
 using CampaignService.Api.Services.Cache.Abstract;
 using CampaignService.Api.Services.Cache.Concrete;
+using CampaignService.Api.Services.Localization.Abstract;
+using CampaignService.Api.Services.Localization.Concrete;
 using GraphQL.Types;
 
 namespace CampaignService.Api.Configurations.Installers.ServiceInstallers;
@@ -41,5 +43,6 @@ public class StartupDIServiceInstaller : IServiceInstaller
         services.AddScoped<CouponItemCollectionBatchDataLoader>();
 
         services.AddSingleton<IRedisService, RedisService>();
+        services.AddSingleton<ILocalizationService, LocalizationService>();
     }
 }

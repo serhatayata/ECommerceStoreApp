@@ -1,28 +1,18 @@
 ﻿using BasketService.Api.Dtos.Localization;
-using BasketService.Api.Extensions;
-using BasketService.Api.Models;
 using BasketService.Api.Models.Settings;
 using BasketService.Api.Services.Localization.Abstract;
 using BasketService.Api.Services.Redis.Abstract;
-using BasketService.Api.Utilities.Results;
 using Microsoft.Extensions.Caching.Memory;
-using Polly;
-using Serilog;
-using System.Reflection;
 
 namespace BasketService.Api.Services.Localization.Concrete
 {
     public class LocalizationService : ILocalizationService
     {
         private readonly IRedisService _redisService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger<LocalizationService> _logger;
         private readonly IConfiguration _configuration;
-        private readonly IHttpClientFactory _httpClientFactory;
 
         private string _localizationMemberKey;
-
-        private int _redisCacheDuration;
 
         private int _databaseId;
 
@@ -34,18 +24,14 @@ namespace BasketService.Api.Services.Localization.Concrete
                       ILogger<LocalizationService> logger)
         {
             _redisService = redisService;
-            _httpContextAccessor = httpContextAccessor;
             _logger = logger;
             _configuration = configuration;
-            _httpClientFactory = httpClientFactory;
 
             var localizationSettings = _configuration.GetSection("LocalizationSettings").Get<LocalizationSettings>();
 
             _localizationMemberKey = localizationSettings.MemberKey;
 
             _databaseId = localizationSettings.DatabaseId;
-
-            _redisCacheDuration = localizationSettings.CacheDuration;
         }
 
         public string this[string culture, string key, params object[] args]
@@ -78,44 +64,13 @@ namespace BasketService.Api.Services.Localization.Concrete
 
         private string GetLocalizationData(string currentCulture, string resourceKey, params object[] args)
         {
-            string redisKey = $"{_localizationMemberKey}-{currentCulture}-{resourceKey}";
+            string redisKey = GetResourceCacheKey(_localizationMemberKey, currentCulture, resourceKey, args);
+            if (args != null && args.Count() > 0)
+                return GetLocalizedValue(redisKey, args) ?? string.Empty;
+
             var redisValue = _redisService.Get<ResourceDto>(redisKey, _databaseId);
 
-            if (!_redisService.AnyKeyExistsByPrefix(_localizationMemberKey, _databaseId))
-                this.SetCacheValues();
-
-            if (redisValue != null)
-                return redisValue?.Value ?? string.Empty;
-
-            var result = _redisService.Get<ResourceDto>(redisKey, _databaseId);
-            return result?.Value ?? string.Empty;
-        }
-
-        private void SetCacheValues()
-        {
-            Task.Run(async () =>
-            {
-                var policy = Polly.Policy.Handle<Exception>()
-                .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
-                {
-                    Log.Error("ERROR handling message: {ExceptionMessage} - Method : {ClassName}.{MethodName}",
-                                        ex.Message, nameof(LocalizationService),
-                                        MethodBase.GetCurrentMethod()?.Name);
-                });
-
-                await policy.ExecuteAsync(async () =>
-                {
-                    var gatewayClient = _httpClientFactory.CreateClient("gateway-specific");
-                    var result = await gatewayClient.PostGetResponseAsync<Result, StringModel>("localization/members/get-with-resources-by-memberkey-and-save-default", new StringModel() { Value = _localizationMemberKey });
-
-                    if (result == null || (!result?.Success ?? false))
-                        throw new Exception("Localization data request not successful");
-
-                    //MemoryCacheExtensions.SaveLocalizationData(memoryCache: _memoryCache,
-                    //                                           configuration: _configuration,
-                    //                                           result.Data);
-                });
-            });
+            return redisValue?.Value ?? string.Empty;
         }
 
         private string? GetLocalizedValue(string key, params object[] args)
@@ -125,6 +80,23 @@ namespace BasketService.Api.Services.Localization.Concrete
             return (args == null || args.Length == 0) ?
                        value :
                        string.Format(value, args);
+        }
+
+        private static string GetResourceCacheKey(
+        string memberKey,
+        string language,
+        string key,
+        params object[] args)
+        {
+            var result = string.Join("-",
+                             memberKey,
+                             language,
+                             key);
+
+            if (args != null && args.Count() > 0)
+                result += string.Join("-", "-", args);
+
+            return result;
         }
     }
 }

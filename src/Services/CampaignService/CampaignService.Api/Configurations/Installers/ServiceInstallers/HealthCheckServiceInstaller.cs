@@ -17,7 +17,7 @@ public class HealthCheckServiceInstaller : IServiceInstaller
             tags: new string[] { "db", "mssql", "sqlserver" }
         )
         .AddRedis(
-            redisConnectionString: configuration["RedisOptions:ConnectionString"] ?? string.Empty,
+            redisConnectionString: configuration["LocalizationSettings:ConnectionString"] ?? string.Empty,
             name: "Redis Check",
             failureStatus: Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Unhealthy | Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Degraded,
             tags: new string[] { "redis" }

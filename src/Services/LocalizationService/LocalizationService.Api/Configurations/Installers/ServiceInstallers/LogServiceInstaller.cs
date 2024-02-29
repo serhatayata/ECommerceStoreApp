@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace LocalizationService.Api.Configurations.Installers.ServiceInstallers;
 
-[InstallerOrder(Order = 9)]
+[InstallerOrder(Order = 10)]
 public class LogServiceInstaller : IServiceInstaller
 {
     public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)

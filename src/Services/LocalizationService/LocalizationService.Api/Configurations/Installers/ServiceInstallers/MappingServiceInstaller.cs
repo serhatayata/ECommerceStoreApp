@@ -3,7 +3,7 @@ using LocalizationService.Api.Mapping;
 
 namespace LocalizationService.Api.Configurations.Installers.ServiceInstallers;
 
-[InstallerOrder(Order = 10)]
+[InstallerOrder(Order = 1)]
 public class MappingServiceInstaller : IServiceInstaller
 {
     public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)

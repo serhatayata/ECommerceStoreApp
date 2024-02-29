@@ -1,37 +1,32 @@
-﻿using NotificationService.Api.Dtos.Localization;
-using NotificationService.Api.Models.Settings;
-using NotificationService.Api.Services.Base.Abstract;
-using NotificationService.Api.Services.Cache.Abstract;
+﻿using CampaignService.Api.Models.Localization;
+using CampaignService.Api.Services.Localization.Abstract;
+using CampaignService.Api.Services.Cache.Abstract;
+using CampaignService.Api.Models.Settings;
 
-namespace NotificationService.Api.Services.Base.Concrete;
+namespace CampaignService.Api.Services.Localization.Concrete;
 
 public class LocalizationService : ILocalizationService
 {
     private readonly IRedisService _redisService;
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger<LocalizationService> _logger;
     private readonly IConfiguration _configuration;
-    private readonly IHttpClientFactory _httpClientFactory;
 
     private string _localizationMemberKey;
     private int _databaseId;
 
     public LocalizationService(
                   IRedisService redisService,
-                  IHttpContextAccessor httpContextAccessor,
-                  IHttpClientFactory httpClientFactory,
                   IConfiguration configuration,
                   ILogger<LocalizationService> logger)
     {
         _redisService = redisService;
-        _httpContextAccessor = httpContextAccessor;
         _logger = logger;
         _configuration = configuration;
-        _httpClientFactory = httpClientFactory;
 
         var localizationSettings = _configuration.GetSection("LocalizationSettings").Get<LocalizationSettings>();
 
         _localizationMemberKey = localizationSettings.MemberKey;
+
         _databaseId = localizationSettings.DatabaseId;
     }
 
@@ -61,18 +56,28 @@ public class LocalizationService : ILocalizationService
 
     private string GetLocalizationData(string currentCulture, string resourceKey, params object[] args)
     {
-        string redisKey = GetResourceCacheKey(_localizationMemberKey, currentCulture, resourceKey, args);
-        if (args != null && args.Count() > 0)
-            return this.GetLocalizedValue(redisKey, args) ?? string.Empty;
+        try
+        {
+            var redisKey = GetResourceCacheKey(this._localizationMemberKey, currentCulture, resourceKey, args);
+            if (args != null && args.Count() > 0)
+                return GetLocalizedValue(redisKey, args) ?? string.Empty;
 
-        var redisValue = _redisService.Get<ResourceDto>(redisKey, _databaseId);
+            var redisValue = _redisService.Get<ResourceModel>(redisKey, _databaseId);
 
-        return redisValue?.Value ?? string.Empty;
+            return redisValue?.Value ?? string.Empty;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "ERROR - {Message}", ex.Message);
+            return string.Empty;
+        }
     }
 
     private string? GetLocalizedValue(string key, params object[] args)
     {
         var value = _redisService.Get<string>(key, _databaseId);
+        if (string.IsNullOrWhiteSpace(value))
+            return value;
 
         return (args == null || args.Length == 0) ?
                    value :

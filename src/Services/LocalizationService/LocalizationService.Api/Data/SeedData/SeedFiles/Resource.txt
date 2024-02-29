@@ -14,3 +14,11 @@ BC22U.SmsSuccess,<p>Email Gönderildi {Name} </p>,tr-TR,true,NotificationV1
 BC22U.SmsSuccess,<p>Email sent {Name} </p>,en-US,true,NotificationV1
 BC22U.SmsSuccessSubject, Ödeme tamamlandı başarılı mesajı,tr-TR,true,NotificationV1
 BC22U.SmsSuccessSubject, Payment completed success message,en-US,true,NotificationV1
+campaigninput.status.notempty,Statü boş bırakılamaz,tr-TR,true,CampaignV1
+campaigninput.status.notempty,Status cannot be empty,en-US,true,CampaignV1
+campaigninput.name.notempty,İsim boş bırakılamaz,tr-TR,true,CampaignV1
+campaigninput.name.notempty,Name cannot be empty,en-US,true,CampaignV1
+campaigninput.description.notempty,Tanım boş bırakılamaz,tr-TR,true,CampaignV1
+campaigninput.description.notempty,Description cannot be empty,en-US,true,CampaignV1
+campaigninput.description.length,Tanım uzunluğu {1} ile {2} arasında olmalı,tr-TR,true,CampaignV1
+campaigninput.description.length,Description length must be between {1} and {2},en-US,true,CampaignV1
