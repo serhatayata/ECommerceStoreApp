@@ -12,8 +12,8 @@ namespace BasketService.Api.Validations.FluentValidation.Base
         {
             string culture = HttpExtensions.GetAcceptLanguage(httpContextAccessor);
 
-            RuleFor(request => request.Value).NotEmpty().WithMessage(localizer[culture, "stringmodel.value.notempty"]);
-            RuleFor(request => request.Value).NotNull().WithMessage(localizer[culture, "stringmodel.value.notnull"]);
+            RuleFor(request => request.Value).NotEmpty().WithMessage(l => localizer[culture, "stringmodel.value.notempty"]);
+            RuleFor(request => request.Value).NotNull().WithMessage(l => localizer[culture, "stringmodel.value.notnull"]);
         }
     }
 }

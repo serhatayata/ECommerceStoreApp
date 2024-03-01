@@ -11,8 +11,8 @@ namespace BasketService.Api.Validations.FluentValidation.gRPC
         {
             string culture = HttpExtensions.GetAcceptLanguage(httpContextAccessor);
 
-            RuleFor(request => request.Id).NotEmpty().WithMessage(localizer[culture, "basketrequest.id.notempty"]);
-            RuleFor(request => request.Id).NotNull().WithMessage(localizer[culture, "basketrequest.id.notnull"]);
+            RuleFor(request => request.Id).NotEmpty().WithMessage(l => localizer[culture, "basketrequest.id.notempty"]);
+            RuleFor(request => request.Id).NotNull().WithMessage(l => localizer[culture, "basketrequest.id.notnull"]);
         }
     }
 }

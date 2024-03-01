@@ -12,11 +12,11 @@ namespace CatalogService.Api.Utilities.Validations.FluentValidation.FeatureValid
         {
             string culture = HttpExtensions.GetAcceptLanguage(httpContextAccessor);
 
-            RuleFor(b => b.FeatureId).NotEmpty().NotNull().WithMessage(localizer[culture, "productfeaturemodel.featureid.notempty"]);
-            RuleFor(b => b.FeatureId).GreaterThan(0).WithMessage(localizer[culture, "productfeaturemodel.featureid.greater", 0]);
+            RuleFor(b => b.FeatureId).NotEmpty().NotNull().WithMessage(l => localizer[culture, "productfeaturemodel.featureid.notempty"]);
+            RuleFor(b => b.FeatureId).GreaterThan(0).WithMessage(l => localizer[culture, "productfeaturemodel.featureid.greater", 0]);
 
-            RuleFor(b => b.ProductId).NotEmpty().NotNull().WithMessage(localizer[culture, "productfeaturemodel.productid.notempty"]);
-            RuleFor(b => b.ProductId).GreaterThan(0).WithMessage(localizer[culture, "productfeaturemodel.productid.notempty", 0]);
+            RuleFor(b => b.ProductId).NotEmpty().NotNull().WithMessage(l => localizer[culture, "productfeaturemodel.productid.notempty"]);
+            RuleFor(b => b.ProductId).GreaterThan(0).WithMessage(l => localizer[culture, "productfeaturemodel.productid.notempty", 0]);
         }
     }
 }

@@ -12,6 +12,6 @@ public class BoolModelValidator : AbstractValidator<BoolModel>
     {
         string culture = HttpExtensions.GetAcceptLanguage(httpContextAccessor);
 
-        RuleFor(b => b.Value).NotEmpty().NotNull().WithMessage(localizer[culture, "boolmodel.value.notempty"]);
+        RuleFor(b => b.Value).NotEmpty().NotNull().WithMessage(l => localizer[culture, "boolmodel.value.notempty"]);
     }
 }

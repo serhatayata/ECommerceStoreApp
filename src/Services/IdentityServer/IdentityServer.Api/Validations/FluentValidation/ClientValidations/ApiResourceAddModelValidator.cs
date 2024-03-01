@@ -12,12 +12,12 @@ namespace IdentityServer.Api.Validations.FluentValidation.ClientValidations
         {
             string culture = HttpExtensions.GetAcceptLanguage(httpContextAccessor);
 
-            RuleFor(x => x.Name).NotEmpty().NotNull().WithMessage(localizer[culture, "apiresourceaddmodel.name.notempty"]);
-            RuleFor(x => x.Name).Length(5, 500).WithMessage(localizer[culture, "apiresourceaddmodel.name.length", 5, 500]);
+            RuleFor(x => x.Name).NotEmpty().NotNull().WithMessage(l => localizer[culture, "apiresourceaddmodel.name.notempty"]);
+            RuleFor(x => x.Name).Length(5, 500).WithMessage(l => localizer[culture, "apiresourceaddmodel.name.length", 5, 500]);
 
-            RuleFor(x => x.Scopes).Must(s => s == null || s.Any()).WithMessage(localizer[culture, "apiresourceaddmodel.scopes.notempty"]);
+            RuleFor(x => x.Scopes).Must(s => s == null || s.Any()).WithMessage(l => localizer[culture, "apiresourceaddmodel.scopes.notempty"]);
 
-            RuleFor(x => x.Secrets).Must(s => s == null || s.Any()).WithMessage(localizer[culture, "apiresourceaddmodel.secrets.notempty"]);
+            RuleFor(x => x.Secrets).Must(s => s == null || s.Any()).WithMessage(l => localizer[culture, "apiresourceaddmodel.secrets.notempty"]);
         }
     }
 }

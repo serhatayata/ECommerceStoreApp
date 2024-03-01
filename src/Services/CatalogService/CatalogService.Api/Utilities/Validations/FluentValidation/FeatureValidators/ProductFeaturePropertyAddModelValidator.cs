@@ -12,14 +12,14 @@ namespace CatalogService.Api.Utilities.Validations.FluentValidation.FeatureValid
         {
             string culture = HttpExtensions.GetAcceptLanguage(httpContextAccessor);
 
-            RuleFor(b => b.ProductFeatureId).NotEmpty().NotNull().WithMessage(localizer[culture, "productfeaturepropertyaddmodel.productfeatureid.notempty"]);
-            RuleFor(b => b.ProductFeatureId).GreaterThan(0).WithMessage(localizer[culture, "productfeaturepropertyaddmodel.productfeatureid.greater",0]);
+            RuleFor(b => b.ProductFeatureId).NotEmpty().NotNull().WithMessage(l => localizer[culture, "productfeaturepropertyaddmodel.productfeatureid.notempty"]);
+            RuleFor(b => b.ProductFeatureId).GreaterThan(0).WithMessage(l => localizer[culture, "productfeaturepropertyaddmodel.productfeatureid.greater",0]);
 
-            RuleFor(b => b.Name).NotEmpty().NotNull().WithMessage(localizer[culture, "productfeaturepropertyaddmodel.name.notempty"]);
-            RuleFor(b => b.Name).Length(2, 100).WithMessage(localizer[culture, "productfeaturepropertyaddmodel.name.greater", 2, 100]);
+            RuleFor(b => b.Name).NotEmpty().NotNull().WithMessage(l => localizer[culture, "productfeaturepropertyaddmodel.name.notempty"]);
+            RuleFor(b => b.Name).Length(2, 100).WithMessage(l => localizer[culture, "productfeaturepropertyaddmodel.name.greater", 2, 100]);
 
-            RuleFor(b => b.Description).NotEmpty().NotNull().WithMessage(localizer[culture, "productfeaturepropertyaddmodel.description.notempty"]);
-            RuleFor(b => b.Description).Length(2, 1000).WithMessage(localizer[culture, "productfeaturepropertyaddmodel.description.length", 0]);
+            RuleFor(b => b.Description).NotEmpty().NotNull().WithMessage(l => localizer[culture, "productfeaturepropertyaddmodel.description.notempty"]);
+            RuleFor(b => b.Description).Length(2, 1000).WithMessage(l => localizer[culture, "productfeaturepropertyaddmodel.description.length", 0]);
         }
     }
 }

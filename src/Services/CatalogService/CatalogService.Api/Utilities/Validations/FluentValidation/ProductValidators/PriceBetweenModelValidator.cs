@@ -12,10 +12,10 @@ public class PriceBetweenModelValidator : AbstractValidator<PriceBetweenModel>
     {
         string culture = HttpExtensions.GetAcceptLanguage(httpContextAccessor);
 
-        RuleFor(b => b.MinimumPrice).NotEmpty().NotNull().WithMessage(localizer[culture, "pricebetweenmodel.minimumprice.notempty"]);
-        RuleFor(b => b.MinimumPrice).GreaterThan(0).WithMessage(localizer[culture, "pricebetweenmodel.minimumprice.greater", 0]);
+        RuleFor(b => b.MinimumPrice).NotEmpty().NotNull().WithMessage(l => localizer[culture, "pricebetweenmodel.minimumprice.notempty"]);
+        RuleFor(b => b.MinimumPrice).GreaterThan(0).WithMessage(l => localizer[culture, "pricebetweenmodel.minimumprice.greater", 0]);
 
-        RuleFor(b => b.MaximumPrice).NotEmpty().NotNull().WithMessage(localizer[culture, "pricebetweenmodel.maximumprice.notempty"]);
-        RuleFor(b => b.MaximumPrice).GreaterThan(0).WithMessage(localizer[culture, "pricebetweenmodel.maximumprice.greater"]);
+        RuleFor(b => b.MaximumPrice).NotEmpty().NotNull().WithMessage(l => localizer[culture, "pricebetweenmodel.maximumprice.notempty"]);
+        RuleFor(b => b.MaximumPrice).GreaterThan(0).WithMessage(l => localizer[culture, "pricebetweenmodel.maximumprice.greater"]);
     }
 }

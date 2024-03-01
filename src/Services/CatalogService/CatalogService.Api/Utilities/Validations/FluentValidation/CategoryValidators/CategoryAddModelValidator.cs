@@ -12,10 +12,10 @@ public class CategoryAddModelValidator : AbstractValidator<CategoryAddModel>
     {
         string culture = HttpExtensions.GetAcceptLanguage(httpContextAccessor);
 
-        RuleFor(b => b.Name).NotEmpty().NotNull().WithMessage(localizer[culture, "categoryaddmodel.name.notempty"]);
-        RuleFor(b => b.Name).Length(2, 500).WithMessage(localizer[culture, "categoryaddmodel.name.length", 2, 500]);
+        RuleFor(b => b.Name).NotEmpty().NotNull().WithMessage(l => localizer[culture, "categoryaddmodel.name.notempty"]);
+        RuleFor(b => b.Name).Length(2, 500).WithMessage(l => localizer[culture, "categoryaddmodel.name.length", 2, 500]);
 
-        RuleFor(b => b.Line).NotEmpty().NotNull().WithMessage(localizer[culture, "categoryaddmodel.line.notempty"]);
-        RuleFor(b => b.Line).GreaterThan(0).WithMessage(localizer[culture, "categoryaddmodel.line.greater", 0]);
+        RuleFor(b => b.Line).NotEmpty().NotNull().WithMessage(l => localizer[culture, "categoryaddmodel.line.notempty"]);
+        RuleFor(b => b.Line).GreaterThan(0).WithMessage(l => localizer[culture, "categoryaddmodel.line.greater", 0]);
     }
 }

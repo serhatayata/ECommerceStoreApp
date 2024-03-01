@@ -12,8 +12,8 @@ namespace CatalogService.Api.Utilities.Validations.FluentValidation.FeatureValid
         {
             string culture = HttpExtensions.GetAcceptLanguage(httpContextAccessor);
 
-            RuleFor(b => b.Name).NotEmpty().NotNull().WithMessage(localizer[culture, "featureaddmodel.name.notempty"]);
-            RuleFor(b => b.Name).Length(2, 100).WithMessage(localizer[culture, "featureaddmodel.name.length", 2, 100]);
+            RuleFor(b => b.Name).NotEmpty().NotNull().WithMessage(l => localizer[culture, "featureaddmodel.name.notempty"]);
+            RuleFor(b => b.Name).Length(2, 100).WithMessage(l => localizer[culture, "featureaddmodel.name.length", 2, 100]);
         }
     }
 }

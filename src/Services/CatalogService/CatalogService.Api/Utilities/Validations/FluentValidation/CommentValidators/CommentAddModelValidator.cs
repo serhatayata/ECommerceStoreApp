@@ -12,13 +12,13 @@ namespace CatalogService.Api.Utilities.Validations.FluentValidation.CommentValid
         {
             string culture = HttpExtensions.GetAcceptLanguage(httpContextAccessor);
 
-            RuleFor(b => b.ProductId).NotEmpty().NotNull().WithMessage(localizer[culture, "commentaddmodel.productid.notempty"]);
-            RuleFor(b => b.ProductId).GreaterThan(0).WithMessage(localizer[culture, "commentaddmodel.productid.greater", 0]);
+            RuleFor(b => b.ProductId).NotEmpty().NotNull().WithMessage(l => localizer[culture, "commentaddmodel.productid.notempty"]);
+            RuleFor(b => b.ProductId).GreaterThan(0).WithMessage(l => localizer[culture, "commentaddmodel.productid.greater", 0]);
 
-            RuleFor(b => b.Content).NotEmpty().NotNull().WithMessage(localizer[culture, "commentaddmodel.content.notempty"]);
-            RuleFor(b => b.Content).Length(2,1000).WithMessage(localizer[culture, "commentaddmodel.content.length", 2, 1000]);
+            RuleFor(b => b.Content).NotEmpty().NotNull().WithMessage(l => localizer[culture, "commentaddmodel.content.notempty"]);
+            RuleFor(b => b.Content).Length(2,1000).WithMessage(l => localizer[culture, "commentaddmodel.content.length", 2, 1000]);
 
-            RuleFor(b => b.UserId).NotEmpty().NotNull().WithMessage(localizer[culture, "commentaddmodel.userid.notempty"]);
+            RuleFor(b => b.UserId).NotEmpty().NotNull().WithMessage(l => localizer[culture, "commentaddmodel.userid.notempty"]);
         }
     }
 }

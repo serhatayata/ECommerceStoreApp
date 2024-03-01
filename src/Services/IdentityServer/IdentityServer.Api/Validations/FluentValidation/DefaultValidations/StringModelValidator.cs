@@ -13,7 +13,7 @@ namespace IdentityServer.Api.Validations.FluentValidation.DefaultValidations
         {
             string culture = HttpExtensions.GetAcceptLanguage(httpContextAccessor);
 
-            RuleFor(x => x.Value).NotEmpty().NotNull().WithMessage(localizer[culture, "stringmodel.value.notempty"]);
+            RuleFor(x => x.Value).NotEmpty().NotNull().WithMessage(l => localizer[culture, "stringmodel.value.notempty"]);
         }
     }
 }

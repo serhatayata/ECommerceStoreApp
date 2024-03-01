@@ -14,21 +14,21 @@ namespace IdentityServer.Api.Validations.FluentValidation.ClientValidations
             string culture = HttpExtensions.GetAcceptLanguage(httpContextAccessor);
 
             #region ClientId
-            RuleFor(x => x.ClientId).NotEmpty().NotNull().WithMessage(localizer[culture, "clientaddmodel.clientid.notempty"]);
-            RuleFor(x => x.ClientId).Length(5, 500).WithMessage(localizer[culture, "clientaddmodel.clientid.length", 5, 500]);
+            RuleFor(x => x.ClientId).NotEmpty().NotNull().WithMessage(l => localizer[culture, "clientaddmodel.clientid.notempty"]);
+            RuleFor(x => x.ClientId).Length(5, 500).WithMessage(l => localizer[culture, "clientaddmodel.clientid.length", 5, 500]);
             #endregion
             #region ClientName
-            RuleFor(x => x.ClientName).NotEmpty().NotNull().WithMessage(localizer[culture, "clientaddmodel.clientname.notempty"]);
-            RuleFor(x => x.ClientName).Length(5, 500).WithMessage(localizer[culture, "clientaddmodel.clientname.length", 5, 500]);
+            RuleFor(x => x.ClientName).NotEmpty().NotNull().WithMessage(l => localizer[culture, "clientaddmodel.clientname.notempty"]);
+            RuleFor(x => x.ClientName).Length(5, 500).WithMessage(l => localizer[culture, "clientaddmodel.clientname.length", 5, 500]);
             #endregion
             #region Secrets
-            RuleFor(x => x.Secrets).Must(s => s == null || s.Any()).WithMessage(localizer[culture, "clientaddmodel.secrets.empty"]);
+            RuleFor(x => x.Secrets).Must(s => s == null || s.Any()).WithMessage(l => localizer[culture, "clientaddmodel.secrets.empty"]);
             #endregion
             #region AllowedGrantTypes
-            RuleFor(x => x.AllowedGrantTypes).Must(s => s == null || s.Any()).WithMessage(localizer[culture, "clientaddmodel.allowedgranttypes.empty"]);
+            RuleFor(x => x.AllowedGrantTypes).Must(s => s == null || s.Any()).WithMessage(l => localizer[culture, "clientaddmodel.allowedgranttypes.empty"]);
             #endregion
             #region AllowedScopes
-            RuleFor(x => x.AllowedScopes).Must(s => s == null || s.Any()).WithMessage(localizer[culture, "clientaddmodel.allowedscopes.empty"]);
+            RuleFor(x => x.AllowedScopes).Must(s => s == null || s.Any()).WithMessage(l => localizer[culture, "clientaddmodel.allowedscopes.empty"]);
             #endregion
         }
     }

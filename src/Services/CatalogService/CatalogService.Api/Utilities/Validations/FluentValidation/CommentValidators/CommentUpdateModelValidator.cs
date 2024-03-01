@@ -12,12 +12,12 @@ namespace CatalogService.Api.Utilities.Validations.FluentValidation.CommentValid
         {
             string culture = HttpExtensions.GetAcceptLanguage(httpContextAccessor);
 
-            RuleFor(b => b.Code).NotEmpty().NotNull().WithMessage(localizer[culture, "commentupdatemodel.code.notempty"]);
+            RuleFor(b => b.Code).NotEmpty().NotNull().WithMessage(l => localizer[culture, "commentupdatemodel.code.notempty"]);
 
-            RuleFor(b => b.Content).NotEmpty().NotNull().WithMessage(localizer[culture, "commentupdatemodel.content.notempty"]);
-            RuleFor(b => b.Content).Length(2, 1000).WithMessage(localizer[culture, "commentupdatemodel.content.notempty", 2, 1000]);
+            RuleFor(b => b.Content).NotEmpty().NotNull().WithMessage(l => localizer[culture, "commentupdatemodel.content.notempty"]);
+            RuleFor(b => b.Content).Length(2, 1000).WithMessage(l => localizer[culture, "commentupdatemodel.content.notempty", 2, 1000]);
 
-            RuleFor(b => b.UserId).NotEmpty().NotNull().WithMessage(localizer[culture, "commentupdatemodel.userid.notempty"]);
+            RuleFor(b => b.UserId).NotEmpty().NotNull().WithMessage(l => localizer[culture, "commentupdatemodel.userid.notempty"]);
         }
     }
 }

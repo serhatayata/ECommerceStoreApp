@@ -13,9 +13,9 @@ namespace BasketService.Api.Validations.FluentValidation
         {
             string culture = HttpExtensions.GetAcceptLanguage(httpContextAccessor);
 
-            RuleFor(request => request.BuyerId).NotEmpty().WithMessage(localizer[culture, "customerbasket.buyerid.notempty"]);
+            RuleFor(request => request.BuyerId).NotEmpty().WithMessage(l => localizer[culture, "customerbasket.buyerid.notempty"]);
 
-            RuleFor(request => request.BuyerId).NotNull().WithMessage(localizer[culture, "customerbasket.buyerid.notnull"]);
+            RuleFor(request => request.BuyerId).NotNull().WithMessage(l => localizer[culture, "customerbasket.buyerid.notnull"]);
 
             RuleForEach(request => request.Items).SetValidator(new BasketItemValidator(localizer, httpContextAccessor));
         }

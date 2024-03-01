@@ -12,6 +12,6 @@ public class IntModelValidator : AbstractValidator<IntModel>
     {
         string culture = HttpExtensions.GetAcceptLanguage(httpContextAccessor);
 
-        RuleFor(b => b.Value).NotEmpty().NotNull().WithMessage(localizer[culture, "intmodel.name.notempty"]);
+        RuleFor(b => b.Value).NotEmpty().NotNull().WithMessage(l => localizer[culture, "intmodel.name.notempty"]);
     }
 }

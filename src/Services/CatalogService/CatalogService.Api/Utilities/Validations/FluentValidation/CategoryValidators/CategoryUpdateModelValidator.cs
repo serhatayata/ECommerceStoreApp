@@ -12,14 +12,14 @@ namespace CatalogService.Api.Utilities.Validations.FluentValidation.CategoryVali
         {
             string culture = HttpExtensions.GetAcceptLanguage(httpContextAccessor);
 
-            RuleFor(b => b.Id).NotEmpty().NotNull().WithMessage(localizer[culture, "categoryupdatemodel.id.notempty"]);
-            RuleFor(b => b.Id).GreaterThan(0).WithMessage(localizer[culture, "categoryupdatemodel.id.greater", 0]);
+            RuleFor(b => b.Id).NotEmpty().NotNull().WithMessage(l => localizer[culture, "categoryupdatemodel.id.notempty"]);
+            RuleFor(b => b.Id).GreaterThan(0).WithMessage(l => localizer[culture, "categoryupdatemodel.id.greater", 0]);
 
-            RuleFor(b => b.Name).NotEmpty().NotNull().WithMessage(localizer[culture, "categoryupdatemodel.name.notempty"]);
-            RuleFor(b => b.Name).Length(2, 500).WithMessage(localizer[culture, "categoryupdatemodel.name.length", 2, 500]);
+            RuleFor(b => b.Name).NotEmpty().NotNull().WithMessage(l => localizer[culture, "categoryupdatemodel.name.notempty"]);
+            RuleFor(b => b.Name).Length(2, 500).WithMessage(l => localizer[culture, "categoryupdatemodel.name.length", 2, 500]);
 
-            RuleFor(b => b.Line).NotEmpty().NotNull().WithMessage(localizer[culture, "categoryupdatemodel.line.notempty"]);
-            RuleFor(b => b.Line).GreaterThan(0).WithMessage(localizer[culture, "categoryupdatemodel.line.greater", 0]);
+            RuleFor(b => b.Line).NotEmpty().NotNull().WithMessage(l => localizer[culture, "categoryupdatemodel.line.notempty"]);
+            RuleFor(b => b.Line).GreaterThan(0).WithMessage(l => localizer[culture, "categoryupdatemodel.line.greater", 0]);
         }
     }
 }

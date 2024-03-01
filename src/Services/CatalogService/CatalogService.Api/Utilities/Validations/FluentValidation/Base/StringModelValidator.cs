@@ -12,6 +12,6 @@ public class StringModelValidator : AbstractValidator<StringModel>
     {
         string culture = HttpExtensions.GetAcceptLanguage(httpContextAccessor);
 
-        RuleFor(b => b.Value).NotEmpty().NotNull().WithMessage(localizer[culture, "stringmodel.value.notempty"]);
+        RuleFor(b => b.Value).NotEmpty().NotNull().WithMessage(l => localizer[culture, "stringmodel.value.notempty"]);
     }
 }

@@ -14,31 +14,31 @@ namespace IdentityServer.Api.Validations.FluentValidation.UserValidations
             string culture = HttpExtensions.GetAcceptLanguage(httpContextAccessor);
 
             #region Name
-            RuleFor(x => x.Name).NotEmpty().NotNull().WithMessage(localizer[culture, "useraddmodel.name.notempty"]);
-            RuleFor(x => x.Name).Length(2, 50).WithMessage(localizer[culture, "useraddmodel.name.length", 2, 50]);
+            RuleFor(x => x.Name).NotEmpty().NotNull().WithMessage(l => localizer[culture, "useraddmodel.name.notempty"]);
+            RuleFor(x => x.Name).Length(2, 50).WithMessage(l => localizer[culture, "useraddmodel.name.length", 2, 50]);
             #endregion
             #region Surname
-            RuleFor(x => x.Surname).NotEmpty().NotNull().WithMessage(localizer[culture, "useraddmodel.surname.notempty"]);
-            RuleFor(x => x.Surname).Length(2, 50).WithMessage(localizer[culture, "useraddmodel.name.length", 2, 50]);
+            RuleFor(x => x.Surname).NotEmpty().NotNull().WithMessage(l => localizer[culture, "useraddmodel.surname.notempty"]);
+            RuleFor(x => x.Surname).Length(2, 50).WithMessage(l => localizer[culture, "useraddmodel.name.length", 2, 50]);
             #endregion
             #region UserName
-            RuleFor(x => x.UserName).NotEmpty().NotNull().WithMessage(localizer[culture, "useraddmodel.username.notempty"]);
-            RuleFor(x => x.UserName).Length(8, 50).WithMessage(localizer[culture, "useraddmodel.name.length", 8, 50]);
+            RuleFor(x => x.UserName).NotEmpty().NotNull().WithMessage(l => localizer[culture, "useraddmodel.username.notempty"]);
+            RuleFor(x => x.UserName).Length(8, 50).WithMessage(l => localizer[culture, "useraddmodel.name.length", 8, 50]);
             #endregion
             #region Email
-            RuleFor(x => x.Email).EmailAddress().WithMessage(localizer[culture, "useraddmodel.email.notvalid"]);
+            RuleFor(x => x.Email).EmailAddress().WithMessage(l => localizer[culture, "useraddmodel.email.notvalid"]);
             #endregion
             #region PhoneNumber
-            RuleFor(x => x.PhoneNumber).InternationalPhoneNumber().WithMessage(localizer[culture, "useraddmodel.phonenumber.invalidphonenumber"]);
+            RuleFor(x => x.PhoneNumber).InternationalPhoneNumber().WithMessage(l => localizer[culture, "useraddmodel.phonenumber.invalidphonenumber"]);
             #endregion
             #region Password
-            RuleFor(x => x.Password).PasswordWithoutMessage().WithMessage(localizer[culture, "useraddmodel.password.notvalid"]);
-            RuleFor(x => x.Password).NotNull().NotEmpty().WithMessage(localizer[culture, "useraddmodel.password.notnull"]);
-            RuleFor(x => x.Password).Length(8, 21).WithMessage(localizer[culture, "useraddmodel.password.length",8,21]);
-            RuleFor(x => x.Password).Equal(s => s.ConfirmPassword).WithMessage(localizer[culture, "useraddmodel.password.notequal"]);
+            RuleFor(x => x.Password).PasswordWithoutMessage().WithMessage(l => localizer[culture, "useraddmodel.password.notvalid"]);
+            RuleFor(x => x.Password).NotNull().NotEmpty().WithMessage(l => localizer[culture, "useraddmodel.password.notnull"]);
+            RuleFor(x => x.Password).Length(8, 21).WithMessage(l => localizer[culture, "useraddmodel.password.length",8,21]);
+            RuleFor(x => x.Password).Equal(s => s.ConfirmPassword).WithMessage(l => localizer[culture, "useraddmodel.password.notequal"]);
             #endregion
             #region ConfirmPassword
-            RuleFor(x => x.ConfirmPassword).NotEmpty().NotNull().WithMessage(localizer[culture, "useraddmodel.confirmpassword.notempty"]);
+            RuleFor(x => x.ConfirmPassword).NotEmpty().NotNull().WithMessage(l => localizer[culture, "useraddmodel.confirmpassword.notempty"]);
             #endregion
         }
     }
