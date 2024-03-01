@@ -1,39 +1,45 @@
-﻿using CampaignService.Api.GraphQL.Types.Inputs;
+﻿using CampaignService.Api.Extensions;
+using CampaignService.Api.GraphQL.Types.Inputs;
+using CampaignService.Api.Services.Localization.Abstract;
 using FluentValidation;
 
 namespace CampaignService.Api.GraphQL.Validators;
 
 public class CouponInputValidator : AbstractValidator<CouponInput>
 {
-    public CouponInputValidator()
+    public CouponInputValidator(
+        ILocalizationService localizer,
+        IHttpContextAccessor httpContextAccessor)
     {
+        string culture = HttpExtensions.GetAcceptLanguage(httpContextAccessor);
+
         RuleFor(c => c.Name)
-            .NotNull().NotEmpty().WithMessage("Name cannot be empty")
-            .Length(1, 255).WithMessage("Name length must be between 1-255");
+            .NotNull().NotEmpty().WithMessage(l => localizer[culture, "couponinput.name.notempty"])
+            .Length(1, 255).WithMessage(l => localizer[culture, "couponinput.name.length", 1, 255]);
 
         RuleFor(c => c.Description)
-            .NotNull().NotEmpty().WithMessage("Description cannot be empty")
-            .Length(1, 1000).WithMessage("Description length must be between 1-1000");
+            .NotNull().NotEmpty().WithMessage(l => localizer[culture, "couponinput.description.notempty"])
+            .Length(1, 1000).WithMessage(l => localizer[culture, "couponinput.description.length", 1, 1000]);
 
         RuleFor(c => c.Type)
-            .IsInEnum().WithMessage("Type is not valid");
+            .IsInEnum().WithMessage(l => localizer[culture, "couponinput.type.notvalid"]);
 
         RuleFor(c => c.UsageType)
-            .IsInEnum().WithMessage("Usage type is not valid");
+            .IsInEnum().WithMessage(l => localizer[culture, "couponinput.usagetype.notvalid"]);
 
         RuleFor(c => c.CalculationType)
-            .IsInEnum().WithMessage("Calculation type is not valid");
+            .IsInEnum().WithMessage(l => localizer[culture, "couponinput.calculationtype.notvalid"]);
 
         RuleFor(c => c.CalculationAmount)
-            .PrecisionScale(8, 2, true).WithMessage("Calculation amount value is not valid scale must be 8,2");
+            .PrecisionScale(8, 2, true).WithMessage(l => localizer[culture, "couponinput.calculationamount.notvalid"]);
 
         RuleFor(c => c.Amount)
-            .PrecisionScale(8, 2, true).WithMessage("Calculation amount value is not valid scale must be 8,2");
+            .PrecisionScale(8, 2, true).WithMessage(l => localizer[culture, "couponinput.amount.notvalid"]);
 
         RuleFor(c => c.MaxUsage)
-            .NotNull().NotEmpty().WithMessage("Max usage cannot be empty");
+            .NotNull().NotEmpty().WithMessage(l => localizer[culture, "couponinput.maxusage.notempty"]);
 
         RuleFor(c => c.ExpirationDate)
-            .NotNull().NotEmpty().WithMessage("Expiration date cannot be empty");
+            .NotNull().NotEmpty().WithMessage((l => localizer[culture, "couponinput.expirationdate.notempty"]);
     }
 }

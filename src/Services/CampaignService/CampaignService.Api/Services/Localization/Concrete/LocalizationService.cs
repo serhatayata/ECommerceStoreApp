@@ -58,7 +58,7 @@ public class LocalizationService : ILocalizationService
     {
         try
         {
-            var redisKey = GetResourceCacheKey(this._localizationMemberKey, currentCulture, resourceKey, args);
+            var redisKey = GetResourceCacheKey(this._localizationMemberKey, currentCulture, resourceKey);
             if (args != null && args.Count() > 0)
                 return GetLocalizedValue(redisKey, args) ?? string.Empty;
 
@@ -75,28 +75,24 @@ public class LocalizationService : ILocalizationService
 
     private string? GetLocalizedValue(string key, params object[] args)
     {
-        var value = _redisService.Get<string>(key, _databaseId);
-        if (string.IsNullOrWhiteSpace(value))
-            return value;
+        var model = _redisService.Get<ResourceModel>(key, _databaseId);
+        if (string.IsNullOrWhiteSpace(model?.Value))
+            return string.Empty;
 
         return (args == null || args.Length == 0) ?
-                   value :
-                   string.Format(value, args);
+                   model.Value :
+                   string.Format(model.Value, args);
     }
 
     private static string GetResourceCacheKey(
     string memberKey,
     string language,
-    string key,
-    params object[] args)
+    string key)
     {
         var result = string.Join("-",
                          memberKey,
                          language,
                          key);
-
-        if (args != null && args.Count() > 0)
-            result += string.Join("-", "-", args);
 
         return result;
     }
