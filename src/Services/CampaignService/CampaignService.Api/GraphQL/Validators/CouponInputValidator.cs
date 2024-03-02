@@ -40,6 +40,6 @@ public class CouponInputValidator : AbstractValidator<CouponInput>
             .NotNull().NotEmpty().WithMessage(l => localizer[culture, "couponinput.maxusage.notempty"]);
 
         RuleFor(c => c.ExpirationDate)
-            .NotNull().NotEmpty().WithMessage((l => localizer[culture, "couponinput.expirationdate.notempty"]);
+            .NotNull().NotEmpty().WithMessage(l => localizer[culture, "couponinput.expirationdate.notempty"]);
     }
 }

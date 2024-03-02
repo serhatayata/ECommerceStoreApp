@@ -1,6 +1,6 @@
-﻿using CampaignService.Api.Configurations.Installers.ApplicationBuilderInstallers;
+﻿using Web.ApiGateway.Configurations.Installers.ApplicationBuilderInstallers;
 
-namespace CampaignService.Api.Extensions;
+namespace Web.ApiGateway.Extensions;
 
 public static class ServiceDiscoveryExtensions
 {

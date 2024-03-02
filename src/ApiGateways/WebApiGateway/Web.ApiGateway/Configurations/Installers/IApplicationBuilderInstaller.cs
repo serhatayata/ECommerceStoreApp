@@ -1,0 +1,6 @@
+﻿namespace Web.ApiGateway.Configurations.Installers;
+
+public interface IApplicationBuilderInstaller
+{
+    void Install(IApplicationBuilder app, IHostApplicationLifetime lifeTime, IConfiguration configuration);
+}

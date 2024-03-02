@@ -1,56 +1,27 @@
-using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
-using Ocelot.Provider.Consul;
+using Web.ApiGateway.Configurations.Installers;
 using Web.ApiGateway.Extensions;
-using Web.ApiGateway.Handlers;
 using Web.ApiGateway.Middlewares;
-using Web.ApiGateway.Models.LogModels;
-using Web.ApiGateway.Services.ElasticSearch.Abstract;
-using Web.ApiGateway.Services.ElasticSearch.Concrete;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
 var assembly = typeof(Program).Assembly.GetName().Name;
 IWebHostEnvironment environment = builder.Environment;
 
-var config = ConfigurationExtension.appConfig;
-var serilogConfig = ConfigurationExtension.serilogConfig;
+builder.Host
+    .InstallHost(
+    configuration,
+    environment,
+    typeof(IHostInstaller).Assembly);
 
-builder.Configuration.AddConfiguration(config);
-
-builder.Host.AddHostExtensions(environment);
-
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-#region Startup DI
-builder.Services.AddSingleton<IElasticSearchService, ElasticSearchService>();
-#endregion
-#region Logging
-builder.Services.AddLogging();
-#endregion
-#region Http
-builder.Services.AddHttpContextAccessor();
-#endregion
-
-builder.Services.AddOcelot().AddConsul();
-builder.Services.ConfigureCors();
-
-#region Handlers
-builder.Services.AddTransient<HttpClientDelegatingHandler>();
-#endregion
-#region ElasticSearch
-var serviceProvider = builder.Services.BuildServiceProvider();
-var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();
-
-var elasticSearchService = scope.ServiceProvider.GetRequiredService<IElasticSearchService>();
-
-var elasticLogOptions = configuration.GetSection("ElasticSearchOptions").Get<ElasticSearchOptions>();
-await elasticSearchService.CreateIndexAsync<LogDetail>(elasticLogOptions.LogIndex);
-#endregion
+builder.Services
+    .InstallServices(
+        configuration,
+        environment,
+        typeof(IServiceInstaller).Assembly);
 
 var app = builder.Build();
+app.ConfigureCustomExceptionMiddleware();
 
 if (app.Environment.IsDevelopment())
 {
@@ -58,21 +29,28 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Web.ApiGateway v1"));
 }
 
-app.ConfigureCustomExceptionMiddleware();
 app.UseRouting();
-
 app.UseCors("CorsPolicy");
-
 app.UseAuthentication();
 app.UseAuthorization();
 
 //This will be changed
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllerRoute(
-    name: "default",
-    pattern: "{controller}/{action}/{id?}");
-});
+//app.UseEndpoints(endpoints =>
+//{
+//    endpoints.MapControllerRoute(
+//    name: "default",
+//    pattern: "{controller}/{action}/{id?}");
+//});
+
+app.InstallWebApp(app.Lifetime,
+                  configuration,
+                  typeof(IWebApplicationInstaller).Assembly);
+
+app.InstallApplicationBuilder(app.Lifetime,
+                              configuration,
+                              typeof(IApplicationBuilderInstaller).Assembly);
+
+app.MapControllers();
 
 var ocelotConfig = new OcelotPipelineConfiguration
 {
@@ -82,4 +60,8 @@ await app.UseOcelot(ocelotConfig);
 
 app.MapControllers();
 
-app.Run();
+app.Start();
+
+app.InstallServiceDiscovery(app.Lifetime, configuration);
+
+app.WaitForShutdown();

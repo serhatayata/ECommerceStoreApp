@@ -20,16 +20,5 @@ namespace Web.ApiGateway.Extensions
         {
             return await Client.GetFromJsonAsync<T>(Url);
         }
-
-        public static void ConfigureHttpClients(this IServiceCollection services, IConfiguration configuration)
-        {
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddTransient<HttpClientDelegatingHandler>();
-
-            services.AddHttpClient("localization", c =>
-            {
-                c.BaseAddress = new Uri(configuration["ServiceInfo:Localization"]);
-            }).AddHttpMessageHandler<HttpClientDelegatingHandler>();
-        }
     }
 }

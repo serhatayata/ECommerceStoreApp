@@ -13,7 +13,7 @@ public class LogServiceInstaller : IServiceInstaller
     public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         //Get the environment which the app is running on
-        var env = System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+        var env = hostEnvironment.EnvironmentName;
 
         //Create logger
         Log.Logger = new LoggerConfiguration()
