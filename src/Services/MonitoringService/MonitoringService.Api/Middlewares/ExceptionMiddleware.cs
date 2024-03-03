@@ -11,18 +11,13 @@ namespace IdentityServer.Api.Middlewares
     public class ExceptionMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly IConfiguration _configuration;
-        private readonly IWebHostEnvironment _env;
         private readonly ILogger<ExceptionMiddleware> _logger;
 
-        public ExceptionMiddleware(RequestDelegate next, 
-                                   IConfiguration configuration,
-                                   IWebHostEnvironment env,
-                                   ILogger<ExceptionMiddleware> logger)
+        public ExceptionMiddleware(
+            RequestDelegate next, 
+            ILogger<ExceptionMiddleware> logger)
         {
             _next = next;
-            _configuration = configuration;
-            _env = env;
             _logger = logger;
         }
 
@@ -69,7 +64,6 @@ namespace IdentityServer.Api.Middlewares
             httpContext.Response.ContentType = "application/json";
             httpContext.Response.StatusCode = statusCode;
 
-            var now = DateTime.UtcNow;
             _logger.LogError(new EventId(ex.HResult), ex, ex.Message);
 
             await httpContext.Response.WriteAsync(this.GetErrorResult(httpContext.Response.StatusCode, ex.Message).ToString(), cancellationToken);
