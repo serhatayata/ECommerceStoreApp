@@ -8,10 +8,10 @@ public class AuthorizationServiceInstaller : IServiceInstaller
 {
     public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
-        services.AddAuthorization(options =>
-        {
-            // Will be filled
-        });
+        //services.AddAuthorization(options =>
+        //{
+        //    // Will be filled
+        //});
 
         IdentityModelEventSource.ShowPII = true;
     }

@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
+using Ocelot.DependencyInjection;
+using Ocelot.Provider.Consul;
 using Web.ApiGateway.Attributes;
 
 namespace Web.ApiGateway.Configurations.Installers.ServiceInstallers;
@@ -10,24 +12,26 @@ public class AuthenticationServiceInstaller : IServiceInstaller
 {
     public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
-        string secretKey = configuration["AuthConfigurations:SecretKey"] ?? string.Empty;
-        var signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey));
-
+        var defaultScheme = "GatewayAuthenticationScheme";
         services.AddAuthentication(opt =>
         {
-            opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            opt.DefaultAuthenticateScheme = defaultScheme;
+            opt.DefaultChallengeScheme = defaultScheme;
         })
-        .AddJwtBearer(options =>
+        .AddJwtBearer(defaultScheme, options =>
         {
-            options.TokenValidationParameters = new TokenValidationParameters
+            options.Authority = configuration.GetValue<string>("AuthConfigurations:Url");
+            options.Audience = "resource_gateway";
+            //options.RequireHttpsMetadata = false;
+            //options.MetadataAddress = configuration.GetValue<string>("AuthConfigurations:UrlMetadata");
+            options.TokenValidationParameters = new TokenValidationParameters()
             {
-                ValidateIssuer = false,
-                ValidateAudience = false,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = signingKey
+                ValidateAudience = false
             };
         });
+        
+        services.AddOcelot().AddConsul();
+
+        IdentityModelEventSource.ShowPII = true;
     }
 }

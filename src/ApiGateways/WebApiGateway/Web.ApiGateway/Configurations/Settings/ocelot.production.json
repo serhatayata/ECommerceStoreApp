@@ -10,7 +10,11 @@
 
       "UpstreamPathTemplate": "/localization/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "DELETE", "PUT" ],
-      "UpstreamScheme": "http"
+      "UpstreamScheme": "http",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayAuthenticationScheme",
+        "AllowedScopes": [ "localization_writepermission", "localization_readpermission" ]
+      }
     },
     // IDENTITY SERVICE
     {
@@ -21,7 +25,11 @@
 
       "UpstreamPathTemplate": "/auth/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "DELETE", "PUT" ],
-      "UpstreamScheme": "http"
+      "UpstreamScheme": "http",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayAuthenticationScheme",
+        "AllowedScopes": [ "identity_full", "identity_read", "identity_write" ]
+      }
     },
     // BASKET SERVICE
     {
@@ -32,7 +40,11 @@
 
       "UpstreamPathTemplate": "/basket/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "DELETE", "PUT" ],
-      "UpstreamScheme": "http"
+      "UpstreamScheme": "http",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayAuthenticationScheme",
+        "AllowedScopes": [ "basket_full", "basket_read", "basket_write" ]
+      }
     },
     // NOTIFICATION SERVICE
     {
@@ -43,7 +55,11 @@
 
       "UpstreamPathTemplate": "/notification/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "DELETE", "PUT" ],
-      "UpstreamScheme": "http"
+      "UpstreamScheme": "http",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayAuthenticationScheme",
+        "AllowedScopes": [ "notification_full", "notification_read", "notification_write" ]
+      }
     },
     // CATALOG SERVICE
     {
@@ -54,7 +70,11 @@
 
       "UpstreamPathTemplate": "/catalog/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "DELETE", "PUT" ],
-      "UpstreamScheme": "http"
+      "UpstreamScheme": "http",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayAuthenticationScheme",
+        "AllowedScopes": [ "catalog_full", "catalog_read", "catalog_write" ]
+      }
     },
     // CATALOG GRPC SERVICE
     {
@@ -65,7 +85,11 @@
 
       "UpstreamPathTemplate": "/cataloggrpc/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "DELETE", "PUT" ],
-      "UpstreamScheme": "http"
+      "UpstreamScheme": "http",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayAuthenticationScheme",
+        "AllowedScopes": [ "catalog_full", "catalog_read", "catalog_write" ]
+      }
     },
     // HEALTH CHECK SERVICE
     {
@@ -76,7 +100,11 @@
 
       "UpstreamPathTemplate": "/monitoring/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "DELETE", "PUT" ],
-      "UpstreamScheme": "http"
+      "UpstreamScheme": "http",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayAuthenticationScheme",
+        "AllowedScopes": [ "healthcheck_full", "healthcheck_read", "healthcheck_write" ]
+      }
     },
     // CDC DEBEZIUM
     {

@@ -1,0 +1,137 @@
+{
+  "Routes": [
+    // LOCALIZATION SERVICE
+    //Notes : Consul service discovery is used, no need to use DownstreamHostAndPorts.
+    {
+      "UseServiceDiscovery": true,
+      "ServiceName": "LocalizationService",
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+
+      "UpstreamPathTemplate": "/localization/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "DELETE", "PUT" ],
+      "UpstreamScheme": "http",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayAuthenticationScheme",
+        "AllowedScopes": [ "localization_writepermission", "localization_readpermission" ]
+      }
+    },
+    // IDENTITY SERVICE
+    {
+      "UseServiceDiscovery": true,
+      "ServiceName": "IdentityService",
+      "DownstreamPathTemplate": "/{everything}",
+      "DownstreamScheme": "https",
+
+      "UpstreamPathTemplate": "/auth/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "DELETE", "PUT" ],
+      "UpstreamScheme": "http",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayAuthenticationScheme",
+        "AllowedScopes": [ "identity_full", "identity_read", "identity_write" ]
+      }
+    },
+    // BASKET SERVICE
+    {
+      "UseServiceDiscovery": true,
+      "ServiceName": "BasketService",
+      "DownstreamPathTemplate": "/{everything}",
+      "DownstreamScheme": "http",
+
+      "UpstreamPathTemplate": "/basket/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "DELETE", "PUT" ],
+      "UpstreamScheme": "http",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayAuthenticationScheme",
+        "AllowedScopes": [ "basket_full", "basket_read", "basket_write" ]
+      }
+    },
+    // NOTIFICATION SERVICE
+    {
+      "UseServiceDiscovery": true,
+      "ServiceName": "NotificationService",
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+
+      "UpstreamPathTemplate": "/notification/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "DELETE", "PUT" ],
+      "UpstreamScheme": "http",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayAuthenticationScheme",
+        "AllowedScopes": [ "notification_full", "notification_read", "notification_write" ]
+      }
+    },
+    // CATALOG SERVICE
+    {
+      "UseServiceDiscovery": true,
+      "ServiceName": "CatalogService",
+      "DownstreamPathTemplate": "/{everything}",
+      "DownstreamScheme": "https",
+
+      "UpstreamPathTemplate": "/catalog/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "DELETE", "PUT" ],
+      "UpstreamScheme": "http",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayAuthenticationScheme",
+        "AllowedScopes": [ "catalog_full", "catalog_read", "catalog_write" ]
+      }
+    },
+    // CATALOG GRPC SERVICE
+    {
+      "UseServiceDiscovery": true,
+      "ServiceName": "CatalogGrpcService",
+      "DownstreamPathTemplate": "/{everything}",
+      "DownstreamScheme": "https",
+
+      "UpstreamPathTemplate": "/cataloggrpc/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "DELETE", "PUT" ],
+      "UpstreamScheme": "http",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayAuthenticationScheme",
+        "AllowedScopes": [ "catalog_full", "catalog_read", "catalog_write" ]
+      }
+    },
+    // HEALTH CHECK SERVICE
+    {
+      "UseServiceDiscovery": true,
+      "ServiceName": "MonitoringService",
+      "DownstreamPathTemplate": "/{everything}",
+      "DownstreamScheme": "http",
+
+      "UpstreamPathTemplate": "/monitoring/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "DELETE", "PUT" ],
+      "UpstreamScheme": "http",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayAuthenticationScheme",
+        "AllowedScopes": [ "healthcheck_full", "healthcheck_read", "healthcheck_write" ]
+      }
+    },
+    // CDC DEBEZIUM
+    {
+      "DownstreamPathTemplate": "/{everything}",
+      "DownstreamScheme": "http",
+
+      "UpstreamPathTemplate": "/cdcconnector/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "DELETE", "PUT" ],
+      "UpstreamScheme": "http",
+
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 8083
+        }
+      ]
+    }
+  ],
+  "GlobalConfiguration": {
+    //"BaseUrl": "http://web.apigateway.api:5000",
+    "BaseUrl": "http://localhost:5000",
+    "ServiceDiscoveryProvider": {
+      "Scheme": "http",
+      //"Host": "s_consul",
+      "Host": "localhost",
+      "Port": "8500",
+      "Type": "Consul"
+    }
+  }
+}
