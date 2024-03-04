@@ -2,7 +2,7 @@
 
 namespace FileService.Api.Dtos.ImageDtos;
 
-public class ImageEntityTypePagingDto : Paging
+public class ImageEntityTypePagingModel : Paging
 {
     public int EntityTypeId { get; set; }
 }

@@ -1,4 +1,5 @@
 ﻿namespace FileService.Api.Utilities.Results;
+
 public class ErrorDataResult<T> : DataResult<T>
 {
     public ErrorDataResult(T data, object message, int statusCode = 400) : base(data, false, message, statusCode)

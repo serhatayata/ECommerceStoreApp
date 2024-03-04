@@ -1,4 +1,5 @@
 ﻿namespace FileService.Api.Utilities.Results;
+
 public class SuccessResult : Result
 {
     public SuccessResult(string message) : base(true, message, 400)
