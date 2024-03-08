@@ -1,8 +1,8 @@
 ﻿using FileService.Api.Models.Base;
 
-namespace FileService.Api.Dtos.ImageDtos;
+namespace FileService.Api.Models.ImageModels;
 
-public class ImageEntityTypeAndIdPagingModel : Paging
+public class ImageTypeAndIdPagingModel : Paging
 {
     public int EntityType { get; set; }
     public int EntityId { get; set; }

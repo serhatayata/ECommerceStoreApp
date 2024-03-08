@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.14" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.14">
@@ -23,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Configurations\Installers\" />
+    <Folder Include="Configurations\Installers\ApplicationBuilderInstallers\" />
     <Folder Include="Controllers\" />
   </ItemGroup>
 

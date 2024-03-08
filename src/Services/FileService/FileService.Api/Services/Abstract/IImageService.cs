@@ -1,4 +1,4 @@
-﻿using FileService.Api.Dtos.ImageDtos;
+﻿using FileService.Api.Models.ImageModels;
 using FileService.Api.Utilities.Results;
 
 namespace FileService.Api.Services.Abstract;
@@ -24,28 +24,28 @@ public interface IImageService
     /// </summary>
     /// <param name="model">image get dto</param>
     /// <returns></returns>
-    Task<DataResult<List<ImageModel>>> GetAllByEntityTypeAsync(ImageEntityTypeModel model);
+    Task<DataResult<List<ImageModel>>> GetAllByTypeAsync(ImageTypeModel model);
 
     /// <summary>
     /// Get all images paging by entity type
     /// </summary>
     /// <param name="model">image get dto</param>
     /// <returns></returns>
-    Task<DataResult<List<ImageModel>>> GetAllByEntityTypePagingAsync(ImageEntityTypeModel model);
+    Task<DataResult<List<ImageModel>>> GetAllByTypePagingAsync(ImageTypePagingModel model);
 
     /// <summary>
     /// Get all images by entity type and id
     /// </summary>
     /// <param name="model">image dto</param>
     /// <returns>List of image dto</returns>
-    Task<DataResult<List<ImageModel>>> GetAllByEntityTypeAndIdAsync(ImageEntityTypeAndIdModel model);
+    Task<DataResult<List<ImageModel>>> GetAllByTypeAndFileUserIdAsync(ImageTypeAndFileUserIdModel model);
 
     /// <summary>
     /// Get all images paging by entity type and id
     /// </summary>
     /// <param name="model">image dto</param>
     /// <returns>List of image dto</returns>
-    Task<DataResult<List<ImageModel>>> GetAllByEntityTypeAndIdPagingAsync(ImageEntityTypeAndIdModel model);
+    Task<DataResult<List<ImageModel>>> GetByTypeAndFileUserIdPagingAsync(ImageTypeAndFileUserIdPagingModel model);
 
     /// <summary>
     /// Delete image by id
