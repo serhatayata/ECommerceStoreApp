@@ -38,7 +38,7 @@ public class LogServiceInstaller : IServiceInstaller
 
     private static ElasticsearchSinkOptions ConfigureElasticSink(IConfiguration configuration, string environment)
     {
-        var connString = configuration.GetSection("ElasticSearchOptions:ConnectionString").Value;
+        var connString = configuration.GetSection("ElasticSearchLogOptions:ConnectionString").Value;
 
         return new ElasticsearchSinkOptions(new Uri(connString))
         {
