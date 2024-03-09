@@ -1,0 +1,22 @@
+version: '3.4'
+
+services:
+  fileservice-api:
+    image: ${DOCKER_REGISTRY-}fileserviceapi
+    build:
+      context: .
+      dockerfile: src/Services/FileService/FileService.Api/Dockerfile
+    depends_on:
+      - sql-server
+
+  sql-server:
+    container_name: sql-server
+    image: mcr.microsoft.com/mssql/server:2019-latest
+
+  consul-service:
+    container_name: consul-service
+    image: consul
+
+volumes:
+  sqlserver_data:
+  sqlserver_log:

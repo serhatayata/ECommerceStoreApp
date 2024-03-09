@@ -1,0 +1,16 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "composeLaunchAction": "LaunchBrowser",
+      "composeLaunchServiceName": "fileservice-api",
+      "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/swagger",
+      "serviceActions": {
+        "fileservice-api": "StartDebugging",
+        "consul-service": "StartWithoutDebugging",
+        "sql-server": "StartWithoutDebugging"
+      }
+    }
+  }
+}
