@@ -1,11 +1,11 @@
-﻿using CampaignService.Api.Attributes;
+﻿using FileService.Api.Attributes;
 using Serilog;
 using Serilog.Formatting.Compact;
 using Serilog.Formatting.Elasticsearch;
 using Serilog.Sinks.Elasticsearch;
 using System.Reflection;
 
-namespace CampaignService.Api.Configurations.Installers.ServiceInstallers;
+namespace FileService.Api.Configurations.Installers.ServiceInstallers;
 
 [InstallerOrder(Order = 7)]
 public class LogServiceInstaller : IServiceInstaller
@@ -13,16 +13,13 @@ public class LogServiceInstaller : IServiceInstaller
     public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         //Get the environment which the app is running on
-        var env = hostEnvironment.EnvironmentName;
-
+        var env = System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+        //Get Config
         var serilogConfiguration = new ConfigurationBuilder()
-            .AddJsonFile("Configurations/Settings/serilog.json",
-                         optional: false,
-                         reloadOnChange: true)
-            .AddJsonFile($"Configurations/Settings/serilog.{hostEnvironment.EnvironmentName}.json",
-                         optional: true,
-                         reloadOnChange: true)
-            .Build();
+                            .AddJsonFile($"Configurations/Settings/serilog.{env}.json",
+                                         optional: false,
+                                         reloadOnChange: true)
+                            .Build();
 
         //Create logger
         Log.Logger = new LoggerConfiguration()
@@ -36,9 +33,9 @@ public class LogServiceInstaller : IServiceInstaller
                         .CreateLogger();
     }
 
-    private static ElasticsearchSinkOptions ConfigureElasticSink(IConfiguration configuration, string environment)
+    private static ElasticsearchSinkOptions ConfigureElasticSink(IConfigurationRoot configuration, string environment)
     {
-        var connString = configuration.GetSection("ElasticSearchOptions:ConnectionString").Value;
+        var connString = configuration.GetSection("ElasticSearchLogOptions:ConnectionString").Value;
 
         return new ElasticsearchSinkOptions(new Uri(connString))
         {

@@ -57,7 +57,6 @@ public class ImageService : IImageService
                 _dbContext.Connection.Close();
             }
         }
-
     }
 
     public async Task<Result> DeleteAsync(int id)

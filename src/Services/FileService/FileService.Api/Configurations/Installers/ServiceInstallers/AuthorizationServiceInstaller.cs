@@ -1,13 +1,12 @@
 ﻿using FileService.Api.Attributes;
-using FileService.Api.Mappings;
 
 namespace FileService.Api.Configurations.Installers.ServiceInstallers;
 
-[InstallerOrder(Order = 8)]
-public class MappingServiceInstaller : IServiceInstaller
+[InstallerOrder(Order = 11)]
+public class AuthorizationServiceInstaller : IServiceInstaller
 {
     public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
-        services.AddAutoMapper(typeof(MapProfile).Assembly);
+        
     }
 }

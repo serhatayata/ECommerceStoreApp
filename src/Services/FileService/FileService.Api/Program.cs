@@ -1,20 +1,22 @@
+using FileService.Api.Configurations.Installers;
 using FileService.Api.Extensions;
 
-var appConfig = ConfigurationExtension.appConfig;
-var serilogConf = ConfigurationExtension.serilogConfig;
-
 var builder = WebApplication.CreateBuilder(args);
+ConfigurationManager configuration = builder.Configuration;
+var assembly = typeof(Program).Assembly.GetName().Name;
+IWebHostEnvironment environment = builder.Environment;
 
-builder.Configuration.AddConfiguration(appConfig);
-builder.Host.UseDefaultServiceProvider((context, options) =>
-{
-    options.ValidateOnBuild = false;
-    options.ValidateScopes = false;
-});
+builder.Host
+    .InstallHost(
+    configuration,
+    environment,
+    typeof(IHostInstaller).Assembly);
 
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services
+    .InstallServices(
+        configuration,
+        environment,
+        typeof(IServiceInstaller).Assembly);
 
 var app = builder.Build();
 
@@ -28,6 +30,16 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
+app.InstallWebApp(app.Lifetime,
+                  configuration,
+                  typeof(IWebApplicationInstaller).Assembly);
+
+app.InstallApplicationBuilder(app.Lifetime,
+                              configuration,
+                              typeof(IApplicationBuilderInstaller).Assembly);
+
 app.MapControllers();
 
-app.Run();
+app.Start();
+app.InstallServiceDiscovery(app.Lifetime, configuration);
+app.WaitForShutdown();
