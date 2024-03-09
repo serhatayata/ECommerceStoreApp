@@ -107,9 +107,10 @@ public class ImageService : IImageService
     public async Task<DataResult<List<ImageModel>>> GetByTypeAndFileUserIdPagingAsync(
         ImageTypeAndFileUserIdPagingModel model)
     {
+        var skipCount = model.Page == 0 ? 0 : model.Page - 1;
         var list = await _dbContext.Images
                                    .Where(i => i.FileUserId == model.FileUserId && i.Type == model.Type)
-                                   .Skip((model.Page - 1) * model.PageSize)
+                                   .Skip((skipCount) * model.PageSize)
                                    .Take(model.PageSize)
                                    .ToListAsync();
 
@@ -131,9 +132,10 @@ public class ImageService : IImageService
     public async Task<DataResult<List<ImageModel>>> GetAllByTypePagingAsync(
         ImageTypePagingModel model)
     {
+        var skipCount = model.Page == 0 ? 0 : model.Page - 1;
         var list = await _dbContext.Images
                                    .Where(i => i.Type == model.Type)
-                                   .Skip((model.Page - 1) * model.PageSize)
+                                   .Skip((skipCount) * model.PageSize)
                                    .Take(model.PageSize)
                                    .ToListAsync();
 

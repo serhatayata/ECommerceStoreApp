@@ -1,7 +1,7 @@
 ﻿namespace Monitoring.BackgroundTasks.Utilities.Results;
 public class SuccessResult : Result
 {
-    public SuccessResult(string message) : base(true, message, 400)
+    public SuccessResult(string message) : base(true, message, 200)
     {
     }
 

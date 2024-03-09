@@ -1,4 +1,5 @@
-﻿using FileService.Api.Models.ImageModels;
+﻿using FileService.Api.Extensions;
+using FileService.Api.Models.ImageModels;
 using FileService.Api.Services.Abstract;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,8 +18,13 @@ public class ImageController : ControllerBase
     }
 
     [HttpPost("add")]
-    public async Task<IActionResult> AddAsync([FromBody] ImageModel model)
+    public async Task<IActionResult> AddAsync([FromForm] ImageModel model)
     {
+        ///
+        /// SAVE DATA TO AWS OR SOMEWHERE LIKE THAT
+        /// 
+
+        model.Path = $"blabla.com/{RandomExtensions.GetRandomNumber()}";
         var result = await _imageService.AddAsync(model);
         return Ok(result);
     }
@@ -26,6 +32,10 @@ public class ImageController : ControllerBase
     [HttpDelete("delete")]
     public async Task<IActionResult> DeleteAsync([FromBody] int id)
     {
+        ///
+        /// DELETE FROM IMAGE REPO
+        ///
+
         var result = await _imageService.DeleteAsync(id);
         return Ok(result);
     }

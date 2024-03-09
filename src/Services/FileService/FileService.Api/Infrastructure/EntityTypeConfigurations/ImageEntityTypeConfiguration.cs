@@ -17,8 +17,8 @@ public class ImageEntityTypeConfiguration : IEntityTypeConfiguration<Image>
                .HasColumnType(typeName: "nvarchar(100)")
                .IsRequired();
 
-        builder.Property(c => c.Data)
-               .HasColumnType(typeName: "varbinary(MAX)")
+        builder.Property(c => c.Path)
+               .HasColumnType(typeName: "nvarchar(1000)")
                .IsRequired();
 
         builder.Property(o => o.CreateDate)

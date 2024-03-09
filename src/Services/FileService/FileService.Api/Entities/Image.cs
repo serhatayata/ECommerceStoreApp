@@ -20,9 +20,9 @@ public class Image : IEntity
     public int EntityId { get; set; }
 
     /// <summary>
-    /// URL of the image
+    /// Entity id for example CategoryId or ProductId
     /// </summary>
-    public byte[] Data { get; set; }
+    public string Path { get; set; }
 
     /// <summary>
     /// Created date
