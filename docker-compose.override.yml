@@ -4,11 +4,11 @@ services:
   fileservice-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=5004
-      - ASPNETCORE_HTTP_PORTS=6004
+      - ASPNETCORE_HTTP_PORTS=5004,80
+      - ASPNETCORE_HTTPS_PORTS=6004,443
     ports:
-      - 5004:5004
-      - 6004:6004
+      - "5004:80"
+      - "6004:443"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro

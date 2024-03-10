@@ -8,6 +8,10 @@ services:
       dockerfile: src/Services/FileService/FileService.Api/Dockerfile
     depends_on:
       - sql-server
+      - consul-service
+    ports:
+      - "5004:80"
+      - "6004:443"
 
   sql-server:
     container_name: sql-server

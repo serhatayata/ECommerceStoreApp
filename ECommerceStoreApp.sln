@@ -133,7 +133,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "debezium", "debezium", "{D8
 		debezium\debezium-config.json = debezium\debezium-config.json
 	EndProjectSection
 EndProject
-Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{3E2F7E7A-2F03-489D-85FF-27FFFC650060}"
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{A21D0A1B-2804-43B3-8C82-5A24C091BBD9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -213,10 +213,10 @@ Global
 		{F802555A-E1F5-4D64-B23C-3775745ABD32}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F802555A-E1F5-4D64-B23C-3775745ABD32}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F802555A-E1F5-4D64-B23C-3775745ABD32}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3E2F7E7A-2F03-489D-85FF-27FFFC650060}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3E2F7E7A-2F03-489D-85FF-27FFFC650060}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3E2F7E7A-2F03-489D-85FF-27FFFC650060}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3E2F7E7A-2F03-489D-85FF-27FFFC650060}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A21D0A1B-2804-43B3-8C82-5A24C091BBD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A21D0A1B-2804-43B3-8C82-5A24C091BBD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A21D0A1B-2804-43B3-8C82-5A24C091BBD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A21D0A1B-2804-43B3-8C82-5A24C091BBD9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
