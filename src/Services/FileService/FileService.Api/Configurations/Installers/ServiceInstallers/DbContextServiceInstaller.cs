@@ -7,7 +7,7 @@ namespace FileService.Api.Configurations.Installers.ServiceInstallers;
 [InstallerOrder(Order = 3)]
 public class DbContextServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public async void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         var assembly = typeof(Program).Assembly.GetName().Name;
 
@@ -23,5 +23,10 @@ public class DbContextServiceInstaller : IServiceInstaller
                                      //sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
                                  });
         }, ServiceLifetime.Scoped);
+
+        var serviceProvider = services.BuildServiceProvider();
+        var context = serviceProvider.GetRequiredService<FileDbContext>();
+
+        await context.Database.MigrateAsync();
     }
 }

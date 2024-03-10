@@ -9,7 +9,9 @@
       "serviceActions": {
         "consul-service": "StartWithoutDebugging",
         "fileservice-api": "StartDebugging",
-        "sql-server": "StartWithoutDebugging"
+        "sql-server": "StartWithoutDebugging",
+        "elasticsearch": "StartWithoutDebugging",
+        "kibana": "StartWithoutDebugging"
       }
     }
   }

@@ -20,5 +20,23 @@ public class FileUserEntityTypeConfiguration : IEntityTypeConfiguration<FileUser
         builder.Property(c => c.Description)
                .HasColumnType(typeName: "nvarchar(500)")
                .IsRequired();
+
+        FileUser[] fileUsers = new[]
+        {
+            new FileUser()
+            {
+                Id = 1,
+                Name = "fileUser_1",
+                Description = "description 1"
+            },
+            new FileUser()
+            {
+                Id = 2,
+                Name = "fileUser_2",
+                Description = "description 2"
+            }
+        };
+
+        builder.HasData(fileUsers);
     }
 }
