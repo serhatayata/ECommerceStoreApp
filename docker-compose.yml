@@ -2,6 +2,7 @@ version: '3.4'
 
 services:
   fileservice-api:
+    container_name: fileservice-api
     image: ${DOCKER_REGISTRY-}fileserviceapi
     build:
       context: .
@@ -10,6 +11,19 @@ services:
       - sql-server
       - consul-service
       - elasticsearch
+
+  campaignservice-api:
+    container_name: campaignservice-api
+    image: ${DOCKER_REGISTRY-}campaignserviceapi
+    build:
+      context: .
+      dockerfile: src/Services/CampaignService/CampaignService.Api/Dockerfile
+    depends_on:
+      - sql-server
+      - consul-service
+      - elasticsearch
+      - redis
+      - rabbitmq
 
   sql-server:
     container_name: sql-server
@@ -26,6 +40,18 @@ services:
   kibana:
     container_name: kibana
     image: docker.elastic.co/kibana/kibana:7.16.1
+
+  redis:
+    container_name: redis
+    image: 'redis:6.0.6'
+
+  redisinsight:
+    container_name: redisinsight
+    image: 'redislabs/redisinsight:latest'
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: "rabbitmq:3-management"
 
 volumes:
   sqlserver_data:

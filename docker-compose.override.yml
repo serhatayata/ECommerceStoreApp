@@ -6,12 +6,26 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=5004,80
       - ASPNETCORE_HTTPS_PORTS=6004,443
+      - ASPNETCORE_URLS=https://+:443;http://+:80
     ports:
       - "5004:80"
       - "6004:443"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+  campaignservice-api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=5009,80
+      - ASPNETCORE_HTTPS_PORTS=6009,443
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+    ports:
+      - "5009:80"
+      - "6009:443"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
 
   sql-server:
     user: root
@@ -44,6 +58,24 @@ services:
       - elasticsearch
     environment:
       - ELASTICSEARCH_URL=http://elasticsearch:9200
+
+  redis:
+    ports:
+      - 6379:6379
+    healthcheck:
+      test: redis-cli ping
+      interval: 3s
+      timeout: 5s
+      retries: 5
+
+  redisinsight:
+    ports:
+      - 8001:8001
+
+  rabbitmq:
+    ports:
+      - '5672:5672'
+      - '15672:15672'
 
   consul-service:
     ports:
