@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MonitoringService.Api.Attributes;
 using MonitoringService.Api.Infrastructure.Contexts;
 
 namespace MonitoringService.Api.Configurations.Installers.ServiceInstallers;
 
+[InstallerOrder(Order = 9)]
 public class DbContextServiceInstaller : IServiceInstaller
 {
     public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
@@ -12,5 +14,10 @@ public class DbContextServiceInstaller : IServiceInstaller
                         .AddDbContext<MonitoringDbContext>(options =>
                                                             options.UseNpgsql(connString)
                                                                    .UseLowerCaseNamingConvention());
+
+        var serviceProvider = services.BuildServiceProvider();
+        var context = serviceProvider.GetRequiredService<MonitoringDbContext>();
+
+        _ = context.Database.EnsureCreated();
     }
 }

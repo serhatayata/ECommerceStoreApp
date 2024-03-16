@@ -41,6 +41,6 @@ app.MapControllers();
 
 app.Start();
 
-app.RegisterWithConsul(app.Lifetime, configuration);
+app.InstallServiceDiscovery(app.Lifetime, configuration);
 
 app.WaitForShutdown();

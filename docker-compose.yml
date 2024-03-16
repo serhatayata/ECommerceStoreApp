@@ -37,6 +37,16 @@ services:
       - elasticsearch
       - redis
 
+  monitoringservice-api:
+    container_name: monitoringservice-api
+    image: ${DOCKER_REGISTRY-}monitoringserviceapi
+    build:
+      context: .
+      dockerfile: src/Services/MonitoringService/MonitoringService.Api/Dockerfile
+    depends_on:
+      - postgres
+      - elasticsearch
+
   sql-server:
     container_name: sql-server
     image: mcr.microsoft.com/mssql/server:2019-latest
@@ -65,8 +75,13 @@ services:
     container_name: rabbitmq
     image: "rabbitmq:3-management"
 
+  postgres:
+    container_name: postgres
+    image: postgres:14-alpine
+
 volumes:
   sqlserver_data:
   sqlserver_log:
   elasticsearch-data:
+
 

@@ -1,7 +1,9 @@
-﻿using Serilog;
+﻿using MonitoringService.Api.Attributes;
+using Serilog;
 
 namespace MonitoringService.Api.Configurations.Installers.HostInstallers;
 
+[InstallerOrder(Order = 1)]
 public class ApplicationHostInstaller : IHostInstaller
 {
     public void Install(IHostBuilder host, IConfiguration configuration, IWebHostEnvironment hostEnvironment)

@@ -3,9 +3,11 @@ using MonitoringService.Api.Services.Cache.Abstract;
 using MonitoringService.Api.Services.Cache.Concrete;
 using MonitoringService.Api.Services.Token.Abstract;
 using MonitoringService.Api.Services.Token.Concrete;
+using MonitoringService.Api.Attributes;
 
 namespace MonitoringService.Api.Configurations.Installers.ServiceInstallers;
 
+[InstallerOrder(Order = 1)]
 public class StartupDIServiceInstaller : IServiceInstaller
 {
     public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)

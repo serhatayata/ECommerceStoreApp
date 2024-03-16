@@ -5,18 +5,20 @@
       "commandVersion": "1.0",
       "composeLaunchAction": "LaunchBrowser",
       "composeLaunchServiceName": "localizationservice-api",
-      "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/swagger",
+      "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/swagger/index.html",
       "serviceActions": {
         "consul-service": "StartWithoutDebugging",
-        "fileservice-api": "DoNotStart",
+        "fileservice-api": "StartDebugging",
         "sql-server": "StartWithoutDebugging",
         "elasticsearch": "StartWithoutDebugging",
         "kibana": "StartWithoutDebugging",
-        "campaignservice-api": "DoNotStart",
+        "campaignservice-api": "StartDebugging",
         "rabbitmq": "StartWithoutDebugging",
         "redis": "StartWithoutDebugging",
         "redisinsight": "StartWithoutDebugging",
-        "localizationservice-api": "StartDebugging"
+        "localizationservice-api": "StartDebugging",
+        "monitoringservice-api": "StartDebugging",
+        "postgres": "StartWithoutDebugging"
       }
     }
   }

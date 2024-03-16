@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using MonitoringService.Api.Attributes;
+using Serilog;
 using Serilog.Formatting.Compact;
 using Serilog.Formatting.Elasticsearch;
 using Serilog.Sinks.Elasticsearch;
@@ -6,6 +7,7 @@ using System.Reflection;
 
 namespace MonitoringService.Api.Configurations.Installers.ServiceInstallers;
 
+[InstallerOrder(Order = 7)]
 public class LogServiceInstaller : IServiceInstaller
 {
     public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)

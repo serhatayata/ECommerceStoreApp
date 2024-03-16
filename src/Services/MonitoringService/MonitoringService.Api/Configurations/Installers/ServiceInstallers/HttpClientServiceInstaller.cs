@@ -1,8 +1,10 @@
-﻿using MonitoringService.Api.Infrastructure.DelegatingHandlers;
+﻿using MonitoringService.Api.Attributes;
+using MonitoringService.Api.Infrastructure.DelegatingHandlers;
 using MonitoringService.Api.Models.Settings;
 
 namespace MonitoringService.Api.Configurations.Installers.ServiceInstallers;
 
+[InstallerOrder(Order = 4)]
 public class HttpClientServiceInstaller : IServiceInstaller
 {
     public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)

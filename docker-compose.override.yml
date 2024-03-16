@@ -40,6 +40,19 @@ services:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
 
+  monitoringservice-api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=5010,80
+      - ASPNETCORE_HTTPS_PORTS=6010,443
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+    ports:
+      - "5010:80"
+      - "6010:443"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
   sql-server:
     user: root
     ports:
@@ -95,3 +108,13 @@ services:
       - 8500:8500
       - 8600:8600/tcp
       - 8600:8600/udp
+
+  postgres:
+    ports:
+      - 5432:5432
+    volumes:
+      - ~/apps/postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=ECSA_Monitoring

@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MonitoringService.Api.Attributes;
 using System.Text.Json.Serialization;
 
 namespace MonitoringService.Api.Configurations.Installers.ServiceInstallers;
 
+[InstallerOrder(Order = 2)]
 public class ControllerServiceInstaller : IServiceInstaller
 {
     public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)

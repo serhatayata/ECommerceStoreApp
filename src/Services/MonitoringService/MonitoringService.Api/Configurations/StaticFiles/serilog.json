@@ -9,6 +9,6 @@
     }
   },
   "ElasticSearchLogOptions": {
-    "ConnectionString": "http://localhost:9200"
+    "ConnectionString": "http://elasticsearch:9200"
   }
 }
