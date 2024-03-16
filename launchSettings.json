@@ -4,7 +4,7 @@
       "commandName": "DockerCompose",
       "commandVersion": "1.0",
       "composeLaunchAction": "LaunchBrowser",
-      "composeLaunchServiceName": "localizationservice-api",
+      "composeLaunchServiceName": "notificationservice-api",
       "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/swagger/index.html",
       "serviceActions": {
         "consul-service": "StartWithoutDebugging",
@@ -18,7 +18,9 @@
         "redisinsight": "StartWithoutDebugging",
         "localizationservice-api": "StartDebugging",
         "monitoringservice-api": "StartDebugging",
-        "postgres": "StartWithoutDebugging"
+        "postgres": "StartWithoutDebugging",
+        "notificationservice-api": "StartDebugging",
+        "postgres-notification": "StartWithoutDebugging"
       }
     }
   }

@@ -47,6 +47,18 @@ services:
       - postgres
       - elasticsearch
 
+  notificationservice-api:
+    container_name: notificationservice-api
+    image: ${DOCKER_REGISTRY-}notificationserviceapi
+    build:
+      context: .
+      dockerfile: src/Services/NotificationService/NotificationService.Api/Dockerfile
+    depends_on:
+      - postgres-notification
+      - consul-service
+      - elasticsearch
+      - redis
+
   sql-server:
     container_name: sql-server
     image: mcr.microsoft.com/mssql/server:2019-latest
@@ -79,9 +91,14 @@ services:
     container_name: postgres
     image: postgres:14-alpine
 
+  postgres-notification:
+    container_name: postgres-notification
+    image: postgres:14-alpine
+
 volumes:
   sqlserver_data:
   sqlserver_log:
   elasticsearch-data:
+
 
 
