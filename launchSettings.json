@@ -4,18 +4,19 @@
       "commandName": "DockerCompose",
       "commandVersion": "1.0",
       "composeLaunchAction": "LaunchBrowser",
-      "composeLaunchServiceName": "campaignservice-api",
-      "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/ui/playground",
+      "composeLaunchServiceName": "localizationservice-api",
+      "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/swagger",
       "serviceActions": {
         "consul-service": "StartWithoutDebugging",
-        "fileservice-api": "StartDebugging",
+        "fileservice-api": "DoNotStart",
         "sql-server": "StartWithoutDebugging",
         "elasticsearch": "StartWithoutDebugging",
         "kibana": "StartWithoutDebugging",
-        "campaignservice-api": "StartDebugging",
+        "campaignservice-api": "DoNotStart",
         "rabbitmq": "StartWithoutDebugging",
         "redis": "StartWithoutDebugging",
-        "redisinsight": "StartWithoutDebugging"
+        "redisinsight": "StartWithoutDebugging",
+        "localizationservice-api": "StartDebugging"
       }
     }
   }
