@@ -8,7 +8,7 @@ public class ServiceDiscoveryServiceInstaller : IServiceInstaller
     {
         services.AddSingleton<IConsulClient, ConsulClient>(p => new ConsulClient(consulConfig =>
         {
-            var address = configuration["ServiceDiscoveryConfig:Address"];
+            var address = configuration["ConsulConfig:Address"];
             consulConfig.Address = new Uri(address);
         }));
     }

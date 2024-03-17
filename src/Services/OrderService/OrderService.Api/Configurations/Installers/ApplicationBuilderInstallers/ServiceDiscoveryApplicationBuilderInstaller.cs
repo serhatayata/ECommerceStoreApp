@@ -1,6 +1,4 @@
 ﻿using Consul;
-using Microsoft.AspNetCore.Hosting.Server;
-using Microsoft.AspNetCore.Hosting.Server.Features;
 using OrderService.Api.Models.Settings;
 
 namespace OrderService.Api.Configurations.Installers.ApplicationBuilderInstallers;
@@ -13,18 +11,9 @@ public class ServiceDiscoveryApplicationBuilderInstaller : IApplicationBuilderIn
         {
             var consulClient = app.ApplicationServices.GetRequiredService<IConsulClient>();
             var loggingFactory = app.ApplicationServices.GetRequiredService<ILoggerFactory>();
-            var server = app.ApplicationServices.GetRequiredService<IServer>();
+            var consulSettings = configuration.GetSection("ConsulConfig").Get<ConsulSettings>();
+
             var logger = loggingFactory.CreateLogger<IApplicationBuilder>();
-
-            var addressFeature = server.Features.Get<IServerAddressesFeature>();
-            var addresses = addressFeature?.Addresses;
-
-            if (addresses == null)
-            {
-                logger.LogInformation("Registering with consul not completed because address is NULL !");
-                return;
-            }
-            var consulSettings = configuration.GetSection("ServiceDiscoveryConfig").Get<ServiceDiscoverySettings>();
 
             var registrationIds = new List<string>();
             logger.LogInformation("Registering with consul");
@@ -32,17 +21,14 @@ public class ServiceDiscoveryApplicationBuilderInstaller : IApplicationBuilderIn
             //Base
             if (consulSettings != null)
             {
-                var address = addresses.Take(1).FirstOrDefault();
-                if (!string.IsNullOrWhiteSpace(address))
+                if (!string.IsNullOrWhiteSpace(consulSettings.Host))
                 {
-                    Uri currentUri = new Uri(address, UriKind.Absolute);
-
                     var baseRegistrationId = RegisterConsulService(
                         app,
                         consulSettings.ServiceId,
                         consulSettings.ServiceName,
-                        currentUri.Host,
-                        currentUri.Port);
+                        consulSettings.Host,
+                        consulSettings.Port);
 
                     if (!string.IsNullOrWhiteSpace(baseRegistrationId))
                         registrationIds.Add(baseRegistrationId);
@@ -66,11 +52,11 @@ public class ServiceDiscoveryApplicationBuilderInstaller : IApplicationBuilderIn
     }
 
     private static string? RegisterConsulService(
-    IApplicationBuilder app,
-    string serviceId,
-    string serviceName,
-    string host,
-    int port)
+        IApplicationBuilder app,
+        string serviceId,
+        string serviceName,
+        string host,
+        int port)
     {
         var consulClient = app.ApplicationServices.GetRequiredService<IConsulClient>();
 

@@ -20,9 +20,13 @@
 
   <ItemGroup>
     <Compile Remove="Configurations\Installers\WebHostBuilderInstallers\**" />
+    <Compile Remove="Models\CouponItem\**" />
     <Content Remove="Configurations\Installers\WebHostBuilderInstallers\**" />
+    <Content Remove="Models\CouponItem\**" />
     <EmbeddedResource Remove="Configurations\Installers\WebHostBuilderInstallers\**" />
+    <EmbeddedResource Remove="Models\CouponItem\**" />
     <None Remove="Configurations\Installers\WebHostBuilderInstallers\**" />
+    <None Remove="Models\CouponItem\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -69,10 +73,6 @@
     <PackageReference Include="Serilog.Sinks.Elasticsearch" Version="9.0.3" />
     <PackageReference Include="StackExchange.Redis" Version="2.7.10" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Models\CouponItem\" />
   </ItemGroup>
 
   <ItemGroup>
