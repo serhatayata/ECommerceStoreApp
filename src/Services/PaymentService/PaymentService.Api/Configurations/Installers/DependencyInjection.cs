@@ -67,13 +67,13 @@ public static class DependencyInjection
     IConfiguration configuration,
     params Assembly[] assemblies)
     {
-        IEnumerable<IWebAppInstaller> webAppInstallers = assemblies
+        IEnumerable<IApplicationBuilderInstaller> webAppInstallers = assemblies
             .SelectMany(a => a.DefinedTypes)
-            .Where(IsAssignableToType<IWebAppInstaller>)
+            .Where(IsAssignableToType<IApplicationBuilderInstaller>)
             .Select(Activator.CreateInstance)
-            .Cast<IWebAppInstaller>();
+            .Cast<IApplicationBuilderInstaller>();
 
-        foreach (IWebAppInstaller webAppIstaller in webAppInstallers)
+        foreach (IApplicationBuilderInstaller webAppIstaller in webAppInstallers)
         {
             webAppIstaller.Install(app, appLifeTime, configuration);
         }

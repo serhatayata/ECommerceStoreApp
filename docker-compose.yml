@@ -71,6 +71,17 @@ services:
       - elasticsearch
       - redis
 
+  paymentservice-api:
+    image: ${DOCKER_REGISTRY-}paymentserviceapi
+    build:
+      context: .
+      dockerfile: src/Services/PaymentService/PaymentService.Api/Dockerfile
+    depends_on:
+      - sql-server
+      - consul-service
+      - elasticsearch
+      - redis
+
   sql-server:
     container_name: sql-server
     image: mcr.microsoft.com/mssql/server:2019-latest
@@ -111,6 +122,7 @@ volumes:
   sqlserver_data:
   sqlserver_log:
   elasticsearch-data:
+
 
 
 

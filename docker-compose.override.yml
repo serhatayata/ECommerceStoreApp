@@ -79,6 +79,19 @@ services:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
 
+  paymentservice-api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=5008,80
+      - ASPNETCORE_HTTPS_PORTS=6008,443
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+    ports:
+      - "5008:80"
+      - "6008:443"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
   sql-server:
     user: root
     ports:
@@ -154,3 +167,4 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_DB=ECSA_Notification
+

@@ -4,7 +4,7 @@
       "commandName": "DockerCompose",
       "commandVersion": "1.0",
       "composeLaunchAction": "LaunchBrowser",
-      "composeLaunchServiceName": "orderservice-api",
+      "composeLaunchServiceName": "paymentservice-api",
       "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/swagger",
       "serviceActions": {
         "consul-service": "StartWithoutDebugging",
@@ -21,7 +21,8 @@
         "postgres": "StartWithoutDebugging",
         "notificationservice-api": "StartDebugging",
         "postgres-notification": "StartWithoutDebugging",
-        "orderservice-api": "StartDebugging"
+        "orderservice-api": "StartDebugging",
+        "paymentservice-api": "StartDebugging"
       }
     }
   }

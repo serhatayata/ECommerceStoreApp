@@ -1,4 +1,4 @@
-﻿using PaymentService.Api.Configurations.Installers.WebApplicationInstallers;
+﻿using PaymentService.Api.Configurations.Installers.ApplicationBuilderInstallers;
 
 namespace PaymentService.Api.Extensions;
 
@@ -9,7 +9,7 @@ public static class ServiceDiscoveryExtensions
     IHostApplicationLifetime lifeTime,
     IConfiguration configuration)
     {
-        var serviceDiscoveryInstaller = new ServiceDiscoveryWebAppInstaller();
+        var serviceDiscoveryInstaller = new ServiceDiscoveryApplicationBuilderInstaller();
         serviceDiscoveryInstaller.Install(app, lifeTime, configuration);
     }
 }
