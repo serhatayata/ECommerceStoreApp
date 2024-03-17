@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using OrderService.Api.Models.Settings;
 
-namespace OrderService.Api.Configurations.Installers.WebApplicationInstallers;
+namespace OrderService.Api.Configurations.Installers.ApplicationBuilderInstallers;
 
-public class ServiceDiscoveryWebAppInstaller : IWebAppInstaller
+public class ServiceDiscoveryApplicationBuilderInstaller : IApplicationBuilderInstaller
 {
     public void Install(IApplicationBuilder app, IHostApplicationLifetime lifeTime, IConfiguration configuration)
     {

@@ -1,6 +1,6 @@
 ﻿namespace OrderService.Api.Configurations.Installers;
 
-public interface IWebAppInstaller
+public interface IApplicationBuilderInstaller
 {
     void Install(IApplicationBuilder app, IHostApplicationLifetime lifeTime, IConfiguration configuration);
 }

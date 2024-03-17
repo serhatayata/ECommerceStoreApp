@@ -1,4 +1,4 @@
-﻿using OrderService.Api.Configurations.Installers.WebApplicationInstallers;
+﻿using OrderService.Api.Configurations.Installers.ApplicationBuilderInstallers;
 
 namespace OrderService.Api.Extensions;
 
@@ -9,7 +9,7 @@ public static class ServiceDiscoveryExtensions
         IHostApplicationLifetime lifeTime, 
         IConfiguration configuration)
     {
-        var serviceDiscoveryInstaller = new ServiceDiscoveryWebAppInstaller();
+        var serviceDiscoveryInstaller = new ServiceDiscoveryApplicationBuilderInstaller();
         serviceDiscoveryInstaller.Install(app, lifeTime, configuration);
     }
 }
