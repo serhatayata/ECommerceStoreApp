@@ -32,7 +32,7 @@ app.UseAuthorization();
 
 app.InstallWebApp(app.Lifetime,
                   configuration,
-                  typeof(IWebAppInstaller).Assembly);
+                  typeof(IApplicationBuilderInstaller).Assembly);
 
 app.MapControllers();
 

@@ -72,10 +72,23 @@ services:
       - redis
 
   paymentservice-api:
+    container_name: paymentservice-api
     image: ${DOCKER_REGISTRY-}paymentserviceapi
     build:
       context: .
       dockerfile: src/Services/PaymentService/PaymentService.Api/Dockerfile
+    depends_on:
+      - sql-server
+      - consul-service
+      - elasticsearch
+      - redis
+
+  stockservice-api:
+    container_name: stockservice-api
+    image: ${DOCKER_REGISTRY-}stockserviceapi
+    build:
+      context: .
+      dockerfile: src/Services/StockService/StockService.Api/Dockerfile
     depends_on:
       - sql-server
       - consul-service
@@ -122,6 +135,7 @@ volumes:
   sqlserver_data:
   sqlserver_log:
   elasticsearch-data:
+
 
 
 

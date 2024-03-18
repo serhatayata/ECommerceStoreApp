@@ -1,11 +1,9 @@
 ﻿using Consul;
-using Microsoft.AspNetCore.Hosting.Server;
-using Microsoft.AspNetCore.Hosting.Server.Features;
 using StockService.Api.Models.Settings;
 
-namespace StockService.Api.Configurations.Installers.WebApplicationInstallers;
+namespace StockService.Api.Configurations.Installers.ApplicationBuilderInstallers;
 
-public class ServiceDiscoveryWebAppInstaller : IWebAppInstaller
+public class ServiceDiscoveryApplicationBuilderInstaller : IApplicationBuilderInstaller
 {
     public void Install(IApplicationBuilder app, IHostApplicationLifetime lifeTime, IConfiguration configuration)
     {
@@ -13,18 +11,9 @@ public class ServiceDiscoveryWebAppInstaller : IWebAppInstaller
         {
             var consulClient = app.ApplicationServices.GetRequiredService<IConsulClient>();
             var loggingFactory = app.ApplicationServices.GetRequiredService<ILoggerFactory>();
-            var server = app.ApplicationServices.GetRequiredService<IServer>();
-            var logger = loggingFactory.CreateLogger<IApplicationBuilder>();
-
-            var addressFeature = server.Features.Get<IServerAddressesFeature>();
-            var addresses = addressFeature?.Addresses;
-
-            if (addresses == null)
-            {
-                logger.LogInformation("Registering with consul not completed because address is NULL !");
-                return;
-            }
             var consulSettings = configuration.GetSection("ServiceDiscoveryConfig").Get<ServiceDiscoverySettings>();
+
+            var logger = loggingFactory.CreateLogger<IApplicationBuilder>();
 
             var registrationIds = new List<string>();
             logger.LogInformation("Registering with consul");
@@ -32,17 +21,14 @@ public class ServiceDiscoveryWebAppInstaller : IWebAppInstaller
             //Base
             if (consulSettings != null)
             {
-                var address = addresses.Take(1).FirstOrDefault();
-                if (!string.IsNullOrWhiteSpace(address))
+                if (!string.IsNullOrWhiteSpace(consulSettings.Host))
                 {
-                    Uri currentUri = new Uri(address, UriKind.Absolute);
-
                     var baseRegistrationId = RegisterConsulService(
                         app,
                         consulSettings.ServiceId,
                         consulSettings.ServiceName,
-                        currentUri.Host,
-                        currentUri.Port);
+                        consulSettings.Host,
+                        consulSettings.Port);
 
                     if (!string.IsNullOrWhiteSpace(baseRegistrationId))
                         registrationIds.Add(baseRegistrationId);
