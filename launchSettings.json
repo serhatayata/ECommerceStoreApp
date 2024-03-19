@@ -4,26 +4,27 @@
       "commandName": "DockerCompose",
       "commandVersion": "1.0",
       "composeLaunchAction": "LaunchBrowser",
-      "composeLaunchServiceName": "stockservice-api",
-      "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/swagger",
+      "composeLaunchServiceName": "basketservice-api",
+      "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/",
       "serviceActions": {
         "consul-service": "StartWithoutDebugging",
-        "fileservice-api": "StartDebugging",
+        "fileservice-api": "DoNotStart",
         "sql-server": "StartWithoutDebugging",
         "elasticsearch": "StartWithoutDebugging",
         "kibana": "StartWithoutDebugging",
-        "campaignservice-api": "StartDebugging",
+        "campaignservice-api": "DoNotStart",
         "rabbitmq": "StartWithoutDebugging",
         "redis": "StartWithoutDebugging",
         "redisinsight": "StartWithoutDebugging",
-        "localizationservice-api": "StartDebugging",
-        "monitoringservice-api": "StartDebugging",
+        "localizationservice-api": "DoNotStart",
+        "monitoringservice-api": "DoNotStart",
         "postgres": "StartWithoutDebugging",
-        "notificationservice-api": "StartDebugging",
+        "notificationservice-api": "DoNotStart",
         "postgres-notification": "StartWithoutDebugging",
-        "orderservice-api": "StartDebugging",
-        "paymentservice-api": "StartDebugging",
-        "stockservice-api": "StartDebugging"
+        "orderservice-api": "DoNotStart",
+        "paymentservice-api": "DoNotStart",
+        "stockservice-api": "DoNotStart",
+        "basketservice-api": "StartDebugging"
       }
     }
   }

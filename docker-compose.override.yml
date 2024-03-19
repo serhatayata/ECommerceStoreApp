@@ -105,6 +105,20 @@ services:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
 
+  basketservice-api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=7005,6005
+      - ASPNETCORE_URLS=http://+:6005;http://+:7005
+      - Logging__Loglevel__Default=Debug
+      - Logging__Loglevel__Microsoft.AspNetCore=Debug
+    ports:
+      - "7005:7005"
+      - "6005:6005"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
   sql-server:
     user: root
     ports:

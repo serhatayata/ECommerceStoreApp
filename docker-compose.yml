@@ -95,6 +95,17 @@ services:
       - elasticsearch
       - redis
 
+  basketservice-api:
+    container_name: basketservice-api
+    image: ${DOCKER_REGISTRY-}basketserviceapi
+    build:
+      context: .
+      dockerfile: src/Services/BasketService/BasketService.Api/Dockerfile
+    depends_on:
+      - consul-service
+      - elasticsearch
+      - redis
+
   sql-server:
     container_name: sql-server
     image: mcr.microsoft.com/mssql/server:2019-latest
@@ -135,6 +146,7 @@ volumes:
   sqlserver_data:
   sqlserver_log:
   elasticsearch-data:
+
 
 
 
