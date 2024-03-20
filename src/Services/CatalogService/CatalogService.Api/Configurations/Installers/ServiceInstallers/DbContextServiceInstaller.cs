@@ -21,5 +21,10 @@ public class DbContextServiceInstaller : IServiceInstaller
                                      //sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
                                  });
         }, ServiceLifetime.Scoped);
+
+        var serviceProvider = services.BuildServiceProvider();
+        var context = serviceProvider.GetRequiredService<CatalogDbContext>();
+
+        context.Database.Migrate();
     }
 }

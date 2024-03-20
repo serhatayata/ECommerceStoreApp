@@ -1,0 +1,5 @@
+﻿﻿Name,Description
+Type-1,Type 1 description
+Type-2,Type 2 description
+Type-3,Type 3 description
+Type-4,Type 4 description

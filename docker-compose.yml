@@ -106,6 +106,19 @@ services:
       - elasticsearch
       - redis
 
+  catalogservice-api:
+    container_name: catalogservice-api
+    image: ${DOCKER_REGISTRY-}catalogserviceapi
+    build:
+      context: .
+      dockerfile: src/Services/CatalogService/CatalogService.Api/Dockerfile
+    depends_on:
+      - consul-service
+      - elasticsearch
+      - redis
+      - rabbitmq
+      - mongodb
+
   sql-server:
     container_name: sql-server
     image: mcr.microsoft.com/mssql/server:2019-latest
@@ -142,10 +155,16 @@ services:
     container_name: postgres-notification
     image: postgres:14-alpine
 
+  mongodb:
+    container_name: mongodb
+    image: mongo:4.2
+
 volumes:
   sqlserver_data:
   sqlserver_log:
   elasticsearch-data:
+  mongo_data:
+
 
 
 

@@ -1,6 +1,8 @@
-﻿
+﻿using CatalogService.Api.Attributes;
+
 namespace CatalogService.Api.Configurations.Installers.ServiceInstallers;
 
+[InstallerOrder(Order = 2)]
 public class HttpServiceInstaller : IServiceInstaller
 {
     public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)

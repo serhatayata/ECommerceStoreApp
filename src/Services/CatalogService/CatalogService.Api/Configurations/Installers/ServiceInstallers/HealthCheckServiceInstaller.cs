@@ -1,10 +1,11 @@
-﻿
+﻿using CatalogService.Api.Attributes;
 using CatalogService.Api.Models.Settings;
 using System.Reflection;
 using System.Web;
 
 namespace CatalogService.Api.Configurations.Installers.ServiceInstallers;
 
+[InstallerOrder(Order = 6)]
 public class HealthCheckServiceInstaller : IServiceInstaller
 {
     public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)

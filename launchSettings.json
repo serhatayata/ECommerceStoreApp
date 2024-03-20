@@ -4,8 +4,8 @@
       "commandName": "DockerCompose",
       "commandVersion": "1.0",
       "composeLaunchAction": "LaunchBrowser",
-      "composeLaunchServiceName": "basketservice-api",
-      "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/",
+      "composeLaunchServiceName": "catalogservice-api",
+      "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/swagger",
       "serviceActions": {
         "consul-service": "StartWithoutDebugging",
         "fileservice-api": "DoNotStart",
@@ -24,7 +24,9 @@
         "orderservice-api": "DoNotStart",
         "paymentservice-api": "DoNotStart",
         "stockservice-api": "DoNotStart",
-        "basketservice-api": "StartDebugging"
+        "basketservice-api": "DoNotStart",
+        "catalogservice-api": "StartDebugging",
+        "mongodb": "StartWithoutDebugging"
       }
     }
   }

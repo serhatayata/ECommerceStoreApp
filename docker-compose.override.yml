@@ -119,6 +119,18 @@ services:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
 
+  catalogservice-api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=7006,6006
+      - ASPNETCORE_URLS=http://+:6006;http://+:7006
+    ports:
+      - "5006:5006"
+      - "7006:7006"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
   sql-server:
     user: root
     ports:
@@ -194,3 +206,9 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_DB=ECSA_Notification
+
+  mongodb:
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo_data:/data/db

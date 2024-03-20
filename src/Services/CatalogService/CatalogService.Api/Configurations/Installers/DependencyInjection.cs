@@ -1,5 +1,4 @@
-﻿using CatalogService.Api.Configurations.Installers.ServiceInstallers;
-using CatalogService.Api.Configurations.Installers.WebApplicationInstallers;
+﻿using CatalogService.Api.Attributes;
 using System.Reflection;
 
 namespace CatalogService.Api.Configurations.Installers;
@@ -19,9 +18,14 @@ public static class DependencyInjection
             .Cast<IServiceInstaller>()
             .OrderBy(ord =>
             {
-                if (ord.GetType() == typeof(StartupDIServiceInstaller))
-                    return false;
-                return true;
+                var att = ord.GetType()
+                             .GetCustomAttributes(typeof(InstallerOrderAttribute), true)
+                             .FirstOrDefault() as InstallerOrderAttribute;
+
+                if (att == null)
+                    return int.MaxValue;
+
+                return att.Order;
             });
 
         foreach (IServiceInstaller serviceInstaller in serviceInstallers)

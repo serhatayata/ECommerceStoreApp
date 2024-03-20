@@ -1,4 +1,5 @@
-﻿using CatalogService.Api.Models.CacheModels;
+﻿using CatalogService.Api.Attributes;
+using CatalogService.Api.Models.CacheModels;
 using CatalogService.Api.Models.Settings;
 using CatalogService.Api.Services.Base.Abstract;
 using CatalogService.Api.Services.Base.Concrete;
@@ -12,6 +13,7 @@ using CatalogService.Api.Utilities.IoC;
 
 namespace CatalogService.Api.Configurations.Installers.ServiceInstallers;
 
+[InstallerOrder(Order = 1)]
 public class StartupDIServiceInstaller : IServiceInstaller
 {
     public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
