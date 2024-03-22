@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
 using IdentityModel;
-using IdentityServer.Api.Data.Contexts;
 using IdentityServer.Api.Entities.Identity;
 using IdentityServer.Api.Extensions;
-using IdentityServer4.AspNetIdentity;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Identity;

@@ -26,7 +26,8 @@
         "stockservice-api": "DoNotStart",
         "basketservice-api": "DoNotStart",
         "catalogservice-api": "StartDebugging",
-        "mongodb": "StartWithoutDebugging"
+        "mongodb": "StartWithoutDebugging",
+        "identityserver.api": "StartDebugging"
       }
     }
   }

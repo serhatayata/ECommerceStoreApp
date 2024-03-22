@@ -131,6 +131,19 @@ services:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
 
+  identityserver-api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=5001,80
+      - ASPNETCORE_HTTPS_PORTS=6001,443
+      - ASPNETCORE_URLS=http://+:5001;http://+:6001
+    ports:
+      - "5001:80"
+      - "6001:443"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
   sql-server:
     user: root
     ports:

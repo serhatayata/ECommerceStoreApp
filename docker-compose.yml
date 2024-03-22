@@ -119,6 +119,17 @@ services:
       - rabbitmq
       - mongodb
 
+  identityserver-api:
+    container_name: identityserver-api
+    image: ${DOCKER_REGISTRY-}identityserverapi
+    build:
+      context: .
+      dockerfile: src/Services/IdentityServer/IdentityServer.Api/Dockerfile
+    depends_on:
+      - consul-service
+      - elasticsearch
+      - redis
+
   sql-server:
     container_name: sql-server
     image: mcr.microsoft.com/mssql/server:2019-latest
@@ -164,11 +175,3 @@ volumes:
   sqlserver_log:
   elasticsearch-data:
   mongo_data:
-
-
-
-
-
-
-
-
