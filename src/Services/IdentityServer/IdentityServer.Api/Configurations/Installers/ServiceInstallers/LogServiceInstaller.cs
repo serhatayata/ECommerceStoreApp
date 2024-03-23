@@ -41,7 +41,7 @@ public class LogServiceInstaller : IServiceInstaller
         var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope(); var elasticSearchService = scope.ServiceProvider.GetRequiredService<IElasticSearchService>();
 
         var elasticLogOptions = configuration.GetSection("ElasticSearchOptions").Get<ElasticSearchOptions>();
-        await elasticSearchService.CreateIndexAsync<LogDetail>(elasticLogOptions.LogIndex);
+        _ = elasticSearchService.CreateIndexAsync<LogDetail>(elasticLogOptions.LogIndex).GetAwaiter().GetResult();
     }
 
     private static ElasticsearchSinkOptions ConfigureElasticSink(IConfiguration configuration, string environment)

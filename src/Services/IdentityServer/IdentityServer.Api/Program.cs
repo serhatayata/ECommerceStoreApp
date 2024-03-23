@@ -26,7 +26,7 @@ var app = builder.Build();
 app.ConfigureCustomExceptionMiddleware();
 app.UseStaticFiles();
 app.UseSession();
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseRouting();
 //app.UseCors();
 app.UseAuthentication();

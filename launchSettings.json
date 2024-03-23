@@ -4,7 +4,7 @@
       "commandName": "DockerCompose",
       "commandVersion": "1.0",
       "composeLaunchAction": "LaunchBrowser",
-      "composeLaunchServiceName": "catalogservice-api",
+      "composeLaunchServiceName": "identityserver-api",
       "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/swagger",
       "serviceActions": {
         "consul-service": "StartWithoutDebugging",
@@ -25,9 +25,9 @@
         "paymentservice-api": "DoNotStart",
         "stockservice-api": "DoNotStart",
         "basketservice-api": "DoNotStart",
-        "catalogservice-api": "StartDebugging",
+        "catalogservice-api": "DoNotStart",
         "mongodb": "StartWithoutDebugging",
-        "identityserver.api": "StartDebugging"
+        "identityserver-api": "StartDebugging"
       }
     }
   }
