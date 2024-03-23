@@ -1,54 +1,24 @@
 version: '3.4'
 
 services:
-  fileservice-api:
+  identityserver-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=5004,80
-      - ASPNETCORE_HTTPS_PORTS=6004,443
-      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_HTTP_PORTS=5001
+      - ASPNETCORE_URLS=http://+:5001
     ports:
-      - "5004:80"
-      - "6004:443"
+      - "5001:5001"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
-
-  campaignservice-api:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=5009,80
-      - ASPNETCORE_HTTPS_PORTS=6009,443
-      - ASPNETCORE_URLS=https://+:443;http://+:80
-    ports:
-      - "5009:80"
-      - "6009:443"
-    volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
 
   localizationservice-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=5002,80
-      - ASPNETCORE_HTTPS_PORTS=6002,443
-      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_HTTP_PORTS=5002
+      - ASPNETCORE_URLS=http://+:5002
     ports:
-      - "5002:80"
-      - "6002:443"
-    volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
-
-  monitoringservice-api:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=5010,80
-      - ASPNETCORE_HTTPS_PORTS=6010,443
-      - ASPNETCORE_URLS=https://+:443;http://+:80
-    ports:
-      - "5010:80"
-      - "6010:443"
+      - "5002:5002"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
@@ -56,51 +26,21 @@ services:
   notificationservice-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=5003,80
-      - ASPNETCORE_HTTPS_PORTS=6003,443
-      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_HTTP_PORTS=5003
+      - ASPNETCORE_URLS=http://+:5003
     ports:
-      - "5003:80"
-      - "6003:443"
+      - "5003:5003"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
 
-  orderservice-api:
+  fileservice-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=5007,80
-      - ASPNETCORE_HTTPS_PORTS=6007,443
-      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_HTTP_PORTS=5004
+      - ASPNETCORE_URLS=http://+:5004
     ports:
-      - "5007:80"
-      - "6007:443"
-    volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
-
-  paymentservice-api:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=5008,80
-      - ASPNETCORE_HTTPS_PORTS=6008,443
-      - ASPNETCORE_URLS=https://+:443;http://+:80
-    ports:
-      - "5008:80"
-      - "6008:443"
-    volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
-
-  stockservice-api:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=5011,80
-      - ASPNETCORE_HTTPS_PORTS=6011,443
-      - ASPNETCORE_URLS=https://+:443;http://+:80
-    ports:
-      - "5011:80"
-      - "6011:443"
+      - "5004:5004"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
@@ -131,13 +71,57 @@ services:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
 
-  identityserver-api:
+  orderservice-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=5001
-      - ASPNETCORE_URLS=http://+:5001
+      - ASPNETCORE_HTTP_PORTS=5007
+      - ASPNETCORE_URLS=http://+:5007
     ports:
-      - "5001:5001"
+      - "5007:5007"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+  paymentservice-api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=5008
+      - ASPNETCORE_URLS=http://+:5008
+    ports:
+      - "5008:5008"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+  campaignservice-api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=5009
+      - ASPNETCORE_URLS=http://+:5009
+    ports:
+      - "5009:5009"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+
+  monitoringservice-api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=5010
+      - ASPNETCORE_URLS=http://+:5010
+    ports:
+      - "5010:5010"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+  stockservice-api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=5011
+      - ASPNETCORE_URLS=http://+:5011
+    ports:
+      - "5011:5011"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro

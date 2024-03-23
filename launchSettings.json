@@ -4,7 +4,7 @@
       "commandName": "DockerCompose",
       "commandVersion": "1.0",
       "composeLaunchAction": "LaunchBrowser",
-      "composeLaunchServiceName": "identityserver-api",
+      "composeLaunchServiceName": "localizationservice-api",
       "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/swagger",
       "serviceActions": {
         "consul-service": "StartWithoutDebugging",
@@ -16,7 +16,7 @@
         "rabbitmq": "StartWithoutDebugging",
         "redis": "StartWithoutDebugging",
         "redisinsight": "StartWithoutDebugging",
-        "localizationservice-api": "DoNotStart",
+        "localizationservice-api": "StartDebugging",
         "monitoringservice-api": "DoNotStart",
         "postgres": "StartWithoutDebugging",
         "notificationservice-api": "DoNotStart",
@@ -27,7 +27,7 @@
         "basketservice-api": "DoNotStart",
         "catalogservice-api": "DoNotStart",
         "mongodb": "StartWithoutDebugging",
-        "identityserver-api": "StartDebugging"
+        "identityserver-api": "DoNotStart"
       }
     }
   }
