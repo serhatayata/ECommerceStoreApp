@@ -157,6 +157,19 @@ services:
       - kafdrop
       - kafka1
 
+  monitoring-backgroundtasks:
+    container_name: monitoring-backgroundtasks
+    image: ${DOCKER_REGISTRY-}monitoringbackgroundtasks
+    build:
+      context: .
+      dockerfile: src/Services/MonitoringService/Monitoring.BackgroundTasks/Dockerfile
+    depends_on:
+      - gateway-api
+      - postgres-monitoring
+      - consul-service
+      - elasticsearch
+      - redis
+
   sql-server:
     container_name: sql-server
     image: mcr.microsoft.com/mssql/server:2019-latest
@@ -193,6 +206,10 @@ services:
     container_name: postgres-notification
     image: postgres:14-alpine
 
+  postgres-monitoring:
+    container_name: postgres-monitoring
+    image: postgres:14-alpine
+
   mongodb:
     container_name: mongodb
     image: mongo:4.2
@@ -218,9 +235,14 @@ services:
       - kafka1
       - zookeeper
 
+  sagastatemachineworkerservice:
+    image: ${DOCKER_REGISTRY-}sagastatemachineworkerservice
+    build:
+      context: .
+      dockerfile: src/BuildingBlocks/StateMachine/SagaStateMachineWorkerService/Dockerfile
+
 volumes:
   sqlserver_data:
   sqlserver_log:
   elasticsearch-data:
   mongo_data:
-

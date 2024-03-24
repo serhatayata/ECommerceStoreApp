@@ -108,14 +108,19 @@
     },
     // CDC DEBEZIUM
     {
-      "UseServiceDiscovery": true,
-      "ServiceName": "CdcDebezium",
       "DownstreamPathTemplate": "/{everything}",
       "DownstreamScheme": "http",
 
-      "UpstreamPathTemplate": "/cdc/{everything}",
+      "UpstreamPathTemplate": "/cdcconnector/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "DELETE", "PUT" ],
-      "UpstreamScheme": "http"
+      "UpstreamScheme": "http",
+
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "debezium-connect",
+          "Port": 8083
+        }
+      ]
     }
   ],
   "GlobalConfiguration": {

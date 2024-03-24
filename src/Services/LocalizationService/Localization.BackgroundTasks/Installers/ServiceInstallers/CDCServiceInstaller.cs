@@ -44,7 +44,7 @@ public class CDCServiceInstaller : IServiceInstaller
         {
             var httpClient = httpClientFactory.CreateClient("apigateway");
             StringContent stringContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
-            var result = await httpClient.PostAsync("cdc/cdcconnector/connectors", stringContent);
+            var result = await httpClient.PostAsync("cdcconnector/connectors", stringContent);
 
             if (result.StatusCode == System.Net.HttpStatusCode.Conflict)
                 return;

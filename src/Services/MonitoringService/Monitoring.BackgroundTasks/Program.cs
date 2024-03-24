@@ -1,36 +1,21 @@
-using Monitoring.BackgroundTasks.Extensions;
-using Monitoring.BackgroundTasks.Models.Settings;
-using Monitoring.BackgroundTasks.Services.Abstract;
-using Monitoring.BackgroundTasks.Services.Concrete;
-using Quartz;
+using Monitoring.BackgroundTasks.Configurations.Installers;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
 var assembly = typeof(Program).Assembly.GetName().Name;
 IWebHostEnvironment environment = builder.Environment;
 
-builder.Configuration.SetBasePath(Directory.GetCurrentDirectory());
-builder.Host.AddHostExtensions(environment);
+builder.Host
+    .InstallHost(
+    configuration,
+    environment,
+    typeof(IHostInstaller).Assembly);
 
-#region DI
-builder.Services.AddScoped<IClientCredentialsTokenService, ClientCredentialsTokenService>();
-#endregion
-#region LOG
-builder.Services.AddLogConfiguration();
-#endregion
-#region Http
-builder.Services.AddHttpClients(configuration);
-#endregion
-#region Configurations
-builder.Services.Configure<HealthCheckSaveSettings>(configuration.GetSection("Settings:HealthCheckSave"));
-#endregion
-#region Scheduling
-builder.Services.AddJobConfigurations(configuration);
-builder.Services.AddQuartzHostedService(q =>
-{
-    q.WaitForJobsToComplete = true;
-});
-#endregion
+builder.Services
+    .InstallServices(
+        configuration,
+        environment,
+        typeof(IServiceInstaller).Assembly);
 
 var app = builder.Build();
 

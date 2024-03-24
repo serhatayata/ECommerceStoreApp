@@ -1,4 +1,3 @@
-using IdentityServer.Api.Extensions;
 using Localization.BackgroundTasks.Extensions;
 using Localization.BackgroundTasks.Installers;
 using Localization.BackgroundTasks.Models.Settings;
@@ -32,8 +31,6 @@ builder.Services.Configure<CacheSettings>(configuration.GetSection($"Localizatio
 var app = builder.Build();
 
 app.Start();
-
-app.InstallServiceDiscovery(app.Lifetime, configuration);
 
 app.WaitForShutdown();
 

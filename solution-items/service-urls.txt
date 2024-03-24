@@ -14,6 +14,7 @@ MonitoringService -> 5010
 StockService -> 5011
 
 Localization.BackgroundTasks -> 50002
+Monitoring.BackgroundTasks -> 50010
 
 -- Https Ports --
 
@@ -31,6 +32,7 @@ MonitoringService -> 6010
 StockService -> 6011
 
 Localization.BackgroundTasks -> 60002
+Monitoring.BackgroundTasks -> 60010
 
 -- IIS Ports --
 

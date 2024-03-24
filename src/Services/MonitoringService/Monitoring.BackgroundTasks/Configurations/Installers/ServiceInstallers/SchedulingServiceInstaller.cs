@@ -1,13 +1,17 @@
-﻿using Monitoring.BackgroundTasks.Jobs;
+﻿using Monitoring.BackgroundTasks.Attributes;
+using Monitoring.BackgroundTasks.Jobs;
 using Monitoring.BackgroundTasks.Models.Settings;
 using Quartz;
-using System.Runtime.CompilerServices;
 
-namespace Monitoring.BackgroundTasks.Extensions;
+namespace Monitoring.BackgroundTasks.Configurations.Installers.ServiceInstallers;
 
-public static class JobExtensions
+[InstallerOrder(Order = 5)]
+public class SchedulingServiceInstaller : IServiceInstaller
 {
-    public static async void AddJobConfigurations(this IServiceCollection services, IConfiguration configuration)
+    public void Install(
+        IServiceCollection services, 
+        IConfiguration configuration, 
+        IWebHostEnvironment hostEnvironment)
     {
         services.AddQuartz(async q =>
         {
@@ -37,6 +41,11 @@ public static class JobExtensions
                    .WithSimpleSchedule(s => s
                        .WithIntervalInMinutes(healthCheckGrpcSaveSettings?.Interval ?? 30)
                        .RepeatForever()));
+        });
+        
+        services.AddQuartzHostedService(q =>
+        {
+            q.WaitForJobsToComplete = true;
         });
     }
 

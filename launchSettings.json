@@ -33,7 +33,9 @@
         "kafdrop": "StartWithoutDebugging",
         "kafka1": "StartWithoutDebugging",
         "localization-backgroundtasks": "StartDebugging",
-        "zookeeper": "StartWithoutDebugging"
+        "zookeeper": "StartWithoutDebugging",
+        "monitoring-backgroundtasks": "StartDebugging",
+        "postgres-monitoring": "StartWithoutDebugging"
       }
     }
   }

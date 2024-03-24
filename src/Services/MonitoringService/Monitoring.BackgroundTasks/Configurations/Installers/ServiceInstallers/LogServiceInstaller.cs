@@ -1,24 +1,29 @@
-﻿using Serilog.Sinks.Elasticsearch;
+﻿using Monitoring.BackgroundTasks.Attributes;
 using Serilog;
-using System.Reflection;
 using Serilog.Formatting.Compact;
 using Serilog.Formatting.Elasticsearch;
+using Serilog.Sinks.Elasticsearch;
+using System.Reflection;
 
-namespace Monitoring.BackgroundTasks.Extensions;
+namespace Monitoring.BackgroundTasks.Configurations.Installers.ServiceInstallers;
 
-public static class LogExtensions
+[InstallerOrder(Order = 4)]
+public class LogServiceInstaller : IServiceInstaller
 {
-    public static void AddLogConfiguration(this IServiceCollection services)
+    public void Install(
+        IServiceCollection services, 
+        IConfiguration configuration, 
+        IWebHostEnvironment hostEnvironment)
     {
         //Get the environment which the app is running on
         var env = System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
         //Get Config
-        var configuration = new ConfigurationBuilder()
-                            .AddJsonFile("Configurations/serilog.json", 
-                                         optional: false, 
+        var serilogConfiguration = new ConfigurationBuilder()
+                            .AddJsonFile("Configurations/Settings/serilog.json",
+                                         optional: false,
                                          reloadOnChange: true)
-                            .AddJsonFile($"Configurations/serilog.{env}.json", 
-                                         optional: false, 
+                            .AddJsonFile($"Configurations/Settings/serilog.{env}.json",
+                                         optional: false,
                                          reloadOnChange: true)
                             .Build();
 
@@ -28,9 +33,9 @@ public static class LogExtensions
                         .Enrich.WithMachineName()
                         .WriteTo.Async(writeTo => writeTo.Console(new Serilog.Formatting.Json.JsonFormatter()))
                         .WriteTo.Async(writeTo => writeTo.Debug(new RenderedCompactJsonFormatter()))
-                        .WriteTo.Async(writeTo => writeTo.Elasticsearch(ConfigureElasticSink(configuration, env)))
+                        .WriteTo.Async(writeTo => writeTo.Elasticsearch(ConfigureElasticSink(serilogConfiguration, env)))
                         .Enrich.WithProperty("Environment", env)
-                        .ReadFrom.Configuration(configuration)
+                        .ReadFrom.Configuration(serilogConfiguration)
                         .CreateLogger();
     }
 
@@ -58,4 +63,3 @@ public static class LogExtensions
         };
     }
 }
-
