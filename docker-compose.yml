@@ -1,6 +1,17 @@
 version: '3.4'
 
 services:
+  gateway-api:
+    container_name: gateway-api
+    image: ${DOCKER_REGISTRY-}webapigateway
+    build:
+      context: .
+      dockerfile: src/ApiGateways/WebApiGateway/Web.ApiGateway/Dockerfile
+    depends_on:
+      - consul-service
+      - elasticsearch
+      - redis
+
   fileservice-api:
     container_name: fileservice-api
     image: ${DOCKER_REGISTRY-}fileserviceapi
@@ -130,6 +141,22 @@ services:
       - elasticsearch
       - redis
 
+  localization-backgroundtasks:
+    container_name: localization-backgroundtasks
+    image: ${DOCKER_REGISTRY-}localizationbackgroundtasks
+    build:
+      context: .
+      dockerfile: src/Services/LocalizationService/Localization.BackgroundTasks/Dockerfile
+    depends_on:
+      - gateway-api
+      - sql-server
+      - consul-service
+      - elasticsearch
+      - redis
+      - debezium-connect
+      - kafdrop
+      - kafka1
+
   sql-server:
     container_name: sql-server
     image: mcr.microsoft.com/mssql/server:2019-latest
@@ -170,8 +197,30 @@ services:
     container_name: mongodb
     image: mongo:4.2
 
+  zookeeper:
+    container_name: zookeeper
+    image: wurstmeister/zookeeper:latest
+
+  kafka1:
+    container_name: kafka1
+    image: wurstmeister/kafka:latest
+    restart: "no"
+
+  kafdrop:
+    container_name: kafdrop
+    image: obsidiandynamics/kafdrop
+    restart: "no"
+
+  debezium-connect:
+    container_name: debezium-connect
+    image: debezium/connect
+    depends_on:
+      - kafka1
+      - zookeeper
+
 volumes:
   sqlserver_data:
   sqlserver_log:
   elasticsearch-data:
   mongo_data:
+

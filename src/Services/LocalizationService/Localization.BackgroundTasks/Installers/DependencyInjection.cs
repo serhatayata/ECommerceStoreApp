@@ -1,4 +1,4 @@
-﻿using Localization.BackgroundTasks.Installers.ServiceInstallers;
+﻿using Localization.BackgroundTasks.Attributes;
 using System.Reflection;
 
 namespace Localization.BackgroundTasks.Installers;
@@ -6,36 +6,27 @@ namespace Localization.BackgroundTasks.Installers;
 public static class DependencyInjection
 {
     public static IServiceCollection InstallServices(
-    this IServiceCollection services,
-    IConfiguration configuration,
-    IWebHostEnvironment hostEnvironment,
-    params Assembly[] assemblies)
+        this IServiceCollection services,
+        IConfiguration configuration,
+        IWebHostEnvironment hostEnvironment,
+        params Assembly[] assemblies)
     {
-        var servicePriorities = new List<Type>()
-        {
-            typeof(StartupDIServiceInstaller),
-            typeof(HttpClientServiceInstaller)
-        };
-
         IEnumerable<IServiceInstaller> serviceInstallers = assemblies
             .SelectMany(a => a.DefinedTypes)
             .Where(IsAssignableToType<IServiceInstaller>)
             .Select(Activator.CreateInstance)
             .Cast<IServiceInstaller>()
-            .Select(t => new
-            {
-                Value = t,
-                Order = servicePriorities.IndexOf(t.GetType())
-            })
             .OrderBy(ord =>
             {
-                if (ord.Order != -1)
-                    return false;
-                return true;
-            })
-            .ThenBy(o => o.Order)
-            .Select(s => s.Value)
-            .ToList();
+                var att = ord.GetType()
+                             .GetCustomAttributes(typeof(InstallerOrderAttribute), true)
+                             .FirstOrDefault() as InstallerOrderAttribute;
+
+                if (att == null)
+                    return int.MaxValue;
+
+                return att.Order;
+            });
 
         foreach (IServiceInstaller serviceInstaller in serviceInstallers)
         {

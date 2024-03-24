@@ -27,7 +27,13 @@
         "basketservice-api": "DoNotStart",
         "catalogservice-api": "DoNotStart",
         "mongodb": "StartWithoutDebugging",
-        "identityserver-api": "DoNotStart"
+        "identityserver-api": "DoNotStart",
+        "gateway-api": "StartDebugging",
+        "debezium-connect": "StartWithoutDebugging",
+        "kafdrop": "StartWithoutDebugging",
+        "kafka1": "StartWithoutDebugging",
+        "localization-backgroundtasks": "StartDebugging",
+        "zookeeper": "StartWithoutDebugging"
       }
     }
   }

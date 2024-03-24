@@ -22,6 +22,7 @@ public class AuthenticationServiceInstaller : IServiceInstaller
         {
             options.Authority = configuration.GetValue<string>("AuthConfigurations:Url");
             options.Audience = "resource_gateway";
+            options.RequireHttpsMetadata = false;
             //options.RequireHttpsMetadata = false;
             //options.MetadataAddress = configuration.GetValue<string>("AuthConfigurations:UrlMetadata");
             options.TokenValidationParameters = new TokenValidationParameters()

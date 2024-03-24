@@ -4,12 +4,24 @@
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>ec1e10c1-98e9-43fe-b5a4-0b00c317c848</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\..\..\..</DockerfileContext>
+    <DockerComposeProjectPath>..\..\..\..\docker-compose.dcproj</DockerComposeProjectPath>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Configurations\Installers\WebHostBuilderInstallers\**" />
+    <Content Remove="Configurations\Installers\WebHostBuilderInstallers\**" />
+    <EmbeddedResource Remove="Configurations\Installers\WebHostBuilderInstallers\**" />
+    <None Remove="Configurations\Installers\WebHostBuilderInstallers\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.27" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.4" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.35.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.5" />
     <PackageReference Include="NEST" Version="7.17.5" />
     <PackageReference Include="Ocelot" Version="19.0.2" />
     <PackageReference Include="Ocelot.Provider.Consul" Version="19.0.2" />
@@ -20,10 +32,6 @@
     <PackageReference Include="Serilog.Sinks.Elasticsearch" Version="9.0.1" />
     <PackageReference Include="StackExchange.Redis" Version="2.6.111" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Configurations\Installers\WebHostBuilderInstallers\" />
   </ItemGroup>
 
 </Project>

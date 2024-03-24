@@ -1,5 +1,8 @@
-﻿namespace Localization.BackgroundTasks.Installers.ServiceInstallers;
+﻿using Localization.BackgroundTasks.Attributes;
 
+namespace Localization.BackgroundTasks.Installers.ServiceInstallers;
+
+[InstallerOrder(Order = 2)]
 public class HttpClientServiceInstaller : IServiceInstaller
 {
     public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)

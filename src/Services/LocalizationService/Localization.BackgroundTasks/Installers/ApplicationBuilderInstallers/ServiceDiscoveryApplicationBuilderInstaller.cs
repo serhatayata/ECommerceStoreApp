@@ -1,13 +1,14 @@
 ﻿using Consul;
-using Web.ApiGateway.Attributes;
-using Web.ApiGateway.Models.Settings;
+using Localization.BackgroundTasks.Models.Settings;
 
-namespace Web.ApiGateway.Configurations.Installers.ApplicationBuilderInstallers;
+namespace Localization.BackgroundTasks.Installers.ApplicationBuilderInstallers;
 
-[InstallerOrder(Order = 1)]
 public class ServiceDiscoveryApplicationBuilderInstaller : IApplicationBuilderInstaller
 {
-    public void Install(IApplicationBuilder app, IHostApplicationLifetime lifeTime, IConfiguration configuration)
+    public void Install(
+        IApplicationBuilder app,
+        IHostApplicationLifetime lifeTime,
+        IConfiguration configuration)
     {
         try
         {

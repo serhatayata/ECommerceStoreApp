@@ -1,7 +1,9 @@
 ﻿using Quartz;
+using Localization.BackgroundTasks.Attributes;
 
 namespace Localization.BackgroundTasks.Installers.ServiceInstallers;
 
+[InstallerOrder(Order = 4)]
 public class JobServiceInstaller : IServiceInstaller
 {
     public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)

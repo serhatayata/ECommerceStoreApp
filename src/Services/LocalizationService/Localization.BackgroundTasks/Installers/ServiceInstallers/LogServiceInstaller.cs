@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using Localization.BackgroundTasks.Attributes;
+using Serilog;
 using Serilog.Formatting.Compact;
 using Serilog.Formatting.Elasticsearch;
 using Serilog.Sinks.Elasticsearch;
@@ -6,6 +7,7 @@ using System.Reflection;
 
 namespace Localization.BackgroundTasks.Installers.ServiceInstallers;
 
+[InstallerOrder(Order = 5)]
 public class LogServiceInstaller : IServiceInstaller
 {
     public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)

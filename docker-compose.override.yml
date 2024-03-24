@@ -1,6 +1,17 @@
 version: '3.4'
 
 services:
+  gateway-api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=5000
+      - ASPNETCORE_URLS=http://+:5000
+    ports:
+      - "5000:5000"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
   identityserver-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
@@ -126,6 +137,17 @@ services:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
 
+  localization-backgroundtasks:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=50002
+      - ASPNETCORE_URLS=http://+:50002
+    ports:
+      - "50002:50002"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
   sql-server:
     user: root
     ports:
@@ -207,3 +229,42 @@ services:
       - 27017:27017
     volumes:
       - mongo_data:/data/db
+
+  zookeeper:
+    ports:
+      - 2181:2181
+      - 2888:2888
+      - 3888:3888
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka1:
+    ports:
+      - 9092:9092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: INTERNAL://:29092,EXTERNAL://:9092
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka1:29092,EXTERNAL://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  kafdrop:
+    environment:
+      KAFKA_BROKERCONNECT: "kafka1:29092"
+      JVM_OPTS: "-Xms16M -Xmx512M -Xss180K -XX:-TieredCompilation -XX:+UseStringDeduplication -noverify"
+    ports:
+      - 9000:9000
+    depends_on:
+      - kafka1
+
+  debezium-connect:
+    ports:
+      - 8083:8083
+    environment:
+      CONFIG_STORAGE_TOPIC: my_connect_configs
+      OFFSET_STORAGE_TOPIC: my_connect_offsets
+      STATUS_STORAGE_TOPIC: my_connect_statuses
+      BOOTSTRAP_SERVERS: kafka1:29092
