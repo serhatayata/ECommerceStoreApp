@@ -170,6 +170,15 @@ services:
       - elasticsearch
       - redis
 
+  sagastatemachine-workerservice:
+    container_name: sagastatemachine-workerservice
+    image: ${DOCKER_REGISTRY-}sagastatemachineworkerservice
+    build:
+      context: .
+      dockerfile: src/BuildingBlocks/StateMachine/SagaStateMachineWorkerService/Dockerfile
+    depends_on:
+      - sql-server
+
   sql-server:
     container_name: sql-server
     image: mcr.microsoft.com/mssql/server:2019-latest
@@ -235,14 +244,9 @@ services:
       - kafka1
       - zookeeper
 
-  sagastatemachineworkerservice:
-    image: ${DOCKER_REGISTRY-}sagastatemachineworkerservice
-    build:
-      context: .
-      dockerfile: src/BuildingBlocks/StateMachine/SagaStateMachineWorkerService/Dockerfile
-
 volumes:
   sqlserver_data:
   sqlserver_log:
   elasticsearch-data:
   mongo_data:
+

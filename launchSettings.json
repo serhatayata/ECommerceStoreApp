@@ -4,7 +4,7 @@
       "commandName": "DockerCompose",
       "commandVersion": "1.0",
       "composeLaunchAction": "LaunchBrowser",
-      "composeLaunchServiceName": "localizationservice-api",
+      "composeLaunchServiceName": "orderservice-api",
       "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/swagger",
       "serviceActions": {
         "consul-service": "StartWithoutDebugging",
@@ -16,14 +16,14 @@
         "rabbitmq": "StartWithoutDebugging",
         "redis": "StartWithoutDebugging",
         "redisinsight": "StartWithoutDebugging",
-        "localizationservice-api": "StartDebugging",
+        "localizationservice-api": "DoNotStart",
         "monitoringservice-api": "DoNotStart",
         "postgres": "StartWithoutDebugging",
         "notificationservice-api": "DoNotStart",
         "postgres-notification": "StartWithoutDebugging",
-        "orderservice-api": "DoNotStart",
-        "paymentservice-api": "DoNotStart",
-        "stockservice-api": "DoNotStart",
+        "orderservice-api": "StartDebugging",
+        "paymentservice-api": "StartDebugging",
+        "stockservice-api": "StartDebugging",
         "basketservice-api": "DoNotStart",
         "catalogservice-api": "DoNotStart",
         "mongodb": "StartWithoutDebugging",
@@ -32,10 +32,11 @@
         "debezium-connect": "StartWithoutDebugging",
         "kafdrop": "StartWithoutDebugging",
         "kafka1": "StartWithoutDebugging",
-        "localization-backgroundtasks": "StartDebugging",
+        "localization-backgroundtasks": "DoNotStart",
         "zookeeper": "StartWithoutDebugging",
-        "monitoring-backgroundtasks": "StartDebugging",
-        "postgres-monitoring": "StartWithoutDebugging"
+        "monitoring-backgroundtasks": "DoNotStart",
+        "postgres-monitoring": "StartWithoutDebugging",
+        "sagastatemachine-workerservice": "StartDebugging"
       }
     }
   }

@@ -42,6 +42,11 @@ IHost host = Host.CreateDefaultBuilder(args)
             });
         });
 
+        var serviceProvider = services.BuildServiceProvider();
+        var context = serviceProvider.GetRequiredService<DbContext>();
+
+        context.Database.Migrate();
+
         services.AddHostedService<Worker>();
     })
     .Build();

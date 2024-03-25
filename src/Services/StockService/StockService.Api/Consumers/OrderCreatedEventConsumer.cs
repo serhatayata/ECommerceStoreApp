@@ -2,7 +2,6 @@
 using MassTransit;
 using Shared.Queue.Events;
 using Shared.Queue.Events.Interfaces;
-using StockService.Api.Extensions;
 using StockService.Api.Services.Abstract;
 
 namespace StockService.Api.Consumers;

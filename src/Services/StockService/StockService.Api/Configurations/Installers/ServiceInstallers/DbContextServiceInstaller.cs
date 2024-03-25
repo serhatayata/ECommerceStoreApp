@@ -10,5 +10,10 @@ public class DbContextServiceInstaller : IServiceInstaller
         var connString = configuration.GetConnectionString("StockDb");
         services.AddDbContext<StockDbContext>(options =>
                                               options.UseSqlServer(connectionString: connString));
+
+        var serviceProvider = services.BuildServiceProvider();
+        var context = serviceProvider.GetRequiredService<StockDbContext>();
+
+        context.Database.Migrate();
     }
 }

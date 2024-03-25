@@ -16,6 +16,8 @@ StockService -> 5011
 Localization.BackgroundTasks -> 50002
 Monitoring.BackgroundTasks -> 50010
 
+SagaStateMachineWorkerService -> 4000
+
 -- Https Ports --
 
 ApiGateway -> 6000

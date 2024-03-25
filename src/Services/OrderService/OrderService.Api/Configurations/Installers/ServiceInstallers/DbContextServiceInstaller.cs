@@ -10,5 +10,10 @@ public class DbContextServiceInstaller : IServiceInstaller
         var connString = configuration.GetConnectionString("OrderDb");
         services.AddDbContext<OrderDbContext>(options =>
                                               options.UseSqlServer(connectionString: connString));
+
+        var serviceProvider = services.BuildServiceProvider();
+        var context = serviceProvider.GetRequiredService<OrderDbContext>();
+
+        context.Database.Migrate();
     }
 }
