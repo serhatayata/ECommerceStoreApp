@@ -4,7 +4,7 @@
       "commandName": "DockerCompose",
       "commandVersion": "1.0",
       "composeLaunchAction": "LaunchBrowser",
-      "composeLaunchServiceName": "orderservice-api",
+      "composeLaunchServiceName": "catalogservice-api",
       "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/swagger",
       "serviceActions": {
         "consul-service": "StartWithoutDebugging",
@@ -21,14 +21,14 @@
         "postgres": "StartWithoutDebugging",
         "notificationservice-api": "DoNotStart",
         "postgres-notification": "StartWithoutDebugging",
-        "orderservice-api": "StartDebugging",
-        "paymentservice-api": "StartDebugging",
-        "stockservice-api": "StartDebugging",
+        "orderservice-api": "DoNotStart",
+        "paymentservice-api": "DoNotStart",
+        "stockservice-api": "DoNotStart",
         "basketservice-api": "DoNotStart",
-        "catalogservice-api": "DoNotStart",
+        "catalogservice-api": "StartDebugging",
         "mongodb": "StartWithoutDebugging",
         "identityserver-api": "DoNotStart",
-        "gateway-api": "StartDebugging",
+        "gateway-api": "DoNotStart",
         "debezium-connect": "StartWithoutDebugging",
         "kafdrop": "StartWithoutDebugging",
         "kafka1": "StartWithoutDebugging",
@@ -36,7 +36,7 @@
         "zookeeper": "StartWithoutDebugging",
         "monitoring-backgroundtasks": "DoNotStart",
         "postgres-monitoring": "StartWithoutDebugging",
-        "sagastatemachine-workerservice": "StartDebugging"
+        "sagastatemachine-workerservice": "DoNotStart"
       }
     }
   }
