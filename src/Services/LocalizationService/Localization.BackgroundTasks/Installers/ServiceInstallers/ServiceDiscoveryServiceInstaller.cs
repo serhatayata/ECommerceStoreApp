@@ -6,7 +6,7 @@ namespace Localization.BackgroundTasks.Installers.ServiceInstallers;
 [InstallerOrder(Order = 6)]
 public class ServiceDiscoveryServiceInstaller : IServiceInstaller
 {
-    public void Install(
+    public Task Install(
         IServiceCollection services, 
         IConfiguration configuration, 
         IWebHostEnvironment hostEnvironment)
@@ -16,5 +16,7 @@ public class ServiceDiscoveryServiceInstaller : IServiceInstaller
             var address = configuration["ServiceDiscoveryConfig:Address"];
             consulConfig.Address = new Uri(address);
         }));
+
+        return Task.CompletedTask;
     }
 }

@@ -2,5 +2,5 @@
 
 public interface IServiceInstaller
 {
-    void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment);
+    Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment);
 }

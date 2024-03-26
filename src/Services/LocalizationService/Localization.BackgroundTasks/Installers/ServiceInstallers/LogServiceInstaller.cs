@@ -10,7 +10,7 @@ namespace Localization.BackgroundTasks.Installers.ServiceInstallers;
 [InstallerOrder(Order = 5)]
 public class LogServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         //Get the environment which the app is running on
         var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
@@ -35,6 +35,8 @@ public class LogServiceInstaller : IServiceInstaller
                         .Enrich.WithProperty("Environment", env)
                         .ReadFrom.Configuration(serilogConfig)
                         .CreateLogger();
+
+        return Task.CompletedTask;
     }
 
     private static ElasticsearchSinkOptions ConfigureElasticSink(IConfigurationRoot configuration, string environment)

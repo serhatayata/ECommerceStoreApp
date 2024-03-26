@@ -5,7 +5,7 @@ namespace Localization.BackgroundTasks.Installers.ServiceInstallers;
 [InstallerOrder(Order = 2)]
 public class HttpClientServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         #region CDC Debezium Http Client
         string gatewayClient = configuration.GetSection($"ApiGatewaySettings:{hostEnvironment.EnvironmentName}:Url").Value;
@@ -16,5 +16,7 @@ public class HttpClientServiceInstaller : IServiceInstaller
             config.BaseAddress = new Uri(baseAddress);
         });
         #endregion
+
+        return Task.CompletedTask;
     }
 }

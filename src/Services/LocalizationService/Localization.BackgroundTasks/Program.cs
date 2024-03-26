@@ -13,17 +13,17 @@ var config = ConfigurationExtension.appConfig;
 
 builder.Configuration.AddConfiguration(config);
 
-builder.Services
-    .InstallServices(
-        configuration,
-        environment,
-        typeof(IServiceInstaller).Assembly);
+await builder.Services
+       .InstallServices(
+           configuration,
+           environment,
+           typeof(IServiceInstaller).Assembly);
 
-builder.Host
-    .InstallHost(
-    configuration,
-    environment,
-    typeof(IHostInstaller).Assembly);
+await builder.Host
+       .InstallHost(
+       configuration,
+       environment,
+       typeof(IHostInstaller).Assembly);
 
 builder.Services.Configure<QueueSettings>(configuration.GetSection($"LocalizationQueueSettings:{environment.EnvironmentName}"));
 builder.Services.Configure<CacheSettings>(configuration.GetSection($"LocalizationCacheSettings:{environment.EnvironmentName}"));

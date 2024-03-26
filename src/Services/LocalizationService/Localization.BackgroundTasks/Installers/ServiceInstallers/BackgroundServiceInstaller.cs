@@ -6,8 +6,10 @@ namespace Localization.BackgroundTasks.Installers.ServiceInstallers;
 [InstallerOrder(Order = 2)]
 public class BackgroundServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         services.AddHostedService(service => service.GetRequiredService<ResourceChangeBackgroundService>());
+
+        return Task.CompletedTask;
     }
 }
