@@ -12,7 +12,7 @@ namespace IdentityServer.Api.Configurations.Installers.ServiceInstallers;
 [InstallerOrder(Order = 7)]
 public class LogServiceInstaller : IServiceInstaller
 {
-    public async void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public async Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         //Get the environment which the app is running on
         var env = hostEnvironment.EnvironmentName;
@@ -41,7 +41,7 @@ public class LogServiceInstaller : IServiceInstaller
         var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope(); var elasticSearchService = scope.ServiceProvider.GetRequiredService<IElasticSearchService>();
 
         var elasticLogOptions = configuration.GetSection("ElasticSearchOptions").Get<ElasticSearchOptions>();
-        _ = elasticSearchService.CreateIndexAsync<LogDetail>(elasticLogOptions.LogIndex).GetAwaiter().GetResult();
+        _ = await elasticSearchService.CreateIndexAsync<LogDetail>(elasticLogOptions.LogIndex);
     }
 
     private static ElasticsearchSinkOptions ConfigureElasticSink(IConfiguration configuration, string environment)

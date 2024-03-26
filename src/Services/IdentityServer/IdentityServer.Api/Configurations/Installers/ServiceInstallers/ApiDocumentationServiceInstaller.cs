@@ -3,11 +3,13 @@ namespace IdentityServer.Api.Configurations.Installers.ServiceInstallers;
 
 public class ApiDocumentationServiceInstaller : IServiceInstaller
 {
-    public void Install(
+    public Task Install(
         IServiceCollection services, 
         IConfiguration configuration, 
         IWebHostEnvironment hostEnvironment)
     {
         services.AddSwaggerGen();
+
+        return Task.CompletedTask;
     }
 }

@@ -13,7 +13,7 @@ namespace IdentityServer.Api.Configurations.Installers.ServiceInstallers;
 [InstallerOrder(Order = 12)]
 public class IdentityServiceInstaller : IServiceInstaller
 {
-    public async void Install(
+    public async Task Install(
         IServiceCollection services, 
         IConfiguration configuration, 
         IWebHostEnvironment hostEnvironment)

@@ -7,7 +7,7 @@ namespace IdentityServer.Api.Configurations.Installers.ServiceInstallers;
 [InstallerOrder(Order = 5)]
 public class DbContextServiceInstaller : IServiceInstaller
 {
-    public void Install(
+    public Task Install(
         IServiceCollection services, 
         IConfiguration configuration, 
         IWebHostEnvironment hostEnvironment)
@@ -17,5 +17,7 @@ public class DbContextServiceInstaller : IServiceInstaller
         string defaultConnString = configuration.GetSection("ConnectionStrings:DefaultConnection").Value;
 
         services.AddDbContext<AppIdentityDbContext>(options => options.UseSqlServer(defaultConnString, b => b.MigrationsAssembly(assembly)), ServiceLifetime.Transient);
+
+        return Task.CompletedTask;
     }
 }

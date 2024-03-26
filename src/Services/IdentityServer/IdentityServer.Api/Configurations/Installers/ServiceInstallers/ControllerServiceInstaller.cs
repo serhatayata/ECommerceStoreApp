@@ -11,7 +11,7 @@ namespace IdentityServer.Api.Configurations.Installers.ServiceInstallers;
 [InstallerOrder(Order = 8)]
 public class ControllerServiceInstaller : IServiceInstaller
 {
-    public void Install(
+    public Task Install(
         IServiceCollection services,
         IConfiguration configuration,
         IWebHostEnvironment hostEnvironment)
@@ -45,5 +45,7 @@ public class ControllerServiceInstaller : IServiceInstaller
 
         services.AddFluentValidationAutoValidation();
         services.AddFluentValidationClientsideAdapters(); // for client side    }
+
+        return Task.CompletedTask;
     }
 }

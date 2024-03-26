@@ -5,12 +5,14 @@ namespace IdentityServer.Api.Configurations.Installers.ServiceInstallers;
 [InstallerOrder(Order = 4)]
 public class HttpServiceInstaller : IServiceInstaller
 {
-    public void Install(
+    public Task Install(
         IServiceCollection services, 
         IConfiguration configuration, 
         IWebHostEnvironment hostEnvironment)
     {
         services.AddHttpContextAccessor();
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+        return Task.CompletedTask;
     }
 }

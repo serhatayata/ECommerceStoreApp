@@ -2,7 +2,7 @@
 
 public class SessionServiceInstaller : IServiceInstaller
 {
-    public void Install(
+    public Task Install(
         IServiceCollection services, 
         IConfiguration configuration, 
         IWebHostEnvironment hostEnvironment)
@@ -11,5 +11,7 @@ public class SessionServiceInstaller : IServiceInstaller
         {
             options.IdleTimeout = TimeSpan.FromMinutes(60);
         });
+
+        return Task.CompletedTask;
     }
 }

@@ -6,7 +6,7 @@ namespace IdentityServer.Api.Configurations.Installers.ServiceInstallers;
 [InstallerOrder(Order = 5)]
 public class HttpClientServiceInstaller : IServiceInstaller
 {
-    public void Install(
+    public Task Install(
         IServiceCollection services,
         IConfiguration configuration,
         IWebHostEnvironment hostEnvironment)
@@ -29,6 +29,8 @@ public class HttpClientServiceInstaller : IServiceInstaller
             var baseAddress = $"{gatewayClient}";
             config.BaseAddress = new Uri(baseAddress);
         });
-        #endregion    
+        #endregion
+
+        return Task.CompletedTask;
     }
 }

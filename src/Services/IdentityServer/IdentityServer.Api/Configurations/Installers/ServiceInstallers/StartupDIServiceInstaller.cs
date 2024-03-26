@@ -14,7 +14,7 @@ namespace IdentityServer.Api.Configurations.Installers.ServiceInstallers;
 [InstallerOrder(Order = 1)]
 public class StartupDIServiceInstaller : IServiceInstaller
 {
-    public void Install(
+    public Task Install(
         IServiceCollection services, 
         IConfiguration configuration, 
         IWebHostEnvironment hostEnvironment)
@@ -27,5 +27,7 @@ public class StartupDIServiceInstaller : IServiceInstaller
         services.Configure<SourceOrigin>(configuration.GetSection($"SourceOriginSettings:{hostEnvironment.EnvironmentName}"));
 
         services.AddAccessTokenManagement();
+
+        return Task.CompletedTask;
     }
 }
