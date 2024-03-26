@@ -13,7 +13,7 @@ namespace LocalizationService.Api.Configurations.Installers.ServiceInstallers;
 [InstallerOrder(Order = 6)]
 public class SeedDataServiceInstaller : IServiceInstaller
 {
-    public void Install(
+    public Task Install(
         IServiceCollection services, 
         IConfiguration configuration, 
         IWebHostEnvironment hostEnvironment)
@@ -158,5 +158,7 @@ public class SeedDataServiceInstaller : IServiceInstaller
 
             return languageList;
         }
+
+        return Task.CompletedTask;
     }
 }

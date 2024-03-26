@@ -9,24 +9,23 @@ IWebHostEnvironment environment = builder.Environment;
 
 ServiceTool.Create(builder.Services);
 
-builder.WebHost
-    .InstallWebAppBuilder(
+await builder.WebHost
+    .InstallWebHostBuilder(
         environment,
         configuration,
-        typeof(IWebHostBuilderInstaller).Assembly
-    );
+        typeof(IWebHostBuilderInstaller).Assembly);
 
-builder.Host
-    .InstallHost(
-    configuration,
-    environment,
-    typeof(IHostInstaller).Assembly);
-
-builder.Services
-    .InstallServices(
+await builder.Host
+      .InstallHost(
         configuration,
         environment,
-        typeof(IServiceInstaller).Assembly);
+        typeof(IHostInstaller).Assembly);
+
+await builder.Services
+      .InstallServices(
+          configuration,
+          environment,
+          typeof(IServiceInstaller).Assembly);
 
 var app = builder.Build();
 

@@ -7,7 +7,7 @@ namespace LocalizationService.Api.Configurations.Installers.ServiceInstallers;
 [InstallerOrder(Order = 3)]
 public class AuthorizationServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         var staticScheme = configuration.GetSection("StaticConfigurations:Scheme").Value;
 
@@ -45,5 +45,7 @@ public class AuthorizationServiceInstaller : IServiceInstaller
         });
 
         IdentityModelEventSource.ShowPII = true;
+
+        return Task.CompletedTask;
     }
 }

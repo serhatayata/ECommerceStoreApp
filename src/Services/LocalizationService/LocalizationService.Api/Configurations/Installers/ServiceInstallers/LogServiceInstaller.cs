@@ -8,7 +8,7 @@ namespace LocalizationService.Api.Configurations.Installers.ServiceInstallers;
 [InstallerOrder(Order = 10)]
 public class LogServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         services.AddLogging();
 
@@ -34,6 +34,8 @@ public class LogServiceInstaller : IServiceInstaller
                         .Enrich.WithProperty("Environment", env)
                         .ReadFrom.Configuration(serilogConfiguration)
                         .CreateLogger();
+
+        return Task.CompletedTask;
     }
 
     private static ElasticsearchSinkOptions ConfigureElasticSink(IConfigurationRoot configuration, string environment)
