@@ -7,7 +7,7 @@ namespace CampaignService.Api.Configurations.Installers.ServiceInstallers;
 [InstallerOrder(Order = 3)]
 public class DbContextServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         var assembly = typeof(Program).Assembly.GetName().Name;
 
@@ -28,5 +28,7 @@ public class DbContextServiceInstaller : IServiceInstaller
         var context = serviceProvider.GetRequiredService<CampaignDbContext>();
 
         context.Database.EnsureCreated();
+
+        return Task.CompletedTask;
     }
 }

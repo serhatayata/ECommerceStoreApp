@@ -10,7 +10,7 @@ namespace CampaignService.Api.Configurations.Installers.ServiceInstallers;
 [InstallerOrder(Order = 5)]
 public class GraphQLServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         services.AddSingleton<IDataLoaderContextAccessor, DataLoaderContextAccessor>();
         services.AddSingleton<DataLoaderDocumentListener>();
@@ -48,5 +48,7 @@ public class GraphQLServiceInstaller : IServiceInstaller
         services.AddValidatorsFromAssemblyContaining<CampaignRuleInputValidator>();
         services.AddValidatorsFromAssemblyContaining<CouponInputValidator>();
         services.AddValidatorsFromAssemblyContaining<CouponItemInputValidator>();
+
+        return Task.CompletedTask;
     }
 }
