@@ -5,8 +5,8 @@ namespace FileService.Api.Configurations.Installers.ServiceInstallers;
 [InstallerOrder(Order = 10)]
 public class AuthenticationServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
-        
+        return Task.CompletedTask;
     }
 }

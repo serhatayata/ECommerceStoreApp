@@ -7,7 +7,7 @@ namespace FileService.Api.Configurations.Installers.ServiceInstallers;
 [InstallerOrder(Order = 3)]
 public class DbContextServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         var assembly = typeof(Program).Assembly.GetName().Name;
 
@@ -30,5 +30,7 @@ public class DbContextServiceInstaller : IServiceInstaller
         var isCreated = context.Database.EnsureCreated();
         if (!isCreated)
             context.Database.Migrate();
+
+        return Task.CompletedTask;
     }
 }
