@@ -5,7 +5,7 @@ namespace BasketService.Api.Configurations.Installers.ServiceInstallers;
 
 public class ApiDocumentationServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         services.AddSwaggerGen(options => {
             options.SwaggerDoc("v1", new OpenApiInfo
@@ -31,5 +31,7 @@ public class ApiDocumentationServiceInstaller : IServiceInstaller
 
             options.OperationFilter<AuthorizeCheckOperationFilter>();
         });
+
+        return Task.CompletedTask;
     }
 }

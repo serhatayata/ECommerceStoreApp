@@ -10,7 +10,7 @@ namespace BasketService.Api.Configurations.Installers.ServiceInstallers;
 
 public class LogServiceInstaller : IServiceInstaller
 {
-    public async void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public async Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         //Get the environment which the app is running on
         var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");

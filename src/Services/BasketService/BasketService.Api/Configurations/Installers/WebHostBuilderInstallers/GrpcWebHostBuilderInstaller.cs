@@ -4,7 +4,7 @@ namespace BasketService.Api.Configurations.Installers.WebHostBuilderInstallers;
 
 public class GrpcWebHostBuilderInstaller : IWebHostBuilderInstaller
 {
-    public void Install(ConfigureWebHostBuilder builder, IWebHostEnvironment hostEnv, IConfiguration configuration)
+    public Task Install(ConfigureWebHostBuilder builder, IWebHostEnvironment hostEnv, IConfiguration configuration)
     {
         builder.UseKestrel(options =>
         {
@@ -18,6 +18,8 @@ public class GrpcWebHostBuilderInstaller : IWebHostBuilderInstaller
                 listenOptions.Protocols = HttpProtocols.Http1;
             });
         });
+
+        return Task.CompletedTask;
     }
 
     static (int httpPort, int grpcPort) GetDefinedPorts(IConfiguration config)

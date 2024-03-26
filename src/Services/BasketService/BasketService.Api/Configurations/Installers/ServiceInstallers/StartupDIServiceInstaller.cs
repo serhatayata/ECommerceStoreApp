@@ -13,7 +13,7 @@ namespace BasketService.Api.Configurations.Installers.ServiceInstallers;
 
 public class StartupDIServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         services.AddSingleton<IElasticSearchService, ElasticSearchService>();
         services.AddSingleton<IRedisService, RedisService>();
@@ -23,5 +23,7 @@ public class StartupDIServiceInstaller : IServiceInstaller
 
         services.Configure<RedisOptions>(configuration.GetSection("RedisOptions"));
         services.Configure<LocalizationSettings>(configuration.GetSection("LocalizationSettings"));
+
+        return Task.CompletedTask;
     }
 }
