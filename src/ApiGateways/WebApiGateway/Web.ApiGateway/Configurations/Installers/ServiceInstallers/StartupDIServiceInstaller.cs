@@ -8,11 +8,13 @@ namespace Web.ApiGateway.Configurations.Installers.ServiceInstallers;
 [InstallerOrder(Order = 1)]
 public class StartupDIServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         services.AddSingleton<IElasticSearchService, ElasticSearchService>();
         services.AddTransient<HttpClientDelegatingHandler>();
         //services.AddSingleton<IRedisService, RedisService>();
         //services.AddSingleton<ILocalizationService, LocalizationService>();
+
+        return Task.CompletedTask;
     }
 }

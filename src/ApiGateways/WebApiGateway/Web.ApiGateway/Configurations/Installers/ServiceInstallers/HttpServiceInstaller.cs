@@ -7,7 +7,7 @@ namespace Web.ApiGateway.Configurations.Installers.ServiceInstallers;
 [InstallerOrder(Order = 3)]
 public class HttpServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         services.AddTransient<HttpClientDelegatingHandler>();
@@ -16,5 +16,7 @@ public class HttpServiceInstaller : IServiceInstaller
         {
             c.BaseAddress = new Uri(configuration["ServiceInfo:Localization"]);
         }).AddHttpMessageHandler<HttpClientDelegatingHandler>();
+
+        return Task.CompletedTask;
     }
 }

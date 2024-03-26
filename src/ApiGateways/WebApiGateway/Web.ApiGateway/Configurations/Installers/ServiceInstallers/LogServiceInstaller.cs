@@ -12,7 +12,7 @@ namespace Web.ApiGateway.Configurations.Installers.ServiceInstallers;
 [InstallerOrder(Order = 7)]
 public class LogServiceInstaller : IServiceInstaller
 {
-    public async void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public async Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         var env = hostEnvironment.EnvironmentName;
 
@@ -27,7 +27,7 @@ public class LogServiceInstaller : IServiceInstaller
                         .ReadFrom.Configuration(configuration)
                         .CreateLogger();
 
-        CreateElasticLogIndex(services, configuration);
+        await CreateElasticLogIndex(services, configuration);
     }
 
     private ElasticsearchSinkOptions ConfigureElasticSink(IConfiguration configuration, string environment)
@@ -54,7 +54,7 @@ public class LogServiceInstaller : IServiceInstaller
         };
     }
 
-    private async void CreateElasticLogIndex(IServiceCollection services, IConfiguration configuration)
+    private async Task CreateElasticLogIndex(IServiceCollection services, IConfiguration configuration)
     {
         var serviceProvider = services.BuildServiceProvider();
         var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();
