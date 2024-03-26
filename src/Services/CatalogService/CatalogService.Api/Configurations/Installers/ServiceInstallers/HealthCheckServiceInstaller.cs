@@ -8,7 +8,7 @@ namespace CatalogService.Api.Configurations.Installers.ServiceInstallers;
 [InstallerOrder(Order = 6)]
 public class HealthCheckServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         services.AddHealthChecks()
         .AddSqlServer(
@@ -50,6 +50,8 @@ public class HealthCheckServiceInstaller : IServiceInstaller
                     check: () => Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy(),
                     tags: new string[] { "Catalog" }
                 );
+
+        return Task.CompletedTask;
     }
 
     private static string GetRabbitMqConnectionString(IConfiguration configuration)

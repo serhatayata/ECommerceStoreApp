@@ -10,7 +10,7 @@ namespace CatalogService.Api.Configurations.Installers.ServiceInstallers;
 [InstallerOrder(Order = 8)]
 public class LogServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         //Get the environment which the app is running on
         var env = System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
@@ -34,6 +34,8 @@ public class LogServiceInstaller : IServiceInstaller
                         .Enrich.WithProperty("Environment", env)
                         .ReadFrom.Configuration(serilogConfiguration)
                         .CreateLogger();
+
+        return Task.CompletedTask;
     }
 
     private static ElasticsearchSinkOptions ConfigureElasticSink(IConfigurationRoot configuration, string environment)

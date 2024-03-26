@@ -6,7 +6,7 @@ namespace CatalogService.Api.Configurations.Installers.ServiceInstallers;
 [InstallerOrder(Order = 3)]
 public class HttpClientServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         services.AddScoped<LocalizationRequestTokenHandler>();
 
@@ -20,5 +20,7 @@ public class HttpClientServiceInstaller : IServiceInstaller
         }).AddHttpMessageHandler<LocalizationRequestTokenHandler>();
 
         #endregion
+
+        return Task.CompletedTask;
     }
 }

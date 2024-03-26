@@ -7,7 +7,7 @@ namespace CatalogService.Api.Configurations.Installers.ServiceInstallers;
 [InstallerOrder(Order = 7)]
 public class GrpcServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         services.AddGrpc(g =>
         {
@@ -27,5 +27,7 @@ public class GrpcServiceInstaller : IServiceInstaller
         //    g.Interceptors.Add<ExceptionInterceptor>();
         //}).AddJsonTranscoding();
         #endregion
+
+        return Task.CompletedTask;
     }
 }
