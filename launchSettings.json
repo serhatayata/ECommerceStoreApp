@@ -1,0 +1,43 @@
+{
+  "profiles": {
+    "test1": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "composeLaunchAction": "LaunchBrowser",
+      "composeLaunchServiceName": "campaignservice-api",
+      "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/ui/playground",
+      "serviceActions": {
+        "consul-service": "StartWithoutDebugging",
+        "fileservice-api": "DoNotStart",
+        "sql-server": "StartWithoutDebugging",
+        "elasticsearch": "StartWithoutDebugging",
+        "kibana": "StartWithoutDebugging",
+        "campaignservice-api": "StartDebugging",
+        "rabbitmq": "StartWithoutDebugging",
+        "redis": "StartWithoutDebugging",
+        "redisinsight": "StartWithoutDebugging",
+        "localizationservice-api": "DoNotStart",
+        "monitoringservice-api": "DoNotStart",
+        "postgres": "StartWithoutDebugging",
+        "notificationservice-api": "DoNotStart",
+        "postgres-notification": "StartWithoutDebugging",
+        "orderservice-api": "DoNotStart",
+        "paymentservice-api": "DoNotStart",
+        "stockservice-api": "DoNotStart",
+        "basketservice-api": "DoNotStart",
+        "catalogservice-api": "DoNotStart",
+        "mongodb": "StartWithoutDebugging",
+        "identityserver-api": "DoNotStart",
+        "gateway-api": "DoNotStart",
+        "debezium-connect": "StartWithoutDebugging",
+        "kafdrop": "StartWithoutDebugging",
+        "kafka1": "StartWithoutDebugging",
+        "localization-backgroundtasks": "DoNotStart",
+        "zookeeper": "StartWithoutDebugging",
+        "monitoring-backgroundtasks": "DoNotStart",
+        "postgres-monitoring": "StartWithoutDebugging",
+        "sagastatemachine-workerservice": "DoNotStart"
+      }
+    }
+  }
+}

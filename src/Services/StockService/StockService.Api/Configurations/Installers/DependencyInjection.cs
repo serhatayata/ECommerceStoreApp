@@ -1,12 +1,12 @@
 ﻿using StockService.Api.Configurations.Installers.ServiceInstallers;
-using StockService.Api.Configurations.Installers.WebApplicationInstallers;
+using StockService.Api.Configurations.Installers.ApplicationBuilderInstallers;
 using System.Reflection;
 
 namespace StockService.Api.Configurations.Installers;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection InstallServices(
+    public async static Task<IServiceCollection> InstallServices(
     this IServiceCollection services,
     IConfiguration configuration,
     IWebHostEnvironment hostEnvironment,
@@ -26,7 +26,7 @@ public static class DependencyInjection
 
         foreach (IServiceInstaller serviceInstaller in serviceInstallers)
         {
-            serviceInstaller.Install(services, configuration, hostEnvironment);
+            await serviceInstaller.Install(services, configuration, hostEnvironment);
         }
 
         return services;
@@ -37,7 +37,7 @@ public static class DependencyInjection
             !typeInfo.IsAbstract;
     }
 
-    public static IHostBuilder InstallHost(
+    public async static Task<IHostBuilder> InstallHost(
     this IHostBuilder host,
     IConfiguration configuration,
     IWebHostEnvironment hostEnvironment,
@@ -51,7 +51,7 @@ public static class DependencyInjection
 
         foreach (IHostInstaller hostInstaller in hostInstallers)
         {
-            hostInstaller.Install(host, configuration, hostEnvironment);
+            await hostInstaller.Install(host, configuration, hostEnvironment);
         }
 
         return host;
@@ -68,14 +68,14 @@ public static class DependencyInjection
     IConfiguration configuration,
     params Assembly[] assemblies)
     {
-        IEnumerable<IWebAppInstaller> webAppInstallers = assemblies
+        IEnumerable<IApplicationBuilderInstaller> webAppInstallers = assemblies
             .SelectMany(a => a.DefinedTypes)
-            .Where(IsAssignableToType<IWebAppInstaller>)
+            .Where(IsAssignableToType<IApplicationBuilderInstaller>)
             .Select(Activator.CreateInstance)
-            .Cast<IWebAppInstaller>()
-            .Where(s => s.GetType() != typeof(ServiceDiscoveryWebAppInstaller));
+            .Cast<IApplicationBuilderInstaller>()
+            .Where(s => s.GetType() != typeof(ServiceDiscoveryApplicationBuilderInstaller));
 
-        foreach (IWebAppInstaller webAppIstaller in webAppInstallers)
+        foreach (IApplicationBuilderInstaller webAppIstaller in webAppInstallers)
         {
             webAppIstaller.Install(app, appLifeTime, configuration);
         }

@@ -41,8 +41,6 @@ public class SeedDataWebApplicationInstaller : IWebApplicationInstaller
 
         var result = await policy.ExecuteAndCaptureAsync(async () =>
         {
-            await context.Database.MigrateAsync();
-
             if (!await context.Brands.AnyAsync())
             {
                 logger.LogInformation("Start executing seed data : {ClassName}", nameof(Brand));

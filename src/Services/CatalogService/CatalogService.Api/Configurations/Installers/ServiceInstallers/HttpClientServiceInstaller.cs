@@ -1,18 +1,17 @@
-﻿
+﻿using CatalogService.Api.Attributes;
 using CatalogService.Api.Infrastructure.Handlers.ApiTokenHandlers;
 
 namespace CatalogService.Api.Configurations.Installers.ServiceInstallers;
 
+[InstallerOrder(Order = 3)]
 public class HttpClientServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
-        string env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-
         services.AddScoped<LocalizationRequestTokenHandler>();
 
         #region HttpClients
-        string gatewayClient = configuration.GetSection($"SourceOriginSettings:{env}:Gateway").Value;
+        string gatewayClient = configuration.GetSection($"SourceOriginSettings:Gateway").Value;
 
         services.AddHttpClient("gateway", config =>
         {
@@ -21,5 +20,7 @@ public class HttpClientServiceInstaller : IServiceInstaller
         }).AddHttpMessageHandler<LocalizationRequestTokenHandler>();
 
         #endregion
+
+        return Task.CompletedTask;
     }
 }

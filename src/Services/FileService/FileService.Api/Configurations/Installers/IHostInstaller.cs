@@ -2,5 +2,5 @@
 
 public interface IHostInstaller
 {
-    void Install(IHostBuilder host, IConfiguration configuration, IWebHostEnvironment hostEnvironment);
+    Task Install(IHostBuilder host, IConfiguration configuration, IWebHostEnvironment hostEnvironment);
 }

@@ -1,13 +1,14 @@
-﻿
+﻿using CatalogService.Api.Attributes;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Logging;
 using System.Security.Claims;
 
 namespace CatalogService.Api.Configurations.Installers.ServiceInstallers;
 
+[InstallerOrder(Order = 12)]
 public class AuthorizationServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         services.AddAuthorization(options =>
         {
@@ -47,5 +48,7 @@ public class AuthorizationServiceInstaller : IServiceInstaller
         });
 
         IdentityModelEventSource.ShowPII = true;
+
+        return Task.CompletedTask;
     }
 }

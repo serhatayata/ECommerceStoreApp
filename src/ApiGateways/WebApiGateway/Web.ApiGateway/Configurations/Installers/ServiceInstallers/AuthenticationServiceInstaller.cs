@@ -10,7 +10,7 @@ namespace Web.ApiGateway.Configurations.Installers.ServiceInstallers;
 [InstallerOrder(Order = 5)]
 public class AuthenticationServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         var defaultScheme = "GatewayAuthenticationScheme";
         services.AddAuthentication(opt =>
@@ -22,6 +22,7 @@ public class AuthenticationServiceInstaller : IServiceInstaller
         {
             options.Authority = configuration.GetValue<string>("AuthConfigurations:Url");
             options.Audience = "resource_gateway";
+            options.RequireHttpsMetadata = false;
             //options.RequireHttpsMetadata = false;
             //options.MetadataAddress = configuration.GetValue<string>("AuthConfigurations:UrlMetadata");
             options.TokenValidationParameters = new TokenValidationParameters()
@@ -33,5 +34,7 @@ public class AuthenticationServiceInstaller : IServiceInstaller
         services.AddOcelot().AddConsul();
 
         IdentityModelEventSource.ShowPII = true;
+
+        return Task.CompletedTask;
     }
 }

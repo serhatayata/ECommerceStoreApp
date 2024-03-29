@@ -11,7 +11,7 @@ namespace LocalizationService.Api.Configurations.Installers.ServiceInstallers;
 [InstallerOrder(Order = 7)]
 public class DataLoadServiceInstaller : IServiceInstaller
 {
-    public async void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public async Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         var serviceProvider = services.BuildServiceProvider();
         var dbContext = serviceProvider.GetRequiredService<ILocalizationDbContext>();

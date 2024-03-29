@@ -10,15 +10,15 @@ namespace LocalizationService.Api.Configurations.Installers.ServiceInstallers;
 [InstallerOrder(Order = 1)]
 public class StartupDIServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public async Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         services.AddSingleton<IElasticSearchService, ElasticSearchService>();
         services.AddSingleton<IRedisService, RedisService>();
 
-        this.CreateELKIndex(services, configuration);
+        await this.CreateELKIndex(services, configuration);
     }
 
-    private async void CreateELKIndex(IServiceCollection services, IConfiguration configuration)
+    private async Task CreateELKIndex(IServiceCollection services, IConfiguration configuration)
     {
         var serviceProvider = services.BuildServiceProvider();
         var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();

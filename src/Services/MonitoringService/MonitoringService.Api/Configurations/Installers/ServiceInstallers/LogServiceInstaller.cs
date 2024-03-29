@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using MonitoringService.Api.Attributes;
+using Serilog;
 using Serilog.Formatting.Compact;
 using Serilog.Formatting.Elasticsearch;
 using Serilog.Sinks.Elasticsearch;
@@ -6,9 +7,10 @@ using System.Reflection;
 
 namespace MonitoringService.Api.Configurations.Installers.ServiceInstallers;
 
+[InstallerOrder(Order = 7)]
 public class LogServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         //Get the environment which the app is running on
         var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
@@ -32,6 +34,8 @@ public class LogServiceInstaller : IServiceInstaller
                         .Enrich.WithProperty("Environment", env)
                         .ReadFrom.Configuration(serilogConfiguration)
                         .CreateLogger();
+
+        return Task.CompletedTask;
     }
 
     private static ElasticsearchSinkOptions ConfigureElasticSink(IConfigurationRoot configuration, string environment)

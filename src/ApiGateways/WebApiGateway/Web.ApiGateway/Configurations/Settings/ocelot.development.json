@@ -117,19 +117,19 @@
 
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
+          "Host": "debezium-connect",
           "Port": 8083
         }
       ]
     }
   ],
   "GlobalConfiguration": {
-    //"BaseUrl": "http://web.apigateway.api:5000",
-    "BaseUrl": "http://localhost:5000",
+    "BaseUrl": "http://gateway-api:5000",
+    //"BaseUrl": "http://localhost:5000",
     "ServiceDiscoveryProvider": {
       "Scheme": "http",
-      //"Host": "s_consul",
-      "Host": "localhost",
+      "Host": "consul-service",
+      //"Host": "localhost",
       "Port": "8500",
       "Type": "Consul"
     }

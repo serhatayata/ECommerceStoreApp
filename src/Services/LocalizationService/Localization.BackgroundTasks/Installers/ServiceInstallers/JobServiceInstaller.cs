@@ -1,10 +1,12 @@
 ﻿using Quartz;
+using Localization.BackgroundTasks.Attributes;
 
 namespace Localization.BackgroundTasks.Installers.ServiceInstallers;
 
+[InstallerOrder(Order = 4)]
 public class JobServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         services.AddQuartz(async q =>
         {
@@ -29,6 +31,8 @@ public class JobServiceInstaller : IServiceInstaller
         {
             q.WaitForJobsToComplete = true;
         });
+
+        return Task.CompletedTask;
     }
 
     private static string GetJobKey<T>()

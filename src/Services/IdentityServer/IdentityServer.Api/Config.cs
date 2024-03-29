@@ -77,10 +77,10 @@ namespace IdentityServer.Api
                     AllowedGrantTypes = GrantTypes.Code,
 
                     // where to redirect to after login
-                    RedirectUris = { "https://localhost:5003/callback.html" },
+                    RedirectUris = { "https://notificationservice-api:5003/callback.html" },
                     // where to redirect to after logout
-                    PostLogoutRedirectUris = { "https://localhost:5003/index.html"  },
-                    AllowedCorsOrigins =     { "https://localhost:5003" },
+                    PostLogoutRedirectUris = { "https://notificationservice-api:5003/index.html"  },
+                    AllowedCorsOrigins =     { "https://notificationservice-api:5003" },
                     AllowOfflineAccess = true,
 
                     AllowedScopes = new List<string>
@@ -102,10 +102,10 @@ namespace IdentityServer.Api
                     AllowedGrantTypes = GrantTypes.Code,
 
                     // where to redirect to after login
-                    RedirectUris = { "https://localhost:5002/signin-oidc" },
+                    RedirectUris = { "https://localizationservice-api:5002/signin-oidc" },
 
                     // where to redirect to after logout
-                    PostLogoutRedirectUris = { "https://localhost:5002/signout-callback-oidc" },
+                    PostLogoutRedirectUris = { "https://localizationservice-api:5002/signout-callback-oidc" },
                     AllowOfflineAccess = true,
                     AllowedScopes = new List<string>
                     {

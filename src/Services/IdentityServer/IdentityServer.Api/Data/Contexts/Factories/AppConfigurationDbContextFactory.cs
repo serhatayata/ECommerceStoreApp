@@ -12,7 +12,7 @@ namespace IdentityServer.Api.Data.Contexts.Factories
 
             var config = new ConfigurationBuilder()
                .SetBasePath(Path.Combine(Directory.GetCurrentDirectory()))
-               .AddJsonFile("Configurations/appsettings.json", 
+               .AddJsonFile("Configurations/Settings/appsettings.json", 
                             optional: false,
                             reloadOnChange: true)
                .AddEnvironmentVariables()

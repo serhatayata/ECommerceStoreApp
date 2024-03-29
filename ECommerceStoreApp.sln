@@ -128,6 +128,18 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{385508
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "src\Shared\Shared\Shared.csproj", "{F802555A-E1F5-4D64-B23C-3775745ABD32}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "debezium", "debezium", "{D86BDA33-12DC-4C34-B420-E16FFD29125E}"
+	ProjectSection(SolutionItems) = preProject
+		debezium\debezium-config.json = debezium\debezium-config.json
+	EndProjectSection
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{A21D0A1B-2804-43B3-8C82-5A24C091BBD9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "postgres", "postgres", "{CA3A25B2-B439-43B4-A1BF-51B3B8C1B4EA}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose-files\postgres\docker-compose.yml = docker-compose-files\postgres\docker-compose.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -206,6 +218,10 @@ Global
 		{F802555A-E1F5-4D64-B23C-3775745ABD32}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F802555A-E1F5-4D64-B23C-3775745ABD32}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F802555A-E1F5-4D64-B23C-3775745ABD32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A21D0A1B-2804-43B3-8C82-5A24C091BBD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A21D0A1B-2804-43B3-8C82-5A24C091BBD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A21D0A1B-2804-43B3-8C82-5A24C091BBD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A21D0A1B-2804-43B3-8C82-5A24C091BBD9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -257,6 +273,7 @@ Global
 		{74F747A7-6B8E-4B77-8EE0-6A3645ED4089} = {2D5D1916-C306-4A37-8798-5767A2554C8B}
 		{3855080C-15AC-4A09-A7FF-C8A25B16E14F} = {1055DE2C-675F-4234-A46F-D9BB463BEB18}
 		{F802555A-E1F5-4D64-B23C-3775745ABD32} = {3855080C-15AC-4A09-A7FF-C8A25B16E14F}
+		{CA3A25B2-B439-43B4-A1BF-51B3B8C1B4EA} = {3A931DA4-C6CA-496C-9E99-909BD7495FB1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0EA7DAA1-E97E-4D4E-8989-8E0E33F3EDA4}

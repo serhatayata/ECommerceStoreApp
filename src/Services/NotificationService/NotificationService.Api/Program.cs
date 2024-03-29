@@ -7,17 +7,17 @@ ConfigurationManager configuration = builder.Configuration;
 var assembly = typeof(Program).Assembly.GetName().Name;
 IWebHostEnvironment environment = builder.Environment;
 
-builder.Host
-    .InstallHost(
-    configuration,
-    environment,
-    typeof(IHostInstaller).Assembly);
-
-builder.Services
-    .InstallServices(
+await builder.Host
+      .InstallHost(
         configuration,
         environment,
-        typeof(IServiceInstaller).Assembly);
+        typeof(IHostInstaller).Assembly);
+
+await builder.Services
+      .InstallServices(
+          configuration,
+          environment,
+          typeof(IServiceInstaller).Assembly);
 
 var app = builder.Build();
 
@@ -42,14 +42,10 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-app.InstallWebApp(app.Lifetime,
-                  configuration,
-                  typeof(IWebAppInstaller).Assembly);
-
 app.MapControllers();
 
 app.Start();
 
-app.RegisterWithConsul(app.Lifetime, configuration);
+app.InstallServiceDiscovery(app.Lifetime, configuration);
 
 app.WaitForShutdown();

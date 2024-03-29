@@ -15,7 +15,7 @@ namespace CampaignService.Api.Configurations.Installers.ServiceInstallers;
 [InstallerOrder(Order = 1)]
 public class StartupDIServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         services.AddScoped<ISchema, CampaignSchema>();
         services.AddScoped<ISchema, CampaignItemSchema>();
@@ -44,5 +44,7 @@ public class StartupDIServiceInstaller : IServiceInstaller
 
         services.AddSingleton<IRedisService, RedisService>();
         services.AddSingleton<ILocalizationService, LocalizationService>();
+
+        return Task.CompletedTask;
     }
 }

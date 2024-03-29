@@ -1,4 +1,4 @@
-﻿using StockService.Api.Configurations.Installers.WebApplicationInstallers;
+﻿using StockService.Api.Configurations.Installers.ApplicationBuilderInstallers;
 
 namespace StockService.Api.Extensions;
 
@@ -9,7 +9,7 @@ public static class ServiceDiscoveryExtensions
     IHostApplicationLifetime lifeTime,
     IConfiguration configuration)
     {
-        var serviceDiscoveryInstaller = new ServiceDiscoveryWebAppInstaller();
+        var serviceDiscoveryInstaller = new ServiceDiscoveryApplicationBuilderInstaller();
         serviceDiscoveryInstaller.Install(app, lifeTime, configuration);
     }
 }

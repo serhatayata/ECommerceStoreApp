@@ -6,7 +6,7 @@ namespace CampaignService.Api.Configurations.Installers.ServiceInstallers;
 [InstallerOrder(Order = 6)]
 public class HealthCheckServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         services.AddHealthChecks()
         .AddSqlServer(
@@ -40,5 +40,7 @@ public class HealthCheckServiceInstaller : IServiceInstaller
           name: "Consul",
           failureStatus: Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Unhealthy | Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Degraded,
           tags: new string[] { "consul" });
+
+        return Task.CompletedTask;
     }
 }

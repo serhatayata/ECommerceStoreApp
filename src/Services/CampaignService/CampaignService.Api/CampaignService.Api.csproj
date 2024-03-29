@@ -4,6 +4,10 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>23e44063-3f90-4cdd-9013-1d0ee839f7b6</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\..\..\..</DockerfileContext>
+    <DockerComposeProjectPath>..\..\..\..\docker-compose.dcproj</DockerComposeProjectPath>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -13,6 +17,17 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <Optimize>False</Optimize>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Configurations\Installers\WebHostBuilderInstallers\**" />
+    <Compile Remove="Models\CouponItem\**" />
+    <Content Remove="Configurations\Installers\WebHostBuilderInstallers\**" />
+    <Content Remove="Models\CouponItem\**" />
+    <EmbeddedResource Remove="Configurations\Installers\WebHostBuilderInstallers\**" />
+    <EmbeddedResource Remove="Models\CouponItem\**" />
+    <None Remove="Configurations\Installers\WebHostBuilderInstallers\**" />
+    <None Remove="Models\CouponItem\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.Consul" Version="8.0.0" />
@@ -44,6 +59,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.5" />
     <PackageReference Include="NEST" Version="7.17.5" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Polly" Version="8.2.0" />
@@ -57,11 +73,6 @@
     <PackageReference Include="Serilog.Sinks.Elasticsearch" Version="9.0.3" />
     <PackageReference Include="StackExchange.Redis" Version="2.7.10" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Configurations\Installers\WebHostBuilderInstallers\" />
-    <Folder Include="Models\CouponItem\" />
   </ItemGroup>
 
   <ItemGroup>

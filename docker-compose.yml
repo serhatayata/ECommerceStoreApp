@@ -1,0 +1,252 @@
+version: '3.4'
+
+services:
+  gateway-api:
+    container_name: gateway-api
+    image: ${DOCKER_REGISTRY-}webapigateway
+    build:
+      context: .
+      dockerfile: src/ApiGateways/WebApiGateway/Web.ApiGateway/Dockerfile
+    depends_on:
+      - consul-service
+      - elasticsearch
+      - redis
+
+  fileservice-api:
+    container_name: fileservice-api
+    image: ${DOCKER_REGISTRY-}fileserviceapi
+    build:
+      context: .
+      dockerfile: src/Services/FileService/FileService.Api/Dockerfile
+    depends_on:
+      - sql-server
+      - consul-service
+      - elasticsearch
+
+  campaignservice-api:
+    container_name: campaignservice-api
+    image: ${DOCKER_REGISTRY-}campaignserviceapi
+    build:
+      context: .
+      dockerfile: src/Services/CampaignService/CampaignService.Api/Dockerfile
+    depends_on:
+      - sql-server
+      - consul-service
+      - elasticsearch
+      - redis
+      - rabbitmq
+
+  localizationservice-api:
+    container_name: localizationservice-api
+    image: ${DOCKER_REGISTRY-}localizationserviceapi
+    build:
+      context: .
+      dockerfile: src/Services/LocalizationService/LocalizationService.Api/Dockerfile
+    depends_on:
+      - sql-server
+      - consul-service
+      - elasticsearch
+      - redis
+
+  monitoringservice-api:
+    container_name: monitoringservice-api
+    image: ${DOCKER_REGISTRY-}monitoringserviceapi
+    build:
+      context: .
+      dockerfile: src/Services/MonitoringService/MonitoringService.Api/Dockerfile
+    depends_on:
+      - postgres
+      - elasticsearch
+
+  notificationservice-api:
+    container_name: notificationservice-api
+    image: ${DOCKER_REGISTRY-}notificationserviceapi
+    build:
+      context: .
+      dockerfile: src/Services/NotificationService/NotificationService.Api/Dockerfile
+    depends_on:
+      - postgres-notification
+      - consul-service
+      - elasticsearch
+      - redis
+
+  orderservice-api:
+    container_name: orderservice-api
+    image: ${DOCKER_REGISTRY-}orderserviceapi
+    build:
+      context: .
+      dockerfile: src/Services/OrderService/OrderService.Api/Dockerfile
+    depends_on:
+      - sql-server
+      - consul-service
+      - elasticsearch
+      - redis
+
+  paymentservice-api:
+    container_name: paymentservice-api
+    image: ${DOCKER_REGISTRY-}paymentserviceapi
+    build:
+      context: .
+      dockerfile: src/Services/PaymentService/PaymentService.Api/Dockerfile
+    depends_on:
+      - sql-server
+      - consul-service
+      - elasticsearch
+      - redis
+
+  stockservice-api:
+    container_name: stockservice-api
+    image: ${DOCKER_REGISTRY-}stockserviceapi
+    build:
+      context: .
+      dockerfile: src/Services/StockService/StockService.Api/Dockerfile
+    depends_on:
+      - sql-server
+      - consul-service
+      - elasticsearch
+      - redis
+
+  basketservice-api:
+    container_name: basketservice-api
+    image: ${DOCKER_REGISTRY-}basketserviceapi
+    build:
+      context: .
+      dockerfile: src/Services/BasketService/BasketService.Api/Dockerfile
+    depends_on:
+      - consul-service
+      - elasticsearch
+      - redis
+
+  catalogservice-api:
+    container_name: catalogservice-api
+    image: ${DOCKER_REGISTRY-}catalogserviceapi
+    build:
+      context: .
+      dockerfile: src/Services/CatalogService/CatalogService.Api/Dockerfile
+    depends_on:
+      - consul-service
+      - elasticsearch
+      - redis
+      - rabbitmq
+      - mongodb
+
+  identityserver-api:
+    container_name: identityserver-api
+    image: ${DOCKER_REGISTRY-}identityserverapi
+    build:
+      context: .
+      dockerfile: src/Services/IdentityServer/IdentityServer.Api/Dockerfile
+    depends_on:
+      - consul-service
+      - elasticsearch
+      - redis
+
+  localization-backgroundtasks:
+    container_name: localization-backgroundtasks
+    image: ${DOCKER_REGISTRY-}localizationbackgroundtasks
+    build:
+      context: .
+      dockerfile: src/Services/LocalizationService/Localization.BackgroundTasks/Dockerfile
+    depends_on:
+      - gateway-api
+      - sql-server
+      - consul-service
+      - elasticsearch
+      - redis
+      - debezium-connect
+      - kafdrop
+      - kafka1
+
+  monitoring-backgroundtasks:
+    container_name: monitoring-backgroundtasks
+    image: ${DOCKER_REGISTRY-}monitoringbackgroundtasks
+    build:
+      context: .
+      dockerfile: src/Services/MonitoringService/Monitoring.BackgroundTasks/Dockerfile
+    depends_on:
+      - gateway-api
+      - postgres-monitoring
+      - consul-service
+      - elasticsearch
+      - redis
+
+  sagastatemachine-workerservice:
+    container_name: sagastatemachine-workerservice
+    image: ${DOCKER_REGISTRY-}sagastatemachineworkerservice
+    build:
+      context: .
+      dockerfile: src/BuildingBlocks/StateMachine/SagaStateMachineWorkerService/Dockerfile
+    depends_on:
+      - sql-server
+
+  sql-server:
+    container_name: sql-server
+    image: mcr.microsoft.com/mssql/server:2019-latest
+
+  consul-service:
+    container_name: consul-service
+    image: consul
+
+  elasticsearch:
+    container_name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.16.1
+
+  kibana:
+    container_name: kibana
+    image: docker.elastic.co/kibana/kibana:7.16.1
+
+  redis:
+    container_name: redis
+    image: 'redis:6.0.6'
+
+  redisinsight:
+    container_name: redisinsight
+    image: 'redislabs/redisinsight:latest'
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: "rabbitmq:3-management"
+
+  postgres:
+    container_name: postgres
+    image: postgres:14-alpine
+
+  postgres-notification:
+    container_name: postgres-notification
+    image: postgres:14-alpine
+
+  postgres-monitoring:
+    container_name: postgres-monitoring
+    image: postgres:14-alpine
+
+  mongodb:
+    container_name: mongodb
+    image: mongo:4.2
+
+  zookeeper:
+    container_name: zookeeper
+    image: wurstmeister/zookeeper:latest
+
+  kafka1:
+    container_name: kafka1
+    image: wurstmeister/kafka:latest
+    restart: "no"
+
+  kafdrop:
+    container_name: kafdrop
+    image: obsidiandynamics/kafdrop
+    restart: "no"
+
+  debezium-connect:
+    container_name: debezium-connect
+    image: debezium/connect
+    depends_on:
+      - kafka1
+      - zookeeper
+
+volumes:
+  sqlserver_data:
+  sqlserver_log:
+  elasticsearch-data:
+  mongo_data:
+

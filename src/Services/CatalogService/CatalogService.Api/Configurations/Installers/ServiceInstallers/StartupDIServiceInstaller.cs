@@ -1,4 +1,5 @@
-﻿using CatalogService.Api.Models.CacheModels;
+﻿using CatalogService.Api.Attributes;
+using CatalogService.Api.Models.CacheModels;
 using CatalogService.Api.Models.Settings;
 using CatalogService.Api.Services.Base.Abstract;
 using CatalogService.Api.Services.Base.Concrete;
@@ -12,9 +13,10 @@ using CatalogService.Api.Utilities.IoC;
 
 namespace CatalogService.Api.Configurations.Installers.ServiceInstallers;
 
+[InstallerOrder(Order = 1)]
 public class StartupDIServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         services.AddSingleton<IRedisService, RedisService>();
         services.AddSingleton<IElasticSearchService, ElasticSearchService>();
@@ -25,5 +27,7 @@ public class StartupDIServiceInstaller : IServiceInstaller
         services.Configure<MongoDbSettings>(configuration.GetSection("MongoDB"));
 
         ServiceTool.Create(services);
+
+        return Task.CompletedTask;
     }
 }

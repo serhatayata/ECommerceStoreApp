@@ -5,7 +5,7 @@ namespace PaymentService.Api.Configurations.Installers.ServiceInstallers;
 
 public class HealthCheckServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         services.AddHealthChecks()
                 .AddSqlServer(
@@ -33,5 +33,7 @@ public class HealthCheckServiceInstaller : IServiceInstaller
                     failureStatus: Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Unhealthy | Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Degraded,
                     tags: new string[] { "rabbitMQ_MessageBrokerQueue" }
                 );
+
+        return Task.CompletedTask;
     }
 }

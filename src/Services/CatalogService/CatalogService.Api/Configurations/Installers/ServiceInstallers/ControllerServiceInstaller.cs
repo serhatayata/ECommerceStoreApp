@@ -15,9 +15,10 @@ using System.Text.Json.Serialization;
 
 namespace CatalogService.Api.Configurations.Installers.ServiceInstallers;
 
+[InstallerOrder(Order = 5)]
 public class ControllerServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         services.AddControllers(options =>
         {
@@ -92,5 +93,7 @@ public class ControllerServiceInstaller : IServiceInstaller
             f.DisableDataAnnotationsValidation = true;
         });
         //services.AddFluentValidationClientsideAdapters(); // for client side
+
+        return Task.CompletedTask;
     }
 }

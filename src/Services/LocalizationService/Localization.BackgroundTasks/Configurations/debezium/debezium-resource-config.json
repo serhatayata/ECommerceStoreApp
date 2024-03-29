@@ -17,11 +17,11 @@
     "database.whitelist": "localization.Resources",
     "database.history.kafka.topic": "localization.resources.dbhistory",
     "database.encrypt": "false",
-    "database.history.kafka.bootstrap.servers": "kafka1:29092,kafka2:29093",
+    "database.history.kafka.bootstrap.servers": "kafka1:29092",
     "table.whitelist": "resources",
     "schema.include.list": "localization",
     "schema.history.internal.kafka.topic": "localization.resources.schemahistory",
-    "schema.history.internal.kafka.bootstrap.servers": "kafka1:29092,kafka2:29093",
+    "schema.history.internal.kafka.bootstrap.servers": "kafka1:29092",
     "table.include.list": "localization.resources",
     "topic.prefix": "ecom",
     "database.trustServerCertificate": true

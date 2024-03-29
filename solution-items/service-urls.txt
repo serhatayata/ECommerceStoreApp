@@ -13,6 +13,11 @@ CampaignService -> 5009
 MonitoringService -> 5010
 StockService -> 5011
 
+Localization.BackgroundTasks -> 50002
+Monitoring.BackgroundTasks -> 50010
+
+SagaStateMachineWorkerService -> 4000
+
 -- Https Ports --
 
 ApiGateway -> 6000
@@ -27,6 +32,9 @@ PaymentService -> 6008
 CampaignService -> 6009
 MonitoringService -> 6010
 StockService -> 6011
+
+Localization.BackgroundTasks -> 60002
+Monitoring.BackgroundTasks -> 60010
 
 -- IIS Ports --
 

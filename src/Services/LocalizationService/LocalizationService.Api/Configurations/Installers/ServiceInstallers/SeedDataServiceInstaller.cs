@@ -3,7 +3,6 @@ using LocalizationService.Api.Attributes;
 using LocalizationService.Api.Data.Contexts;
 using LocalizationService.Api.Entities;
 using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
 using Polly;
 using Serilog;
 using System.Data.SqlTypes;
@@ -14,7 +13,10 @@ namespace LocalizationService.Api.Configurations.Installers.ServiceInstallers;
 [InstallerOrder(Order = 6)]
 public class SeedDataServiceInstaller : IServiceInstaller
 {
-    public async void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public Task Install(
+        IServiceCollection services, 
+        IConfiguration configuration, 
+        IWebHostEnvironment hostEnvironment)
     {
         var env = hostEnvironment;
         var serviceProvider = services.BuildServiceProvider();
@@ -28,7 +30,7 @@ public class SeedDataServiceInstaller : IServiceInstaller
         var policy = Polly.Policy.Handle<SqlException>()
                     .Or<SqlAlreadyFilledException>()
                     .Or<SqlNullValueException>()
-                    .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
+                    .WaitAndRetry(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
                     {
                         logger.LogError(ex, "ERROR handling message: {ExceptionMessage} - Method : {ClassName}.{MethodName}",
                                             ex.Message,
@@ -36,28 +38,26 @@ public class SeedDataServiceInstaller : IServiceInstaller
                                             MethodBase.GetCurrentMethod()?.Name);
                     });
 
-        var result = await policy.ExecuteAndCaptureAsync(async () =>
+        var result =  policy.ExecuteAndCapture(() =>
         {
-            await context.Database.MigrateAsync();
-
             var languageFileList = GetAllFileLanguages();
-            if (!await context.Languages.AnyAsync())
+            if (!context.Languages.Any())
             {
                 logger.LogInformation("Start executing seed data : {ClassName}", nameof(Language));
 
                 foreach (var lang in languageFileList)
                 {
-                    if (await context.Languages.AnyAsync(l => l.Code == lang.Code))
+                    if (context.Languages.Any(l => l.Code == lang.Code))
                         continue;
 
-                    await context.Languages.AddAsync(lang);
+                     context.Languages.Add(lang);
                 }
 
-                await context.SaveChangesAsync();
+                 context.SaveChanges();
             }
 
             var memberFileList = GetAllFileMembers();
-            if (!await context.Members.AnyAsync())
+            if (! context.Members.Any())
             {
                 logger.LogInformation("Start executing seed data : {ClassName}", nameof(Member));
 
@@ -66,29 +66,29 @@ public class SeedDataServiceInstaller : IServiceInstaller
 
                 foreach (var member in memberFileList)
                 {
-                    if (await context.Members.AnyAsync(m => m.Name == member.Name && m.MemberKey == member.MemberKey))
+                    if ( context.Members.Any(m => m.Name == member.Name && m.MemberKey == member.MemberKey))
                         continue;
 
-                    await context.Members.AddAsync(member);
+                     context.Members.Add(member);
                 }
 
-                await context.SaveChangesAsync();
+                 context.SaveChanges();
             }
 
             var resourceFileList = GetAllFileResources(context.Members.ToList());
-            if (!await context.Resources.AnyAsync())
+            if (! context.Resources.Any())
             {
                 logger.LogInformation("Start executing seed data : {ClassName}", nameof(Resource));
 
                 foreach (var resource in resourceFileList)
                 {
-                    if (await context.Resources.AnyAsync(r => r.Tag == resource.Tag && r.ResourceCode == resource.ResourceCode))
+                    if ( context.Resources.Any(r => r.Tag == resource.Tag && r.ResourceCode == resource.ResourceCode))
                         continue;
 
-                    await context.Resources.AddAsync(resource);
+                     context.Resources.Add(resource);
                 }
 
-                await context.SaveChangesAsync();
+                 context.SaveChanges();
             }
         });
 
@@ -158,5 +158,7 @@ public class SeedDataServiceInstaller : IServiceInstaller
 
             return languageList;
         }
+
+        return Task.CompletedTask;
     }
 }

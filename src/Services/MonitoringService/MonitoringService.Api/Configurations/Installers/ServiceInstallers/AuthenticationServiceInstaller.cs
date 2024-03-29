@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using MonitoringService.Api.Attributes;
 
 namespace MonitoringService.Api.Configurations.Installers.ServiceInstallers;
 
+[InstallerOrder(Order = 10)]
 public class AuthenticationServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         var identityServerUrl = configuration.GetSection("IdentityServerConfigurations:Url").Value;
         var identityServerAudience = configuration.GetSection("IdentityServerConfigurations:Audience").Value;
@@ -21,5 +23,7 @@ public class AuthenticationServiceInstaller : IServiceInstaller
                     ClockSkew = TimeSpan.Zero
                 };
             });
+
+        return Task.CompletedTask;
     }
 }

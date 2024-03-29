@@ -9,7 +9,7 @@ namespace PaymentService.Api.Configurations.Installers.ServiceInstallers;
 
 public class MessageBrokerServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         var sp = services.BuildServiceProvider();
 
@@ -31,5 +31,7 @@ public class MessageBrokerServiceInstaller : IServiceInstaller
                 });
             });
         });
+
+        return Task.CompletedTask;
     }
 }

@@ -7,17 +7,17 @@ ConfigurationManager configuration = builder.Configuration;
 var assembly = typeof(Program).Assembly.GetName().Name;
 IWebHostEnvironment environment = builder.Environment;
 
-builder.Host
-    .InstallHost(
-    configuration,
-    environment,
-    typeof(IHostInstaller).Assembly);
+await builder.Host
+       .InstallHost(
+         configuration,
+         environment,
+         typeof(IHostInstaller).Assembly);
 
-builder.Services
-    .InstallServices(
-        configuration,
-        environment,
-        typeof(IServiceInstaller).Assembly);
+await builder.Services
+       .InstallServices(
+           configuration,
+           environment,
+           typeof(IServiceInstaller).Assembly);
 
 var app = builder.Build();
 
@@ -41,6 +41,6 @@ app.MapControllers();
 
 app.Start();
 
-app.RegisterWithConsul(app.Lifetime, configuration);
+app.InstallServiceDiscovery(app.Lifetime, configuration);
 
 app.WaitForShutdown();

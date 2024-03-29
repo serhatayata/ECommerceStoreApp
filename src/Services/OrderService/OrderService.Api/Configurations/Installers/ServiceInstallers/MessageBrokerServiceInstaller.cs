@@ -7,7 +7,7 @@ namespace OrderService.Api.Configurations.Installers.ServiceInstallers;
 
 public class MessageBrokerServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         services.AddMassTransit(m =>
         {
@@ -33,5 +33,7 @@ public class MessageBrokerServiceInstaller : IServiceInstaller
                 });
             });
         });
+
+        return Task.CompletedTask;
     }
 }

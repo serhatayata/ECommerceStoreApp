@@ -1,12 +1,11 @@
-﻿
-using Web.ApiGateway.Attributes;
+﻿using Web.ApiGateway.Attributes;
 
 namespace Web.ApiGateway.Configurations.Installers.ServiceInstallers;
 
 [InstallerOrder(Order = 4)]
 public class CorsServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         services.AddCors(options =>
         {
@@ -16,5 +15,7 @@ public class CorsServiceInstaller : IServiceInstaller
                 .AllowAnyHeader()
                 .AllowCredentials());
         });
+
+        return Task.CompletedTask;
     }
 }

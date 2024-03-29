@@ -1,15 +1,14 @@
-﻿using Localization.BackgroundTasks.Extensions;
+﻿using Localization.BackgroundTasks.Attributes;
 using Polly;
-using StackExchange.Redis;
-using System.Net.Http;
 using System.Reflection;
 using System.Text;
 
 namespace Localization.BackgroundTasks.Installers.ServiceInstallers;
 
+[InstallerOrder(Order = 3)]
 public class CDCServiceInstaller : IServiceInstaller
 {
-    public async void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public async Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         // CDC debezium connector
         var environment = hostEnvironment.EnvironmentName;

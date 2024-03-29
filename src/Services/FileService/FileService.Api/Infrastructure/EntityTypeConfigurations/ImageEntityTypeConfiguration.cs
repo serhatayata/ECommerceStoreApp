@@ -30,5 +30,29 @@ public class ImageEntityTypeConfiguration : IEntityTypeConfiguration<Image>
                .HasForeignKey(cs => cs.FileUserId)
                .IsRequired(required: false)
                .OnDelete(DeleteBehavior.Cascade);
+
+        Image[] images = new[]
+        {
+            new Image()
+            {
+                Id = 1,
+                Type = Models.ImageModels.ImageType.Production,
+                EntityId= 1,
+                CreateDate = DateTime.Now,
+                FileUserId = 1,
+                Path = "Path_1"
+            },
+            new Image()
+            {
+                Id = 2,
+                Type = Models.ImageModels.ImageType.Production,
+                EntityId= 2,
+                CreateDate = DateTime.Now,
+                FileUserId = 2,
+                Path = "Path_2"
+            }
+        };
+
+        builder.HasData(images);
     }
 }

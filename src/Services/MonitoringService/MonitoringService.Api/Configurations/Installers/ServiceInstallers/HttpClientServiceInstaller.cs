@@ -1,11 +1,13 @@
-﻿using MonitoringService.Api.Infrastructure.DelegatingHandlers;
+﻿using MonitoringService.Api.Attributes;
+using MonitoringService.Api.Infrastructure.DelegatingHandlers;
 using MonitoringService.Api.Models.Settings;
 
 namespace MonitoringService.Api.Configurations.Installers.ServiceInstallers;
 
+[InstallerOrder(Order = 4)]
 public class HttpClientServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         string env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
@@ -21,5 +23,7 @@ public class HttpClientServiceInstaller : IServiceInstaller
             config.BaseAddress = new Uri(baseAddress);
         }).AddHttpMessageHandler<LocalizationAuthorizationDelegatingHandler>();
         #endregion
+
+        return Task.CompletedTask;
     }
 }
