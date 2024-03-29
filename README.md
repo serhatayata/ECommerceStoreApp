@@ -886,6 +886,51 @@ mutation($coupon: couponUsageInput!){
   ```
   
 ----------
+Localization Resources Table CDC Activation
+```sql
+
+EXEC sys.sp_cdc_enable_db
+
+EXEC sys.sp_cdc_enable_table 
+@source_schema = N'localization', 
+@source_name = N'Resources', 
+@role_name = NULL, 
+@filegroup_name = N'', 
+@supports_net_changes = 0
+
+```
+```json
+{
+  "name": "debezium-localization-resources-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.sqlserver.SqlServerConnector",
+    "topic.creation.enable": true,
+    "topic.creation.default.replication.factor": 1,
+    "topic.creation.default.partitions": 10,
+    "topic.creation.default.cleanup.policy": "compact",
+    "topic.creation.default.compression.type": "lz4",
+    "auto.create.topics.enable": true,
+    "database.server.name": "dbserver1",
+    "database.hostname": "host.docker.internal",
+    "database.port": "1433",
+    "database.user": "sa",
+    "database.password": "sa.++112233",
+    "database.names": "ECSA_Localization",
+    "database.whitelist": "localization.Resources",
+    "database.history.kafka.topic": "localization.resources.dbhistory",
+    "database.encrypt": "false",
+    "database.history.kafka.bootstrap.servers": "kafka1:29092",
+    "table.whitelist": "resources",
+    "schema.include.list": "localization",
+    "schema.history.internal.kafka.topic": "localization.resources.schemahistory",
+    "schema.history.internal.kafka.bootstrap.servers": "kafka1:29092",
+    "table.include.list": "localization.resources",
+    "topic.prefix": "ecom",
+    "database.trustServerCertificate": true
+  }
+}
+```
+----------
 
 - Migration commands IdentityServer
 
