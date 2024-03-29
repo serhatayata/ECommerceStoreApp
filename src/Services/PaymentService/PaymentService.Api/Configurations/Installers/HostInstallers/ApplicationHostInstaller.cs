@@ -4,7 +4,7 @@ namespace PaymentService.Api.Configurations.Installers.HostInstallers;
 
 public class ApplicationHostInstaller : IHostInstaller
 {
-    public void Install(IHostBuilder host, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public Task Install(IHostBuilder host, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         host.UseDefaultServiceProvider((context, options) =>
         {
@@ -25,6 +25,8 @@ public class ApplicationHostInstaller : IHostInstaller
         })
         .ConfigureLogging(s => s.ClearProviders()) // Remove all added providers before
                                                     // https://github.com/serilog/serilog-aspnetcore
-        .UseSerilog();    
+        .UseSerilog();
+
+        return Task.CompletedTask;
     }
 }
