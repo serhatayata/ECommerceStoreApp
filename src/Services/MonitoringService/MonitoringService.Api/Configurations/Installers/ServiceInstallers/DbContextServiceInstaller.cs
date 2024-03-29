@@ -7,7 +7,7 @@ namespace MonitoringService.Api.Configurations.Installers.ServiceInstallers;
 [InstallerOrder(Order = 9)]
 public class DbContextServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         var connString = configuration.GetConnectionString("MonitoringDB");
         services.AddEntityFrameworkNpgsql()
@@ -19,5 +19,7 @@ public class DbContextServiceInstaller : IServiceInstaller
         var context = serviceProvider.GetRequiredService<MonitoringDbContext>();
 
         _ = context.Database.EnsureCreated();
+
+        return Task.CompletedTask;
     }
 }

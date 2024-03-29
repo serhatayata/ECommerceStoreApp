@@ -7,7 +7,7 @@ namespace MonitoringService.Api.Configurations.Installers.ServiceInstallers;
 [InstallerOrder(Order = 2)]
 public class ControllerServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         services.AddControllers(options =>
         {
@@ -23,5 +23,7 @@ public class ControllerServiceInstaller : IServiceInstaller
         {
             options.SuppressModelStateInvalidFilter = true;
         });
+
+        return Task.CompletedTask;
     }
 }
