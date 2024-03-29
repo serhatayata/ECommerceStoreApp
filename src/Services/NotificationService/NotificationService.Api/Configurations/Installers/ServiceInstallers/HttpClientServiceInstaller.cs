@@ -5,7 +5,7 @@ namespace NotificationService.Api.Configurations.Installers.ServiceInstallers;
 
 public class HttpClientServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         string env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
@@ -20,5 +20,7 @@ public class HttpClientServiceInstaller : IServiceInstaller
             config.BaseAddress = new Uri(baseAddress);
         }).AddHttpMessageHandler<LocalizationAuthorizationDelegatingHandler>();
         #endregion
+
+        return Task.CompletedTask;
     }
 }

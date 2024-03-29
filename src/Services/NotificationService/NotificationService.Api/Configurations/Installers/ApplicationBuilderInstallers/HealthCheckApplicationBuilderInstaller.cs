@@ -1,8 +1,8 @@
 ﻿using NotificationService.Api.Extensions;
 
-namespace NotificationService.Api.Configurations.Installers.WebApplicationInstallers;
+namespace NotificationService.Api.Configurations.Installers.ApplicationBuilderInstallers;
 
-public class HealthCheckWebAppInstaller : IWebAppInstaller
+public class HealthCheckApplicationBuilderInstaller : IApplicationBuilderInstaller
 {
     public void Install(IApplicationBuilder app, IHostApplicationLifetime lifeTime, IConfiguration configuration)
     {
