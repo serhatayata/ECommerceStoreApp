@@ -5,7 +5,7 @@ namespace StockService.Api.Configurations.Installers.ServiceInstallers;
 
 public class DbContextServiceInstaller : IServiceInstaller
 {
-    public void Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
+    public Task Install(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostEnvironment)
     {
         var connString = configuration.GetConnectionString("StockDb");
         services.AddDbContext<StockDbContext>(options =>
@@ -15,5 +15,7 @@ public class DbContextServiceInstaller : IServiceInstaller
         var context = serviceProvider.GetRequiredService<StockDbContext>();
 
         context.Database.Migrate();
+
+        return Task.CompletedTask;
     }
 }
