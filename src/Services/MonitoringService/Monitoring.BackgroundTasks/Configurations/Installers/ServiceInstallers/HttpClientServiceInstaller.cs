@@ -6,7 +6,7 @@ namespace Monitoring.BackgroundTasks.Configurations.Installers.ServiceInstallers
 [InstallerOrder(Order = 3)]
 public class HttpClientServiceInstaller : IServiceInstaller
 {
-    public void Install(
+    public Task Install(
         IServiceCollection services, 
         IConfiguration configuration, 
         IWebHostEnvironment hostEnvironment)
@@ -25,5 +25,7 @@ public class HttpClientServiceInstaller : IServiceInstaller
         }).AddHttpMessageHandler<MonitoringAuthorizationDelegatingHandler>();
 
         #endregion    
+
+        return Task.CompletedTask;
     }
 }

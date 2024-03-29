@@ -8,7 +8,7 @@ namespace Monitoring.BackgroundTasks.Configurations.Installers.ServiceInstallers
 [InstallerOrder(Order = 5)]
 public class SchedulingServiceInstaller : IServiceInstaller
 {
-    public void Install(
+    public Task Install(
         IServiceCollection services, 
         IConfiguration configuration, 
         IWebHostEnvironment hostEnvironment)
@@ -47,6 +47,8 @@ public class SchedulingServiceInstaller : IServiceInstaller
         {
             q.WaitForJobsToComplete = true;
         });
+
+        return Task.CompletedTask;
     }
 
     private static string GetJobKey<T>()

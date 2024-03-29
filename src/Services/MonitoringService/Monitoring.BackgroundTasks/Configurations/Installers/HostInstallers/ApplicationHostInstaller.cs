@@ -6,7 +6,7 @@ namespace Monitoring.BackgroundTasks.Configurations.Installers.HostInstallers;
 [InstallerOrder(Order = 1)]
 public class ApplicationHostInstaller : IHostInstaller
 {
-    public void Install(
+    public Task Install(
         IHostBuilder host, 
         IConfiguration configuration, 
         IWebHostEnvironment hostEnvironment)
@@ -31,5 +31,7 @@ public class ApplicationHostInstaller : IHostInstaller
         .ConfigureLogging(s => s.ClearProviders()) // Remove all added providers before
                                                    // https://github.com/serilog/serilog-aspnetcore
         .UseSerilog();
+
+        return Task.CompletedTask;
     }
 }

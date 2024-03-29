@@ -8,7 +8,7 @@ namespace Monitoring.BackgroundTasks.Configurations.Installers.ServiceInstallers
 [InstallerOrder(Order = 1)]
 public class StartupDIServiceInstaller : IServiceInstaller
 {
-    public void Install(
+    public Task Install(
         IServiceCollection services, 
         IConfiguration configuration, 
         IWebHostEnvironment hostEnvironment)
@@ -16,5 +16,7 @@ public class StartupDIServiceInstaller : IServiceInstaller
         services.AddScoped<IClientCredentialsTokenService, ClientCredentialsTokenService>();
 
         services.Configure<HealthCheckSaveSettings>(configuration.GetSection("Settings:HealthCheckSave"));
+
+        return Task.CompletedTask;
     }
 }

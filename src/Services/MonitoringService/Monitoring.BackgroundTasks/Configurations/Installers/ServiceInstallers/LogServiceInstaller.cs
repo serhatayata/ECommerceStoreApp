@@ -10,7 +10,7 @@ namespace Monitoring.BackgroundTasks.Configurations.Installers.ServiceInstallers
 [InstallerOrder(Order = 4)]
 public class LogServiceInstaller : IServiceInstaller
 {
-    public void Install(
+    public Task Install(
         IServiceCollection services, 
         IConfiguration configuration, 
         IWebHostEnvironment hostEnvironment)
@@ -37,6 +37,8 @@ public class LogServiceInstaller : IServiceInstaller
                         .Enrich.WithProperty("Environment", env)
                         .ReadFrom.Configuration(serilogConfiguration)
                         .CreateLogger();
+
+        return Task.CompletedTask;
     }
 
     private static ElasticsearchSinkOptions ConfigureElasticSink(IConfigurationRoot configuration, string environment)
