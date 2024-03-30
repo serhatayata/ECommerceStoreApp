@@ -1,0 +1,12 @@
+version: '3.4'
+
+services:
+  prometheus:
+    image: ubuntu/prometheus
+    container_name: prometheus
+    ports:
+      - "5100:9090"
+    environment:
+      - TZ=UTC
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml

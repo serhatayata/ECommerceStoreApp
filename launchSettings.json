@@ -4,8 +4,8 @@
       "commandName": "DockerCompose",
       "commandVersion": "1.0",
       "composeLaunchAction": "LaunchBrowser",
-      "composeLaunchServiceName": "campaignservice-api",
-      "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/ui/playground",
+      "composeLaunchServiceName": "basketservice-api",
+      "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}",
       "serviceActions": {
         "consul-service": "StartWithoutDebugging",
         "fileservice-api": "DoNotStart",
@@ -24,8 +24,8 @@
         "orderservice-api": "DoNotStart",
         "paymentservice-api": "DoNotStart",
         "stockservice-api": "DoNotStart",
-        "basketservice-api": "DoNotStart",
-        "catalogservice-api": "DoNotStart",
+        "basketservice-api": "StartDebugging",
+        "catalogservice-api": "StartDebugging",
         "mongodb": "StartWithoutDebugging",
         "identityserver-api": "DoNotStart",
         "gateway-api": "DoNotStart",
@@ -36,7 +36,9 @@
         "zookeeper": "StartWithoutDebugging",
         "monitoring-backgroundtasks": "DoNotStart",
         "postgres-monitoring": "StartWithoutDebugging",
-        "sagastatemachine-workerservice": "DoNotStart"
+        "sagastatemachine-workerservice": "DoNotStart",
+        "grafana": "StartWithoutDebugging",
+        "prometheus": "StartWithoutDebugging"
       }
     }
   }

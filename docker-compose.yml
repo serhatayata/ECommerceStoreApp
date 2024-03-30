@@ -244,6 +244,14 @@ services:
       - kafka1
       - zookeeper
 
+  prometheus:
+    container_name: prometheus
+    image: ubuntu/prometheus
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana
+
 volumes:
   sqlserver_data:
   sqlserver_log:

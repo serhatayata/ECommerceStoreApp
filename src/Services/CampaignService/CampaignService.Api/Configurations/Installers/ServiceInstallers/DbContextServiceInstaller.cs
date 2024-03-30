@@ -27,7 +27,7 @@ public class DbContextServiceInstaller : IServiceInstaller
         var serviceProvider = services.BuildServiceProvider();
         var context = serviceProvider.GetRequiredService<CampaignDbContext>();
 
-        context.Database.EnsureCreated();
+        context.Database.Migrate();
 
         return Task.CompletedTask;
     }

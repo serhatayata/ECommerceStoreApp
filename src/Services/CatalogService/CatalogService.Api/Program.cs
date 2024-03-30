@@ -1,6 +1,7 @@
 using CatalogService.Api.Configurations.Installers;
 using CatalogService.Api.Extensions;
 using CatalogService.Api.Extensions.Middlewares;
+using Prometheus;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -45,6 +46,9 @@ app.InstallWebApp(app.Lifetime,
 app.InstallApplicationBuilder(app.Lifetime,
                               configuration,
                               typeof(IApplicationBuilderInstaller).Assembly);
+
+app.UseHttpMetrics();
+app.MapMetrics();
 
 app.MapControllers();
 

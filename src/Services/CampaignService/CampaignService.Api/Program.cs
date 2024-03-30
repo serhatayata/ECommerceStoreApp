@@ -1,6 +1,7 @@
 using CampaignService.Api.Configurations.Installers;
 using CampaignService.Api.Extensions;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Prometheus;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -43,6 +44,9 @@ app.InstallWebApp(app.Lifetime,
 app.InstallApplicationBuilder(app.Lifetime,
                               configuration,
                               typeof(IApplicationBuilderInstaller).Assembly);
+
+app.UseHttpMetrics();
+app.MapMetrics();
 
 app.MapControllers();
 

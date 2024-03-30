@@ -1,6 +1,7 @@
 using BasketService.Api.Configurations.Installers;
 using BasketService.Api.Extensions;
 using BasketService.Api.Services.Grpc;
+using Prometheus;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -37,6 +38,9 @@ app.InstallWebApp(app.Lifetime,
                   typeof(IWebAppInstaller).Assembly);
 
 app.MapGrpcService<GrpcBasketService>();
+
+app.UseHttpMetrics();
+app.MapMetrics();
 
 app.MapControllers();
 

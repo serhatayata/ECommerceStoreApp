@@ -73,8 +73,8 @@ services:
   catalogservice-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=7006,6006
-      - ASPNETCORE_URLS=http://+:6006;http://+:7006
+      - ASPNETCORE_HTTP_PORTS=7006,5006
+      - ASPNETCORE_URLS=http://+:5006;http://+:7006
     ports:
       - "5006:5006"
       - "7006:7006"
@@ -297,3 +297,20 @@ services:
       OFFSET_STORAGE_TOPIC: my_connect_offsets
       STATUS_STORAGE_TOPIC: my_connect_statuses
       BOOTSTRAP_SERVERS: kafka1:29092
+
+  prometheus:
+    ports:
+      - "9090:9090"
+    environment:
+      - TZ=UTC
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./grafana-data/data:/var/lib/grafana
