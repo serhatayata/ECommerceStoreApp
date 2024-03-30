@@ -1,7 +1,6 @@
 # ECommerceStoreApp
 E-Commerce Microservices Application (STILL BEING IMPROVED)
 
-- .NET Blazor SPA
 - Ocelot Gateway
 - Consul (Service Discovery)
 - ElasticSearch
@@ -16,6 +15,7 @@ E-Commerce Microservices Application (STILL BEING IMPROVED)
 - Event Sourcing Pattern
 - Retry Pattern, Circuit Breaker Pattern
 - Expression Builder
+- Grafana, Prometheus
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------
 
