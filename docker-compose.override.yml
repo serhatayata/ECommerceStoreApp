@@ -44,6 +44,11 @@ services:
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+    healthcheck:
+      test: curl --fail http://notificationservice-api:5003/health || exit 1
+      interval: 1m
+      timeout: 10s
+      retries: 3
 
   fileservice-api:
     environment:

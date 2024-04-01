@@ -42,6 +42,10 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
+app.InstallApplicationBuilder(app.Lifetime,
+                              configuration,
+                              typeof(IApplicationBuilderInstaller).Assembly);
+
 app.MapControllers();
 
 app.Start();

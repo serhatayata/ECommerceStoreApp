@@ -31,6 +31,10 @@ app.UseAuthentication();
 app.UseAuthorization();
 #endregion
 
+app.InstallApplicationBuilder(app.Lifetime,
+                              configuration,
+                              typeof(IApplicationBuilderInstaller).Assembly);
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

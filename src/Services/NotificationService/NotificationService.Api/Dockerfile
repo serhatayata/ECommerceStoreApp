@@ -5,6 +5,8 @@ WORKDIR /app
 EXPOSE 5003
 EXPOSE 6003
 
+RUN apt-get update && apt-get install -y curl jq 
+
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
@@ -17,6 +19,8 @@ RUN dotnet build "./NotificationService.Api.csproj" -c $BUILD_CONFIGURATION -o /
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "./NotificationService.Api.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+
+RUN apt-get update && apt-get install -y curl
 
 FROM base AS final
 WORKDIR /app

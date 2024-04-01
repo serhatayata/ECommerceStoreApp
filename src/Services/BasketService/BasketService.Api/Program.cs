@@ -33,10 +33,6 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.InstallWebApp(app.Lifetime,
-                  configuration,
-                  typeof(IWebAppInstaller).Assembly);
-
 app.MapGrpcService<GrpcBasketService>();
 
 app.UseHttpMetrics();
