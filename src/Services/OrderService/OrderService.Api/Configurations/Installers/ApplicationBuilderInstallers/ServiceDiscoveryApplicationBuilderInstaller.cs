@@ -11,7 +11,7 @@ public class ServiceDiscoveryApplicationBuilderInstaller : IApplicationBuilderIn
         {
             var consulClient = app.ApplicationServices.GetRequiredService<IConsulClient>();
             var loggingFactory = app.ApplicationServices.GetRequiredService<ILoggerFactory>();
-            var consulSettings = configuration.GetSection("ConsulConfig").Get<ConsulSettings>();
+            var consulSettings = configuration.GetSection("ServiceDiscoveryConfig").Get<ServiceDiscoverySettings>();
 
             var logger = loggingFactory.CreateLogger<IApplicationBuilder>();
 

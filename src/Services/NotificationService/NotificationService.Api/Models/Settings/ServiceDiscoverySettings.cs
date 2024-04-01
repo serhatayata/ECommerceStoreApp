@@ -1,6 +1,6 @@
-﻿namespace MonitoringService.Api.Models.Settings;
+﻿namespace NotificationService.Api.Models.Settings;
 
-public class ConsulSettings
+public class ServiceDiscoverySettings
 {
     public string Address { get; set; }
     public string ServiceName { get; set; }
