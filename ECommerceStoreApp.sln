@@ -150,6 +150,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "grafana", "grafana", "{F55A
 		docker-compose-files\grafana\docker-compose.yml = docker-compose-files\grafana\docker-compose.yml
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "k8s", "k8s", "{37ED411F-923C-4C55-8C70-9B024D4886A8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "deployment", "deployment", "{E7BEE736-C582-4E4B-BDD7-248725044857}"
+	ProjectSection(SolutionItems) = preProject
+		k8s\deployment\deployment-template.yml = k8s\deployment\deployment-template.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -286,6 +293,7 @@ Global
 		{CA3A25B2-B439-43B4-A1BF-51B3B8C1B4EA} = {3A931DA4-C6CA-496C-9E99-909BD7495FB1}
 		{BEAE11C1-B749-4F63-9C0B-4CDA501FC301} = {3A931DA4-C6CA-496C-9E99-909BD7495FB1}
 		{F55ACB2F-9242-484E-A0C1-81B96EFF53ED} = {3A931DA4-C6CA-496C-9E99-909BD7495FB1}
+		{E7BEE736-C582-4E4B-BDD7-248725044857} = {37ED411F-923C-4C55-8C70-9B024D4886A8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0EA7DAA1-E97E-4D4E-8989-8E0E33F3EDA4}

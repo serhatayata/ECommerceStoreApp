@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ecstore-redis-deployment
+  labels:
+    team: development
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: ecstore-redis
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 2
+      maxSurge: 2
+  template:
+    metadata:
+      labels:
+        app: ecstore-redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:6.0.6
+        ports:
+        - containerPort: 6379
+          protocol: TCP
+
+---
+
+
