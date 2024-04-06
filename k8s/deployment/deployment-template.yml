@@ -1,3 +1,5 @@
+#Redis
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -17,11 +19,13 @@ spec:
           image: redis:latest
           ports:
             - containerPort: 6379
+  
 ---
+
 apiVersion: v1
 kind: Service
 metadata:
-  name: redis-service
+  name: redis
 spec:
   selector:
     app: redis
@@ -30,4 +34,48 @@ spec:
     - protocol: TCP
       port: 6379
       targetPort: 6379
-      nodePort: 32565
+
+---
+## MSSQL SERVER
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sql-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sql-server
+  template:
+    metadata:
+      labels:
+        app: sql-server
+    spec:
+      containers:
+      - image: mcr.microsoft.com/mssql/server
+        name: sql-server
+        env:
+        - name: ACCEPT_EULA
+          value: "Y"
+        - name: SA_PASSWORD
+          value: sa.++112233
+        - name: MSSQL_PID
+          value: Standard
+        ports:
+        - containerPort: 1433
+          name: sql-server
+  
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+   name: sql-server
+spec:
+  type: NodePort
+  ports:
+  - port: 1433 
+    nodePort: 31433
+  selector:
+    app: sql-server
