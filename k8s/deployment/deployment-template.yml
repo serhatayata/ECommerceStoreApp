@@ -79,3 +79,56 @@ spec:
     nodePort: 31433
   selector:
     app: sql-server
+
+---
+# PostgreSQL
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - image: postgres:14-alpine
+        name: postgres
+        env:
+        - name: POSTGRES_PASSWORD
+          value: "postgres"
+        - name: POSTGRES_USER
+          value: "postgres"
+        - name: POSTGRES_DB
+          value: "ECSA_Monitoring"
+        ports:
+        - containerPort: 5432
+          name: postgres
+        volumeMounts:
+        - name: postgres-data-monitoring
+          mountPath: /var/lib/postgresql-monitoring/data
+      volumes:
+      - name: postgres-data-monitoring
+        emptyDir: {}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+   name: postgres
+spec:
+  type: NodePort
+  ports:
+  - port: 5432 
+    nodePort: 30432
+  selector:
+    app: postgres
+
+---
