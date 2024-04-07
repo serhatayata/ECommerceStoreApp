@@ -1,4 +1,6 @@
-#Redis
+## DEPLOYMENTS
+
+#Redis Deployment
 
 apiVersion: apps/v1
 kind: Deployment
@@ -19,24 +21,9 @@ spec:
           image: redis:latest
           ports:
             - containerPort: 6379
-  
----
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: redis
-spec:
-  selector:
-    app: redis
-  type: NodePort
-  ports:
-    - protocol: TCP
-      port: 6379
-      targetPort: 6379
 
 ---
-## MSSQL SERVER
+## MSSQL SERVER Deployment
 
 apiVersion: apps/v1
 kind: Deployment
@@ -65,23 +52,9 @@ spec:
         ports:
         - containerPort: 1433
           name: sql-server
-  
----
-
-apiVersion: v1
-kind: Service
-metadata:
-   name: sql-server
-spec:
-  type: NodePort
-  ports:
-  - port: 1433 
-    nodePort: 31433
-  selector:
-    app: sql-server
 
 ---
-# PostgreSQL
+# PostgreSQL Monitoring Deployment
 
 apiVersion: apps/v1
 kind: Deployment
@@ -119,6 +92,43 @@ spec:
 
 ---
 
+## SERVICES
+
+## Redis service
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+spec:
+  selector:
+    app: redis
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 6379
+      targetPort: 6379
+
+---
+
+## SQL Server service
+
+apiVersion: v1
+kind: Service
+metadata:
+   name: sql-server
+spec:
+  type: NodePort
+  ports:
+  - port: 1433 
+    nodePort: 31433
+  selector:
+    app: sql-server
+
+---
+
+## Postgres Service
+
 apiVersion: v1
 kind: Service
 metadata:
@@ -131,4 +141,3 @@ spec:
   selector:
     app: postgres
 
----
