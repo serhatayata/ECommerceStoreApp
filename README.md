@@ -946,3 +946,11 @@ EXEC sys.sp_cdc_enable_table
     - update-database -context AppIdentityDbContext -migration mig_v1
     - update-database -context AppPersistedGrantDbContext -migration mig_persisted_v1
     - update-database -context AppConfigurationDbContext -migration mig_config_v1
+
+-----------
+
+Minikube expose service port for tests 
+
+```sh
+minikube service --url postgres
+```
